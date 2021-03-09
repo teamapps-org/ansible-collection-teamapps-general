@@ -1,0 +1,6 @@
+---
+# handlers file for zammad
+- name: zammad_restart
+  docker_compose:
+    project_src: '{{ zammad_path }}'
+    restarted: true

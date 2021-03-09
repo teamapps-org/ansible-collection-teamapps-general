@@ -1,0 +1,86 @@
+---
+# tasks file for webproxy
+
+## Based on following Project, but tuned with custom nginx.conf
+# - name: checkout gitrepo
+#   git:
+#     repo: 'https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion.git'
+#     dest: '{{ webproxy_path }}'
+#     version: master
+
+- name: webproxy directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ container_path }}'
+    - '{{ webproxy_path }}'
+    - '{{ webproxy_path }}/data'
+    - '{{ webproxy_path }}/data/certs'
+    - '{{ webproxy_path }}/data/conf.d'
+    - '{{ webproxy_path }}/data/html'
+    - '{{ webproxy_path }}/data/htpasswd'
+    - '{{ webproxy_path }}/data/vhost.d'
+    - '{{ webproxy_path }}/data/acme.sh'
+
+- name: Create external docker network for communication between applications and webproxy
+  docker_network:
+    name: webproxy
+    ipam_config:
+      - subnet: 172.28.0.0/16
+        gateway: 172.28.0.1
+
+- name: 'Webproxy docker-compose.yml'
+  template:
+    src: templates/docker-compose.yml.j2
+    dest: '{{ webproxy_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: webproxy_docker-compose-up
+
+- name: 'Webproxy environment variables, .env file'
+  template:
+    src: templates/env.j2
+    dest: '{{ webproxy_path }}/.env'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: webproxy_docker-compose-up
+
+- name: 'Custom nginx.conf with performance tuning'
+  template:
+    src: templates/nginx.conf
+    dest: '{{ webproxy_path }}/data/nginx.conf'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: webproxy_docker-compose-restart
+
+- name: 'Nginx custom_options.conf'
+  template:
+    src: templates/custom_options.conf
+    dest: '{{ webproxy_path }}/data/conf.d/custom_options.conf'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: webproxy_docker-compose-restart
+
+  # from evertramos, with tuned listen backlog=65536
+- name: 'Copy template for generated server config, nginx.tmpl'
+  copy:
+    src: files/nginx.tmpl
+    dest: '{{ webproxy_path }}/nginx.tmpl'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: webproxy_docker-compose-restart
+
+- name: webproxy_docker-compose-up
+  docker_compose:
+    project_src: '{{ webproxy_path }}'
+    state: present
+    pull: '{{ webproxy_docker_pull }}'

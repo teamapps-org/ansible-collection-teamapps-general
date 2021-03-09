@@ -1,0 +1,110 @@
+---
+version: '3'
+
+services:
+
+  zammad-backup:
+    command: ["zammad-backup"]
+    depends_on:
+      - zammad-railsserver
+    entrypoint: /usr/local/bin/backup.sh
+    environment:
+      - BACKUP_SLEEP=86400
+      - HOLD_DAYS={{ zammad_backup_hold_days }}
+      - POSTGRESQL_USER=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASS}
+    image: zammad/zammad-docker-compose:zammad-postgresql-{{ zammad_version }}
+    restart: always
+    volumes:
+      - ./data/zammad-backup:/var/tmp/zammad
+      - ./data/zammad-data:/opt/zammad
+
+  zammad-elasticsearch:
+    image: zammad/zammad-docker-compose:zammad-elasticsearch-{{ zammad_version }}
+    restart: always
+    environment:
+      - discovery.type=single-node
+    hostname: zammad-elasticsearch
+    volumes:
+      - ./data/elasticsearch-data:/usr/share/elasticsearch/data
+
+  zammad-init:
+    command: ["zammad-init"]
+    depends_on:
+      - zammad-postgresql
+    environment:
+      - POSTGRESQL_USER=${POSTGRES_USER}
+      - POSTGRESQL_PASS=${POSTGRES_PASS}
+    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
+    restart: on-failure
+    volumes:
+      - ./data/zammad-data:/opt/zammad
+
+  zammad-memcached:
+    command: memcached -m 256M
+    image: memcached:1.6.9-alpine
+    restart: always
+
+  zammad-nginx:
+    command: ["zammad-nginx"]
+    expose:
+      - "80"
+    depends_on:
+      - zammad-railsserver
+    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
+    environment:
+      VIRTUAL_HOST: '{{ zammad_domain }}'
+      LETSENCRYPT_HOST: '{{ zammad_domain }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    networks:
+      - default
+      - webproxy
+    restart: always
+    volumes:
+      - ./data/zammad-data:/opt/zammad
+
+  zammad-postgresql:
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+    image: zammad/zammad-docker-compose:zammad-postgresql-{{ zammad_version }}
+    restart: always
+    volumes:
+      - ./data/postgresql-data:/var/lib/postgresql/data
+
+  zammad-railsserver:
+    command: ["zammad-railsserver"]
+    depends_on:
+      - zammad-memcached
+      - zammad-postgresql
+    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
+    restart: always
+    volumes:
+      - ./data/zammad-data:/opt/zammad
+
+  zammad-scheduler:
+    command: ["zammad-scheduler"]
+    depends_on:
+      - zammad-memcached
+      - zammad-railsserver
+    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
+    restart: always
+    volumes:
+      - ./data/zammad-data:/opt/zammad
+
+  zammad-websocket:
+    command: ["zammad-websocket"]
+    depends_on:
+      - zammad-memcached
+      - zammad-railsserver
+    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
+    restart: always
+    volumes:
+      - ./data/zammad-data:/opt/zammad
+
+networks:
+  default:
+    driver: bridge
+  webproxy:
+    external:
+      name: webproxy

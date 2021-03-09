@@ -1,0 +1,44 @@
+- name: zammad_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ zammad_path }}'
+
+- name: zammad elastic search data directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '1000'
+    group: root
+    mode: '0750'
+  with_items:
+    - '{{ zammad_path }}/data/elasticsearch-data/'
+
+- name: deploy config
+  template:
+    src: templates/{{ item }}
+    dest: '{{ zammad_path }}/{{ item }}'
+    owner: root
+    group: root
+    mode: '0640'
+  with_items:
+    - docker-compose.yml
+
+- name: env file for secrets
+  no_log: true
+  template:
+    src: templates/env.j2
+    dest: '{{ zammad_path }}/.env'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: zammad_docker-compose-up
+  docker_compose:
+    project_src: '{{ zammad_path }}'
+    state: present
+    pull: '{{ zammad_docker_pull }}'

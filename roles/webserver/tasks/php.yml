@@ -1,0 +1,29 @@
+- name: php config directory
+  file:
+    path: '{{ webserver_path }}/php'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: deploy config
+  template:
+    src: '{{ item }}'
+    dest: '{{ webserver_path }}/{{ item }}'
+    owner: root
+    group: root
+    mode: '0640'
+  with_items:
+    - php/Dockerfile
+    - php/fpm-custom.ini
+    - php/php-override.ini
+  notify: webserver_restart_php
+
+- name: remove old files
+  file:
+    path: '{{ webserver_path }}/{{ item }}'
+    state: absent
+  with_items:
+    - log.conf
+    - php/zz-custom.ini
+    - php/fpm-log.ini

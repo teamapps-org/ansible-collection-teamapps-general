@@ -1,0 +1,84 @@
+# nginx webserver
+
+# config based on https://github.com/mikechernev/dockerised-php/tree/feature/log-to-stdout
+- name: webserver_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ webserver_path }}'
+
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: '{{ webserver_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: create user owned files
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+  with_items:
+    - '{{ webserver_path }}/code'
+    - '{{ webserver_path }}/code/{{ webserver_document_root }}' # document root
+
+- name: deploy nginx config
+  template:
+    src: '{{ webserver_nginx_template }}'
+    dest: '{{ webserver_path }}/site.conf'
+    owner: www-data
+    group: www-data
+    mode: '0640'
+  notify: webserver_restart_nginx
+
+# - name: deploy info.php
+#   template:
+#     src: templates/info.php
+#     dest: '{{ webserver_path }}/code/httpdocs/info.php'
+#     owner: root
+#     group: root
+#     mode: '0640'
+
+- include_tasks: mysql.yml
+  when: webserver_mysql_enable
+
+- include_tasks: php.yml
+  when: webserver_php_enable
+
+- include_tasks: sftp.yml
+  when: webserver_sftp_enable
+
+- name: configure basic auth htpasswd in webproxy
+  copy:
+    content: "{{ webserver_basic_auth }}\n"
+    dest: '{{ webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - webserver_basic_auth != ''
+  notify: webserver_restart_nginx
+
+- name: Remove basic auth
+  file:
+    path: '{{ webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
+    state: absent
+  when:
+    - webserver_basic_auth == ''
+  notify: webserver_restart_nginx
+
+- name: webserver_docker-compose-up
+  docker_compose:
+    project_src: '{{ webserver_path }}'
+    state: present
+    remove_orphans: yes
+    pull: '{{ webserver_docker_pull }}'
+    build: '{{ webserver_docker_pull }}'

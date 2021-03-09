@@ -1,0 +1,27 @@
+- name: webserver_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ webserver_path }}/sftp/'
+
+- name: generate host keys
+  command: ssh-keygen -t {{ item }} -f {{ webserver_path }}/sftp/ssh_host_{{ item }}_key
+  args:
+    creates: "{{ webserver_path }}/sftp/ssh_host_{{ item }}_key"
+  with_items:
+    - rsa
+    - ed25519
+  notify: webserver_recreate_sftp
+
+- name: authorized_keys
+  copy:
+    content: '{{ webserver_sftp_authorized_keys }}'
+    dest: "{{ webserver_path }}/sftp/authorized_keys"
+    owner: www-data
+    group: www-data
+    mode: '0640'
+  notify: webserver_recreate_sftp

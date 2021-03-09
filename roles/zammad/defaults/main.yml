@@ -1,0 +1,17 @@
+---
+# defaults file for zammad
+zammad_path: '{{ container_path }}/zammad'
+zammad_domain: 'zammad.{{ ansible_fqdn }}'
+zammad_letsencrypt_host: '{{ zammad_domain }}'
+
+# Version as on docker hub: https://hub.docker.com/r/zammad/zammad-docker-compose/tags
+zammad_version: latest # 3.6.0-43
+
+# to be replaced in host_vars
+zammad_postgres_user: zammad
+# zammad_postgres_pass:
+
+zammad_backup_hold_days: 10
+
+# pull docker images (docker-compose pull)
+zammad_docker_pull: '{{ global_docker_pull | default(False) }}'

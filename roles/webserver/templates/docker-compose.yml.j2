@@ -1,0 +1,111 @@
+# docker-compose.yml
+# config based on https://github.com/mikechernev/dockerised-php/tree/feature/log-to-stdout
+version: '3.7'
+
+services:
+  web:
+    image: nginxinc/nginx-unprivileged:stable-alpine
+    user: "33"
+    restart: always
+    expose:
+      - 8080
+    environment:
+      VIRTUAL_HOST: '{{ webserver_domains | join(",") }}'
+      LETSENCRYPT_HOST: '{{ webserver_domains | join(",") }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    volumes:
+      - type: bind
+        source: './code'
+        target: /code
+        read_only: false
+      - type: bind
+        source: ./site.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+    networks:
+      - webproxy
+      - code-network
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+
+{% if webserver_php_enable %}
+  php:
+    # image: php:fpm
+    build: ./php
+    restart: always
+    volumes:
+      - type: bind
+        source: './code'
+        target: /code
+        read_only: false
+      - type: bind
+        source: ./php/fpm-custom.ini
+        target: /usr/local/etc/php-fpm.d/zz-custom.conf
+        read_only: true
+    working_dir: /code
+    networks:
+      - code-network
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+
+{% endif %}
+{% if webserver_mysql_enable %}
+  db:
+    image: mariadb:latest
+    restart: always
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-allowed-packet=64M
+    volumes:
+      - type: bind
+        source: './db'
+        target: '/var/lib/mysql'
+        read_only: false
+    environment:
+      TZ: Etc/UTC
+      MYSQL_ROOT_PASSWORD: '{{ webserver_mysql_root_password }}'
+      MYSQL_DATABASE: '{{ webserver_mysql_database }}'
+      MYSQL_USER: '{{ webserver_mysql_user }}'
+      MYSQL_PASSWORD: '{{ webserver_mysql_password }}'
+    networks:
+      - code-network
+
+{% endif %}
+{% if webserver_sftp_enable %}
+  sftp:
+    image: atmoz/sftp
+    restart: always
+    volumes:
+      - type: bind
+        source: './code'
+        target: /home/uploader/code
+        read_only: false
+      - type: bind
+        source: './sftp/authorized_keys'
+        target: /home/uploader/.ssh/keys/authorized_keys.pub
+        read_only: true
+      - type: bind
+        source: './sftp/ssh_host_rsa_key'
+        target: /etc/ssh/ssh_host_rsa_key
+        read_only: true
+      - type: bind
+        source: './sftp/ssh_host_ed25519_key'
+        target: /etc/ssh/ssh_host_ed25519_key
+        read_only: true
+    command: uploader::33
+    ports:
+      - '{{ webserver_sftp_port }}:22'
+{% endif %}
+
+
+
+networks:
+  code-network:
+    driver: bridge
+  webproxy:
+    external:
+      name: webproxy

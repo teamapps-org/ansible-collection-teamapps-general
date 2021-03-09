@@ -1,0 +1,14 @@
+---
+# handlers file for webproxy
+
+- name: webproxy_docker-compose-up
+  docker_compose:
+    project_src: '{{ webproxy_path }}'
+    state: present
+
+
+- name: webproxy_docker-compose-restart
+  docker_compose:
+    project_src: '{{ webproxy_path }}'
+    state: present
+    restarted: yes

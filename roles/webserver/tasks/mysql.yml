@@ -1,0 +1,50 @@
+- name: Database Data Directory
+  file:
+    path: '{{ webserver_path }}/db'
+    state: directory
+    owner: '999'
+    group: '999'
+    mode: '0755'
+
+- name: Dbdump Directory
+  file:
+    path: '{{ webserver_path }}/dbdumps'
+    state: directory
+    owner: '999'
+    group: '999'
+    mode: '0755'
+
+- name: mysqldump wrapper
+  copy:
+    content: |
+      #!/bin/bash
+      set -eux
+      dir="$(dirname $(readlink -f $0))"
+      cd $dir
+      docker-compose exec -T db sh -c "exec mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" {{ webserver_mysql_database }}  --default-character-set=utf8mb4 --skip-dump-date | \
+        sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
+        gzip --rsyncable > dbdumps/{{ webserver_mysql_database }}.sql.gz
+    dest: '{{ webserver_path }}/mysqldump.sh'
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Mysql backup prebackup
+  lineinfile:
+    path: /usr/local/bin/prebackup.sh
+    line: '{{ webserver_path }}/mysqldump.sh'
+    regex: '^{{ webserver_path }}'
+
+- name: mysqlrestore wrapper
+  copy:
+    content: |
+      #!/bin/bash
+      set -eux
+      dir="$(dirname $(readlink -f $0))"
+      cd $dir
+      zcat dbdumps/{{ webserver_mysql_database }}.sql.gz | \
+      docker-compose exec -T db sh -c 'exec mysql -p"$MYSQL_ROOT_PASSWORD" {{ webserver_mysql_database }}'
+    dest: '{{ webserver_path }}/mysqlrestore.sh'
+    owner: root
+    group: root
+    mode: 0750

@@ -1,0 +1,4 @@
+- name: webproxy with nginx
+  import_tasks: webproxy.yml
+  tags:
+    - webproxy

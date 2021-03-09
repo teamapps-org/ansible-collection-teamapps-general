@@ -1,0 +1,23 @@
+---
+# defaults file for webproxy
+
+container_path: /container
+webproxy_path: '{{ container_path }}/webproxy'
+
+# set access_log off; in nginx
+webproxy_access_log_off: False
+
+# pull docker images (docker-compose pull)
+webproxy_docker_pull: '{{ global_docker_pull | default(False) }}'
+
+webproxy_cookies_secure_only: False
+
+webproxy_default_host: ""
+
+webproxy_log_driver: "{{ global_log_driver | default('json-file') }}"
+
+webproxy_loki_server: '{{ global_loki_server | default() }}'
+webproxy_loki_user: '{{ global_loki_user | default() }}'
+webproxy_loki_password: '{{ global_loki_password | default() }}'
+
+webproxy_letsencrypt_companion_tag: latest
