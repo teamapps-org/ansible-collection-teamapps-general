@@ -1,7 +1,7 @@
-Webserver
-=========
+Webproxy
+========
 
-Webserver using nginx with optional php and sftp
+Role for Webproxy based on https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion
 
 Requirements
 ------------
@@ -11,35 +11,40 @@ Requirements
 Role Variables
 --------------
 
-see `defaults/main.yml`
+See `defaults/main.yml`
 
 Dependencies
 ------------
 
-- webproxy
+Docker
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+With collection referenced in play
 
 ~~~yaml
-- hosts: servers
-  vars:
-    webproxy_domain: example.com
-    webproxy_php_enable: True
-    webproxy_sftp_enable: True
-    webproxy_sftp_port: 8822
+- hosts: localhost
+  collections:
+    - teamapps.general
   roles:
-     - role: webproxy
+    - role: webproxy
+~~~
+
+With fully qualified role name
+
+~~~yaml
+- hosts: localhost
+  roles:
+    - role: teamapps.general.webproxy
 ~~~
 
 License
 -------
 
-BSD
+Apache 2.0
 
 Author Information
 ------------------
 
-Philipp Gassmann <phiphi@phiphi.ch>
+An optional section for the role authors to include contact information, or a website (HTML is not allowed).
