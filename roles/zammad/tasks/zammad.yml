@@ -7,6 +7,7 @@
     mode: '0755'
   with_items:
     - '{{ zammad_path }}'
+    - '{{ zammad_path }}/zammad-backup'
 
 - name: zammad elastic search data directory
   file:
@@ -17,6 +18,26 @@
     mode: '0750'
   with_items:
     - '{{ zammad_path }}/data/elasticsearch-data/'
+
+- name: zammad-data directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '1000'
+    group: '1000'
+    mode: '0750'
+  with_items:
+    - '{{ zammad_path }}/data/zammad-data/'
+
+- name: postgresql directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '70'
+    group: root
+    mode: '0700'
+  with_items:
+    - '{{ zammad_path }}/data/zammad-data/'
 
 - name: deploy config
   template:
