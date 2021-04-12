@@ -48,7 +48,7 @@ services:
   zammad-nginx:
     command: ["zammad-nginx"]
     expose:
-      - "80"
+      - "8080"
     depends_on:
       - zammad-railsserver
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
