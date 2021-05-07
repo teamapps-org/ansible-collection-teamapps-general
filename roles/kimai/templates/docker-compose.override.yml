@@ -1,0 +1,8 @@
+# mount composer
+services:
+  php:
+    volumes:
+      - type: bind
+        source: './composer.phar'
+        target: /usr/local/bin/composer
+        read_only: true

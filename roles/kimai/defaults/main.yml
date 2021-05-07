@@ -1,0 +1,33 @@
+---
+container_path: /container
+kimai_path: '{{ container_path }}/kimai'
+kimai_domain: '{{ ansible_fqdn }}'
+
+kimai_version: '1.13' # https://www.kimai.org/documentation/installation.html
+
+kimai_mysql_database: kimai
+kimai_mysql_user: kimai
+# kimai_mysql_root_password:
+# kimai_mysql_password:
+
+# email configuration https://www.kimai.org/documentation/emails.html
+kimai_mailer_from: 'kimai@{{ kimai_domain }}'
+kimai_mailer_url: null://null # disabled
+# kimai_mailer_url: # 'smtp://username:password@mx.example.com:587?encryption=tls&auth_mode=plain'
+
+# REQUIRED
+# kimai_app_secret: change_this_to_something_unique
+
+kimai_php_extensions:
+  - gd
+  - intl
+  - imagick
+  - opcache
+  - zip
+  - mcrypt
+  - pdo_mysql
+  - mysqli
+  - xdebug
+  - soap
+  - apcu
+  - xsl

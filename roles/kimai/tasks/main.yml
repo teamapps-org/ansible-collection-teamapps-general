@@ -1,0 +1,4 @@
+- name: setup kimai
+  include_tasks: kimai.yml
+  tags:
+    - kimai
