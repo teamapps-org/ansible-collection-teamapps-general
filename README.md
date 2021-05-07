@@ -13,7 +13,7 @@ Add to your `requirements.yml`:
 
 collections:
   # current unreleased from git source, requires ansible 2.10 or higher
-  - name: git+https://github.com/teamapps/ansible-collection-teamapps-general.git
+  - name: git+https://github.com/teamapps-org/ansible-collection-teamapps-general.git
     type: git
     version: main
 ~~~
