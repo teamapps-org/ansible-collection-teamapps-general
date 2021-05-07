@@ -1,0 +1,6 @@
+---
+- name: webserver_redirect_restart
+  docker_compose:
+    project_src: '{{ webserver_redirect_path }}'
+    state: present
+    restarted: yes

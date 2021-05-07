@@ -1,0 +1,39 @@
+# nginx webserver
+
+# config based on https://github.com/mikechernev/dockerised-php/tree/feature/log-to-stdout
+- name: webserver_redirect_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ webserver_redirect_path }}'
+
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: '{{ webserver_redirect_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: webserver_redirect_restart
+
+- name: deploy config
+  template:
+    src: '{{ item }}'
+    dest: '{{ webserver_redirect_path }}/{{ item }}'
+    owner: www-data
+    group: www-data
+    mode: '0640'
+  with_items:
+    - site.conf
+  notify: webserver_redirect_restart
+
+- name: webserver_redirect_docker-compose-up
+  docker_compose:
+    project_src: '{{ webserver_redirect_path }}'
+    state: present
+    remove_orphans: yes
+    pull: '{{ webserver_redirect_docker_pull }}'

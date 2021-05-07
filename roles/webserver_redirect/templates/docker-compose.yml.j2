@@ -1,0 +1,33 @@
+# docker-compose.yml
+# config based on https://github.com/mikechernev/dockerised-php/tree/feature/log-to-stdout
+version: '3.7'
+
+services:
+  web:
+    image: nginxinc/nginx-unprivileged:stable-alpine
+    user: "33"
+    restart: always
+    expose:
+      - 8080
+    environment:
+      VIRTUAL_HOST: {{ webserver_redirect_domains | join(',') }}
+      LETSENCRYPT_HOST: {{ webserver_redirect_domains | join(',') }}
+      LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
+      HTTPS_METHOD: noredirect
+    volumes:
+      - type: bind
+        source: ./site.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
+    networks:
+      - webproxy
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+
+networks:
+  webproxy:
+    external:
+      name: webproxy
