@@ -42,3 +42,9 @@ webserver_mysql_enable: False
 # webserver_mysql_password:
 
 webserver_basic_auth: ''
+
+# PhpMyAdmin interface on /.myadmin
+webserver_myadmin_enable: False
+# htpasswd file content (if webserver_basic_auth is used, it should also contain the myadmin_htpasswd credentials)
+webserver_myadmin_htpasswd: ''
+webserver_myadmin_absolute_uri: https://{{ webserver_domain }}/.myadmin/

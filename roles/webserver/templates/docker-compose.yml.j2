@@ -22,6 +22,12 @@ services:
         source: ./site.conf
         target: /etc/nginx/conf.d/default.conf
         read_only: true
+{% if webserver_myadmin_enable %}
+      - type: bind
+        source: ./htpasswd_myadmin
+        target: /etc/nginx/conf.d/htaccess/htpasswd_myadmin
+        read_only: true
+{% endif %}
     networks:
       - webproxy
       - code-network
@@ -102,6 +108,23 @@ services:
 {% endif %}
 
 
+{% if webserver_myadmin_enable %}
+  myadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      TZ: Etc/UTC
+      PMA_HOST: db
+      PMA_USER: '{{ webserver_mysql_user }}'
+      PMA_PASSWORD: '{{ webserver_mysql_password }}'
+      HIDE_PHP_VERSION: 'yes'
+      UPLOAD_LIMIT: 100M
+      PMA_ABSOLUTE_URI: '{{ webserver_myadmin_absolute_uri }}'
+    networks:
+      - code-network
+    depends_on:
+      - db
+{% endif %}
 
 networks:
   code-network:

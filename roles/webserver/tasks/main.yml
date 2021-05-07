@@ -75,6 +75,17 @@
     - webserver_basic_auth == ''
   notify: webserver_restart_nginx
 
+
+- name: configure basic auth for myadmin if configured
+  copy:
+    content: "{{ webserver_myadmin_htpasswd }}\n"
+    dest: '{{ webserver_path }}/htpasswd_myadmin'
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - webserver_myadmin_enable
+
 - name: webserver_docker-compose-up
   docker_compose:
     project_src: '{{ webserver_path }}'
