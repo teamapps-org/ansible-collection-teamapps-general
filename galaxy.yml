@@ -16,7 +16,7 @@ readme: README.md
 # A list of the collection's content authors. Can be just the name or in the format 'Full Name <email> (url)
 # @nicks:irc/im.site#channel'
 authors:
-- Philipp Gassmann <phiphi@phiphi.ch>
+  - Philipp Gassmann <phiphi@phiphi.ch>
 
 
 ### OPTIONAL but strongly recommended
@@ -26,7 +26,7 @@ description: generic roles for different tools of an organization or company
 # Either a single license or a list of licenses for content inside of a collection. Ansible Galaxy currently only
 # accepts L(SPDX,https://spdx.org/licenses/) licenses. This key is mutually exclusive with 'license_file'
 license:
-- Apache-2.0
+  - Apache-2.0
 
 # The path to the license file for the collection. This path is relative to the root of the collection. This key is
 # mutually exclusive with 'license'

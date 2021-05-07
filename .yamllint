@@ -1,0 +1,19 @@
+---
+# Config file for yamllint
+# https://yamllint.readthedocs.io/en/stable/configuration.html
+
+extends: relaxed
+
+rules:
+  comments:
+    min-spaces-from-content: 1
+  indentation:
+    spaces: 2
+    indent-sequences: true
+  line-length: disable
+  #  max: 120
+
+ignore: |
+  /roles_galaxy
+  /collections
+  /.cache

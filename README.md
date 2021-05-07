@@ -50,6 +50,43 @@ Check the `defaults.yml` of the roles for information on how to configure them.
 
 ~~~
 
+## Development setup
+
+We use [pipenv](https://pipenv.readthedocs.io) to install ansible and dependency package.
+
+### First time Setup
+
+This is my current way I do it on Ubuntu. There are other ways to install ansible and manage the python dependencies.
+
+~~~bash
+cd ansible-collection-teamapps-general # where you cloned this repository
+sudo apt install python3-pip
+# set PATH so it includes user's ~/.local/bin
+echo $PATH | grep '\.local/bin' || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile && export PATH="$HOME/.local/bin:$PATH"
+pip3 install --user --upgrade pip pipenv
+pipenv shell --three
+pipenv install
+# check ansible working correctly
+ansible --version
+~~~
+
+### Loading pipenv
+
+~~~bash
+cd ansible-collection-teamapps-general # where you cloned this repository
+pipenv shell
+pipenv install
+~~~
+
+### Run checks
+
+Check YAML and ansible syntax
+
+~~~bash
+yamllint .
+ansible-lint roles/*
+~~~
+
 ## License
 
 Apache 2.0

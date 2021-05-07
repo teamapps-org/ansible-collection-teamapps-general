@@ -1,0 +1,12 @@
+# Ansible-Lint configuration
+# Options: https://ansible-lint.readthedocs.io/en/latest/configuring.html
+
+offline: true # don't install roles and collections from requirements.yml
+
+use_default_rules: true
+
+exclude_paths:
+  - ./roles_galaxy
+
+skip_list:
+  - empty-string-compare
