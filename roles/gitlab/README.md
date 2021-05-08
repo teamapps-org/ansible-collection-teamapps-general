@@ -6,6 +6,19 @@ Recommendation: mount an external volume to /srv before installing gitlab.
 
 This role installs gitlab from the apt repository and does not use docker.
 
+## Usage Example
+
+~~~yaml
+- name: Gitlab
+  hosts: git1.example.com
+  vars:
+    gitlab_domain: git.example.com
+  roles:
+    - role: teamapps.general.gitlab
+      tags:
+        - gitlab
+~~~
+
 ## Backup
 
 Backups are created by backuppc prebackup.sh script. it creates a tar file `/srv/backup/auto_gitlab_backup.tar` that is then backed up.
