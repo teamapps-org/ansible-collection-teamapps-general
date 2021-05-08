@@ -1,0 +1,98 @@
+---
+- name: create promtail system group
+  group:
+    name: promtail
+    system: true
+    state: present
+
+- name: create promtail system user
+  user:
+    name: promtail
+    system: true
+    shell: "/sbin/nologin"
+    group: promtail
+    groups: "{{ promtail_additional_groups | default('systemd-journal') }}"
+    createhome: false
+
+- name: create promtail directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: promtail
+    group: promtail
+    mode: 0750
+  with_items:
+    - "{{ promtail_config_dir }}"
+    - /var/log/promtail/
+
+
+- name: Promtail Configuration File
+  template:
+    src: promtail-config.yml.j2
+    dest: '{{ promtail_config_dir }}/promtail.yml'
+    owner: promtail
+    group: promtail
+    mode: '0640'
+  notify: restart promtail
+
+
+- name: Create download directory
+  delegate_to: localhost
+  file:
+    path: "{{ local_cache_dir }}/promtail"
+    state: directory
+    mode: 0755
+  check_mode: false
+
+- name: download promtail
+  delegate_to: localhost
+  become: false
+  get_url:
+    url: "https://github.com/grafana/loki/releases/download/v{{ promtail_version }}/{{ item.name }}.zip"
+    dest: "{{ local_cache_dir }}/promtail/{{ item.name }}.zip"
+    checksum: "sha256:{{ item.checksum }}"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  check_mode: false
+  with_items:
+    - { name: promtail-linux-amd64, checksum: "{{ promtail_checksum }}" }
+
+- name: unpack promtail binaries # noqa 208
+  delegate_to: localhost
+  become: false
+  unarchive:
+    remote_src: true
+    src: "{{ local_cache_dir }}/promtail/{{ item }}.zip"
+    dest: "{{ local_cache_dir }}/promtail"
+    creates: "{{ local_cache_dir }}/promtail/{{ item }}"
+  check_mode: false
+  with_items:
+    - promtail-linux-amd64
+
+- name: copy promtail
+  copy:
+    remote_src: false
+    src: "{{ local_cache_dir }}/promtail/promtail-linux-amd64"
+    dest: "/usr/local/bin/promtail"
+    mode: 0755
+    owner: root
+    group: root
+  notify:
+    - restart promtail
+
+- name: create systemd service unit
+  template:
+    src: promtail.service.j2
+    dest: /etc/systemd/system/promtail.service
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart promtail
+
+- name: Enable service promtail
+  service:
+    name: promtail
+    enabled: yes

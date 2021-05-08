@@ -1,0 +1,67 @@
+# Promtail Config
+# Documentation: https://grafana.com/docs/loki/latest/clients/promtail/configuration/
+
+server:
+  disable: {{ 'true' if promtail_server_disable else 'false' }}
+
+  # HTTP server listen host
+  # [http_listen_address: <string>]
+  http_listen_address: {{ promtail_server_http_listen_address | default('0.0.0.0') }}
+
+  # HTTP server listen port (0 means random port)
+  http_listen_port: 9080
+  # gRPC server listen host
+  # [grpc_listen_address: <string>]
+  # gRPC server listen port (0 means random port)
+  grpc_listen_port: 0
+
+positions:
+  filename: {{ promtail_positions_path }}/positions.yaml
+
+# clients:
+#   - url: http://loki:3100/loki/api/v1/push
+clients:
+  - url: {{ promtail_loki_url }}
+    basic_auth:
+      username: '{{ promtail_loki_username }}'
+      password: '{{ promtail_loki_password }}'
+
+    # Maximum amount of time to wait before sending a batch, even if that
+    # batch isn't full.
+    # [batchwait: <duration> | default = 1s]
+
+    # Maximum batch size (in bytes) of logs to accumulate before sending
+    # the batch to Loki.
+    # [batchsize: <int> | default = 102400]
+
+    # Configures how to retry requests to Loki when a request
+    # fails.
+    # Default backoff schedule:
+    # 0.5s, 1s, 2s, 4s, 8s, 16s, 32s, 64s, 128s, 256s(4.267m)
+    # For a total time of 511.5s(8.5m) before logs are lost
+    backoff_config:
+      #   # Initial backoff time between retries
+      #   [min_period: <duration> | default = 500ms]
+      min_period: 500ms
+
+      #   # Maximum backoff time between retries
+      #   [max_period: <duration> | default = 5m]
+      max_period: 30m
+
+      #   # Maximum number of retries to do
+      #   [max_retries: <int> | default = 10]
+      max_retries: 15
+
+    # Static labels to add to all logs being sent to Loki.
+    # Use map like {"foo": "bar"} to add a label foo with
+    # value bar.
+    external_labels:
+      instance: {{ ansible_fqdn }}
+      host: {{ ansible_hostname }}
+
+scrape_configs:
+  {{ promtail_scrape_configs_default | to_nice_yaml(indent=2) | indent(2,False) }}
+
+{% if promtail_scrape_configs != [{}] %}
+  {{ promtail_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+{% endif %}

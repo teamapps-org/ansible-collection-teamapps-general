@@ -1,0 +1,25 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=promtail
+After=network.target
+
+[Service]
+Type=simple
+User=promtail
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=/usr/local/bin/promtail \
+  --config.file={{ promtail_config_dir }}/promtail.yml
+
+PrivateTmp=true
+ProtectHome=true
+NoNewPrivileges=true
+SyslogIdentifier=promtail
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+StartLimitInterval=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target

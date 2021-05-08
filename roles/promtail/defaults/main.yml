@@ -1,0 +1,77 @@
+---
+# defaults file for promtail deployment
+container_path: /container
+promtail_path: '{{ container_path }}/promtail'
+
+promtail_docker_pull: '{{ global_docker_pull | default(False) }}'
+promtail_loki_server: 'loki.{{ ansible_domain }}'
+promtail_loki_url: https://{{ promtail_loki_server }}/loki/api/v1/push
+promtail_loki_username: testuser
+promtail_loki_password: password
+
+promtail_scape_configs_default:
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          category: 'serverlogs'
+          job: varlogs
+          __path__: /var/log/*log
+
+  - job_name: apt
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          category: 'serverlogs'
+          job: varlogs
+          __path__: /var/log/apt/*log
+    pipeline_stages: []
+
+  - job_name: journal
+    journal:
+      path: /var/log/journal/
+      labels:
+        category: 'serverlogs'
+        job: journallogs
+    relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        # remove .service
+        # regex: '(.+)\.service'
+        # replacement: '$1'
+        target_label: 'systemd_unit'
+
+# additional scrape_configs
+promtail_scrape_configs: [{}]
+
+# Example
+# promtail_scrape_configs:
+#   - job_name: gitlab
+#     static_configs:
+#       - targets:
+#           - localhost
+#         labels:
+#           category: 'serverlogs'
+#           job: varlogs
+#           __path__: /var/log/gitlab/*/*.log
+
+# deploy mode (binary/docker)
+# docker: use docker-compose in /container/promtail
+# binary: download binary, install systemd service
+promtail_deploy_mode: binary
+
+promtail_config_dir: "{{ '/container/promtail' if promtail_deploy_mode == 'docker' else '/etc/promtail' }}"
+promtail_positions_path: "{{ '/data/promtail' if promtail_deploy_mode == 'docker' else '/var/log/promtail' }}"
+
+promtail_version: 2.2.1
+# checksum of promtail-linux-amd64.zip from https://github.com/grafana/loki/releases
+promtail_checksum: 40d8d414b44baa78c5010cb7575d74eea035b6b00adb78e9676a045d6730a16f
+
+promtail_server_disable: True
+promtail_server_http_listen_address: 0.0.0.0
+
+# additional groups for user promtail to read files
+promtail_additional_groups:
+  - adm
+  - systemd-journal

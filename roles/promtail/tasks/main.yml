@@ -1,0 +1,6 @@
+---
+- include_tasks: binary.yml
+  when: promtail_deploy_mode == 'binary'
+
+- include_tasks: docker.yml
+  when: promtail_deploy_mode == 'docker'

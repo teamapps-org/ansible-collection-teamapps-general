@@ -1,0 +1,33 @@
+- name: create directories for promtail
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ promtail_path }}'
+
+- name: Promtail Configuration File
+  template:
+    src: promtail-config.yml.j2
+    dest: '{{ promtail_path }}/promtail-config.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: restart promtail
+
+
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: '{{ promtail_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: promtail_docker-compose-up
+  docker_compose:
+    project_src: '{{ promtail_path }}'
+    state: present
+    pull: '{{ promtail_docker_pull }}'
