@@ -1,0 +1,24 @@
+---
+version: '3'
+services:
+  minio1:
+    image: minio/minio:{{ minio_version }}
+    volumes:
+      - ./data:/data
+    expose:
+      - 9000
+    environment:
+      MINIO_ACCESS_KEY: '{{ minio_access_key }}'
+      MINIO_SECRET_KEY: '{{ minio_secret_key }}'
+      VIRTUAL_HOST: '{{ minio_domain }}'
+      LETSENCRYPT_HOST: '{{ minio_letsencrypt_host }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    command: server /data
+    restart: always
+    networks:
+      - webproxy
+
+networks:
+  webproxy:
+    external:
+      name: webproxy

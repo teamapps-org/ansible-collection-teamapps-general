@@ -1,0 +1,15 @@
+---
+# defaults file for minio
+minio_path: '{{ container_path }}/minio'
+minio_domain: 'minio.{{ ansible_fqdn }}'
+minio_letsencrypt_host: '{{ minio_domain }}'
+
+
+# to be replaced in host_vars
+minio_access_key: please_override
+minio_secret_key: FovMoghpokDiUnecshydhoolRipht6daiwofryt
+
+minio_version: latest
+
+# pull docker images (docker-compose pull)
+minio_docker_pull: '{{ global_docker_pull | default(False) }}'

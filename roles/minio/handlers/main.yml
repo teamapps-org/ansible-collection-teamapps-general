@@ -1,0 +1,6 @@
+---
+# handlers file for minio
+- name: minio_restart
+  docker_compose:
+    project_src: '{{ minio_path }}'
+    restarted: true

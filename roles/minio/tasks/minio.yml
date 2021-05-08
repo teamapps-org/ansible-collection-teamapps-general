@@ -1,0 +1,26 @@
+- name: minio_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ minio_path }}'
+
+- name: deploy config
+  template:
+    src: templates/{{ item }}
+    dest: '{{ minio_path }}/{{ item }}'
+    owner: root
+    group: root
+    mode: '0640'
+  with_items:
+    - docker-compose.yml
+  notify: minio_restart
+
+- name: minio_docker-compose-up
+  docker_compose:
+    project_src: '{{ minio_path }}'
+    state: present
+    pull: '{{ minio_docker_pull }}'
