@@ -1,0 +1,6 @@
+---
+# handlers file for nexus
+- name: nexus_restart
+  docker_compose:
+    project_src: '{{ nexus_path }}'
+    restarted: true

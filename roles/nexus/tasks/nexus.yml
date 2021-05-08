@@ -1,0 +1,31 @@
+- name: nexus_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ nexus_path }}'
+
+- name: nexus_data directory
+  file:
+    path: "{{ nexus_path }}/data"
+    state: directory
+    owner: '200'
+    group: '200'
+    mode: '0750'
+
+- name: deploy docker-compose.yml
+  template:
+    src: 'docker-compose.yml'
+    dest: '{{ nexus_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: nexus_docker-compose-up
+  docker_compose:
+    project_src: '{{ nexus_path }}'
+    state: present
+    pull: '{{ nexus_docker_pull }}'

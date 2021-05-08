@@ -1,0 +1,7 @@
+---
+# tasks file for nexus
+
+- name: nexus
+  import_tasks: nexus.yml
+  tags:
+    - nexus

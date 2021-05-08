@@ -1,0 +1,25 @@
+---
+
+version: '3'
+services:
+  nexus:
+    image: sonatype/nexus3:{{ nexus_version }}
+    volumes:
+      - type: bind
+        source: './data'
+        target: /nexus-data
+        read_only: false
+    environment:
+      VIRTUAL_HOST: {{ nexus_domain }}
+      LETSENCRYPT_HOST: {{ nexus_domain }}
+      LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
+    restart: unless-stopped
+    expose:
+      - 8081
+    networks:
+      - webproxy
+
+networks:
+  webproxy:
+    external:
+      name: webproxy
