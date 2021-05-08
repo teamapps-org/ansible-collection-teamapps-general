@@ -1,0 +1,6 @@
+# tasks for gitlab
+
+- name: setup gitlab
+  import_tasks: gitlab.yml
+  tags:
+    - gitlab

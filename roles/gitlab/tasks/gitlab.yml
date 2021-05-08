@@ -1,0 +1,49 @@
+# gitlab tasks
+
+- name: Install prereqs
+  apt:
+    pkg:
+      - curl
+      - openssh-server
+      - ca-certificates
+      # - postfix # replaced by msmtp-mta
+      - apt-transport-https
+      - debian-archive-keyring
+    state: present
+    install_recommends: no
+
+- name: Add archive key
+  apt_key:
+    url: "https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey"
+    id: F6403F6544A38863DAA0B6E03F01618A51312F3F
+
+- name: Add sources list
+  apt_repository:
+    repo: deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_lsb.id | lower }}/ {{ ansible_lsb.codename }} main
+    state: present
+    filename: 'gitlab_gitlab-ce'
+
+- name: Install latest package version
+  apt:
+    name: gitlab-ce
+  when: gitlab_version == "latest"
+
+- name: Install specific package version
+  apt:
+    name: gitlab-ce={{ gitlab_version }}
+  when: gitlab_version != "latest"
+
+- name: install gitlab.rb config file
+  template:
+    src: gitlab.rb
+    dest: /etc/gitlab/gitlab.rb
+    owner: root
+    group: root
+    mode: 0600
+  notify: gitlab-ctl reconfigure
+
+- name: Gitlab backup config
+  lineinfile:
+    path: /usr/local/bin/prebackup.sh
+    line: 'gitlab-backup create BACKUP=auto GZIP_RSYNCABLE=yes CRON=1 SKIP={{ gitlab_backup_skip }}'
+    regex: '^gitlab'

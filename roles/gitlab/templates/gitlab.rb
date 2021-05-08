@@ -1,0 +1,79 @@
+# for all possible paramters, see:
+# https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template
+
+## Url on which GitLab will be reachable.
+## For more details on configuring external_url see:
+## https://gitlab.com/gitlab-org/omnibus-gitlab/blob/629def0a7a26e7c2326566f0758d4a27857b52a3/README.md#configuring-the-external-url-for-gitlab
+external_url 'https://{{ gitlab_domain }}'
+
+### For setting up different data storing directory
+###! Docs: https://docs.gitlab.com/omnibus/settings/configuration.html#storing-git-data-in-an-alternative-directory
+###! **If you want to use a single non-default directory to store git data use a
+###!   path that doesn't contain symlinks.**
+git_data_dirs({"default"=> { "path" => "/srv/git"}})
+
+############################
+# gitlab.yml configuration #
+############################
+
+gitlab_rails['backup_keep_time'] = 172800
+gitlab_rails['backup_path'] = "/srv/backup"
+gitlab_rails['gitlab_default_theme'] = 6
+gitlab_rails['gitlab_email_display_name'] = "{{ gitlab_email_display_name }}"
+gitlab_rails['gitlab_email_enabled'] = true
+gitlab_rails['gitlab_email_from'] = "{{ gitlab_mail_from }}"
+gitlab_rails['gitlab_email_reply_to'] = "{{ gitlab_email_reply_to }}"
+gitlab_rails['registry_enabled'] = true
+# gitlab_rails['smtp_enable'] = false
+gitlab_rails['time_zone'] = "CET"
+
+### GitLab email server settings
+###! Docs: https://docs.gitlab.com/omnibus/settings/smtp.html
+###! **Use smtp instead of sendmail/postfix.**
+
+gitlab_rails['smtp_enable'] = true
+gitlab_rails['smtp_address'] = "{{ gitlab_mail_host }}"
+gitlab_rails['smtp_port'] = {{ gitlab_mail_port }}
+gitlab_rails['smtp_user_name'] = "{{ gitlab_mail_user }}"
+gitlab_rails['smtp_password'] = "{{ gitlab_mail_password }}"
+gitlab_rails['smtp_domain'] = "{{ gitlab_mail_host }}"
+gitlab_rails['smtp_authentication'] = "login"
+gitlab_rails['smtp_enable_starttls_auto'] = true
+gitlab_rails['smtp_tls'] = false
+gitlab_rails['smtp_openssl_verify_mode'] = 'peer'
+
+##################
+# GitLab Sidekiq #
+##################
+
+sidekiq['shutdown_timeout'] = 5
+
+################
+# GitLab Nginx #
+################
+## see: https://gitlab.com/gitlab-org/omnibus-gitlab/tree/629def0a7a26e7c2326566f0758d4a27857b52a3/doc/settings/nginx.md
+
+letsencrypt['enable'] = true
+letsencrypt['contact_emails'] = [ '{{ letsencrypt_email }}' ] # This should be an array of email addresses to add as contacts
+
+nginx['client_max_body_size'] = "512m"
+#nginx['redirect_http_to_https'] = true
+#nginx['ssl_certificate'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+#nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
+
+############
+# Registry #
+############
+
+#registry_external_url 'https://{{ gitlab_domain }}:5005'
+registry_external_url '{{ gitlab_registry_url }}'
+gitlab_rails['registry_path'] = "{{ gitlab_registry_path }}"
+
+##################
+# Registry NGINX #
+##################
+
+registry_nginx['client_max_body_size'] = "512m"
+#registry_nginx['redirect_http_to_https'] = true
+#registry_nginx['ssl_certificate'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+#registry_nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.key"

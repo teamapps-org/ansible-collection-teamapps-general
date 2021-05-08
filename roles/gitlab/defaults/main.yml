@@ -1,0 +1,23 @@
+# defaults for gitlab
+
+# GitLab's default administrator account details are below; be sure to login immediately after installation and change these credentials!
+
+#     root
+#     5iveL!fe
+
+gitlab_version: latest
+gitlab_domain: '{{ ansible_fqdn }}'
+gitlab_registry_url: https://registry.{{ gitlab_domain }}
+
+gitlab_email_display_name: "Gitlab"
+gitlab_email_reply_to: "noreply@{{ gitlab_domain }}"
+
+gitlab_mail_host: '{{ base_mail_host }}'
+gitlab_mail_port: '{{ base_mail_port }}'
+# gitlab_mail_from: '{{ base_mail_from }}'
+gitlab_mail_from: git@{{ ansible_fqdn }}
+gitlab_mail_user: '{{ base_mail_user }}'
+gitlab_mail_password: '{{ base_mail_password }}'
+
+gitlab_backup_skip: "artifacts,registry,builds"
+gitlab_registry_path: /var/opt/gitlab/gitlab-rails/shared/registry
