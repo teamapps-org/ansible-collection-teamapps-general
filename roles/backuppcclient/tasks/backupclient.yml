@@ -1,0 +1,76 @@
+---
+- name: "BackupPC Authorized_keys"
+  authorized_key:
+    user: root
+    state: present
+    key_options: 'no-agent-forwarding,no-port-forwarding,no-pty,no-X11-forwarding' # command="~/backuppc.sh",
+    key: '{{ backuppcclient_authorized_key }}'
+    comment: 'backuppc_{{ backuppcclient_server }} {{ base_authorized_keys_marker }}'
+  tags:
+    - backuppcclient_local
+
+- name: create prebackup.sh script
+  copy:
+    content: "#!/bin/bash\nset -exu"
+    dest: /usr/local/bin/prebackup.sh
+    force: false
+    owner: root
+    group: root
+    mode: '0750'
+  tags:
+    - backuppcclient_local
+
+
+- name: save original ssh_host as ansible_ssh_host_orig
+  set_fact:
+    ansible_ssh_host_orig: '{{ ansible_ssh_host }}'
+
+- name: save original ssh_port as ansible_ssh_port_orig
+  set_fact:
+    ansible_ssh_port_orig: '{{ ansible_ssh_port | default(22) }}'
+
+- name: Create hosts file entry on backuppc server # noqa no-tabs
+  delegate_to: '{{ backuppcclient_server }}'
+  delegate_facts: True
+  lineinfile:
+    path: '{{ backuppcclient_server_hostsfile }}'
+    regexp: '^{{ backuppcclient_clientname }}\s.*'
+    line: "{{ backuppcclient_clientname }}\t0\tansible\t{{ backuppcclient_backup_admins | join (',') }}"
+  notify: backuppcclient backuppc service reload
+
+- name: backup config on backuppc server
+  delegate_to: '{{ backuppcclient_server }}'
+  delegate_facts: True
+  template:
+    src: templates/backuppc_hostconfig.pl.j2
+    dest: '{{ backuppcclient_server_confdir }}/pc/{{ backuppcclient_clientname }}.pl'
+    owner: '1000'
+    group: '1000'
+    mode: '0600'
+  notify: backuppcclient backuppc service reload
+
+- name: known_hosts entry for backuppc
+  delegate_to: '{{ backuppcclient_server }}'
+  delegate_facts: True
+  lineinfile:
+    dest: '{{ backuppcclient_server_known_hosts }}'
+    regexp: '^{{ backuppcclient_clientname }},.*'
+    line: "{{ backuppcclient_clientname }},{{ backuppcclient_ssh_host }},{{ ansible_default_ipv4.address }} ecdsa-sha2-nistp256 {{ ansible_ssh_host_key_ecdsa_public }}"
+    create: true
+    owner: '1000'
+    group: '1000'
+    mode: '0600'
+  when: backuppcclient_ssh_port == '22'
+
+- name: known_hosts entry for backuppc with nonstandard port
+  delegate_to: '{{ backuppcclient_server }}'
+  delegate_facts: True
+  lineinfile:
+    dest: '{{ backuppcclient_server_known_hosts }}'
+    regexp: '^\[{{ backuppcclient_clientname }}\]:{{ backuppcclient_ssh_port }},.*'
+    line: "[{{ backuppcclient_clientname }}]:{{ backuppcclient_ssh_port }},[{{ backuppcclient_ssh_host }}]:{{ backuppcclient_ssh_port }},[{{ ansible_default_ipv4.address }}]:{{ backuppcclient_ssh_port }} ecdsa-sha2-nistp256 {{ ansible_ssh_host_key_ecdsa_public }}"
+    create: true
+    owner: '1000'
+    group: '1000'
+    mode: '0600'
+  when: backuppcclient_ssh_port != '22'

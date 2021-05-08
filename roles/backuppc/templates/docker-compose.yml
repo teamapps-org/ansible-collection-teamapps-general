@@ -1,0 +1,55 @@
+# docker-compose.yml
+version: '3.7'
+
+services:
+  backuppc:
+    image: adferrand/backuppc
+    restart: always
+    hostname: '{{ backuppc_domain }}'
+    expose:
+      - 8080
+    environment:
+      - VIRTUAL_HOST={{ backuppc_domain }}
+      - LETSENCRYPT_HOST={{ backuppc_domain }}
+      - LETSENCRYPT_EMAIL={{ letsencrypt_email }}
+      - TZ=Europe/Berlin
+      - SMTP_HOST=172.28.0.1
+      - SMTP_MAIL_DOMAIN={{ backuppc_domain }}
+      - BACKUPPC_WEB_PASSWD=!
+    labels:
+      traefik.enable: true
+      traefik.frontend.rule: 'Host:{{ backuppc_domain }}'
+      traefik.port: 8080
+      traefik.frontend.auth.basic.usersFile: /auth/admin.htpasswd
+    volumes:
+      - type: bind
+        source: '{{ backuppc_datapath }}/etc'
+        target: /etc/backuppc
+        read_only: false
+      - type: bind
+        source: '{{ backuppc_datapath }}/home'
+        target: /home/backuppc
+        read_only: false
+      - type: bind
+        source: '{{ backuppc_datapath }}/data'
+        target: /data/backuppc
+        read_only: false
+      - type: bind
+        source: '/archive'
+        target: /archive
+        read_only: false
+
+      # additionally mount mail config to /etc
+      - type: bind
+        source: '{{ backuppc_datapath }}/home/.msmtprc'
+        target: /etc/msmtprc
+        read_only: false
+      - type: bind
+        source: '{{ backuppc_datapath }}/home/mailaliases'
+        target: /etc/mailaliases
+        read_only: false
+
+networks:
+  default:
+    external:
+      name: webproxy

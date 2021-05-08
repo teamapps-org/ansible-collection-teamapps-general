@@ -1,0 +1,50 @@
+---
+# defaults file for backuppcclient
+
+# backup host by backuppc
+backuppcclient_manage: True
+
+backuppcclient_clientname: '{{ inventory_hostname }}'
+backuppcclient_user: root
+# backuppcclient_authorized_key: <required>
+
+# Additional users that can access backups in BackupPC. moreUsers Setting in backuppc hostlist
+# Users need to have Access to backuppc (entry in backuppc_htpasswd)
+backuppcclient_backup_admins: []
+
+# ssh host for backuppc to connect, fact is copied in task for use in delegation
+backuppcclient_ssh_host: '{{ ansible_ssh_host_orig }}'
+backuppcclient_ssh_port: '{{ ansible_ssh_port_orig }}'
+# ssh options, default "" if ssh_port is 22, else "-p <ssh_port>"
+backuppcclient_ssh_args: '{{ "" if backuppcclient_ssh_port == "22" else "-p " + backuppcclient_ssh_port|string }}'
+
+# Information about BackupPC Server
+# backuppcclient_server: <required>
+backuppcclient_server_confdir: /container/backuppc/data/etc
+backuppcclient_server_hostsfile: '{{ backuppcclient_server_confdir }}/hosts'
+backuppcclient_server_known_hosts: '/container/backuppc/data/home/.ssh/known_hosts'
+
+backuppcclient_files_exclude_default:
+  - '.cache'
+  - '.Trash*'
+  - 'Cache'
+  - '/dev'
+  - '/proc'
+  - '/run'
+  - '/sys'
+  - '/media'
+  - '/tmp'
+  - '/var/cache'
+  - '/var/lib/docker'
+  - '/var/lib/lxcfs'
+  - '/var/lib/lxd'
+  - '/var/lock'
+  - '/var/run'
+  - '/var/tmp'
+  - '/var/lib/yum/yumdb/'
+
+# var to configure additional excludes
+backuppcclient_files_exclude_extra: []
+# combine excludes
+backuppcclient_files_exclude: '{{ ( backuppcclient_files_exclude_default + backuppcclient_files_exclude_extra ) | unique }}'
+backuppcclient_additional_config: ''

@@ -1,0 +1,48 @@
+---
+# defaults file for backuppc
+container_path: /container
+backuppc_path: '{{ container_path }}/backuppc'
+backuppc_datapath: '{{ container_path }}/backuppc/data'
+backuppc_domain: 'backup.{{ ansible_fqdn }}'
+backuppc_htpasswd:
+# generate lines with htpasswd -B -n username
+# backuppc_htpasswd: |
+#   example:$2y$05$FKZudtjvFczlcV.6dtp8auCn.rrad9KWK0ffXXl6TiW5.tvF2cRg2
+backuppc_admin_users: ['backuppc']
+
+# pull docker images (docker-compose pull), used for updating
+backuppc_docker_pull: '{{ global_docker_pull | default(False) }}'
+
+# backup policy
+backuppc_wakeup_schedule: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] # hours when new backup jobs can be started
+backuppc_full_period: '6.97'        # do a full every week
+backuppc_full_keep_cnt: [5, 0, 3]   # 5 weekly, 0 bi-weekly, 3 monthly (4x full-period)
+backuppc_full_age_max: '180'        # delete fulls after half-year
+backuppc_incr_period: '0.9'         # 1 day minus backuptime
+backuppc_incr_keep_cnt: 40          # keep max 40 incremental backups
+backuppc_incr_age_max: 35           # delete incrementals older than 35 days
+
+backuppc_blackout_periods:
+  - hourBegin: '7'
+    hourEnd: '19.5'
+    weekDays: [1, 2, 3, 4, 5]
+
+backuppc_mail_enable: True
+backuppc_mail_host: '{{ base_mail_host }}'
+backuppc_mail_port: '{{ base_mail_port }}'
+backuppc_mail_from: backuppc+{{ inventory_hostname_short }}@{{ ansible_domain }}
+backuppc_mail_user: '{{ base_mail_user }}'
+backuppc_mail_password: '{{ base_mail_password }}'
+backuppc_mail_default_recipient: '{{ monitoring_email }}'
+backuppc_monitoring_email: '{{ monitoring_email }}'
+
+# Requires to generate a backuppc ssh key: ssh-keygen -f ./id_ed25519 -t ed25519
+# copy to {{ backuppc_datapath }}/home/.ssh/id_ed25519
+# mv ./id_ed25519* /container/backuppc/data/home/.ssh/
+# chown 1000:1000 /container/backuppc/data/home/.ssh/id_ed*
+# add public key in ansible as backuppcclient_authorized_key:
+
+# Domain part to be appended to username ("ansible")
+# Include the @
+# @domain.com
+backuppc_email_dest_domain: ""

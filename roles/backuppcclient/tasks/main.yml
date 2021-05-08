@@ -1,0 +1,8 @@
+---
+# tasks file for backuppcclient
+
+- name: configure backuppc client
+  import_tasks: backupclient.yml
+  when: backuppcclient_manage
+  tags:
+    - backuppcclient

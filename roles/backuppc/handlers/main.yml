@@ -1,0 +1,14 @@
+---
+# handlers file for backuppc
+
+- name: backuppc_restart
+  docker_compose:
+    project_src: '{{ backuppc_path }}'
+    restarted: true
+  register: backuppc_restart
+
+- name: backuppc reload config
+  command: 'docker-compose exec -T backuppc pkill -SIGHUP -x BackupPC'
+  args:
+    chdir: '{{ backuppc_path }}'
+  when: not backuppc_restart.changed | default(true)

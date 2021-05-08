@@ -1,0 +1,26 @@
+$Conf{ClientComment} = '{{ ansible_managed }}';
+$Conf{ClientNameAlias} = [
+  '{{ backuppcclient_ssh_host }}'
+];
+$Conf{XferMethod} = 'rsync';
+$Conf{XferLogLevel} = '1';
+$Conf{BackupFilesExclude} = {
+  '/' => [
+{% for exclude in backuppcclient_files_exclude %}
+    '{{exclude}}',
+{% endfor %}
+  ]
+};
+$Conf{RsyncClientCmd} = '/usr/bin/rsync';
+$Conf{RsyncClientRestoreCmd} = '$sshPath -q -x -l {{ backuppcclient_user }} {{ backuppcclient_ssh_args }} $host $rsyncPath $argList+';
+$Conf{RsyncShareName} = [
+  '/'
+];
+$Conf{RsyncSshArgs} = [
+  '-e',
+  '$sshPath -l {{ backuppcclient_user }} {{ backuppcclient_ssh_args }}'
+];
+$Conf{DumpPreUserCmd} = '$sshPath -q -x -l {{ backuppcclient_user }} {{ backuppcclient_ssh_args }} $host /usr/local/bin/prebackup.sh';
+{% if  backuppcclient_additional_config != '' %}
+{{ backuppcclient_additional_config }}
+{% endif %}

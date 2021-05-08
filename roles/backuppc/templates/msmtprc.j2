@@ -1,0 +1,20 @@
+# Set default values for all following accounts.
+defaults
+auth           on
+tls            on
+tls_trust_file /etc/ssl/certs/ca-certificates.crt
+logfile        msmtp.log
+
+# Custom Mailserver
+account        mymailserver
+host           {{ backuppc_mail_host }}
+port           {{ backuppc_mail_port }}
+from           {{ backuppc_mail_from }}
+user           {{ backuppc_mail_user }}
+password       {{ backuppc_mail_password }}
+
+# Set a default account
+account default : mymailserver
+
+# load aliases from file
+aliases        mailaliases

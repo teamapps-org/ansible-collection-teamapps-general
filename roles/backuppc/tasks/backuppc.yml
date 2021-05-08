@@ -1,0 +1,78 @@
+---
+# tasks file for backuppc
+
+- name: backuppc_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ backuppc_path }}'
+    - '{{ backuppc_datapath }}'
+
+- name: backuppc_directories with backuppc permissions
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '1000'
+    group: '1000'
+    mode: '0750'
+  with_items:
+    - '{{ backuppc_datapath }}/data'
+    - '{{ backuppc_datapath }}/etc'
+    - '{{ backuppc_datapath }}/etc/pc'
+    - '{{ backuppc_datapath }}/home'
+    - '{{ backuppc_datapath }}/home/.ssh'
+
+- name: docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: '{{ backuppc_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: backuppc_docker-compose-up
+  docker_compose:
+    project_src: '{{ backuppc_path }}'
+    state: present
+    pull: '{{ backuppc_docker_pull }}'
+
+- name: copy file for basic auth
+  copy:
+    content: '{{ backuppc_htpasswd }}'
+    dest: '{{ backuppc_datapath }}/etc/htpasswd'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: backuppc reload config
+
+- name: BackupPC Config file from template
+  template:
+    src: config.pl.j2
+    dest: '{{ backuppc_datapath }}/etc/config.pl'
+    owner: '1000'
+    group: '1000'
+    mode: '0640'
+  notify: backuppc reload config
+
+- name: Configure Mail sending through msmtp
+  template:
+    src: msmtprc.j2
+    dest: '{{ backuppc_datapath }}/home/.msmtprc'
+    owner: '1000'
+    group: '1000'
+    mode: '0600'
+  when: backuppc_mail_enable
+  notify: backuppc_restart
+
+- name: Configure default Mailalias
+  copy:
+    content: "default: {{ backuppc_mail_default_recipient }}\n"
+    dest: '{{ backuppc_datapath }}/home/mailaliases'
+    owner: '1000'
+    group: '1000'
+    mode: '0600'
+  when: backuppc_mail_enable

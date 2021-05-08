@@ -1,0 +1,9 @@
+---
+# handlers file for backuppcclient
+
+- name: backuppcclient backuppc service reload
+  delegate_to: '{{ backuppcclient_server }}'
+  command: 'docker-compose exec -T backuppc pkill -SIGHUP -x BackupPC'
+  args:
+    chdir: '/container/backuppc'
+  run_once: true # restart only once, also if triggered by multiple backuppcclients
