@@ -1,0 +1,15 @@
+#jinja2:lstrip_blocks: True
+{{ ansible_managed | comment }}
+
+{% for host in groups[prometheus_netdata_host_group] | sort %}
+{% if hostvars[host].netdata_docker_integration | default(true) | bool %}
+- labels:
+  {% if hostvars[host].prometheus_alert_team is defined %}
+    team: {{ hostvars[host].prometheus_alert_team }}
+  {% else %}
+    team: operations
+  {% endif %}
+  targets:
+    - netdata.{{ hostvars[host].inventory_hostname -}}:443
+{% endif %}
+{% endfor %}

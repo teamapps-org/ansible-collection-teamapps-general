@@ -1,0 +1,47 @@
+---
+- name: create configuration directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - "{{ victoriametrics_path }}"
+
+- name: deploy docker-compose.yml
+  template:
+    src: 'docker-compose.yml.j2'
+    dest: '{{ victoriametrics_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: include vmagent scraper config
+  include_tasks: vmagent.yml
+
+- name: include blackbox exporter config
+  include_tasks: blackbox_exporter.yml
+
+- name: include alerts config
+  include_tasks: vmalert.yml
+
+- name: include authproxy config
+  include_tasks: authproxy.yml
+
+# - name: alertmanager config (temp)
+#   template:
+#     src: '{{ item }}.j2'
+#     dest: '{{ victoriametrics_path }}/{{ item }}'
+#     owner: root
+#     group: root
+#     mode: '0644'
+#   with_items:
+#     - alertmanager.yml
+
+- name: victoriametrics_docker-compose-up
+  docker_compose:
+    project_src: '{{ victoriametrics_path }}'
+    state: present
+    remove_orphans: yes
+    pull: '{{ victoriametrics_docker_pull }}'

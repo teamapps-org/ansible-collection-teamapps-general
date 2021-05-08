@@ -1,0 +1,131 @@
+{{ ansible_managed | comment }}
+
+modules:
+  http_2xx:
+    prober: http
+    http:
+      preferred_ip_protocol: "ip4"
+
+  http_post_2xx:
+    prober: http
+    http:
+      method: POST
+      preferred_ip_protocol: "ip4"
+
+  http_2xx_redirect:
+    prober: http
+    timeout: 10s
+    http:
+      preferred_ip_protocol: "ip4"
+      no_follow_redirects: false
+      headers:
+        Accept: "*/*"
+
+  http_3xx:
+    prober: http
+    timeout: 5s
+    http:
+      preferred_ip_protocol: "ip4"
+      no_follow_redirects: true
+      valid_status_codes: [301, 302]
+
+  http_401:
+    prober: http
+    timeout: 10s
+    http:
+      preferred_ip_protocol: "ip4"
+      no_follow_redirects: false
+      valid_status_codes: [401]
+      headers:
+        Accept: "*/*"
+
+  http_403:
+    prober: http
+    timeout: 10s
+    http:
+      preferred_ip_protocol: "ip4"
+      no_follow_redirects: false
+      valid_status_codes: [403]
+      headers:
+        Accept: "*/*"
+
+  tcp_connect:
+    prober: tcp
+
+  tcp_connect_tls:
+    prober: tcp
+    tcp:
+      tls: true
+      preferred_ip_protocol: "ip4"
+
+  smtp_starttls:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: "ip4"
+      query_response:
+        - expect: "^220 ([^ ]+) ESMTP"
+        - send: "EHLO prober"
+        - expect: "^250-STARTTLS"
+        - send: "STARTTLS"
+        - expect: "^220"
+        - starttls: true
+        - send: "EHLO prober"
+        - expect: "^250-AUTH"
+        - send: "QUIT"
+
+  imap_starttls:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: "ip4"
+      query_response:
+        - expect: "OK.*STARTTLS"
+        - send: ". STARTTLS"
+        - expect: "OK"
+        - starttls: true
+        - send: ". capability"
+        - expect: "CAPABILITY IMAP4rev1"
+
+  pop3s_banner:
+    prober: tcp
+    tcp:
+      query_response:
+        - expect: "^+OK"
+      tls: true
+      tls_config:
+        insecure_skip_verify: false
+
+  ssh_banner:
+    prober: tcp
+    tcp:
+      query_response:
+        - expect: "^SSH-2.0-"
+
+  irc_banner:
+    prober: tcp
+    tcp:
+      query_response:
+        - send: "NICK prober"
+        - send: "USER prober prober prober :prober"
+        - expect: "PING :([^ ]+)"
+        - send: "PONG ${1}"
+        - expect: "^:[^ ]+ 001"
+
+  icmp:
+    prober: icmp
+
+  http_zammad:
+    prober: http
+    timeout: 10s
+    http:
+      preferred_ip_protocol: "ip4"
+      fail_if_body_not_matches_regexp:
+        - '"healthy":true'
+        - '"message":"success"'
+      headers:
+        Accept: "*/*"
+
+{% if victoriametrics_blackbox_modules != {} %}
+  {{ victoriametrics_blackbox_modules | to_nice_yaml(indent=2) | indent(2,False) }}
+{% endif %}

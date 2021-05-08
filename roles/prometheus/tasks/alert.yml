@@ -1,0 +1,27 @@
+---
+- name: alerting rules file
+  template:
+    src: "alert.rules.yml.j2"
+    dest: "{{ prometheus_config_dir }}/rules/ansible_managed.rules"
+    owner: prometheus
+    group: prometheus
+    mode: 0640
+    # validate: "docker-compose -f /container/prometheus/docker-compose.yml exec -T prometheus promtool check rules %s"
+  notify:
+    - prometheus reload
+    - validate config
+
+- name: copy alerting rule files from prometheus role
+  copy:
+    src: "{{ item }}"
+    dest: "{{ prometheus_config_dir }}/rules/"
+    owner: root
+    group: prometheus
+    mode: 0640
+    # validate: "/usr/local/bin/promtool check rules %s"
+  with_fileglob:
+    - "rules/*.rules.yml"
+  notify:
+    - prometheus reload
+    - validate config
+...

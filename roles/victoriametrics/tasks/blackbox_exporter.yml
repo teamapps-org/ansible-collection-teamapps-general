@@ -1,0 +1,8 @@
+- name: deploy blackbox config
+  template:
+    src: 'blackbox.yml.j2'
+    dest: '{{ victoriametrics_path }}/blackbox.yml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: blackbox reload

@@ -1,0 +1,42 @@
+---
+
+
+- name: create rules directory
+  file:
+    path: "{{ victoriametrics_path }}/rules"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: alerting rules file
+  template:
+    src: "vmalert.rules.yml.j2"
+    dest: "{{ victoriametrics_path }}/rules/vmalert.rules.yml"
+    owner: root
+    group: root
+    mode: 0640
+  notify:
+    - vmalert reload
+    - vmalert validate config
+
+- name: copy alerting rule files from prometheus role
+  copy:
+    src: "{{ item }}"
+    dest: "{{ victoriametrics_path }}/rules/"
+    owner: root
+    group: root
+    mode: 0640
+  with_fileglob:
+    - "rules/*.rules.yml"
+  notify:
+    - vmalert reload
+    - vmalert validate config
+
+# validation in the template won't work because %s expansion won't be reachable from within the container
+- name: vmalert validate config
+  command: docker-compose run --rm -T vmalert -dryRun -rule=/etc/alerts/*.yml
+  args:
+    chdir: "{{ victoriametrics_path }}" # to run docker-compose in the correct directory
+  changed_when: False
+...

@@ -1,0 +1,147 @@
+# based on https://github.com/VictoriaMetrics/VictoriaMetrics/tree/master/deployment/docker
+version: '3.5'
+services:
+
+
+  authproxy:
+    image: nginx:alpine
+    restart: always
+    expose:
+      - 80
+    environment:
+      VIRTUAL_HOST: '{{ victoriametrics_domain }}'
+      LETSENCRYPT_HOST: '{{ victoriametrics_domain }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    volumes:
+      - ./htaccess:/etc/nginx/conf.d/htaccess:ro
+      - ./authproxy-basic-site.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      vm_net:
+      webproxy:
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  victoriametrics:
+    container_name: victoriametrics
+    image: victoriametrics/victoria-metrics:{{ victoriametrics_version }}
+    # ports:
+    #   - 8428:8428
+    #   - 8089:8089
+    #   - 8089:8089/udp
+    #   - 2003:2003
+    #   - 2003:2003/udp
+    #   - 4242:4242
+    ports:
+      - 127.0.0.3:8428:8428
+    expose:
+      - 8428
+    volumes:
+      - ./vmdata:/storage
+    command:
+      - '-storageDataPath=/storage'
+      # - '-graphiteListenAddr=:2003'
+      # - '-opentsdbListenAddr=:4242'
+      - '-httpListenAddr=:8428'
+      # - '-influxListenAddr=:8089'
+      - '-retentionPeriod={{ victoriametrics_retention_period }}'
+    networks:
+      - vm_net
+      - webproxy
+    restart: always
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+
+
+  vmagent:
+    container_name: vmagent
+    image: victoriametrics/vmagent:{{ victoriametrics_vmagent_version }}
+    depends_on:
+      - "victoriametrics"
+    # ports:
+    #   - 8429:8429
+    ports:
+      - 127.0.0.3:8429:8429
+    volumes:
+      - ./vmagentdata:/vmagentdata
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./file_sd:/etc/prometheus/file_sd
+    command:
+      - '-promscrape.config=/etc/prometheus/prometheus.yml'
+      - '-remoteWrite.url=http://victoriametrics:8428/api/v1/write'
+      # - '-remoteWrite.basicAuth.username='
+      # - '-remoteWrite.basicAuth.password='
+    networks:
+      - vm_net
+    restart: always
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+
+
+  vmalert:
+    container_name: vmalert
+    image: victoriametrics/vmalert:{{ victoriametrics_vmagent_version }}
+    depends_on:
+      - "victoriametrics"
+      # - "alertmanager"
+    expose:
+      - 8880
+    ports:
+      - 127.0.0.3:8880:8880
+    volumes:
+      - ./rules/:/etc/alerts/
+    command:
+      - '-datasource.url=http://victoriametrics:8428/'
+      - '-remoteRead.url=http://victoriametrics:8428/'
+      - '-remoteWrite.url=http://victoriametrics:8428/'
+      - '-notifier.url={{ victoriametrics_alertmanager_url }}'
+      - '-notifier.basicAuth.username={{ victoriametrics_alertmanager_user }}'
+      - '-notifier.basicAuth.password={{ victoriametrics_alertmanager_password }}'
+      - '-rule=/etc/alerts/*.yml'
+      # display source of alerts in grafana
+      - '-external.url={{ victoriametrics_vmalert_external_url }}'
+      - '-external.alert.source={{ victoriametrics_vmalert_external_source }}'
+    networks:
+      - vm_net
+    restart: always
+
+  blackbox:
+    container_name: blackbox
+    user: 997:998
+    image: {{ victoriametrics_blackbox_image }}:{{ victoriametrics_blackbox_version }}
+    volumes:
+    - ./blackbox.yml:/config/blackbox.yml:ro
+    command:
+      - '--config.file=/config/blackbox.yml'
+    expose:
+      - 9115
+    ports:
+      - 127.0.0.3:9115:9115
+    restart: always
+    networks:
+      - vm_net
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+
+
+networks:
+  vm_net:
+  webproxy:
+    external:
+      name: webproxy

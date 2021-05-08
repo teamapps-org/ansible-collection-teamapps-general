@@ -1,0 +1,67 @@
+---
+- name: deploy compose
+  template:
+    src: 'docker-compose.yml.j2'
+    dest: '{{ prometheus_config_dir }}/docker-compose.yml'
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+
+- name: deploy prometheus config
+  template:
+    src: 'prometheus.yml.j2'
+    dest: '{{ prometheus_config_dir }}/prometheus.yml'
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+  notify:
+    - prometheus reload
+    - validate config
+
+- name: deploy blackbox config
+  template:
+    src: 'blackbox.yml.j2'
+    dest: '{{ prometheus_config_dir }}/blackbox.yml'
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+  notify: blackbox reload
+
+
+- name: copy file discovery template for netdata targets
+  template:
+    src: ansible.netdata.yml.j2
+    dest: "{{ prometheus_config_dir }}/file_sd/ansible.{{ prometheus_netdata_host_group }}.netdata.yml"
+    owner: root
+    group: prometheus
+    mode: 0640
+  when: "groups[prometheus_netdata_host_group] is defined"
+  loop: '{{ prometheus_netdata_host_groups }}'
+  loop_control:
+    loop_var: prometheus_netdata_host_group
+
+- name: create file discovery configuration
+  copy:
+    content: |
+      #
+      # Managed by ansible
+      #
+      {{ item.config | to_nice_yaml(indent=2) }}
+    dest: "{{ prometheus_config_dir }}/file_sd/{{ item.name | default('custom') }}.{{ item.job }}.yml"
+    owner: root
+    group: prometheus
+    mode: 0640
+  loop: '{{ prometheus_custom_file_sd_config }}'
+
+# promtool check config actually validates config AND alerting rules
+- name: always validate config
+  command: docker-compose exec -T prometheus promtool check config {{ prometheus_config_dir_container }}/prometheus.yml
+  args:
+    chdir: "{{ prometheus_config_dir }}" # to run docker-compose in the correct directory
+  changed_when: False
+
+- name: compose up
+  docker_compose:
+    project_src: '{{ prometheus_config_dir }}'
+    state: present
+...

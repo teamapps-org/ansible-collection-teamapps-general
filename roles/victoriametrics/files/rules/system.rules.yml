@@ -1,0 +1,132 @@
+#
+# Managed by Ansible
+#
+groups:
+  - name: system down
+    rules:
+      - alert: InstanceDown
+        expr: 'up{job="netdata"} == 0'
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          description: "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes."
+          summary: "Host {{ $labels.host }} down"
+
+      # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0
+      - alert: InstanceDownAVG
+        expr: 'avg_over_time(up{job="netdata"} [5m]) <= 0.9'
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes."
+          summary: "Host {{ $labels.host }} down"
+
+
+  - name: cpu
+    rules:
+      - alert: HighCPU
+        expr: 'sum(netdata_system_cpu_percentage_average{dimension!~"idle"}) by (host) > 80'
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          description: "{{ $labels.host }} CPU usage was above 80 for more than 2 minutes"
+          summary: "high CPU on {{ $labels.host }}"
+
+  - name: filesystem
+    rules:
+      - alert: DiskUsagePercentage
+        expr: |
+          (
+            sum by (host, family)(netdata_disk_space_GiB_average{dimension="used", family!~"/boot/efi|/dev/shm|/run|/dev|/run/lock"})
+            /
+            sum by (host, family)(netdata_disk_space_GiB_average{})
+          )
+          * 100
+          > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          description: "{{ $labels.host }}:{{ $labels.family }} filesystem with usage above 90% for longer than 5 minutes "
+          summary: "Disk Full on {{ $labels.host }}:{{ $labels.family }}"
+
+      - alert: DiskSpacePrediction36h
+        expr: |
+          predict_linear(
+            netdata_disk_space_GiB_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*"}
+            [36h], 3600 * 36
+            )
+          < 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          description: "Diskspace is predicted to get below 5GiB on host {{ $labels.host }} for mountpoint {{ $labels.family }}, prediction based on the last 36h"
+          summary: "{{ $labels.host }}:{{ $labels.family }} 36h Disk space prediction low"
+
+      - alert: DiskSpacePrediction72h
+        expr: |
+          predict_linear(
+            netdata_disk_space_GiB_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*"}
+            [36h], 3600 * 72
+            )
+          < 5
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          description: "Diskspace is predicted to get below 5GiB on host {{ $labels.host }} for mountpoint {{ $labels.family }}, prediction based on the last 36h"
+          summary: "{{ $labels.host }}:{{ $labels.family }} 72h Disk space prediction low"
+
+      - alert: DiskInodesPrediction72h
+        expr: |
+          predict_linear(
+            netdata_disk_inodes_inodes_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*"}
+            [36h], 3600 * 72
+            )
+          < 20000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          description: "Inodes is predicted to get below 20'000 on host {{ $labels.host }} for mountpoint {{ $labels.family }}, prediction based on the last 36h"
+          summary: "{{ $labels.host }}:{{ $labels.family }} 72h Inodes prediction low"
+
+      - alert: MdRaidDiskFailed
+        expr: 'netdata_md_health_failed_disks_average > 0'
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          description: "Mdraid failed disk on {{ $labels.host }} {{ $labels.dimension }} "
+          summary: "Mdraid failed disk on {{ $labels.host }} {{ $labels.dimension }} "
+
+  - name: ram
+    rules:
+      - alert: HighMemoryUsage
+        expr: |
+          (
+          sum(netdata_system_ram_MiB_average) by (host) - sum(netdata_mem_available_MiB_average) by (host)
+          )
+          /
+          ( sum(netdata_system_ram_MiB_average) by (host))
+          *100
+          > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: "{{ $labels.host }} RAM usage was above 90% for more than 5 minutes"
+          summary: "High Ram usage on host {{ $labels.host }}"
+
+  # - name:
+  #   rules:
+  #   - alert:
+  #     expr: ' > 80'
+  #     for: 2m
+  #     annotations:
+  #       description: "{{ $labels.host }} "
+  #       summary: "{{ $labels.host }}"

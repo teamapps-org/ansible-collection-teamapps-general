@@ -1,0 +1,57 @@
+version: "3.7"
+
+services:
+  prometheus:
+    user: {{ prometheus_user.uid }}:{{ prometheus_group.gid }}
+    image: {{ prometheus_image }}:v{{ prometheus_version }}
+    environment:
+      VIRTUAL_HOST: '{{ prometheus_domain }}'
+      LETSENCRYPT_HOST: '{{ prometheus_domain }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    volumes:
+      - {{ prometheus_config_dir }}:{{ prometheus_config_dir_container }}
+      - {{ prometheus_db_dir }}:/prometheus
+    command:
+      - '--web.external-url=https://{{ prometheus_domain }}'
+      - '--web.route-prefix=/'
+      - '--config.file={{ prometheus_config_dir_container }}/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time={{ prometheus_storage_retention }}'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--log.level=warn'
+    expose:
+      - {{ prometheus_port }}
+    restart: always
+    networks:
+      - webproxy
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+
+  blackbox:
+    user: {{ prometheus_user.uid }}:{{ prometheus_group.gid }}
+    image: {{ prometheus_blackbox_image }}:{{ prometheus_blackbox_version }}
+    volumes:
+    - {{ prometheus_blackbox_config_dir }}:/config
+    command:
+      - '--config.file=/config/blackbox.yml'
+    expose:
+      - {{ prometheus_blackbox_port }}
+    ports:
+      - 127.0.0.1:{{ prometheus_blackbox_port }}:{{ prometheus_blackbox_port }}
+    restart: always
+    networks:
+      - webproxy
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+
+networks:
+  webproxy:
+    external:
+      name: webproxy

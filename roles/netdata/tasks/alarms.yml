@@ -1,0 +1,22 @@
+# Configuration for netdata alarms
+
+# Documentation Reference: https://learn.netdata.cloud/docs/agent/health/reference
+
+# To change settings of an alarm:
+# check source at Notification mail bottom
+# go to a server
+# cd /etc/netdata
+# ./edit-config health.d/dbengine.conf
+# copy file from /etc/netdata/health.d to templates/health.d/
+# comment what you changed at the top
+
+- name: Deploy health.d (alarm) customizations
+  template:
+    src: '{{ item }}'
+    dest: /etc/netdata/health.d/{{ item | basename }}
+    owner: root
+    group: root
+    mode: '0644'
+  with_fileglob:
+    - templates/health.d/*
+  notify: netdata_reload_alarms

@@ -1,0 +1,38 @@
+# Integration between Netdata and Docker (Webproxy)
+
+- name: Creates directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ container_path }}'
+    - '{{ netdata_path }}'
+
+- name: docker-compose.yml
+  template:
+    src: templates/docker-compose.yml
+    dest: '{{ netdata_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: netdata_docker-compose-up
+
+- name: configure basic auth htpasswd in webproxy
+  copy:
+    content: "{{ netdata_htpasswd }}\n"
+    dest: '{{ webproxy_path }}/data/htpasswd/{{ netdata_domain }}'
+    owner: root
+    group: root
+    mode: '0644'
+  when: dockerhost_use_webproxy | default(True)
+  notify: netdata_docker-compose-restart
+
+- name: netdata_docker-compose-up
+  docker_compose:
+    project_src: '{{ netdata_path }}'
+    state: present
+    pull: '{{ netdata_docker_pull }}'
+    remove_orphans: true

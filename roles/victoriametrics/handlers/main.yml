@@ -1,0 +1,25 @@
+- name: victoriametrics-restart-gateway
+  docker_compose:
+    project_src: '{{ victoriametrics_path }}'
+    state: present
+    services:
+      - authproxy
+    restarted: yes
+
+# validation in the template won't work because %s expansion won't be reachable from within the container
+- name: vmalert validate config
+  command: docker-compose exec -T vmalert /vmalert-prod -dryRun -rule=/etc/alerts/*.yml
+  args:
+    chdir: "{{ victoriametrics_path }}" # to run docker-compose in the correct directory
+
+# use compose to send a SIGHUP to vmalert' process (PID=1)
+- name: vmalert reload
+  command: 'docker-compose exec -T vmalert kill -HUP 1'
+  args:
+    chdir: '{{ victoriametrics_path }}'
+
+# use compose to send a SIGHUP to blacbox's process (PID=1)
+- name: blackbox reload
+  command: 'docker-compose exec -T blackbox kill -HUP 1'
+  args:
+    chdir: '{{ victoriametrics_path }}'

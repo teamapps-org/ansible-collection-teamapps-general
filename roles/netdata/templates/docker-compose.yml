@@ -1,0 +1,33 @@
+# Netdata is installed and started on host to have a complete view of the system.
+# this docker-compose.yml file is used to forward http traffic from webproxy to netdata on the host.
+#
+# socat forwards traffic to netdata on the host
+# 172.28.0.1 is the gateway in the webproxy network which is used to access services on the host.
+# netdata is configured to only allow connections from private networks.
+
+version: '3.7'
+services:
+  socat:
+    image: alpine/socat:latest
+    restart: always
+    environment:
+      VIRTUAL_HOST: '{{ netdata_domain }}'
+      LETSENCRYPT_HOST: '{{ netdata_domain }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    entrypoint: socat TCP-LISTEN:80,nodelay,fork,reuseaddr TCP:172.28.0.1:19999
+    healthcheck:
+      # Send a http request to the main socat instance and check if netcat replies
+      # As without container orchestration no one will restart if unhealthy, we need to do that ourselves...
+      test: ["CMD-SHELL", "if ! [ 'HTTP' = `printf 'GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' | socat - TCP:localhost:80,readbytes=4` ]; then kill 1 ; fi"]
+      # test: ["CMD-SHELL", "[ 'HTTP' = `printf 'GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' | socat - TCP:localhost:80,readbytes=4` ]"]
+      interval: 30s
+      timeout: 20s
+    expose:
+      - 80
+    networks:
+      - webproxy
+
+networks:
+  webproxy:
+    external:
+      name: webproxy

@@ -1,0 +1,5 @@
+- name: netdata
+  import_tasks: netdata.yml
+  tags:
+    - netdata
+  when: netdata_manage_netdata

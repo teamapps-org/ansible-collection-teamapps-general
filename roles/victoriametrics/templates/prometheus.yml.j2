@@ -1,0 +1,99 @@
+global:
+  scrape_interval: 10s
+  external_labels:
+    scraper_instance: victoriametrics-{{ ansible_fqdn }}
+
+scrape_configs:
+  - job_name: 'vmagent'
+    static_configs:
+      - targets: ['vmagent:8429']
+        labels:
+          instance: victoriametrics-{{ ansible_fqdn }}
+          host: '{{ ansible_hostname }}'
+
+  - job_name: 'victoriametrics'
+    static_configs:
+      - targets: ['victoriametrics:8428']
+        labels:
+          instance: victoriametrics-{{ ansible_fqdn }}
+          host: '{{ ansible_hostname }}'
+
+  - job_name: 'vmalert'
+    static_configs:
+      - targets: ['vmalert:8880']
+        labels:
+          instance: victoriametrics-{{ ansible_fqdn }}
+          host: '{{ ansible_hostname }}'
+
+  - job_name: 'http_2xx'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]  # look for a HTTP 200 response.
+    # every blackbox job needs relabel_configs
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: ^https?:\/\/([^?/:]+).*$ # extract domain, input: https://foo.prod1.example.com:443/?foo=asdf; output: foo.prod1.example.com
+        target_label: host
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115 # the blackbox exporter's real hostname:port. Hostname = name of service within docker-compose
+    file_sd_configs:
+      - files:
+          - "/etc/prometheus/file_sd/*.http_2xx.yml"
+
+  - job_name: 'http_401'
+    metrics_path: /probe
+    params:
+      module: [http_401]  # look for a HTTP 401 (Authentication Required) response.
+    # every blackbox job needs relabel_configs
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: ^https?:\/\/([^?/:]+).*$ # input: https://prometheus.domain.com/; output: prometheus.domain.com
+        target_label: host
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115 # the blackbox exporter's real hostname:port. Hostname = name of service within docker-compose
+    file_sd_configs:
+      - files:
+          - "/etc/prometheus/file_sd/*.http_401.yml"
+
+  - job_name: "http_zammad"
+    metrics_path: /probe
+    params:
+      module: [http_zammad]
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__address__]
+        target_label: __param_host
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+    file_sd_configs:
+      - files:
+          - "/etc/prometheus/file_sd/*.http_zammad.yml"
+
+  - job_name: "prometheus"
+    metrics_path: /metrics
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: ^(localhost.*)$ # replace localhost with hostname
+        replacement: '{{ ansible_hostname }}'
+        target_label: host
+      - source_labels: [__address__]
+        regex: ^https?:\/\/([^?/:]+).*$ # extract domain, input: https://prometheus.prod1.example.com:443/?foo=asdf; output: prometheus.prod1.example.com
+        target_label: host
+    file_sd_configs:
+      - files:
+          - "/etc/prometheus/file_sd/*.prometheus.yml"
+
+{% if victoriametrics_scrape_configs != [] %}
+  {{ victoriametrics_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+{% endif %}

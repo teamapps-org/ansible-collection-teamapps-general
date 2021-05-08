@@ -1,0 +1,13 @@
+# handlers file for VictoriaMetrics
+---
+
+- name: "vmagent-daemon-reload"
+  become: true
+  systemd:
+    daemon_reload: true
+
+- name: vmagent-restart
+  become: true
+  service:
+    name: vic-vmagent
+    state: restarted

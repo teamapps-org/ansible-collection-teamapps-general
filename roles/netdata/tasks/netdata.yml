@@ -1,0 +1,95 @@
+---
+# tasks file for netdata installs netdata on host and proxies requests to webproxy
+
+- name: add netdata repository gpgkey
+  apt_key:
+    url: https://packagecloud.io/netdata/netdata/gpgkey
+    id: A799AB702EA6DEE3E21AA716B4188B90F6FB8FD3 # for offline checkmode # gpg --list-keys --keyid-format=long --keyring /etc/apt/trusted.gpg
+
+- name: configure netdata apt repo
+  apt_repository:
+    repo: 'deb https://packagecloud.io/netdata/netdata/ubuntu/ {{ ansible_distribution_release }} main'
+    update_cache: yes
+
+- name: remove edge repository
+  file:
+    path: /etc/apt/sources.list.d/packagecloud_io_netdata_netdata_edge_ubuntu.list
+    state: absent
+
+- name: install netdata
+  apt:
+    name: netdata
+    state: present
+
+- name: create log directory
+  file:
+    path: /var/log/netdata
+    state: directory
+    owner: netdata
+    group: netdata
+    mode: '2750'
+
+- name: add user netdata to docker group
+  user:
+    name: netdata
+    shell: /usr/sbin/nologin
+    groups: [ docker ]
+    append: yes
+  notify: netdata_restart
+  when: netdata_docker_integration
+
+- name: deploy config
+  template:
+    src: templates/{{ item }}
+    dest: '/etc/netdata/{{ item }}'
+    owner: root
+    group: 'netdata'
+    mode: '0640'
+  with_items:
+    - netdata.conf
+    - stream.conf
+  notify: netdata_restart
+
+- name: check for cloud
+  stat:
+    path: /var/lib/netdata/cloud.d/
+  register: netdata_cloud_stat
+
+- name: notify old cloud
+  debug:
+    msg: Is netdata package up to date?
+  when: not netdata_cloud_stat.stat.isdir is defined or not netdata_cloud_stat.stat.isdir
+
+- name: disable cloud
+  template:
+    src: templates/cloud.conf
+    dest: /var/lib/netdata/cloud.d/cloud.conf
+    owner: root
+    group: netdata
+    mode: '0640'
+  when: netdata_cloud_stat.stat.isdir is defined and netdata_cloud_stat.stat.isdir
+  notify: netdata_restart
+
+- name: alarm sending configuration
+  template:
+    src: health_alarm_notify.conf
+    dest: /etc/netdata/health_alarm_notify.conf
+    owner: root
+    group: root
+    mode: '0640'
+  notify: netdata_restart
+
+- name: start netdata service
+  systemd:
+    service: netdata
+    state: started
+    enabled: true
+
+- name: restart netdata service now if needed
+  meta: flush_handlers
+
+- import_tasks: docker.yml
+  when: netdata_docker_integration
+
+- import_tasks: alarms.yml
+  tags: netdata_alarms

@@ -1,0 +1,45 @@
+---
+# https://hub.docker.com/r/victoriametrics/vmagent/tags?page=1&ordering=last_updated
+victoriametrics_version: latest
+victoriametrics_vmagent_version: '{{ victoriametrics_version }}'
+victoriametrics_vmalert_version: '{{ victoriametrics_version }}'
+
+victoriametrics_domain: 'metrics.{{ ansible_fqdn }}'
+
+# retention period (months) https://victoriametrics.github.io/#retention
+victoriametrics_retention_period: 3
+
+container_path: /container
+victoriametrics_path: '{{ container_path }}/victoriametrics'
+victoriametrics_docker_pull: '{{ global_docker_pull | default(False) }}'
+
+victoriametrics_htpasswd_read:
+victoriametrics_htpasswd_write:
+victoriametrics_htpasswd_admin:
+
+victoriametrics_alertmanager_url: http://alertmanager/
+victoriametrics_alertmanager_user: ''
+victoriametrics_alertmanager_password: ''
+
+# Alertmanager source can link to graph in grafana.
+victoriametrics_grafana_datasource_name: VictoriaMetrics
+victoriametrics_vmalert_external_url: 'https://grafana.yourdomain.com'
+victoriametrics_vmalert_external_source: explore?orgId=1&left=["now-1h","now","{{ victoriametrics_grafana_datasource_name }}",{"expr":"{% raw %}{{$$expr|quotesEscape|crlfEscape|pathEscape}}{% endraw %}"}]
+
+victoriametrics_blackbox_image: prom/blackbox-exporter
+victoriametrics_blackbox_version: master # if unstable v0.18.0 can be used
+
+# define your targets, creates files in file_sd/<name>.<job>.yml
+victoriametrics_file_sd_config: []
+  # - job: http_2xx
+  #   name: production
+  #   config:
+  #     - labels:
+  #         environment: production
+  #       targets:
+  #         - https://example.com/
+
+# additional blackbox_exporter modules
+victoriametrics_blackbox_modules: {}
+
+victoriametrics_scrape_configs: []

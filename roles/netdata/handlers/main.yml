@@ -1,0 +1,23 @@
+---
+# handlers file for netdata
+
+- name: netdata_restart
+  systemd:
+    service: netdata
+    state: restarted
+
+- name: netdata_docker-compose-up
+  docker_compose:
+    project_src: '{{ netdata_path }}'
+    state: present
+    pull: '{{ netdata_docker_pull }}'
+    remove_orphans: true
+
+- name: netdata_docker-compose-restart
+  docker_compose:
+    project_src: '{{ netdata_path }}'
+    state: present
+    restarted: yes
+
+- name: netdata_reload_alarms
+  command: pkill -SIGUSR2 netdata
