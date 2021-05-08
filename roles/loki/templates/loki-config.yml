@@ -1,0 +1,99 @@
+# Loki Config file
+
+# based on https://github.com/grafana/loki/blob/master/cmd/loki/loki-docker-config.yaml
+
+# Documentation: https://grafana.com/docs/loki/latest/configuration/
+
+# The module to run Loki with. Supported values
+# all, distributor, ingester, querier, query-frontend, table-manager.
+# [target: <string> | default = "all"]
+target: all
+
+# Enables authentication through the X-Scope-OrgID header, which must be present
+# if true. If false, the OrgID will always be set to "fake".
+auth_enabled: false
+
+# Configures the server of the launched module(s).
+server:
+  http_listen_port: 3100
+  http_server_read_timeout: 60s # allow longer time span queries
+  http_server_write_timeout: 60s # allow longer time span queries
+  grpc_server_max_recv_msg_size: 15728640 # 15 MiB (int bytes), default 4MB
+  grpc_server_max_send_msg_size: 15728640 # 15 MiB (int bytes), default 4MB
+
+
+# Configures the ingester and how the ingester will register itself to a
+# key value store.
+ingester:
+  lifecycler:
+    address: 127.0.0.1
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+    final_sleep: 0s
+  chunk_idle_period: 1h       # Any chunk not receiving new logs in this time will be flushed
+  max_chunk_age: 1h           # All chunks will be flushed when they hit this age, default is 1h
+  chunk_target_size: 1048576  # Loki will attempt to build chunks up to 1.5MB, flushing first if chunk_idle_period or max_chunk_age is reached first
+  chunk_retain_period: 30s    # Must be greater than index read cache TTL if using an index cache (Default index read cache TTL is 5m)
+  max_transfer_retries: 0     # Chunk transfers disabled
+
+schema_config:
+  configs:
+    - from: 2018-04-15
+      store: boltdb
+      object_store: filesystem
+      schema: v11
+      index:
+        prefix: index_
+        period: 168h
+
+    - from: 2020-11-01
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v11
+      index:
+        prefix: index_
+        period: 24h
+
+storage_config:
+  boltdb:
+    directory: /data/loki/index
+
+  filesystem:
+    directory: /data/loki/chunks
+
+  boltdb_shipper:
+    active_index_directory: /data/loki/boltdb-shipper-active
+    cache_location: /data/loki/boltdb-shipper-cache
+    cache_ttl: 24h         # Can be increased for faster performance over longer query periods, uses more disk space
+    shared_store: filesystem
+
+compactor:
+  working_directory: /data/loki/boltdb-shipper-compactor
+  shared_store: filesystem
+
+limits_config:
+  enforce_metric_name: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+
+chunk_store_config:
+  max_look_back_period: 90d
+
+table_manager:
+  retention_deletes_enabled: true
+  retention_period: 91d
+
+ruler:
+  storage:
+    type: local
+    local:
+      directory: /data/loki/rules # volume, directory to scan for rules
+  rule_path: /data/loki/rules-temp # volume, store temporary rule files
+  alertmanager_url: "{{ loki_alertmanager_url }}"
+  ring:
+    kvstore:
+      store: inmemory
+  enable_api: true
+  enable_alertmanager_v2: true

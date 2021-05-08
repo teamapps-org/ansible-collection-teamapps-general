@@ -1,0 +1,34 @@
+---
+# defaults file for loki deployment
+container_path: /container
+loki_path: '{{ container_path }}/loki'
+
+# loki_domain: '{{ ansible_fqdn }}'
+loki_domain: "loki.{{ ansible_fqdn }}"
+loki_version: 2.2.1
+
+# htpasswd -B -n username
+loki_htpasswd: |
+  testuser:$2y$05$5RJ/ieXn7XpXM7R97IZKEOfFLWEo3B0W1KGNQKuArAg3Bt7E9o8Qa
+
+loki_htpasswd_push_only: |
+  testuser:$2y$05$5RJ/ieXn7XpXM7R97IZKEOfFLWEo3B0W1KGNQKuArAg3Bt7E9o8Qa
+
+loki_docker_pull: '{{ global_docker_pull | default(False) }}'
+
+loki_alertmanager_url: "" # http://alertmanager:9093
+
+loki_push_access_log: False
+
+# authentication by subrequest for push_only
+loki_auth: basic # basic/request
+
+# for loki_auth: request
+loki_auth_request_uri: # https://validator.example.com/api/logserveraccess
+loki_auth_request_cache_time: 15m
+loki_auth_request_cache_time_403: 30s
+
+
+loki_nginx_gateway_conf_template: '{{ "auth_basic-site.conf" if loki_auth == "basic" else "auth_request-site.conf" }}'
+
+loki_rules: []

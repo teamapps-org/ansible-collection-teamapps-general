@@ -1,0 +1,9 @@
+{{ ansible_managed | comment }}
+
+{% if alertmanager_allowed_hosts | length > 0 %}
+satisfy any;
+{% for item in alertmanager_allowed_hosts %}
+allow {{ lookup('dig', item) | ipaddr }};
+{% endfor %}
+deny all;
+{% endif %}

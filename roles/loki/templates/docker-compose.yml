@@ -1,0 +1,49 @@
+version: "3.7"
+
+services:
+
+  nginx-gateway:
+    image: nginx:alpine
+    restart: always
+    expose:
+      - 80
+    environment:
+      VIRTUAL_HOST: {{ loki_domain }}
+      LETSENCRYPT_HOST: {{ loki_domain }}
+      LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
+    volumes:
+      - ./htaccess:/etc/nginx/conf.d/htaccess:ro
+      - ./site.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      loki:
+      webproxy:
+        aliases:
+          - loki-gateway-webproxy # used in grafana for direct connection to datasource
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+
+  loki:
+    image: grafana/loki:{{ loki_version }}
+    restart: always
+    expose:
+      - 3100
+    volumes:
+      - ./loki-config.yml:/etc/loki/config.yml:ro
+      - ./data/loki:/data/loki
+    command: -config.file=/etc/loki/config.yml
+    networks:
+      - loki
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+
+networks:
+  loki:
+  webproxy:
+    external:
+      name: webproxy

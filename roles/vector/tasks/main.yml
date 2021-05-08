@@ -1,0 +1,69 @@
+---
+# tasks file for vector
+
+- name: add repository gpgkey
+  apt_key:
+    url: https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key
+    id: 1E46C153E9EFA24018C36F753543DB2D0A2BC4B8 # for offline checkmode # gpg --list-keys --keyid-format=long --keyring /etc/apt/trusted.gpg
+
+- name: configure apt repo
+  apt_repository:
+    repo: 'deb https://repositories.timber.io/public/vector/deb/ubuntu any-version main'
+    update_cache: yes
+
+- name: install vector
+  apt:
+    name: vector
+    state: present
+
+- name: Copy env file
+  template:
+    src: vector.env.j2
+    dest: /etc/default/vector
+    owner: root
+    group: root
+    mode: 0600
+  notify: restart vector
+
+- name: Ensure vector service is enabled on boot
+  systemd:
+    name: vector
+    enabled: true
+
+- name: Copy config
+  template:
+    src: vector.toml.j2
+    dest: /etc/vector/vector.toml
+    mode: 0644
+  notify: reload vector
+
+- name: Add vector user to docker group
+  user:
+    name: vector
+    groups: [docker]
+    append: yes
+  when: vector_add_docker_group | default(False)
+  notify: restart vector
+
+- name: Copy docker to loki config
+  template:
+    src: 'docker-to-loki.toml.j2'
+    dest: '/etc/vector/docker-to-loki.toml'
+    mode: 0644
+    validate: '/usr/bin/vector validate --config-toml /etc/vector/vector.toml --config-toml %s'
+  notify: reload vector
+  when: vector_docker_to_loki | default(False)
+
+- name: Add vector user to systemd-journal group
+  user:
+    name: vector
+    groups: [systemd-journal]
+    append: yes
+  when: vector_add_journal_group | default(False)
+  notify: restart vector
+
+- name: Start Vector
+  service:
+    state: started
+    enabled: yes
+    name: vector

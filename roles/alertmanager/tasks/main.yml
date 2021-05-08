@@ -1,0 +1,68 @@
+---
+- name: create alertmanager system group
+  group:
+    name: alertmanager
+    system: true
+    state: present
+  register: alertmanager_group
+
+- name: create alertmanager system user
+  user:
+    name: alertmanager
+    system: true
+    shell: "/usr/sbin/nologin"
+    group: alertmanager
+    createhome: false
+    home: "{{ alertmanager_config_dir }}"
+  register: alertmanager_user
+
+- name: create alertmanager directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: alertmanager
+    group: alertmanager
+    mode: 0770
+  with_items:
+    - "{{ alertmanager_config_dir }}"
+    - "{{ alertmanager_db_dir }}"
+
+- name: deploy compose
+  template:
+    src: 'docker-compose.yml.j2'
+    dest: '{{ alertmanager_config_dir }}/docker-compose.yml'
+    owner: alertmanager
+    group: alertmanager
+    mode: '0644'
+
+- name: deploy alertmanager config
+  template:
+    src: 'alertmanager.yml.j2'
+    dest: '{{ alertmanager_config_dir }}/alertmanager.yml'
+    owner: alertmanager
+    group: alertmanager
+    mode: '0644'
+  notify: alertmanager reload
+
+- name: create htpasswd file
+  copy:
+    content: '{{ alertmanager_htpasswd }}'
+    dest: '{{ webproxy_path }}/data/htpasswd/{{ alertmanager_domain }}'
+    owner: root
+    group: root
+    mode: 0644
+
+- name: allow whitelisted hosts
+  template:
+    src: 'alertmanager_location.j2'
+    dest: '{{ webproxy_path }}/data/vhost.d/{{ alertmanager_domain }}_location'
+    owner: root
+    group: root
+    mode: 0644
+  notify: nginx gen
+
+- name: compose up
+  docker_compose:
+    project_src: '{{ alertmanager_config_dir }}'
+    state: present
+...

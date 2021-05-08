@@ -1,0 +1,41 @@
+# Read logs from Docker API and Send to loki sink
+
+[sources.docker-local]
+  type = "docker_logs"
+  docker_host = "/var/run/docker.sock"
+  exclude_containers = []
+
+  # Identify zero-width space as first line of a multiline block.
+  multiline.condition_pattern = '^\x{200B}' # required
+  multiline.mode = "halt_before" # required
+  multiline.start_pattern = '^\x{200B}' # required
+  multiline.timeout_ms = 1000 # required, milliseconds
+
+[sinks.loki]
+  # General
+  type = "loki" # required
+  inputs = ["docker-local"] # required
+  endpoint = "{{ vector_loki_endpoint }}" # required
+
+
+  # Auth
+  auth.strategy = "basic" # required
+  auth.user = "{{ vector_loki_username }}" # required
+  auth.password = "{{ vector_loki_password }}" # required
+
+  # Encoding
+  encoding.codec = "json" # required
+
+  # Healthcheck
+  healthcheck.enabled = true # optional, default
+
+{% raw %}
+  # Labels
+  labels.forwarder = 'vector'
+  labels.host = '{{ host }}'
+  labels.container_name = '{{ container_name }}'
+  labels.compose_service = '{{ label.com\.docker\.compose\.service }}'
+  labels.compose_project = '{{ label.com\.docker\.compose\.project }}'
+  labels.source = '{{ stream }}'
+  labels.category = 'dockerlogs'
+{% endraw %}

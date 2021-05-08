@@ -1,0 +1,17 @@
+# Loki handlers
+
+- name: loki-restart-loki
+  docker_compose:
+    project_src: '{{ loki_path }}'
+    state: present
+    services:
+      - loki
+    restarted: yes
+
+- name: loki-restart-gateway
+  docker_compose:
+    project_src: '{{ loki_path }}'
+    state: present
+    services:
+      - nginx-gateway
+    restarted: yes

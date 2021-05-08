@@ -1,0 +1,123 @@
+- name: create directories for grafana
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ grafana_path }}'
+
+- name: Create Grafana directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: "472"
+    group: "472"
+    mode: '0755'
+  with_items:
+    - '{{ grafana_path }}/data'
+    - '{{ grafana_path }}/provisioning'
+    - '{{ grafana_path }}/provisioning/dashboards'
+    - '{{ grafana_path }}/provisioning/datasources'
+    - '{{ grafana_path }}/provisioning/plugins'
+    - '{{ grafana_path }}/provisioning/notifiers'
+    - '{{ grafana_path }}/log'
+    - '{{ grafana_path }}/dashboards'
+    - '{{ grafana_path }}/dashboards/default'
+
+- name: Create Grafana db directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: "999"
+    group: "999"
+    mode: '0755'
+  with_items:
+    - '{{ grafana_path }}/db-dumps'
+    - '{{ grafana_path }}/db-data'
+
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: '{{ grafana_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: configure datasource provisioning
+  template:
+    src: provisioning/datasources/default.yml.j2
+    dest: '{{ grafana_path }}/provisioning/datasources/default.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: grafana_restart
+
+- name: configure dashboards provisioning
+  template:
+    src: provisioning/dashboards/default.yml.j2
+    dest: '{{ grafana_path }}/provisioning/dashboards/default.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: grafana_restart
+
+- name: create dashboard subfolders
+  file:
+    path: '{{ grafana_path }}/dashboards/{{ item }}'
+    state: directory
+    owner: '472'
+    group: '472'
+    mode: 0755
+  with_items: "{{ grafana_dashboards | map('dirname') | unique }}"
+
+- name: copy provisioned dashboards
+  copy:
+    src: "dashboards/{{ item }}"
+    dest: "{{ grafana_path }}/dashboards/{{ item }}"
+    owner: '472'
+    group: '472'
+    mode: 0644
+  with_items: '{{ grafana_dashboards }}'
+
+- name: mysqldump wrapper
+  copy:
+    content: |
+      #!/bin/bash
+      set -eux
+      dir="$(dirname $(readlink -f $0))"
+      cd $dir
+      docker-compose exec -T db sh -c "exec mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" grafana  --default-character-set=utf8mb4 --skip-dump-date | \
+        sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
+        gzip --rsyncable > db-dumps/grafana.sql.gz
+    dest: '{{ grafana_path }}/mysqldump.sh'
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Mysql backup prebackup
+  lineinfile:
+    path: /usr/local/bin/prebackup.sh
+    line: '{{ grafana_path }}/mysqldump.sh'
+    regex: '^{{ grafana_path }}'
+
+- name: mysqlrestore wrapper
+  copy:
+    content: |
+      #!/bin/bash
+      set -eux
+      dir="$(dirname $(readlink -f $0))"
+      cd $dir
+      zcat db-dumps/grafana.sql.gz | \
+      docker-compose exec -T db sh -c 'exec mysql -p"$MYSQL_ROOT_PASSWORD" grafana'
+    dest: '{{ grafana_path }}/mysqlrestore.sh'
+    owner: root
+    group: root
+    mode: 0750
+
+- name: grafana_docker-compose-up
+  docker_compose:
+    project_src: '{{ grafana_path }}'
+    state: present
+    pull: '{{ grafana_docker_pull }}'

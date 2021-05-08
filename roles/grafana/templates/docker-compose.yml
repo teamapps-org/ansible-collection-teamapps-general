@@ -1,0 +1,119 @@
+---
+version: "3.7"
+
+services:
+  grafanadb:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: '{{ grafana_mysql_rootpass }}'
+      MYSQL_DATABASE: grafana
+      MYSQL_USER: grafana
+      MYSQL_PASSWORD: '{{ grafana_mysql_password }}'
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_monitor_enable=all --max-connections=1001
+    volumes:
+      - ./db-data:/var/lib/mysql
+      - ./db-dumps:/db-dumps
+    expose:
+      - 3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p{{ grafana_mysql_rootpass }}"]
+      timeout: 10s
+      retries: 10
+    networks:
+      - grafana
+
+  grafana:
+    user: "472"
+    # image: grafana/grafana:master
+    image: grafana/grafana:{{ grafana_version }}
+    restart: always
+    environment:
+      VIRTUAL_HOST: {{ grafana_domain }}
+      LETSENCRYPT_HOST: {{ grafana_domain }}
+      LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
+
+      # https://grafana.com/docs/grafana/latest/installation/configuration/
+      # https://github.com/grafana/grafana/tree/master/devenv/docker/ha_test
+      GF_SERVER_ROOT_URL: https://{{ grafana_domain }}
+      GF_DEFAULT_INSTANCE_NAME: "{{ grafana_instance_name }}"
+
+      GF_DATABASE_NAME: grafana
+      GF_DATABASE_USER: grafana
+      GF_DATABASE_PASSWORD: '{{ grafana_mysql_password }}'
+      GF_DATABASE_TYPE: mysql
+      GF_DATABASE_HOST: grafanadb:3306
+      GF_DATABASE_MAX_OPEN_CONN: 300
+
+      GF_SESSION_PROVIDER: mysql
+      GF_SESSION_PROVIDER_CONFIG: grafana:{{ grafana_mysql_password }}@tcp(grafanadb:3306)/grafana?allowNativePasswords=true
+      GF_SERVER_ROUTER_LOGGING: 'true'
+      GF_LOG_CONSOLE_FORMAT: json
+      GF_LOG_FILTERS: alerting.notifier:info,alerting.notifier.slack:info,auth:info,rendering:info
+      GF_AUTH_TOKEN_ROTATION_INTERVAL_MINUTES: 2
+
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: '{{ grafana_admin_password }}'
+
+      GF_FEATURE_TOGGLES_ENABLE: live # enable broadcast events when dashboard is saved
+
+      GF_SMTP_ENABLED: "{{ grafana_smtp_enabled }}"
+      GF_SMTP_HOST: "{{ grafana_smtp_host }}"
+      GF_SMTP_USER: "{{ grafana_smtp_user }}"
+      GF_SMTP_PASSWORD: "{{ grafana_smtp_password }}"
+      GF_SMTP_FROM_ADDRESS: "{{ grafana_smtp_from_address }}"
+      GF_SMTP_FROM_NAME: "{{ grafana_smtp_from_name }}"
+
+      # [auth.gitlab]
+      GF_AUTH_GITLAB_ENABLED: '{{ grafana_auth_gitlab_enabled }}'
+      GF_AUTH_GITLAB_ALLOW_SIGN_UP: '{{ grafana_auth_gitlab_allow_sign_up }}'
+      GF_AUTH_GITLAB_CLIENT_ID: '{{ grafana_auth_gitlab_client_id }}'
+      GF_AUTH_GITLAB_CLIENT_SECRET: '{{ grafana_auth_gitlab_client_secret }}'
+      GF_AUTH_GITLAB_SCOPES: '{{ grafana_auth_gitlab_scopes }}'
+      GF_AUTH_GITLAB_AUTH_URL: '{{ grafana_auth_gitlab_auth_url }}'
+      GF_AUTH_GITLAB_TOKEN_URL: '{{ grafana_auth_gitlab_token_url }}'
+      GF_AUTH_GITLAB_API_URL: '{{ grafana_auth_gitlab_api_url }}'
+      # GF_AUTH_GITLAB_ALLOWED_GROUPS: 'example, foo/bar'
+
+      # https://grafana.com/docs/grafana/latest/installation/docker/#install-official-and-community-grafana-plugins
+      GF_INSTALL_PLUGINS: "{{ grafana_plugins | join(',') }}"
+
+      # Grafana Image Rendering
+      GF_RENDERING_SERVER_URL: http://grafana-image-renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: https://{{ grafana_domain }}
+
+      GF_ALERTING_NOTIFICATION_TIMEOUT_SECONDS: 60
+      GF_ALERTING_CONCURRENT_RENDER_LIMIT: 5
+      GF_ALERTING_EVALUATION_TIMEOUT_SECONDS: 60
+      GF_ALERTING_MAX_ATTEMPTS: 5
+    expose:
+      - 3000
+    volumes:
+      - ./data:/var/lib/grafana
+      - ./provisioning/:/etc/grafana/provisioning/
+      - ./log:/var/log/grafana
+      - ./dashboards:/etc/grafana/dashboards
+    networks:
+      - grafana
+      - webproxy
+
+  # https://github.com/grafana/grafana-image-renderer/blob/master/docs/remote_rendering_using_docker.md
+  grafana-image-renderer:
+    image: grafana/grafana-image-renderer:latest
+    environment:
+      ENABLE_METRICS: 'true'
+      RENDERING_VERBOSE_LOGGING: 'false'
+      LOG_LEVEL: 'warning'
+      RENDERING_MODE: 'clustered'
+      RENDERING_CLUSTERING_MODE: 'context'
+      RENDERING_CLUSTERING_MAX_CONCURRENCY: '5'
+    expose:
+      - 8081
+    networks:
+      - grafana
+
+networks:
+  grafana:
+  webproxy:
+    external:
+      name: webproxy

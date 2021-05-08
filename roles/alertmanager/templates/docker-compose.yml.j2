@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  alertmanager:
+    user: {{ alertmanager_user.uid }}:{{ alertmanager_group.gid }}
+    image: {{ alertmanager_image }}:{{ alertmanager_version }}
+    environment:
+      VIRTUAL_HOST: '{{ alertmanager_domain }}'
+      LETSENCRYPT_HOST: '{{ alertmanager_domain }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    volumes:
+      - {{ alertmanager_config_dir }}:/etc/alertmanager/
+      - {{ alertmanager_db_dir }}:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager/'
+      - '--web.external-url=https://{{ alertmanager_domain }}'
+    expose:
+      - 9093
+    restart: always
+    networks:
+      - webproxy
+
+networks:
+  webproxy:
+    external:
+      name: webproxy

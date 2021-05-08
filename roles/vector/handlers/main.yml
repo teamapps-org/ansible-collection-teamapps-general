@@ -1,0 +1,17 @@
+---
+
+- name: validate vector config
+  command: /usr/bin/vector validate --config-toml /etc/vector/*.toml
+  listen:
+    - restart vector
+    - reload vector
+
+- name: restart vector
+  systemd:
+    name: vector
+    state: restarted
+
+- name: reload vector
+  systemd:
+    name: vector
+    state: reloaded

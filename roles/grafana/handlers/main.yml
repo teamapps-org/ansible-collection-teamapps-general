@@ -1,0 +1,7 @@
+- name: grafana_restart
+  docker_compose:
+    project_src: '{{ grafana_path }}'
+    state: present
+    services:
+      - grafana
+    restarted: yes

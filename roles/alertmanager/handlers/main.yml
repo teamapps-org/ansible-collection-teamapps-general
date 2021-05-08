@@ -1,0 +1,14 @@
+---
+# use compose to send a SIGHUP to blacbox's process (PID=1)
+- name: alertmanager reload
+  command: 'docker-compose exec -T alertmanager kill -HUP 1'
+  args:
+    chdir: '{{ alertmanager_config_dir }}'
+
+# regenerates nginx conf from templates
+# this is not the same as just reloading the config
+- name: nginx gen
+  command: 'docker-compose restart nginx-gen'
+  args:
+    chdir: '{{ webproxy_path }}'
+...

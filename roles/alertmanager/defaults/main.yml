@@ -1,0 +1,24 @@
+---
+# default vars for alertmanager role
+alertmanager_image: prom/alertmanager
+alertmanager_version: v0.21.0
+alertmanager_config_dir: /container/alertmanager
+alertmanager_db_dir: /container/alertmanager/data
+alertmanager_resolve_timeout: 5m
+
+# white list hosts that do not require basic auth
+alertmanager_allowed_hosts: []
+alertmanager_domain: "alertmanager.{{ ansible_fqdn }}"
+
+# notifications
+alertmanager_receivers: [] # list of receivers (notification endpoints)
+
+# the root route on which each incoming alert enters
+# configs incoming alerts to receivers
+alertmanager_route:
+
+# htpasswd for alertmanager api
+alertmanager_htpasswd:
+
+# needed for auth config and whitelists
+webproxy_path: /container/webproxy

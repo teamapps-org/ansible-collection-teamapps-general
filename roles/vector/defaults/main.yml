@@ -1,0 +1,41 @@
+---
+
+# Add vector to group 'docker'
+vector_add_docker_group: False
+
+# enable sending docker logs to loki server
+vector_docker_to_loki: False
+
+# Loki Server Configuration
+vector_loki_endpoint: https://loki.example.com:443
+vector_loki_username: '{{ loki_username }}'
+vector_loki_password: '{{ loki_password }}'
+
+# Add vector to group 'systemd-journal'
+vector_add_journal_group: True
+
+# Generic Configuration options for soruces, transforms and sinks
+vector_sources: {}
+  # journald:
+  #   type: journald
+  #   current_boot_only: true
+  #   exclude_units: ['vector']
+
+vector_transforms: {}
+  # grok:
+  #   type: grok_parser
+  #   inputs:
+  #     - journald
+  #   pattern: '(?<capture>\\d+)%{GREEDYDATA}'
+
+vector_sinks: {}
+  # print:
+  #   type: console
+  #   inputs:
+  #     # - journald
+  #     - docker-local
+  #   encoding.codec: "json"
+
+# vector GraphQL API https://vector.dev/docs/reference/api/
+vector_enable_api: False
+vector_api_address: 127.0.0.1:8686

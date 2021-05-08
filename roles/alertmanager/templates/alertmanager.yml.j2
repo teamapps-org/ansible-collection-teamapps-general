@@ -1,0 +1,10 @@
+{{ ansible_managed | comment }}
+
+global:
+{% if alertmanager_resolve_timeout | string | length %}
+  resolve_timeout: {{ alertmanager_resolve_timeout | quote}}
+{% endif %}
+receivers:
+{{ alertmanager_receivers | to_nice_yaml(indent=2) }}
+route:
+  {{ alertmanager_route | to_nice_yaml(indent=2) | indent(2, False) }}

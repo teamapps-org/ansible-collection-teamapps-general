@@ -1,0 +1,33 @@
+# Set global options
+data_dir = "/var/lib/vector"
+
+{% set loop_helper = {
+    "sources": (vector_sources | default({})),
+    "transforms": (vector_transforms | default({})),
+    "sinks": (vector_sinks | default({}))
+} %}
+
+{% for name, cat in loop_helper.items() | sort(attribute='0') %}
+{% for key, value in cat.items() | sort(attribute='0') %}
+[{{ name }}.{{ key }}]
+  {% if value %}
+  {%- for skey, svalue in value.items() | sort(attribute='0') %}
+{%- if svalue is string %}
+  {{ skey }} = "{{ svalue }}"
+{% else %}
+  {{ skey }} = {{ svalue | tojson }}
+{% endif %}
+  {% endfor %}
+  {%- endif %}
+
+{% endfor %}
+{% endfor %}
+
+{% if vector_enable_api %}
+# Vector's GraphQL API (disabled by default)
+# Uncomment to try it out with the `vector top` command or
+# in your browser at http://localhost:8686
+[api]
+enabled = true
+address = "{{ vector_api_address }}"
+{% endif %}

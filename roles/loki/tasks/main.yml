@@ -1,0 +1,88 @@
+---
+
+- name: create directories for loki
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ loki_path }}'
+    - '{{ loki_path }}/htaccess'
+
+- name: Nginx Gateway Configuration File
+  template:
+    src: '{{ loki_nginx_gateway_conf_template }}'
+    dest: '{{ loki_path }}/site.conf'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: loki-restart-gateway
+
+- name: Loki Configuration File
+  template:
+    src: loki-config.yml
+    dest: '{{ loki_path }}/loki-config.yml'
+    owner: '10001'
+    group: '10001'
+    mode: '0640'
+  notify: loki-restart-loki
+
+- name: create data directory for loki
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '10001'
+    group: '10001'
+    mode: '0755'
+  with_items:
+    - '{{ loki_path }}/data'
+    - '{{ loki_path }}/data/loki'
+    - '{{ loki_path }}/data/loki/rules'
+    - '{{ loki_path }}/data/loki/rules/fake' # fake is the default tenandID
+    - '{{ loki_path }}/data/loki/rules-temp'
+
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: '{{ loki_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: deploy loki htpasswd file
+  copy:
+    content: '{{ loki_htpasswd }}'
+    dest: '{{ loki_path }}/htaccess/htpasswd'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: deploy loki push_only htpasswd file
+  copy:
+    content: '{{ loki_htpasswd_push_only }}'
+    dest: '{{ loki_path }}/htaccess/htpasswd_only_push'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: deploy loki alerting rules
+  template:
+    src: loki_rules.yml.j2
+    dest: '{{ loki_path }}/data/loki/rules/fake/rules.yml' # fake is the default name of the tenantID
+    owner: '10001'
+    group: '10001'
+    mode: '0755'
+
+- name: promtail-config
+  file:
+    path: '{{ loki_path }}/promtail-config.yml'
+    state: absent
+
+- name: loki_docker-compose-up
+  docker_compose:
+    project_src: '{{ loki_path }}'
+    state: present
+    remove_orphans: True
+    pull: '{{ loki_docker_pull }}'
