@@ -1,0 +1,35 @@
+- name: youtrack_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ youtrack_path }}'
+
+- name: youtrack data directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '13001' # youtrack inside container
+    group: '13001' # youtrack inside container
+    mode: '0755'
+  with_items:
+    - '{{ youtrack_path }}/data'
+    - '{{ youtrack_path }}/conf'
+    - '{{ youtrack_path }}/logs'
+    - '{{ youtrack_path }}/backups'
+
+- name: deploy config
+  template:
+    src: 'docker-compose.yml'
+    dest: '{{ youtrack_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: youtrack_docker-compose-up
+  docker_compose:
+    project_src: '{{ youtrack_path }}'
+    state: present

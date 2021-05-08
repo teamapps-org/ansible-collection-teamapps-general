@@ -1,0 +1,26 @@
+---
+# {{ ansible_managed }}
+
+version: '3'
+services:
+  youtrack:
+    image: jetbrains/youtrack:{{ youtrack_version }}
+    volumes:
+      - ./data:/opt/youtrack/data
+      - ./conf:/opt/youtrack/conf
+      - ./logs:/opt/youtrack/logs
+      - ./backups:/opt/youtrack/backups
+    environment:
+      VIRTUAL_HOST: {{ youtrack_domain }}
+      LETSENCRYPT_HOST: {{ youtrack_domain }}
+      LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
+    restart: unless-stopped
+    expose:
+      - 8080
+    networks:
+      - webproxy
+
+networks:
+  webproxy:
+    external:
+      name: webproxy

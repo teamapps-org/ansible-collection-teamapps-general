@@ -1,0 +1,6 @@
+---
+# handlers file for youtrack
+- name: youtrack_restart
+  docker_compose:
+    project_src: '{{ youtrack_path }}'
+    restarted: true

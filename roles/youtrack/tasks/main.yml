@@ -1,0 +1,7 @@
+---
+# tasks file for youtrack
+
+- name: youtrack
+  import_tasks: youtrack.yml
+  tags:
+    - youtrack
