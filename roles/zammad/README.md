@@ -49,13 +49,3 @@ Including an example of how to use your role (for instance, with variables passe
   roles:
     - role: teamapps.general.zammad
 ~~~
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-Philipp Gassmann
