@@ -47,7 +47,7 @@ Including an example of how to use your role (for instance, with variables passe
   hosts:
     - zammad1.example.com
   roles:
-    - role: zammad
+    - role: teamapps.general.zammad
 ~~~
 
 License

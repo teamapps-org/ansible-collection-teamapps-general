@@ -47,7 +47,7 @@ Playbook
   hosts:
     - loki1.example.com
   roles:
-    - role: loki
+    - role: teamapps.general.loki
       tags:
         - logserver
         - loki

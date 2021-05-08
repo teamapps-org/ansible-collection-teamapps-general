@@ -24,7 +24,7 @@ Read Logs and send them to a loki server.
               job: gitlab-logs
               __path__: /var/log/gitlab/*/*.log
   roles:
-    - role: promtail
+    - role: teamapps.general.promtail
       tags:
         - promtail
 ~~~
