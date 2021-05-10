@@ -106,21 +106,19 @@ groups:
 
   - name: ram
     rules:
-      - alert: HighMemoryUsage
+      - alert: LowMemoryAvailable
         expr: |
-          (
-          sum(netdata_system_ram_MiB_average) by (host) - sum(netdata_mem_available_MiB_average) by (host)
-          )
+          sum by (host)(netdata_mem_available_MiB_average)
           /
-          ( sum(netdata_system_ram_MiB_average) by (host))
+          sum by (host)(netdata_system_ram_MiB_average)
           *100
-          > 90
+          < 10
         for: 5m
         labels:
           severity: warning
         annotations:
-          description: "{{ $labels.host }} RAM usage was above 90% for more than 5 minutes"
-          summary: "High Ram usage on host {{ $labels.host }}"
+          description: "{{ $labels.host }} available RAM was below 10% for more than 5 minutes"
+          summary: "Low Mem available on host {{ $labels.host }}"
 
   # - name:
   #   rules:
