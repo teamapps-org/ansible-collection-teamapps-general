@@ -9,16 +9,15 @@ groups:
         expr: probe_success == 0
         for: 5m
         annotations:
-          description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for
-            more than 5 minutes.'
-          summary: Instance {{ $labels.instance }} down
+          description: 'Target has been down for more than 5 minutes. Job: {{ $labels.job }} for {{ $labels.instance }}'
+          summary: 'Endpoint down: {{ $labels.instance }}'
         labels:
           severity: critical
 
       - alert: http probe 2xx
         expr: "probe_http_status_code{job=~'http_2xx(_redirect)?'} > 299 OR probe_http_status_code{job=~'http_2xx(_redirect)?'} < 200"
         annotations:
-          summary: "{{ $labels.instance }} - Not OK"
+          summary: "HTTP Not OK: {{ $labels.instance }}"
           description: "Expected HTTP status 2xx, got {{ $value }} for {{ $labels.instance }}"
         labels:
           severity: critical
@@ -26,7 +25,7 @@ groups:
       - alert: http probe 3xx
         expr: "probe_http_status_code{job='http_3xx'} > 399 OR probe_http_status_code{job='http_3xx'} < 300"
         annotations:
-          summary: "{{ $labels.instance }} - Not 3xx"
+          summary: "HTTP Not 3xx: {{ $labels.instance }}"
           description: "Expected HTTP status 3xx, got {{ $value }} for {{ $labels.instance }}"
         labels:
           severity: critical
@@ -34,7 +33,7 @@ groups:
       - alert: http probe 403
         expr: "probe_success{job='http_403'} == 0"
         annotations:
-          summary: "{{ $labels.instance }} - HTTP failure"
+          summary: "HTTP failure - {{ $labels.instance }}"
         labels:
           severity: critical
 
@@ -42,13 +41,13 @@ groups:
         expr: "probe_failed_due_to_regex{job='http_healthz'} == 1"
         for: 5m
         annotations:
-          summary: "{{ $labels.instance }} - Healthz check failed"
+          summary: "Healthz check failed: {{ $labels.instance }}"
         labels:
           severity: warning
 
       - alert: http probe zammad
         annotations:
-          summary: '{{ $labels.instance }} - Zammad check failed'
+          summary: 'Zammad check failed: {{ $labels.instance }}'
         expr: probe_failed_due_to_regex{job='http_zammad'} == 1
         for: 5m
         labels:

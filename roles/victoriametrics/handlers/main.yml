@@ -18,6 +18,11 @@
   args:
     chdir: '{{ victoriametrics_path }}'
 
+- name: victoriametrics-vmagent-reload
+  command: 'docker-compose exec -T vmagent kill -HUP 1'
+  args:
+    chdir: '{{ victoriametrics_path }}'
+
 # use compose to send a SIGHUP to blacbox's process (PID=1)
 - name: blackbox reload
   command: 'docker-compose exec -T blackbox kill -HUP 1'

@@ -23,6 +23,17 @@ groups:
           description: "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes."
           summary: "Host {{ $labels.host }} down"
 
+      - alert: HostNotUp
+        expr: count(up{host!=""} offset 1h) by (host,job) unless count(up{host!=""}) by (host,job)
+        for: 5m
+        labels:
+          team: ops
+          severity: critical
+        annotations:
+          description: |-
+            Host shut down? Missing updates for metric 'up' of host '{{ $labels.host }}' from '{{ $labels.job }}'
+            The up metric has no current value but was available an hour ago.
+          summary: "host not up"
 
   - name: cpu
     rules:

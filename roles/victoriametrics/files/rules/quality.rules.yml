@@ -1,0 +1,34 @@
+---
+groups:
+  - name: general metric quality checks
+    rules:
+      - alert: missing host label
+        expr: "count by (scraper_instance,job)({host='',__name__!~'ALERTS|ALERTS_FOR_STATE'})"
+        for: 5m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          description: |-
+            there are {{ $value }} metrics with no 'host' label.
+            job: '{{ $labels.job }}' scraper: '{{ $labels.scraper_instance }}'
+          summary: "missing host label"
+
+      - alert: MetricsRemoved
+        expr: |
+          count({host!='',__name__=~".+"} offset 1h) by (host,instance,job,scraper_instance)
+          unless count({host!='',__name__=~".+"}) by (host,instance,job,scraper_instance)
+        for: 5m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          description: |-
+            there are {{ $value }} metrics with no update.
+            job: '{{ $labels.job }}'
+            host: '{{ $labels.host }}'
+            instance: '{{ $labels.instance }}'
+            scraper: '{{ $labels.scraper_instance }}'
+
+            Was a check or host or metrics removed? Count of metrics that were reported an hour ago, have no current value.
+          summary: "Metrics removed?"

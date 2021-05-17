@@ -25,6 +25,7 @@
     mode: 0770
   with_items:
     - "{{ alertmanager_config_dir }}"
+    - "{{ alertmanager_config_dir }}/templates"
     - "{{ alertmanager_db_dir }}"
 
 - name: deploy compose
@@ -34,6 +35,16 @@
     owner: alertmanager
     group: alertmanager
     mode: '0644'
+
+- name: deploy alertmanager templates
+  copy:
+    dest: '{{ alertmanager_config_dir }}/templates/{{ item.name }}'
+    content: '{{ item.content }}'
+    owner: alertmanager
+    group: alertmanager
+    mode: '0644'
+  notify: alertmanager reload
+  with_items: '{{ alertmanager_templates }}'
 
 - name: deploy alertmanager config
   template:

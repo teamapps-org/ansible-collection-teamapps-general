@@ -17,6 +17,47 @@ alertmanager_receivers: [] # list of receivers (notification endpoints)
 # configs incoming alerts to receivers
 alertmanager_route:
 
+alertmanager_templates_default:
+  - name: common.tmpl
+    content: |
+      {% raw %}
+      {{ define "slack.common.status" -}}
+      {{- if eq .Status "firing" }}:fire:{{ else }}:ok:{{ end }}[{{- .Status | toUpper -}}]
+      {{- end }}
+
+      # https://www.weave.works/blog/labels-in-prometheus-alerts-think-twice-before-using-them
+      {{ define "slack.common.title" -}}
+      {{- if .CommonAnnotations.summary -}}
+          {{- .CommonAnnotations.summary -}}
+      {{- else -}}
+          {{- with index .Alerts 0 -}}
+              {{- .Annotations.summary }} and others
+          {{- end -}}
+      {{- end -}}
+      {{- end }}
+
+      {{ define "slack.common.text" -}}
+          {{- if .CommonAnnotations.description -}}
+            {{- if .Labels.host }}*Host*: `{{ .Labels.host }}` {{ end }}{{ .CommonAnnotations.description -}}
+            {{- if .Labels.container_name }}{{ "\n" }}*Container*: `{{ .Labels.container_name }}` {{ end -}}
+            {{- if .Annotations.dashboard }}{{ "\n" }}*Dashboard*: {{ .Annotations.dashboard }} {{ end -}}
+          {{- else -}}
+              {{- range $i, $alert := .Alerts -}}
+              *{{ if .Labels.host }}Host `{{ .Labels.host }}` {{ end }}{{- .Annotations.summary -}}*
+              {{- "\n" }}{{ .Annotations.description -}}
+              {{- if .Labels.container_name }}{{ "\n" }}*Container*: `{{ .Labels.container_name }}` {{ end -}}
+              {{- if .Annotations.dashboard }}{{ "\n" }}*Dashboard*: {{ .Annotations.dashboard }} {{ end -}}
+              {{- "\n" -}}
+              {{- "\n" -}}
+              {{- end -}}
+          {{- end -}}
+      {{- end }}
+      {% endraw %}
+
+alertmanager_templates_custom: []
+
+alertmanager_templates: '{{ alertmanager_templates_default + alertmanager_templates_custom }}'
+
 # htpasswd for alertmanager api
 alertmanager_htpasswd:
 

@@ -8,3 +8,7 @@ receivers:
 {{ alertmanager_receivers | to_nice_yaml(indent=2) }}
 route:
   {{ alertmanager_route | to_nice_yaml(indent=2) | indent(2, False) }}
+templates:
+{% for template in  alertmanager_templates %}
+  - templates/{{ template.name }}
+{% endfor %}

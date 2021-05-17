@@ -20,7 +20,7 @@
     - vmalert reload
     - vmalert validate config
 
-- name: copy alerting rule files from prometheus role
+- name: copy alerting rule files
   copy:
     src: "{{ item }}"
     dest: "{{ victoriametrics_path }}/rules/"

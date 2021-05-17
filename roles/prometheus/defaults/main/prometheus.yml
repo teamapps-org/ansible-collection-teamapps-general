@@ -84,11 +84,17 @@ prometheus_scrape_configs:
       module: [http_zammad]
     relabel_configs:
       - source_labels: [__address__]
+        regex: ^https?:\/\/([^?/:]+).*$ # input: https://zammad.domain.com/; output: zammad.domain.com
+        target_label: host
+      - source_labels: [__address__]
         target_label: __param_target
       - source_labels: [__address__]
         target_label: __param_host
-      - source_labels: [__param_target]
-        target_label: instance
+      # - source_labels: [__param_target]
+      #   target_label: instance
+      - source_labels: [__address__]
+        regex: ^(https?:\/\/[^?/:]+).*$ # input: https://zammad.domain.com/api/v1/monitoring/health_check?token=foo; output: zammad.domain.com
+        target_label: instance # hide token
       - target_label: __address__
         replacement: blackbox:9115
     file_sd_configs:
