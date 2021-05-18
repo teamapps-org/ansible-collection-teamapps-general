@@ -1,6 +1,7 @@
 ---
 groups:
   - name: general metric quality checks
+    interval: 10m
     rules:
       - alert: missing host label
         expr: "count by (scraper_instance,job)({host='',__name__!~'ALERTS|ALERTS_FOR_STATE'})"

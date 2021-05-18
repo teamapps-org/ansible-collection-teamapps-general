@@ -1,10 +1,11 @@
 ---
 groups:
   - name: general metric quality checks
+    interval: 10m # evaluate these expensive queries with reduced frequency
     rules:
       - alert: missing host label
         expr: "count by (scraper_instance,job)({host='',__name__!~'ALERTS|ALERTS_FOR_STATE'})"
-        for: 5m
+        for: 0s
         labels:
           team: ops
           severity: warning
@@ -16,9 +17,10 @@ groups:
 
       - alert: MetricsRemoved
         expr: |
-          count({host!='',__name__=~".+"} offset 1h) by (host,instance,job,scraper_instance)
-          unless count({host!='',__name__=~".+"}) by (host,instance,job,scraper_instance)
-        for: 5m
+          count by (host,instance,job,scraper_instance)({__name__!~'ALERTS|ALERTS_FOR_STATE',host!=''} offset 1h)
+          > 5 # small changes are normal
+          unless count({__name__!~'ALERTS|ALERTS_FOR_STATE',host!=''}) by (host,instance,job,scraper_instance)
+        for: 10m
         labels:
           team: ops
           severity: warning

@@ -23,6 +23,7 @@ victoriametrics_alertmanager_password: ''
 
 # Alertmanager source can link to graph in grafana.
 victoriametrics_grafana_datasource_name: VictoriaMetrics
+victoriametrics_vmalert_evaluation_interval: 1m
 victoriametrics_vmalert_external_url: 'https://grafana.yourdomain.com'
 victoriametrics_vmalert_external_source: explore?orgId=1&left=["now-1h","now","{{ victoriametrics_grafana_datasource_name }}",{"expr":"{% raw %}{{$$expr|quotesEscape|crlfEscape|pathEscape}}{% endraw %}"}]
 

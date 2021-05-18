@@ -27,13 +27,21 @@ groups:
         expr: count(up{host!=""} offset 1h) by (host,job) unless count(up{host!=""}) by (host,job)
         for: 5m
         labels:
-          team: ops
           severity: critical
         annotations:
           summary: "Host not up {{ $labels.host }}"
           description: |-
             Host shut down? Missing updates for metric 'up' of host '{{ $labels.host }}' from '{{ $labels.job }}'
             The up metric has no current value but was available an hour ago.
+
+      - alert: HostLastUpdate
+        expr: time()-tlast_over_time(up[1d]) > 60
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Host not reported up {{ $labels.host }}"
+          description: The host {{ $labels.host }} last reported 'up' {{ $value | humanizeDuration }} ago
 
   - name: cpu
     rules:
@@ -137,5 +145,14 @@ groups:
   #     expr: ' > 80'
   #     for: 2m
   #     annotations:
-  #       description: "{{ $labels.host }} "
   #       summary: "{{ $labels.host }}"
+  #       description: "{{ $labels.host }} "
+
+  - name: containers
+    rules:
+    - alert: UnhealthyContainers
+      expr: 'netdata_docker_unhealthy_containers_containers_average > 0.3'
+      for: 5m
+      annotations:
+        summary: "Unhealthy Containers on {{ $labels.host }}"
+        description: "{{ $value }} containers are not healthy on host {{ $labels.host }}"

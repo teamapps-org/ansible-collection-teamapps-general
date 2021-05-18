@@ -107,6 +107,7 @@ services:
       - '-datasource.url=http://victoriametrics:8428/'
       - '-remoteRead.url=http://victoriametrics:8428/'
       - '-remoteWrite.url=http://victoriametrics:8428/'
+      - '-evaluationInterval={{ victoriametrics_vmalert_evaluation_interval }}'
       - '-notifier.url={{ victoriametrics_alertmanager_url }}'
       - '-notifier.basicAuth.username={{ victoriametrics_alertmanager_user }}'
       - '-notifier.basicAuth.password={{ victoriametrics_alertmanager_password }}'
