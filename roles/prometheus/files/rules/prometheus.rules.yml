@@ -26,10 +26,10 @@ groups:
 
       - alert: PrometheusConfigReloadFailed
         annotations:
+          summary: Reloading Prometheus' configuration failed
           description: >-
             Reloading Prometheus' configuration has failed for
-            {{$labels.namespace}}/{{$labels.pod}}
-          summary: Reloading Promehteus' configuration failed
+            {{ $labels.namespace }}/{{ $labels.pod }}
         expr: |
           prometheus_config_last_reload_successful{job=~"prometheus(-k8s)?"} == 0
         for: 10m
@@ -38,10 +38,10 @@ groups:
 
       - alert: PrometheusNotificationQueueRunningFull
         annotations:
+          summary: Prometheus' alert notification queue is running full
           description: >-
             Prometheus' alert notification queue is running full for
-            {{$labels.namespace}}/{{ $labels.pod}}
-          summary: Prometheus' alert notification queue is running full
+            {{ $labels.namespace }}/{{ $labels.pod }}
         expr: >
           predict_linear(prometheus_notifications_queue_length{job=~"prometheus(-k8s)?"}[5m],
           60 * 30) >
@@ -52,11 +52,11 @@ groups:
 
       - alert: PrometheusErrorSendingAlerts
         annotations:
+          summary: Errors while sending alert from Prometheus
           description: >-
             Errors while sending alerts from Prometheus
-            {{$labels.namespace}}/{{ $labels.pod}} to Alertmanager
-            {{$labels.Alertmanager}}
-          summary: Errors while sending alert from Prometheus
+            {{ $labels.namespace }}/{{ $labels.pod }} to Alertmanager
+            {{ $labels.Alertmanager }}
         expr: >
           rate(prometheus_notifications_errors_total{job=~"prometheus(-k8s)?"}[5m])
           /
@@ -68,11 +68,11 @@ groups:
 
       - alert: PrometheusErrorSendingAlerts
         annotations:
+          summary: Errors while sending alerts from Prometheus
           description: >-
             Errors while sending alerts from Prometheus
-            {{$labels.namespace}}/{{ $labels.pod}} to Alertmanager
-            {{$labels.Alertmanager}}
-          summary: Errors while sending alerts from Prometheus
+            {{ $labels.namespace }}/{{ $labels.pod }} to Alertmanager
+            {{ $labels.Alertmanager }}
         expr: >
           rate(prometheus_notifications_errors_total{job=~"prometheus(-k8s)?"}[5m])
           /
@@ -84,10 +84,10 @@ groups:
 
       - alert: PrometheusNotConnectedToAlertmanagers
         annotations:
-          description: >-
-            Prometheus {{ $labels.namespace }}/{{ $labels.pod}} is not
-            connected to any Alertmanagers
           summary: Prometheus is not connected to any Alertmanagers
+          description: >-
+            Prometheus {{ $labels.namespace }}/{{ $labels.pod }} is not
+            connected to any Alertmanagers
         expr: >
           prometheus_notifications_alertmanagers_discovered{job=~"prometheus(-k8s)?"}
           < 1
@@ -97,10 +97,10 @@ groups:
 
       - alert: PrometheusTSDBReloadsFailing
         annotations:
-          description: >-
-            {{$labels.job}} at {{$labels.instance}} had {{$value | humanize}}
-            reload failures over the last four hours.
           summary: Prometheus has issues reloading data blocks from disk
+          description: >-
+            {{ $labels.job }} at {{ $labels.instance }} had {{ $value | humanize }}
+            reload failures over the last four hours.
         expr: >
           increase(prometheus_tsdb_reloads_failures_total{job=~"prometheus(-k8s)?"}[2h])
           > 0
@@ -110,10 +110,10 @@ groups:
 
       - alert: PrometheusTSDBCompactionsFailing
         annotations:
-          description: >-
-            {{$labels.job}} at {{$labels.instance}} had {{$value | humanize}}
-            compaction failures over the last four hours.
           summary: Prometheus has issues compacting sample blocks
+          description: >-
+            {{ $labels.job }} at {{ $labels.instance }} had {{ $value | humanize }}
+            compaction failures over the last four hours.
         expr: >
           increase(prometheus_tsdb_compactions_failed_total{job=~"prometheus(-k8s)?"}[2h])
           > 0
@@ -123,10 +123,10 @@ groups:
 
       - alert: PrometheusTSDBWALCorruptions
         annotations:
-          description: >-
-            {{$labels.job}} at {{$labels.instance}} has a corrupted
-            write-ahead log (WAL).
           summary: Prometheus write-ahead log is corrupted
+          description: >-
+            {{ $labels.job }} at {{ $labels.instance }} has a corrupted
+            write-ahead log (WAL).
         expr: |
           tsdb_wal_corruptions_total{job=~"prometheus(-k8s)?"} > 0
         for: 4h
@@ -135,10 +135,10 @@ groups:
 
       - alert: PrometheusNotIngestingSamples
         annotations:
-          description: >-
-            Prometheus {{ $labels.namespace }}/{{ $labels.pod}} isn't
-            ingesting samples.
           summary: Prometheus isn't ingesting samples
+          description: >-
+            Prometheus {{ $labels.namespace }}/{{ $labels.pod }} isn't
+            ingesting samples.
         expr: >
           rate(prometheus_tsdb_head_samples_appended_total{job=~"prometheus(-k8s)?"}[5m])
           <= 0
@@ -148,10 +148,10 @@ groups:
 
       - alert: PrometheusTargetScrapesDuplicate
         annotations:
-          description: >-
-            {{$labels.namespace}}/{{$labels.pod}} has many samples rejected
-            due to duplicate timestamps but different values
           summary: Prometheus has many samples rejected
+          description: >-
+            {{ $labels.namespace }}/{{ $labels.pod }} has many samples rejected
+            due to duplicate timestamps but different values
         expr: >
           increase(prometheus_target_scrapes_sample_duplicate_timestamp_total{job=~"prometheus(-k8s)?"}[5m])
           > 0

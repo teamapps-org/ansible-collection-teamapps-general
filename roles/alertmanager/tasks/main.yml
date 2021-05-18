@@ -72,6 +72,13 @@
     mode: 0644
   notify: nginx gen
 
+- name: alertmanager-check-config
+  # start new alertmanager container, entrypoint amtool
+  command: 'docker-compose run -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
+  args:
+    chdir: '{{ alertmanager_config_dir }}'
+  changed_when: False
+
 - name: compose up
   docker_compose:
     project_src: '{{ alertmanager_config_dir }}'

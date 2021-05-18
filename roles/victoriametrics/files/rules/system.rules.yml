@@ -10,8 +10,8 @@ groups:
         labels:
           severity: critical
         annotations:
+          summary: "Host down: {{ $labels.host }}"
           description: "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes."
-          summary: "Host {{ $labels.host }} down"
 
       # https://www.robustperception.io/alerting-on-gauges-in-prometheus-2-0
       - alert: InstanceDownAVG
@@ -20,8 +20,8 @@ groups:
         labels:
           severity: warning
         annotations:
+          summary: "Host down: {{ $labels.host }}"
           description: "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes."
-          summary: "Host {{ $labels.host }} down"
 
       - alert: HostNotUp
         expr: count(up{host!=""} offset 1h) by (host,job) unless count(up{host!=""}) by (host,job)
@@ -30,10 +30,10 @@ groups:
           team: ops
           severity: critical
         annotations:
+          summary: "Host not up {{ $labels.host }}"
           description: |-
             Host shut down? Missing updates for metric 'up' of host '{{ $labels.host }}' from '{{ $labels.job }}'
             The up metric has no current value but was available an hour ago.
-          summary: "host not up"
 
   - name: cpu
     rules:
@@ -43,8 +43,8 @@ groups:
         labels:
           severity: critical
         annotations:
+          summary: "High CPU on {{ $labels.host }}"
           description: "{{ $labels.host }} CPU usage was above 80 for more than 2 minutes"
-          summary: "high CPU on {{ $labels.host }}"
 
   - name: filesystem
     rules:
@@ -61,8 +61,8 @@ groups:
         labels:
           severity: critical
         annotations:
+          summary: "Disk Full on {{ $labels.host }}"
           description: "{{ $labels.host }}:{{ $labels.family }} filesystem with usage above 90% for longer than 5 minutes "
-          summary: "Disk Full on {{ $labels.host }}:{{ $labels.family }}"
 
       - alert: DiskSpacePrediction36h
         expr: |
@@ -75,8 +75,8 @@ groups:
         labels:
           severity: warning
         annotations:
+          summary: "36h Disk space prediction low on {{ $labels.host }}"
           description: "Diskspace is predicted to get below 5GiB on host {{ $labels.host }} for mountpoint {{ $labels.family }}, prediction based on the last 36h"
-          summary: "{{ $labels.host }}:{{ $labels.family }} 36h Disk space prediction low"
 
       - alert: DiskSpacePrediction72h
         expr: |
@@ -89,8 +89,8 @@ groups:
         labels:
           severity: warning
         annotations:
+          summary: "72h Disk space prediction low  on {{ $labels.host }}"
           description: "Diskspace is predicted to get below 5GiB on host {{ $labels.host }} for mountpoint {{ $labels.family }}, prediction based on the last 36h"
-          summary: "{{ $labels.host }}:{{ $labels.family }} 72h Disk space prediction low"
 
       - alert: DiskInodesPrediction72h
         expr: |
@@ -103,8 +103,8 @@ groups:
         labels:
           severity: warning
         annotations:
+          summary: "72h Inodes prediction low {{ $labels.host }}"
           description: "Inodes is predicted to get below 20'000 on host {{ $labels.host }} for mountpoint {{ $labels.family }}, prediction based on the last 36h"
-          summary: "{{ $labels.host }}:{{ $labels.family }} 72h Inodes prediction low"
 
       - alert: MdRaidDiskFailed
         expr: 'netdata_md_health_failed_disks_average > 0'
@@ -112,8 +112,8 @@ groups:
         labels:
           severity: critical
         annotations:
+          summary: "Mdraid failed disk on {{ $labels.host }}"
           description: "Mdraid failed disk on {{ $labels.host }} {{ $labels.dimension }} "
-          summary: "Mdraid failed disk on {{ $labels.host }} {{ $labels.dimension }} "
 
   - name: ram
     rules:
@@ -128,8 +128,8 @@ groups:
         labels:
           severity: warning
         annotations:
-          description: "{{ $labels.host }} available RAM was below 10% for more than 5 minutes"
           summary: "Low Mem available on host {{ $labels.host }}"
+          description: "{{ $labels.host }} available RAM was below 10% for more than 5 minutes"
 
   # - name:
   #   rules:

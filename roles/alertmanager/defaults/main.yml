@@ -4,11 +4,19 @@ alertmanager_image: prom/alertmanager
 alertmanager_version: v0.21.0
 alertmanager_config_dir: /container/alertmanager
 alertmanager_db_dir: /container/alertmanager/data
-alertmanager_resolve_timeout: 5m
+
+# htpasswd for alertmanager api
+alertmanager_htpasswd:
 
 # white list hosts that do not require basic auth
 alertmanager_allowed_hosts: []
 alertmanager_domain: "alertmanager.{{ ansible_fqdn }}"
+
+## Alertmanager Config
+# https://www.prometheus.io/docs/alerting/latest/configuration/
+
+alertmanager_global:
+  resolve_timeout: 5m
 
 # notifications
 alertmanager_receivers: [] # list of receivers (notification endpoints)
@@ -17,49 +25,76 @@ alertmanager_receivers: [] # list of receivers (notification endpoints)
 # configs incoming alerts to receivers
 alertmanager_route:
 
+
+# Inhibition rules allow to mute a set of alerts given that another alert is
+# firing.
+# We use this to mute any warning-level notifications if the same alert is
+# already critical.
+alertmanager_inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    # Apply inhibition if the alertname is the same.
+    # CAUTION:
+    #   If all label names listed in `equal` are missing
+    #   from both the source and target alerts,
+    #   the inhibition rule will apply!
+    equal: ['alertname', 'host', 'container_name', 'service']
+
+
 alertmanager_templates_default:
   - name: common.tmpl
+    # Inspired by:
+    # https://blog.ruanbekker.com/blog/2020/11/06/how-to-setup-alerting-with-loki/
+    # https://www.weave.works/blog/labels-in-prometheus-alerts-think-twice-before-using-them
     content: |
       {% raw %}
-      {{ define "slack.common.status" -}}
+      {{ define "common.status.slack" -}}
       {{- if eq .Status "firing" }}:fire:{{ else }}:ok:{{ end }}[{{- .Status | toUpper -}}]
       {{- end }}
 
-      # https://www.weave.works/blog/labels-in-prometheus-alerts-think-twice-before-using-them
-      {{ define "slack.common.title" -}}
+      {{ define "common.title.slack" -}}
       {{- if .CommonAnnotations.summary -}}
-          {{- .CommonAnnotations.summary -}}
+        {{- .CommonAnnotations.summary -}}
       {{- else -}}
-          {{- with index .Alerts 0 -}}
-              {{- .Annotations.summary }} and others
-          {{- end -}}
+        {{- with index .Alerts 0 -}}
+            {{- .Annotations.summary }} and others
+        {{- end -}}
       {{- end -}}
       {{- end }}
 
-      {{ define "slack.common.text" -}}
-          {{- if .CommonAnnotations.description -}}
-            {{- if .Labels.host }}*Host*: `{{ .Labels.host }}` {{ end }}{{ .CommonAnnotations.description -}}
-            {{- if .Labels.container_name }}{{ "\n" }}*Container*: `{{ .Labels.container_name }}` {{ end -}}
-            {{- if .Annotations.dashboard }}{{ "\n" }}*Dashboard*: {{ .Annotations.dashboard }} {{ end -}}
-          {{- else -}}
-              {{- range $i, $alert := .Alerts -}}
-              *{{ if .Labels.host }}Host `{{ .Labels.host }}` {{ end }}{{- .Annotations.summary -}}*
-              {{- "\n" }}{{ .Annotations.description -}}
-              {{- if .Labels.container_name }}{{ "\n" }}*Container*: `{{ .Labels.container_name }}` {{ end -}}
-              {{- if .Annotations.dashboard }}{{ "\n" }}*Dashboard*: {{ .Annotations.dashboard }} {{ end -}}
-              {{- "\n" -}}
-              {{- "\n" -}}
-              {{- end -}}
-          {{- end -}}
+      {{ define "common.text.slack" -}}
+        {{- if .CommonAnnotations.description -}}
+        {{- "\n" }}> {{ .CommonAnnotations.description -}}
+        {{- if .CommonLabels.severity }}{{ "\n" }}> _Severity:_ `{{ .CommonLabels.severity }}` {{ end -}}
+        {{- range $i, $alert := .Alerts -}}
+          {{- if .Labels.host }}{{ "\n" }}*Host `{{ .Labels.host }}`* {{ end }}
+          {{- if .Labels.container_name }}{{ "\n" }}> _Container:_ `{{ .Labels.container_name }}` {{ end -}}
+          {{- if .Annotations.dashboard }}{{ "\n" }}> _Dashboard:_ <{{ .Annotations.dashboard }}|:bar_chart:> {{ end -}}
+          {{- "\n" }}> _Source:_ {{- if .Annotations.logurl }}<{{ .Annotations.logurl }}|:chart_with_upwards_trend:>{{ else }}<{{ .GeneratorURL }}|:chart_with_upwards_trend:>{{ end -}}
+          {{- "\n" -}}
+          {{- "\n" -}}
+        {{- end -}}
+        {{- else -}}
+        {{- range $i, $alert := .Alerts -}}
+          *{{ if .Labels.host }}Host `{{ .Labels.host }}` {{ end }}{{- .Annotations.summary -}}*
+          {{- "\n" }}> {{ .Annotations.description -}}
+          {{- if .Labels.severity }}{{ "\n" }}> _Severity:_ `{{ .Labels.severity }}` {{ end -}}
+          {{- if .Labels.container_name }}{{ "\n" }}> _Container:_ `{{ .Labels.container_name }}` {{ end -}}
+          {{- if .Annotations.dashboard }}{{ "\n" }}> _Dashboard:_ <{{ .Annotations.dashboard }}|:bar_chart:> {{ end -}}
+          {{- "\n" }}> _Source:_ {{- if .Annotations.logurl }}<{{ .Annotations.logurl }}|:chart_with_upwards_trend:>{{ else }}<{{ .GeneratorURL }}|:chart_with_upwards_trend:>{{ end -}}
+          {{- "\n" -}}
+          {{- "\n" -}}
+        {{- end -}}
+        {{- end -}}
       {{- end }}
       {% endraw %}
 
+# add custom templates with this variable
 alertmanager_templates_custom: []
-
+# combine default and custom
 alertmanager_templates: '{{ alertmanager_templates_default + alertmanager_templates_custom }}'
-
-# htpasswd for alertmanager api
-alertmanager_htpasswd:
 
 # needed for auth config and whitelists
 webproxy_path: /container/webproxy
