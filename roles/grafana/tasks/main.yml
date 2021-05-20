@@ -80,6 +80,8 @@
     group: '472'
     mode: 0644
   with_items: '{{ grafana_dashboards }}'
+  tags:
+    - grafana_dashboards
 
 - name: mysqldump wrapper
   copy:
