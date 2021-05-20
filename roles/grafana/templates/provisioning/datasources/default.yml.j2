@@ -2,7 +2,8 @@ apiVersion: 1
 
 # list of datasources that should be deleted from the database
 deleteDatasources:
-{{ grafana_datasources_delete | to_nice_yaml(indent=2, width=10000) }}
+  {{ grafana_datasources_delete | to_nice_yaml(indent=2, width=10000) | indent(2, False) }}
+
 
 datasources:
-{{ grafana_datasources | to_nice_yaml(indent=2, width=10000) }}
+  {{ grafana_datasources | to_nice_yaml(indent=2, width=10000) | indent(2, False) }}

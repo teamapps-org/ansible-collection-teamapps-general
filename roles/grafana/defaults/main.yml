@@ -37,12 +37,13 @@ grafana_plugins: []
 
 # Provisioned datasources can (only) be deleted with this list
 grafana_datasources_delete:
-  - name: loki.example.com
+  - name: prometheus.example.com
+    orgId: 1
 
 # Provision Datasources
 # https://grafana.com/docs/grafana/latest/administration/provisioning/#data-sources
 # See README.md for examples
-grafana_datasources: {}
+grafana_datasources: []
 
 
 grafana_default_dashboards:
