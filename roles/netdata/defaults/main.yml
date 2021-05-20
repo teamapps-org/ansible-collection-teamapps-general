@@ -13,10 +13,7 @@ netdata_streaming_skip_certificate_verification: No
 # pull docker images (docker-compose pull)
 netdata_docker_pull: '{{ global_docker_pull | default(False) }}'
 
-netdata_alarm_email_default_recipient: root@localhost
-netdata_alarm_email_sender: "'Netdata on host {{ ansible_fqdn }}' <netdata@localhost>"
-netdata_send_email: False
-
+# Set to true for your hosts with docker and webproxy
 netdata_docker_integration: False
 
 # when not using docker_integration
@@ -25,9 +22,18 @@ netdata_bind_to: '127.0.0.1:19999'
 # Set to false if you don't want to install/manage netdata on a host/group
 netdata_manage_netdata: True
 
-netdata_send_slack: No
+netdata_alarm_send_email: No
+netdata_alarm_send_slack: No
+netdata_alarm_send_custom: No
+
+netdata_alarm_email_default_recipient: root@localhost
+netdata_alarm_email_sender: "'Netdata on host {{ ansible_fqdn }}' <netdata@localhost>"
+
 netdata_alarm_slack_webhook_url: # https://hooks.slack.com/services/...
 netdata_alarm_slack_recipients: 'monitoring'
+
+netdata_alarm_custom_api_key: ""
+netdata_alarm_custom_webhook: ""
 
 netdata_cloud_enabled: No
 netdata_cloud_base_url: https://app.netdata.cloud
