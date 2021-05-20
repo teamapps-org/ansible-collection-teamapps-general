@@ -42,6 +42,7 @@ backuppcclient_files_exclude_default:
   - '/var/run'
   - '/var/tmp'
   - '/var/lib/yum/yumdb/'
+  - '/zfs_log_file'
 
 # var to configure additional excludes
 backuppcclient_files_exclude_extra: []
