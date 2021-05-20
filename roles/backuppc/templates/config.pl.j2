@@ -320,7 +320,7 @@ $Conf{Bzip2Path} = '/usr/bin/bzip2';
 # Also, currently running backups will not be terminated when the disk
 # usage exceeds this number.
 #
-$Conf{DfMaxUsagePct} = 95;
+$Conf{DfMaxUsagePct} = {{ backuppc_df_max_usage_pct }};
 
 #
 # Maximum threshold for inode utilization on the __TOPDIR__ filesystem.
@@ -331,7 +331,7 @@ $Conf{DfMaxUsagePct} = 95;
 # Also, currently running backups will not be terminated when the disk
 # inode usage exceeds this number.
 #
-$Conf{DfMaxInodeUsagePct} = 95;
+$Conf{DfMaxInodeUsagePct} = {{ backuppc_df_max_inode_pct }};
 
 #
 # List of DHCP address ranges we search looking for PCs to backup.

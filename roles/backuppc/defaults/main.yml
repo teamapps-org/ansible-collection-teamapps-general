@@ -27,6 +27,10 @@ backuppc_blackout_periods:
     hourEnd: '19.5'
     weekDays: [1, 2, 3, 4, 5]
 
+# automatic backups stop if disk is above (space/inodes)
+backuppc_df_max_usage_pct: 95
+backuppc_df_max_inode_pct: 95
+
 backuppc_mail_enable: True
 backuppc_mail_host: '{{ base_mail_host }}'
 backuppc_mail_port: '{{ base_mail_port }}'
