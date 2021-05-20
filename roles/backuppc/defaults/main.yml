@@ -79,3 +79,6 @@ backuppc_monitoring_email: '{{ monitoring_email }}'
 # Include the @
 # @domain.com
 backuppc_email_dest_domain: ""
+
+# path mounted on /archive, so you can configure an archive host with localhost
+backuppc_archive_path: /archive

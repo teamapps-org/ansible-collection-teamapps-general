@@ -35,7 +35,7 @@ services:
         target: /data/backuppc
         read_only: false
       - type: bind
-        source: '/archive'
+        source: '{{ backuppc_archive_path }}'
         target: /archive
         read_only: false
 

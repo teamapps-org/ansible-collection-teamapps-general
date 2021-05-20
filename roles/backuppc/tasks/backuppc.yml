@@ -11,6 +11,7 @@
   with_items:
     - '{{ backuppc_path }}'
     - '{{ backuppc_datapath }}'
+    - '{{ backuppc_archive_path }}'
 
 - name: backuppc_directories with backuppc permissions
   file:
