@@ -42,7 +42,7 @@
   delegate_to: '{{ backuppcclient_server }}'
   delegate_facts: True
   template:
-    src: templates/backuppc_hostconfig.pl.j2
+    src: backuppc_hostconfig.pl.j2
     dest: '{{ backuppcclient_server_confdir }}/pc/{{ backuppcclient_clientname }}.pl'
     owner: '1000'
     group: '1000'

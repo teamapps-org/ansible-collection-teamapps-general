@@ -10,7 +10,7 @@
 
 - name: deploy config
   template:
-    src: templates/{{ item }}
+    src: '{{ item }}'
     dest: '{{ minio_path }}/{{ item }}'
     owner: root
     group: root

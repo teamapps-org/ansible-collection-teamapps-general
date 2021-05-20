@@ -42,7 +42,7 @@
 
 - name: deploy config
   template:
-    src: templates/{{ item }}
+    src: '{{ item }}'
     dest: '{{ zammad_path }}/{{ item }}'
     owner: root
     group: root
@@ -53,7 +53,7 @@
 - name: env file for secrets
   no_log: true
   template:
-    src: templates/env.j2
+    src: env.j2
     dest: '{{ zammad_path }}/.env'
     owner: root
     group: root

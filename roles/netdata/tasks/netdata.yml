@@ -40,7 +40,7 @@
 
 - name: deploy config
   template:
-    src: templates/{{ item }}
+    src: '{{ item }}'
     dest: '/etc/netdata/{{ item }}'
     owner: root
     group: 'netdata'
@@ -62,7 +62,7 @@
 
 - name: disable cloud
   template:
-    src: templates/cloud.conf
+    src: cloud.conf
     dest: /var/lib/netdata/cloud.d/cloud.conf
     owner: root
     group: netdata

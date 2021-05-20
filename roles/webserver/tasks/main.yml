@@ -41,7 +41,7 @@
 
 # - name: deploy info.php
 #   template:
-#     src: templates/info.php
+#     src: info.php
 #     dest: '{{ webserver_path }}/code/httpdocs/info.php'
 #     owner: root
 #     group: root

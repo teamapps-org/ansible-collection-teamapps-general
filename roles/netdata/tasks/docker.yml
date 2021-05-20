@@ -13,7 +13,7 @@
 
 - name: docker-compose.yml
   template:
-    src: templates/docker-compose.yml
+    src: docker-compose.yml
     dest: '{{ netdata_path }}/docker-compose.yml'
     owner: root
     group: root

@@ -35,7 +35,7 @@
 
 - name: 'Webproxy docker-compose.yml'
   template:
-    src: templates/docker-compose.yml.j2
+    src: docker-compose.yml.j2
     dest: '{{ webproxy_path }}/docker-compose.yml'
     owner: root
     group: root
@@ -44,7 +44,7 @@
 
 - name: 'Webproxy environment variables, .env file'
   template:
-    src: templates/env.j2
+    src: env.j2
     dest: '{{ webproxy_path }}/.env'
     owner: root
     group: root
@@ -53,7 +53,7 @@
 
 - name: 'Custom nginx.conf with performance tuning'
   template:
-    src: templates/nginx.conf
+    src: nginx.conf
     dest: '{{ webproxy_path }}/data/nginx.conf'
     owner: root
     group: root
@@ -62,7 +62,7 @@
 
 - name: 'Nginx custom_options.conf'
   template:
-    src: templates/custom_options.conf
+    src: custom_options.conf
     dest: '{{ webproxy_path }}/data/conf.d/custom_options.conf'
     owner: root
     group: root
@@ -72,7 +72,7 @@
   # from evertramos, with tuned listen backlog=65536
 - name: 'Copy template for generated server config, nginx.tmpl'
   copy:
-    src: files/nginx.tmpl
+    src: nginx.tmpl
     dest: '{{ webproxy_path }}/nginx.tmpl'
     owner: root
     group: root
