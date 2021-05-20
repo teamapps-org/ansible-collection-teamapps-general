@@ -754,7 +754,13 @@ $Conf{BackupFilesOnly} = {};
 #       '*' => ['/junk', '/dont_back_this_up'], # these are for other shares
 #    };
 #
-$Conf{BackupFilesExclude} = {};
+$Conf{BackupFilesExclude} = {
+  '/' => [
+{% for exclude in backuppc_files_exclude %}
+    '{{exclude}}',
+{% endfor %}
+  ]
+};
 
 #
 # PCs that are always or often on the network can be backed up after
@@ -876,7 +882,7 @@ $Conf{BackupZeroFilesIsFatal} = '1';
 #                to permanent media, such as tape, CDR or DVD.
 #
 #
-$Conf{XferMethod} = 'smb';
+$Conf{XferMethod} = 'rsync';
 
 #
 # Level of verbosity in Xfer log files.  0 means be quiet, 1
@@ -1333,7 +1339,11 @@ $Conf{RsyncArgs} = [
 #             '--exclude-from=$confDir/pc/$host.exclude',
 #     ];
 #
-$Conf{RsyncArgsExtra} = [];
+$Conf{RsyncArgsExtra} = [
+{% for arg in backuppc_rsync_args_extra %}
+    '{{ arg }}',
+{% endfor %}
+];
 
 #
 # Additional arguments for a full rsync or rsyncd backup.
@@ -1913,7 +1923,7 @@ $Conf{SendmailPath} = '/usr/sbin/sendmail';
 # rounded up (ie: 2.5 means a user will never receive email more
 # than once every 3 days).
 #
-$Conf{EMailNotifyMinDays} = '2.5';
+$Conf{EMailNotifyMinDays} = '0';
 
 #
 # Name to use as the "from" name for email.  Depending upon your mail

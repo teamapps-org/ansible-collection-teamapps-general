@@ -31,6 +31,35 @@ backuppc_blackout_periods:
 backuppc_df_max_usage_pct: 95
 backuppc_df_max_inode_pct: 95
 
+# file excludes default (for / backups) (is overwritten by backuppcclient config)
+backuppc_files_exclude_default:
+  - '.cache'
+  - '.Trash*'
+  - 'Cache'
+  - '/dev'
+  - '/proc'
+  - '/run'
+  - '/sys'
+  - '/media'
+  - '/tmp'
+  - '/var/cache'
+  - '/var/lib/docker'
+  - '/var/lib/lxcfs'
+  - '/var/lib/lxd'
+  - '/var/lock'
+  - '/var/run'
+  - '/var/tmp'
+  - '/var/lib/yum/yumdb/'
+  - '/zfs_log_file'
+
+# var to configure additional excludes
+backuppc_files_exclude_extra: []
+# combine excludes
+backuppc_files_exclude: '{{ ( backuppc_files_exclude_default + backuppc_files_exclude_extra ) | unique }}'
+
+backuppc_rsync_args_extra:
+  - '--xattrs'
+
 backuppc_mail_enable: True
 backuppc_mail_host: '{{ base_mail_host }}'
 backuppc_mail_port: '{{ base_mail_port }}'
@@ -44,7 +73,7 @@ backuppc_monitoring_email: '{{ monitoring_email }}'
 # copy to {{ backuppc_datapath }}/home/.ssh/id_ed25519
 # mv ./id_ed25519* /container/backuppc/data/home/.ssh/
 # chown 1000:1000 /container/backuppc/data/home/.ssh/id_ed*
-# add public key in ansible as backuppcclient_authorized_key:
+# add public key in ansible as backuppc_authorized_key:
 
 # Domain part to be appended to username ("ansible")
 # Include the @
