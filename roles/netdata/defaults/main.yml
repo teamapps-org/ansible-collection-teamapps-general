@@ -32,6 +32,7 @@ netdata_alarm_email_sender: "'Netdata on host {{ ansible_fqdn }}' <netdata@local
 netdata_alarm_slack_webhook_url: # https://hooks.slack.com/services/...
 netdata_alarm_slack_recipients: 'monitoring'
 
+netdata_alarm_custom_recipient: "default"
 netdata_alarm_custom_api_key: ""
 netdata_alarm_custom_webhook: ""
 
