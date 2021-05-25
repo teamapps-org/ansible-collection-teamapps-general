@@ -7,6 +7,11 @@
     webserver_path: '{{ matomo_path }}'
     webserver_domain: '{{ matomo_domain }}'
     webserver_php_enable: True
+    # additional packages for cli archiving
+    # https://matomo.org/faq/troubleshooting/how-to-make-the-diagnostic-managing-processes-via-cli-to-display-ok/
+    webserver_php_apt_packages:
+      - gawk
+      - procps
     webserver_mysql_enable: True
     webserver_mysql_root_password: '{{ matomo_mysql_root_password }}'
     webserver_mysql_database: '{{ matomo_mysql_database }}'
