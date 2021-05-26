@@ -25,6 +25,17 @@ scrape_configs:
           instance: victoriametrics-{{ ansible_fqdn }}
           host: '{{ ansible_hostname }}'
 
+  - job_name: 'alertmanager'
+    scheme: '{{ victoriametrics_alertmanager_scheme }}'
+    basic_auth:
+      username: '{{ victoriametrics_alertmanager_user }}'
+      password: '{{ victoriametrics_alertmanager_password }}'
+    static_configs:
+      - targets: ['{{ victoriametrics_alertmanager_address }}:{{ victoriametrics_alertmanager_port }}']
+        labels:
+          instance: '{{ victoriametrics_alertmanager_url }}'
+          host: '{{ victoriametrics_alertmanager_address }}'
+
   - job_name: 'http_2xx'
     metrics_path: /probe
     params:

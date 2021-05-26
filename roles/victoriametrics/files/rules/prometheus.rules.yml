@@ -158,3 +158,16 @@ groups:
         for: 10m
         labels:
           severity: warning
+
+  - name: alertmanager self monitoring rules
+    rules:
+      - alert: NotificationFailure
+        expr: "increase(alertmanager_notifications_failed_total[10m]) > 0"
+        # for: 1m
+        labels:
+          team: operations
+          severity: critical
+          alert_channel: fallback
+        annotations:
+          summary: "Alertmanager Notification Failure"
+          description: "Alertmanager could not send {{ $value }} alerts to '{{ $labels.integration }}' (instance {{ $labels.instance }})"

@@ -70,3 +70,7 @@ Playbook:
       tags:
         - alertmanager
 ~~~
+
+## Test Slack Alert Templates
+
+https://juliusv.com/promslack/

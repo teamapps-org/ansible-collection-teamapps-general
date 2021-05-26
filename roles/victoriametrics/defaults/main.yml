@@ -17,7 +17,10 @@ victoriametrics_htpasswd_read:
 victoriametrics_htpasswd_write:
 victoriametrics_htpasswd_admin:
 
-victoriametrics_alertmanager_url: http://alertmanager/
+victoriametrics_alertmanager_address: alertmanager.example.com
+victoriametrics_alertmanager_port: 443
+victoriametrics_alertmanager_scheme: https
+victoriametrics_alertmanager_url: '{{ victoriametrics_alertmanager_scheme }}://{{ victoriametrics_alertmanager_address }}:{{ victoriametrics_alertmanager_port }}/'
 victoriametrics_alertmanager_user: ''
 victoriametrics_alertmanager_password: ''
 

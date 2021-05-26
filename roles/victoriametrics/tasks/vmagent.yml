@@ -27,7 +27,7 @@
     owner: root
     group: root
     mode: 0640
-  notify: victoriametrics-vmagent-reload
+  notify: victoriametrics-vmagent-restart
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
 - name: vmagent validate config
