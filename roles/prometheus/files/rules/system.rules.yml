@@ -39,12 +39,12 @@ groups:
     rules:
       - alert: HighCPU
         expr: 'sum(netdata_system_cpu_percentage_average{dimension!~"idle"}) by (host) > 80'
-        for: 2m
+        for: 4m
         labels:
-          severity: critical
+          severity: warning
         annotations:
           summary: "High CPU on {{ $labels.host }}"
-          description: "{{ $labels.host }} CPU usage was above 80 for more than 2 minutes"
+          description: "{{ $labels.host }} CPU usage was above 80 for more than 4 minutes"
 
   - name: filesystem
     rules:

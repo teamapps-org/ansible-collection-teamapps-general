@@ -24,6 +24,9 @@ This role uses an additional nginx proxy to manage access to different api endpo
 Example `host_vars/vic1.example.com.yml`
 
 ~~~yaml
+victoriametrics_version: latest
+victoriametrics_domain: 'metrics.{{ ansible_fqdn }}'
+
 victoriametrics_htpasswd_read: |
   grafana-read-vic:$2y$...
 victoriametrics_htpasswd_write: |
@@ -31,7 +34,9 @@ victoriametrics_htpasswd_write: |
 victoriametrics_htpasswd_admin: |
   hans:...
 
-
+victoriametrics_alertmanager_address: alertmanager.example.com
+victoriametrics_alertmanager_port: 443
+victoriametrics_alertmanager_scheme: https
 victoriametrics_alertmanager_url: https://alertmanager.example.com/
 victoriametrics_alertmanager_user: vmalert-to-alertmanager
 victoriametrics_alertmanager_password: password
