@@ -18,6 +18,7 @@
     webserver_mysql_user: '{{ matomo_mysql_user }}'
     webserver_mysql_password: '{{ matomo_mysql_password }}'
     webserver_document_root: matomo
+    webserver_nginx_template: matomo-nginx.conf
   tags:
     - matomo
 
