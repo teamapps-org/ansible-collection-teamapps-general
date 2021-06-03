@@ -18,6 +18,9 @@ kimai_mailer_url: null://null # disabled
 # REQUIRED
 # kimai_app_secret: change_this_to_something_unique
 
+# override php max_execution_time
+kimai_max_execution_time: 60
+
 kimai_php_extensions:
   - gd
   - intl
