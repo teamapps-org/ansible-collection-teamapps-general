@@ -150,9 +150,9 @@ groups:
 
   - name: containers
     rules:
-    - alert: UnhealthyContainers
-      expr: 'netdata_docker_unhealthy_containers_containers_average > 0.3'
-      for: 5m
-      annotations:
-        summary: "Unhealthy Containers on {{ $labels.host }}"
-        description: "{{ $value }} containers are not healthy on host {{ $labels.host }}"
+      - alert: UnhealthyContainers
+        expr: 'netdata_docker_unhealthy_containers_containers_average > 0.3'
+        for: 5m
+        annotations:
+          summary: "Unhealthy Containers on {{ $labels.host }}"
+          description: "{{ $value }} containers are not healthy on host {{ $labels.host }}"

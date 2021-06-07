@@ -65,7 +65,7 @@ sudo apt install python3-pip
 echo $PATH | grep '\.local/bin' || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile && export PATH="$HOME/.local/bin:$PATH"
 pip3 install --user --upgrade pip pipenv
 pipenv shell --three
-pipenv install
+pipenv sync
 # check ansible working correctly
 ansible --version
 ~~~
@@ -75,15 +75,20 @@ ansible --version
 ~~~bash
 cd ansible-collection-teamapps-general # where you cloned this repository
 pipenv shell
-pipenv install
 ~~~
+
+### update ansible and other python packages
+
+* Update your pip and pipenv packages: `pip3 install --user --upgrade pip pipenv`
+* To update your local packages to what's defined in the Pipfile and Pipfile.lock, run `pipenv sync`
+* To update the Pipfile.lock, run `pipenv update`
+* For a major upgrade of ansible, you will get a warning. use `pipenv --rm` and then `pipenv sync`
 
 ### Run checks
 
 Check YAML and ansible syntax
 
 ~~~bash
-yamllint .
 ansible-lint roles/*
 ~~~
 
