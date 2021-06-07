@@ -1,0 +1,21 @@
+---
+# additional netplan config, managed by Ansible
+# merged with other files. lists are appended.
+
+## Extract from man netplan generate:
+# If  there  are  files with different names, then they are considered in lexicographical order - regardless of the directory they are in.
+#        Later files add to or override earlier files.  For example, /run/netplan/10-foo.yaml would be updated by /lib/netplan/20-abc.yaml.
+#
+#        If you have two files with the same key/setting, the following rules apply:
+#
+#        • If the values are YAML boolean or scalar values (numbers and strings) the old value is overwritten by the new value.
+#
+#        • If the values are sequences, the sequences are concatenated - the new values are appended to the old list.
+#
+#        • If the values are mappings, netplan will examine the elements of the mappings in turn using these rules.
+
+network:
+    version: 2
+    ethernets:
+        {{ netplan_interface }}:
+            {{ netplan_interface_config | to_nice_yaml(indent=4) | indent(12, False) }}

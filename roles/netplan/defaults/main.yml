@@ -1,0 +1,8 @@
+---
+netplan_interface: '{{ ansible_default_ipv4.interface }}'
+netplan_manage_adresses: True
+netplan_addresses: []
+netplan_config_file: /etc/netplan/90-ansible.yaml
+
+netplan_interface_config:
+  addresses: '{{ netplan_addresses }}'

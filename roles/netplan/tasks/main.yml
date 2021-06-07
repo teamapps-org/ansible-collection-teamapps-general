@@ -1,0 +1,20 @@
+---
+- name: Configuring Netplan additional addresses
+  template:
+    src: netplan.yaml.j2
+    dest: "{{ netplan_config_file }}"
+    owner: root
+    group: root
+    mode: '0644'
+  when: netplan_manage_adresses
+  notify: netplan apply
+  tags:
+    - netplan
+
+# Always run validate to keep warning when invalid config is written but not applied
+- name: Netplan validate config
+  command: netplan generate --mapping '{{ netplan_interface }}'
+  when: netplan_manage_adresses
+  changed_when: False
+  tags:
+    - netplan
