@@ -3,7 +3,7 @@ container_path: /container
 kimai_path: '{{ container_path }}/kimai'
 kimai_domain: '{{ ansible_fqdn }}'
 
-kimai_version: '1.13' # https://www.kimai.org/documentation/installation.html
+kimai_version: '1.14.3' # https://www.kimai.org/documentation/installation.html
 
 kimai_mysql_database: kimai
 kimai_mysql_user: kimai
