@@ -64,3 +64,12 @@
     project_src: '{{ zammad_path }}'
     state: present
     pull: '{{ zammad_docker_pull }}'
+    debug: True
+  register: zammad_compose_return
+  changed_when: zammad_compose_return.actions | count > 1 # workaround. zammad-init is always started and stops after init
+
+- name: print compose actions
+  debug:
+    var: zammad_compose_return.actions
+  changed_when: true
+  when: zammad_compose_return.actions | count > 1
