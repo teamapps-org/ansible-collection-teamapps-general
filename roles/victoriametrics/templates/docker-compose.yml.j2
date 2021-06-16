@@ -93,7 +93,7 @@ services:
 
   vmalert:
     container_name: vmalert
-    image: victoriametrics/vmalert:{{ victoriametrics_vmagent_version }}
+    image: victoriametrics/vmalert:{{ victoriametrics_vmalert_version }}
     depends_on:
       - "victoriametrics"
       # - "alertmanager"
@@ -115,6 +115,9 @@ services:
       # display source of alerts in grafana
       - '-external.url={{ victoriametrics_vmalert_external_url }}'
       - '-external.alert.source={{ victoriametrics_vmalert_external_source }}'
+{% for label in victoriametrics_vmalert_external_labels %}
+      - '-external.label={{ label }}'
+{% endfor %}
     networks:
       - vm_net
     restart: always

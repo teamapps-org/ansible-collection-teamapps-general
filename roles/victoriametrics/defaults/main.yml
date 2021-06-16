@@ -30,6 +30,10 @@ victoriametrics_vmalert_evaluation_interval: 1m
 victoriametrics_vmalert_external_url: 'https://grafana.yourdomain.com'
 victoriametrics_vmalert_external_source: explore?orgId=1&left=["now-1h","now","{{ victoriametrics_grafana_datasource_name }}",{"expr":"{% raw %}{{$$expr|quotesEscape|crlfEscape|pathEscape}}{% endraw %}"}]
 
+# external labels added to all alerts. To see and filter in alertmanager where the alert is coming from
+victoriametrics_vmalert_external_labels:
+  - 'alertsource={{ victoriametrics_domain }}'
+
 victoriametrics_blackbox_image: prom/blackbox-exporter
 victoriametrics_blackbox_version: master # if unstable v0.18.0 can be used
 
