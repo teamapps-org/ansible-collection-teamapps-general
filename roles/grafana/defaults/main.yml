@@ -52,6 +52,7 @@ grafana_default_dashboards:
   - default/vmagent.json
   - default/netdata.json
   - default/alertmanager.json
+  - default/blackbox.json
 
 grafana_custom_dashboards: []
 
