@@ -16,8 +16,7 @@
   "editable": true,
   "gnetId": 10229,
   "graphTooltip": 0,
-  "id": 33,
-  "iteration": 1624874060869,
+  "iteration": 1624878497660,
   "links": [
     {
       "icon": "doc",
@@ -321,7 +320,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^vm_app_uptime_seconds{instance=\"victoriametrics:8428\", job=\"victoriametrics\"}$/",
+          "fields": "",
           "values": false
         },
         "text": {},
@@ -3953,5 +3952,5 @@
   "timezone": "",
   "title": "VictoriaMetrics",
   "uid": "wNf0q_kZk",
-  "version": 1
+  "version": 2
 }
