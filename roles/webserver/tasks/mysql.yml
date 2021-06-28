@@ -19,6 +19,7 @@
     content: |
       #!/bin/bash
       set -eux
+      set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       docker-compose exec -T db sh -c "exec mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" {{ webserver_mysql_database }}  --default-character-set=utf8mb4 --skip-dump-date | \
@@ -40,6 +41,7 @@
     content: |
       #!/bin/bash
       set -eux
+      set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       zcat dbdumps/{{ webserver_mysql_database }}.sql.gz | \

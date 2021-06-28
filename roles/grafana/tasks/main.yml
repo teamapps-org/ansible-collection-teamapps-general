@@ -88,9 +88,10 @@
     content: |
       #!/bin/bash
       set -eux
+      set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
-      docker-compose exec -T db sh -c "exec mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" grafana  --default-character-set=utf8mb4 --skip-dump-date | \
+      docker-compose exec -T grafanadb sh -c "exec mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" grafana  --default-character-set=utf8mb4 --skip-dump-date | \
         sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
         gzip --rsyncable > db-dumps/grafana.sql.gz
     dest: '{{ grafana_path }}/mysqldump.sh'
@@ -109,6 +110,7 @@
     content: |
       #!/bin/bash
       set -eux
+      set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       zcat db-dumps/grafana.sql.gz | \
