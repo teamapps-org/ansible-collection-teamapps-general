@@ -153,6 +153,53 @@ groups:
       - alert: UnhealthyContainers
         expr: 'netdata_docker_unhealthy_containers_containers_average > 0.3'
         for: 5m
+        labels:
+          severity: warning
         annotations:
           summary: "Unhealthy Containers on {{ $labels.host }}"
           description: "{{ $value }} containers are not healthy on host {{ $labels.host }}"
+
+  - name: smart
+    interval: 10m # evaluate these queries with reduced frequency
+    rules:
+      - alert: SMARTUncorrectableSectors
+        expr: increase(netdata_smartd_log_offline_uncorrectable_sector_count_sectors_average [1d]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "Uncorrectable Sectors on {{ $labels.host }}"
+          description: "SMART Wear: {{ $value }} new offline uncorrectable sectors in the last day on {{ $labels.host }}, disk {{ $labels.dimension }}"
+
+      - alert: SMARTReallocatedSectors
+        expr: increase(netdata_smartd_log_reallocated_sectors_count_sectors_average [1d]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "Reallocated Sectors on {{ $labels.host }}"
+          description: "SMART Wear: {{ $value }} new reallocated sectors in the last day on {{ $labels.host }}, disk {{ $labels.dimension }}"
+
+      - alert: SMARTPendingSectors
+        expr: netdata_smartd_log_current_pending_sector_count_sectors_average > 0
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Pending Sectors on {{ $labels.host }}"
+          description: "SMART Wear: {{ $value }} current pending sectors on {{ $labels.host }}, disk {{ $labels.dimension }}"
+
+      - alert: SMARTCrCErrors
+        expr: increase(netdata_smartd_log_udma_crc_error_count_errors_average [1d]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "CRC ERRORS on {{ $labels.host }}"
+          description: "SMART Wear: {{ $value | humanize }} CRC errors increase in the last day  on {{ $labels.host }}, disk {{ $labels.dimension }}"
+
+      - alert: SMARTReallocationEvents
+        expr: increase(netdata_smartd_log_reallocation_event_count_events_average [1h]) > 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Reallocation Events {{ $labels.host }}"
+          description: "SMART Wear: {{ $value }} Reallocation Events on {{ $labels.host }}, disk {{ $labels.dimension }}"

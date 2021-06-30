@@ -1,3 +1,10 @@
+- name: netdata smartd smartmontools
+  import_tasks: smartd.yml
+  tags:
+    - netdata
+    - smartd
+  when: netdata_smartd_enabled
+
 - name: netdata
   import_tasks: netdata.yml
   tags:

@@ -16,13 +16,16 @@
   "editable": true,
   "gnetId": 8055,
   "graphTooltip": 0,
-  "id": 9,
-  "iteration": 1619531475262,
+  "iteration": 1625046049256,
   "links": [],
   "panels": [
     {
       "collapsed": false,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -36,27 +39,46 @@
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "rgba(50, 172, 45, 0.97)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(245, 54, 54, 0.9)"
-      ],
       "datasource": "$ds",
-      "decimals": null,
       "description": "Busy state of all CPU cores together",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 85
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        },
         "overrides": []
-      },
-      "format": "percent",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": true,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 4,
@@ -67,39 +89,21 @@
       "id": 1464,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "maxPerRow": 12,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "sum(netdata_system_cpu_percentage_average{dimension!=\"idle\",host=\"$host\"})",
@@ -108,42 +112,42 @@
           "refId": "B"
         }
       ],
-      "thresholds": "85,95",
       "title": "CPU Busy",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "gauge"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "rgba(50, 172, 45, 0.97)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(245, 54, 54, 0.9)"
-      ],
       "datasource": "$ds",
-      "decimals": 0,
       "description": "Non available RAM memory",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 80
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
         "overrides": []
-      },
-      "format": "percent",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": true,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 4,
@@ -155,39 +159,21 @@
       "id": 1468,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "maxPerRow": 6,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "sum(netdata_system_ram_MiB_average{dimension=\"used\",host=\"$host\"}) by (host) / (sum(netdata_system_ram_MiB_average{host=\"$host\"}) by (host)) * 100",
@@ -200,36 +186,51 @@
           "refId": "C"
         }
       ],
-      "thresholds": "80,90",
       "title": "Used RAM Memory",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [],
-      "valueName": "current"
+      "type": "gauge"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "rgba(50, 172, 45, 0.97)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(245, 54, 54, 0.9)"
-      ],
       "datasource": "$ds",
-      "decimals": null,
       "description": "Used Swap",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 10
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 25
+              }
+            ]
+          },
+          "unit": "percent"
+        },
         "overrides": []
-      },
-      "format": "percent",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": true,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 4,
@@ -240,39 +241,21 @@
       "id": 1470,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "maxPerRow": 6,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "sum(netdata_system_swap_MiB_average{dimension=\"used\",host=\"$host\"}) by (host) / sum(netdata_system_swap_MiB_average{host=\"$host\"}) by (host) * 100",
@@ -284,42 +267,51 @@
           "step": 900
         }
       ],
-      "thresholds": "10,25",
       "title": "Used SWAP",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "gauge"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "rgba(50, 172, 45, 0.97)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(245, 54, 54, 0.9)"
-      ],
       "datasource": "$ds",
-      "decimals": null,
       "description": "Used Root FS",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 80
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        },
         "overrides": []
-      },
-      "format": "percent",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": true,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 4,
@@ -330,39 +322,21 @@
       "id": 1472,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "maxPerRow": 6,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true
+      "options": {
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "text": {}
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "sum(netdata_disk_space_GiB_average{host=\"$host\",family=\"/\",dimension=\"used\"}) by (host) / sum(netdata_disk_space_GiB_average{host=\"$host\",family=\"/\"}) by (host) * 100",
@@ -374,42 +348,46 @@
           "step": 900
         }
       ],
-      "thresholds": "80,90",
       "title": "Used Root FS",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "gauge"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
       "datasource": "$ds",
-      "decimals": 1,
       "description": "System uptime",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
         "overrides": []
-      },
-      "format": "s",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -421,38 +399,23 @@
       "id": 1462,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "s",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "netdata_system_uptime_seconds_average{host=~\"$host\"}",
@@ -462,41 +425,45 @@
           "step": 1800
         }
       ],
-      "thresholds": "",
       "title": "Uptime",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
       "datasource": "$ds",
       "description": "Total number of CPU cores",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
         "overrides": []
-      },
-      "format": "short",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -507,39 +474,23 @@
       "id": 1474,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "maxPerRow": 6,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "count(netdata_cpu_cpu_percentage_average{host=\"$host\",dimension=\"idle\"})",
@@ -549,42 +500,46 @@
           "step": 900
         }
       ],
-      "thresholds": "",
       "title": "CPU Cores",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
       "datasource": "$ds",
-      "decimals": 2,
       "description": "Total RAM",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decmbytes"
+        },
         "overrides": []
-      },
-      "format": "decmbytes",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -595,39 +550,23 @@
       "id": 1476,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "maxPerRow": 6,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "70%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "sum(netdata_system_ram_MiB_average{host=~\"$host\"})",
@@ -637,42 +576,46 @@
           "step": 900
         }
       ],
-      "thresholds": "",
       "title": "Total RAM",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
       "datasource": "$ds",
-      "decimals": 2,
       "description": "Total SWAP",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 2,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "decmbytes"
+        },
         "overrides": []
-      },
-      "format": "decmbytes",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -683,39 +626,23 @@
       "id": 1478,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "maxPerRow": 6,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "70%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "sum(netdata_system_swap_MiB_average{host=~\"$host\"})",
@@ -725,42 +652,49 @@
           "step": 900
         }
       ],
-      "thresholds": "",
       "title": "Total SWAP",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": false,
-      "colors": [
-        "rgba(50, 172, 45, 0.97)",
-        "rgba(237, 129, 40, 0.89)",
-        "rgba(245, 54, 54, 0.9)"
-      ],
       "datasource": "$ds",
-      "decimals": null,
       "description": "Total RootFS",
       "fieldConfig": {
-        "defaults": {},
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 70
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "decgbytes"
+        },
         "overrides": []
-      },
-      "format": "decgbytes",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
       },
       "gridPos": {
         "h": 3,
@@ -771,39 +705,23 @@
       "id": 1480,
       "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "maxPerRow": 6,
-      "nullPointMode": "null",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.0.3",
       "targets": [
         {
           "expr": "sum(netdata_disk_space_GiB_average{host=~\"$host\",family=\"/\"})",
@@ -814,22 +732,16 @@
           "step": 900
         }
       ],
-      "thresholds": "70,90",
       "title": "Total RootFS",
-      "type": "singlestat",
-      "valueFontSize": "50%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "collapsed": false,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -848,10 +760,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "Total CPU utilization (all cores). 100% here means there is no CPU idle time at all. You can get per core usage at the _CPUs_ section and per application usage at the _Applications monitoring_ section.\n\nKeep an eye on **iowait**. If it is constantly high, your disks are a bottleneck and they slow your system down.\n\nAn important metric worth monitoring, is **softirq**. A constantly high percentage of softirq may indicate network driver issues.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 5,
       "fillGradient": 0,
       "gridPos": {
@@ -884,7 +792,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -949,6 +857,10 @@
     {
       "collapsed": false,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -967,10 +879,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "Current system load, i.e. the number of processes using CPU or waiting for system resources (usually CPU and disk). The 3 metrics refer to 1, 5 and 15 minute averages. The system calculates this once every 5 seconds.\n\nFor more information check this [Wikipedia article](https://en.wikipedia.org/wiki/Load_(computing))",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1003,7 +911,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1074,6 +982,10 @@
     {
       "collapsed": false,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1092,10 +1004,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "Total Disk I/O, for all physical disks. You can get detailed information about each disk at the _Disks_ section and per application Disk usage at the _Applications Monitoring_ section.\n\nPhysical are all the disks that are listed in `/sys/block`, but do not exist in `/sys/devices/virtual/block`.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1124,7 +1032,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1191,10 +1099,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "Memory paged from/to disk. This is usually the total disk I/O of the system.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1223,7 +1127,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1286,6 +1190,10 @@
     {
       "collapsed": false,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1304,10 +1212,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "System Random Access Memory (i.e. physical memory) usage.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 5,
       "fillGradient": 0,
       "gridPos": {
@@ -1337,7 +1241,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1406,6 +1310,10 @@
     {
       "collapsed": false,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1424,10 +1332,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "System swap memory usage. Swap space is used when the amount of physical memory (RAM) is full. When the system needs more memory resources and the RAM is full, inactive pages in memory are moved to the swap space (usually a disk, a disk partition or a file).",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1456,7 +1360,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1522,10 +1426,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "Total Swap I/O. (netdata measures both `in` and `out`. If either of them is not shown in the chart, it is because it is zero - you can change the page settings to always render all the available dimensions on all charts).",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1554,7 +1454,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1617,6 +1517,10 @@
     {
       "collapsed": false,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1635,10 +1539,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "Total IPv4 Traffic.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1668,7 +1568,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1735,10 +1635,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "Total IPv6 Traffic.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1767,7 +1663,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1829,6 +1725,10 @@
     {
       "collapsed": false,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1847,10 +1747,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "System processes. **Running** are the processes in the CPU. **Blocked** are processes that are willing to enter the CPU, but they cannot, e.g. because they wait for disk activity.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1880,7 +1776,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1947,10 +1843,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "Number of new processes created.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1978,7 +1870,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2045,10 +1937,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "All system processes.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2076,7 +1964,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2142,10 +2030,6 @@
       "dashes": false,
       "datasource": "$ds",
       "description": "[Context Switches](https://en.wikipedia.org/wiki/Context_switch), is the switching of the CPU from one process, task or thread to another. If there are many processes or threads willing to execute and very few CPU cores available to handle them, the system is making more context switching to balance the CPU resources among them. The whole process is computationally intensive. The more the context switches, the slower the system gets.",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
-      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2173,7 +2057,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.2",
+      "pluginVersion": "8.0.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -2236,6 +2120,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2353,6 +2241,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2571,6 +2463,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2689,6 +2585,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2806,6 +2706,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -2923,6 +2827,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3136,6 +3044,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3251,6 +3163,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3573,6 +3489,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3766,6 +3686,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3883,6 +3807,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -4913,6 +4841,10 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -5136,12 +5068,501 @@
     },
     {
       "collapsed": true,
-      "datasource": "$ds",
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 81
+      },
+      "id": 1482,
+      "panels": [
+        {
+          "datasource": "${ds}",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "area"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 10,
+            "x": 0,
+            "y": 82
+          },
+          "id": 1484,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last"
+              ],
+              "displayMode": "table",
+              "placement": "right"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "pluginVersion": "8.0.3",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_offline_uncorrectable_sector_count_sectors_average{host=\"$host\"}",
+              "interval": "",
+              "legendFormat": "uncorrectable sectors {{ dimension }}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            },
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_reallocated_sectors_count_sectors_average{host=\"$host\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "reallocated sectors {{ dimension }}",
+              "queryType": "randomWalk",
+              "refId": "B"
+            },
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_current_pending_sector_count_sectors_average{host=\"$host\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "pending sectors {{ dimension }}",
+              "refId": "C"
+            }
+          ],
+          "title": "S.M.A.R.T wear, bad sectors",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "${ds}",
+          "description": "UDMA CRC Error Count (smartd_log.udma_crc_error_count)\n",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 10,
+            "x": 10,
+            "y": 82
+          },
+          "id": 1485,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last"
+              ],
+              "displayMode": "table",
+              "placement": "right"
+            },
+            "tooltip": {
+              "mode": "single"
+            }
+          },
+          "pluginVersion": "8.0.3",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_udma_crc_error_count_errors_average{host=\"$host\"}",
+              "interval": "",
+              "legendFormat": "{{ dimension }}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "S.M.A.R.T external failure",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "${ds}",
+          "description": "UDMA CRC Error Count (smartd_log.udma_crc_error_count)\n",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 10,
+            "x": 0,
+            "y": 88
+          },
+          "id": 1486,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last"
+              ],
+              "displayMode": "table",
+              "placement": "right"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "pluginVersion": "8.0.3",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_read_error_rate_value_average{host=\"$host\"}",
+              "interval": "",
+              "legendFormat": "read error rate {{ dimension }}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            },
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_seek_error_rate_value_average{host=\"$host\"}",
+              "hide": false,
+              "interval": "",
+              "legendFormat": "seek error rate {{ dimension }}",
+              "refId": "B"
+            }
+          ],
+          "title": "S.M.A.R.T external failure",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "${ds}",
+          "description": "Start/Stop Count (smartd_log.start_stop_count)\n\n",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 10,
+            "x": 10,
+            "y": 88
+          },
+          "id": 1488,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.0.3",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_power_cycle_count_events_average{host=\"$host\"}",
+              "interval": "",
+              "legendFormat": "{{ dimension }}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "S.M.A.R.T power cycles",
+          "type": "stat"
+        },
+        {
+          "datasource": "${ds}",
+          "description": "Power-On Hours Count (smartd_log.power_on_hours_count)\n\n\n",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 1,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "dtdurations"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 10,
+            "x": 0,
+            "y": 94
+          },
+          "id": 1487,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
+          },
+          "pluginVersion": "8.0.3",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_power_on_hours_count_hours_average{host=\"$host\"}*3600",
+              "interval": "",
+              "legendFormat": "{{ dimension }}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "S.M.A.R.T Power-On Hours",
+          "type": "stat"
+        },
+        {
+          "datasource": "${ds}",
+          "description": "Temperature (smartd_log.temperature_celsius)",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 1,
+              "mappings": [],
+              "max": 60,
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 45
+                  },
+                  {
+                    "color": "#6ED0E0",
+                    "value": 55
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 10,
+            "x": 10,
+            "y": 94
+          },
+          "id": 1489,
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "text": {}
+          },
+          "pluginVersion": "8.0.3",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "netdata_smartd_log_temperature_celsius_celsius_average{host=\"$host\"}",
+              "interval": "",
+              "legendFormat": "{{ dimension }}",
+              "queryType": "randomWalk",
+              "refId": "A"
+            }
+          ],
+          "title": "S.M.A.R.T temperature",
+          "type": "gauge"
+        }
+      ],
+      "title": "SMART monitoring",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 82
       },
       "id": 264,
       "panels": [
@@ -5504,11 +5925,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 83
       },
       "id": 364,
       "panels": [
@@ -6533,11 +6958,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 83
+        "y": 84
       },
       "id": 391,
       "panels": [
@@ -6949,11 +7378,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 84
+        "y": 85
       },
       "id": 416,
       "panels": [
@@ -7266,11 +7699,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 85
+        "y": 86
       },
       "id": 439,
       "panels": [
@@ -7484,11 +7921,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 86
+        "y": 87
       },
       "id": 460,
       "panels": [
@@ -7601,11 +8042,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 87
+        "y": 88
       },
       "id": 483,
       "panels": [
@@ -7815,11 +8260,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 88
+        "y": 89
       },
       "id": 523,
       "panels": [
@@ -8005,11 +8454,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 89
+        "y": 90
       },
       "id": 546,
       "panels": [
@@ -8193,11 +8646,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 90
+        "y": 91
       },
       "id": 567,
       "panels": [
@@ -8298,11 +8755,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 91
+        "y": 92
       },
       "id": 1106,
       "panels": [
@@ -8489,11 +8950,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 92
+        "y": 93
       },
       "id": 1174,
       "panels": [
@@ -8592,11 +9057,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 93
+        "y": 94
       },
       "id": 1245,
       "panels": [
@@ -8909,11 +9378,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 94
+        "y": 95
       },
       "id": 1312,
       "panels": [
@@ -9012,11 +9485,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 95
+        "y": 96
       },
       "id": 1381,
       "panels": [
@@ -9204,11 +9681,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 96
+        "y": 97
       },
       "id": 1460,
       "panels": [
@@ -9829,11 +10310,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 97
+        "y": 98
       },
       "id": 586,
       "panels": [
@@ -10045,11 +10530,15 @@
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 98
+        "y": 99
       },
       "id": 630,
       "panels": [
@@ -10088,13 +10577,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10183,13 +10665,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10278,13 +10753,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10342,24 +10810,21 @@
         }
       ],
       "repeat": "view",
-      "scopedVars": {
-        "view": {
-          "selected": true,
-          "text": "netdata_cpu_cpu_percentage_average",
-          "value": "netdata_cpu_cpu_percentage_average"
-        }
-      },
       "title": "[[view]]: cpu",
       "type": "row"
     },
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 99
+        "y": 100
       },
       "id": 706,
       "panels": [
@@ -10396,13 +10861,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10490,13 +10948,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10584,13 +11035,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10678,13 +11122,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10772,13 +11209,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10836,24 +11266,21 @@
         }
       ],
       "repeat": "view",
-      "scopedVars": {
-        "view": {
-          "selected": true,
-          "text": "netdata_cpu_cpu_percentage_average",
-          "value": "netdata_cpu_cpu_percentage_average"
-        }
-      },
       "title": "[[view]]: disk",
       "type": "row"
     },
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 100
+        "y": 101
       },
       "id": 749,
       "panels": [
@@ -10892,13 +11319,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -10988,13 +11408,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -11082,13 +11495,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -11146,24 +11552,21 @@
         }
       ],
       "repeat": "view",
-      "scopedVars": {
-        "view": {
-          "selected": true,
-          "text": "netdata_cpu_cpu_percentage_average",
-          "value": "netdata_cpu_cpu_percentage_average"
-        }
-      },
       "title": "[[view]]: mem",
       "type": "row"
     },
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 101
+        "y": 102
       },
       "id": 773,
       "panels": [
@@ -11212,13 +11615,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -11320,13 +11716,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -11428,13 +11817,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -11493,24 +11875,21 @@
         }
       ],
       "repeat": "view",
-      "scopedVars": {
-        "view": {
-          "selected": true,
-          "text": "netdata_cpu_cpu_percentage_average",
-          "value": "netdata_cpu_cpu_percentage_average"
-        }
-      },
       "title": "[[view]]: processes",
       "type": "row"
     },
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 102
+        "y": 103
       },
       "id": 816,
       "panels": [
@@ -11547,13 +11926,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -11641,13 +12013,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -11704,24 +12069,21 @@
         }
       ],
       "repeat": "view",
-      "scopedVars": {
-        "view": {
-          "selected": true,
-          "text": "netdata_cpu_cpu_percentage_average",
-          "value": "netdata_cpu_cpu_percentage_average"
-        }
-      },
       "title": "[[view]]: swap",
       "type": "row"
     },
     {
       "collapsed": true,
       "datasource": "$ds",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 103
+        "y": 104
       },
       "id": 837,
       "panels": [
@@ -11760,13 +12122,6 @@
           "pointradius": 5,
           "points": false,
           "renderer": "flot",
-          "scopedVars": {
-            "view": {
-              "selected": true,
-              "text": "netdata_cpu_cpu_percentage_average",
-              "value": "netdata_cpu_cpu_percentage_average"
-            }
-          },
           "seriesOverrides": [],
           "spaceLength": 10,
           "stack": true,
@@ -11824,153 +12179,133 @@
         }
       ],
       "repeat": "view",
-      "scopedVars": {
-        "view": {
-          "selected": true,
-          "text": "netdata_cpu_cpu_percentage_average",
-          "value": "netdata_cpu_cpu_percentage_average"
-        }
-      },
       "title": "[[view]]: net",
       "type": "row"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": "$ds",
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 104
-      },
-      "id": 968,
-      "panels": [],
-      "repeat": "temp_sensor",
-      "scopedVars": {
-        "temp_sensor": {
-          "selected": true,
-          "text": "k10temp_pci_00c3_temperature",
-          "value": "k10temp_pci_00c3_temperature"
-        }
-      },
-      "title": "Sensors: temperature",
-      "type": "row"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "$ds",
-      "description": "",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
       },
-      "fill": 1,
-      "fillGradient": 0,
       "gridPos": {
-        "h": 7,
+        "h": 1,
         "w": 24,
         "x": 0,
         "y": 105
       },
-      "hiddenSeries": false,
-      "id": 902,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": true,
-        "min": true,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.2",
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
+      "id": 968,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "$ds",
+          "description": "",
+          "fill": 1,
+          "fillGradient": 0,
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 106
+          },
+          "hiddenSeries": false,
+          "id": 902,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "8.0.3",
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "repeat": "temp_sensor",
+          "repeatDirection": "v",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "netdata_sensors_temperature_Celsius_average{chart=\"sensors.[[temp_sensor]]\",host=\"$host\"}",
+              "format": "time_series",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{dimension}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "[[temp_sensor]]",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "$$hashKey": "object:132",
+              "format": "celsius",
+              "label": "",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "$$hashKey": "object:133",
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
       "repeat": "temp_sensor",
-      "repeatDirection": "v",
-      "scopedVars": {
-        "temp_sensor": {
-          "selected": true,
-          "text": "k10temp_pci_00c3_temperature",
-          "value": "k10temp_pci_00c3_temperature"
-        }
-      },
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "netdata_sensors_temperature_Celsius_average{chart=\"sensors.[[temp_sensor]]\",host=\"$host\"}",
-          "format": "time_series",
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{dimension}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "[[temp_sensor]]",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "transparent": true,
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:132",
-          "format": "celsius",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:133",
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "Sensors: temperature",
+      "type": "row"
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 27,
+  "schemaVersion": 30,
   "style": "dark",
   "tags": [
     "netdata",
@@ -11997,7 +12332,9 @@
       },
       {
         "allValue": null,
-        "current": {},
+        "current": {
+          "selected": true
+        },
         "datasource": "$ds",
         "definition": "label_values(netdata_system_uptime_seconds_average{job=\"netdata\"}, host)",
         "description": null,
@@ -12017,7 +12354,6 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -12025,7 +12361,7 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "netdata_cpu_cpu_percentage_average"
           ],
@@ -12052,7 +12388,6 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -12061,8 +12396,8 @@
         "allValue": null,
         "current": {
           "selected": false,
-          "text": "k10temp_pci_00c3_temperature",
-          "value": "k10temp_pci_00c3_temperature"
+          "text": "None",
+          "value": ""
         },
         "datasource": null,
         "definition": "label_values(netdata_sensors_temperature_Celsius_average, chart)",
@@ -12073,23 +12408,16 @@
         "label": null,
         "multi": false,
         "name": "temp_sensor",
-        "options": [
-          {
-            "selected": true,
-            "text": "k10temp_pci_00c3_temperature",
-            "value": "k10temp_pci_00c3_temperature"
-          }
-        ],
+        "options": [],
         "query": {
           "query": "label_values(netdata_sensors_temperature_Celsius_average, chart)",
           "refId": "StandardVariableQuery"
         },
-        "refresh": 0,
+        "refresh": 1,
         "regex": "/sensors\\.(?<value>.*)/",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -12128,5 +12456,5 @@
   "timezone": "",
   "title": "netdata",
   "uid": "vP_v3QDmk",
-  "version": 53
+  "version": 3
 }

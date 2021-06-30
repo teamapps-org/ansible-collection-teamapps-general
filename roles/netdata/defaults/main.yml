@@ -38,3 +38,5 @@ netdata_alarm_custom_webhook: ""
 
 netdata_cloud_enabled: No
 netdata_cloud_base_url: https://app.netdata.cloud
+
+netdata_smartd_enabled: '{{ ansible_virtualization_role in [ "host", "NA" ] }}'

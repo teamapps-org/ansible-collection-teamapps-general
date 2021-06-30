@@ -21,3 +21,9 @@
 
 - name: netdata_reload_alarms
   command: pkill -SIGUSR2 netdata
+
+- name: netdata-smartd-restart
+  systemd:
+    service: smartd
+    state: restarted
+  notify: netdata_restart

@@ -1,0 +1,45 @@
+
+- name: install packages on physical servers
+  apt:
+    name:
+      - smartmontools
+    state: present
+
+- name: create smartd log directory
+  file:
+    state: directory
+    path: /var/log/smartd/
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: smartd config
+  lineinfile:
+    line: smartd_opts="-A /var/log/smartd/ --interval 600"
+    path: /etc/default/smartmontools
+    regexp: '^smartd_opts='
+  notify: netdata-smartd-restart
+
+- name: smartd service
+  systemd:
+    service: smartd
+    enabled: true
+    state: started
+
+- name: smartd logrotate conf
+  copy:
+    content: |
+      # managed by ansible. netdata role
+      /var/log/smartd/*.csv {
+        daily
+        copytruncate
+        dateext
+        dateyesterday
+        missingok
+        rotate 7
+        notifempty
+      }
+    dest: /etc/logrotate.d/smartd
+    owner: root
+    group: root
+    mode: '0644'
