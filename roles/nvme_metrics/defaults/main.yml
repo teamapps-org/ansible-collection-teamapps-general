@@ -1,0 +1,1 @@
+nvme_metrics_textfile_dir: '{{ node_exporter_textfile_dir | default("/var/lib/node_exporter") }}'
