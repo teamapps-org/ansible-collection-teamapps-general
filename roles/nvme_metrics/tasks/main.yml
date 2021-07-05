@@ -19,5 +19,5 @@
     minute: "*/10"
     hour: "*"
     user: root
-    job: '/usr/local/bin/nvme_metrics.py -o prometheus > {{ node_exporter_textfile_dir }}/nvme.prom.$$ && mv {{ node_exporter_textfile_dir }}/nvme.prom.$$ {{ node_exporter_textfile_dir }}/nvme.prom'
+    job: '/usr/local/bin/nvme_metrics.py -o prometheus > {{ node_exporter_textfile_dir }}/nvme.prom.new && mv {{ node_exporter_textfile_dir }}/nvme.prom.new {{ node_exporter_textfile_dir }}/nvme.prom'
     cron_file: nvme_metrics
