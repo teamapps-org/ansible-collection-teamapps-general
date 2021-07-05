@@ -3,7 +3,7 @@ version: '3.7'
 
 services:
   backuppc:
-    image: adferrand/backuppc
+    image: adferrand/backuppc:{{ backuppc_version }}
     restart: always
     hostname: '{{ backuppc_domain }}'
     expose:

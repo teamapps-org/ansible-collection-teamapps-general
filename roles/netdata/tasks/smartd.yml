@@ -1,5 +1,6 @@
+# smart disk montitoring
 
-- name: install packages on physical servers
+- name: install package
   apt:
     name:
       - smartmontools
