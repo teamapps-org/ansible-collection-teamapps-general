@@ -178,9 +178,12 @@ def print_prometheus_metrics(nvme_data):
             "critical_warning_nvm_subsystem_reliability",
             "critical_warning_read_only",
             "critical_warning_volatile_backup_failed",
-            "critical_warning_persistent_memory_read_only"
+            "critical_warning_persistent_memory_read_only",
+            'controller_enabled',
+            'controller_ready',
         ]:
-            print(metric_entry('nvme_%s'%normalized_metric,  labels, nvme_device['normalized_data'][normalized_metric]))
+            if normalized_metric in nvme_device['normalized_data']:
+                print(metric_entry('nvme_%s'%normalized_metric,  labels, nvme_device['normalized_data'][normalized_metric]))
 
         smart_metrics = [
             # "critical_warning",
