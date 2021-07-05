@@ -33,6 +33,19 @@
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
 
+- name: create file discovery configuration
+  copy:
+    content: |
+      #
+      # Managed by ansible
+      #
+      {{ item.config | to_nice_yaml(indent=2) }}
+    dest: "{{ vmagent_sd_config_dir }}/{{ item.name | default('custom') }}.{{ item.job }}.yml"
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
+    mode: 0640
+  loop: '{{ vmagent_file_sd_config }}'
+
 - name: Configure promscrape config
   template:
     src: prometheus_scrape.yml.j2

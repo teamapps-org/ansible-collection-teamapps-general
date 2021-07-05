@@ -44,3 +44,14 @@ vmagent_proxy_https: ""
 
 vmagent_exec_start_post: ""
 vmagent_exec_stop: ""
+
+# define your targets, creates files in <vmagent_sd_config_dir>/<name>.<job>.yml
+vmagent_file_sd_config: []
+  # - job: node
+  #   name: local
+  #   config:
+  #     - labels:
+  #         instance: '{{ ansible_fqdn }}'
+  #         host: '{{ ansible_hostname }}'
+  #       targets:
+  #         - 127.0.0.1:9100
