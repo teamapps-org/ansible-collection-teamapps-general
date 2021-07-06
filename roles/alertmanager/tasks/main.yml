@@ -13,7 +13,7 @@
     shell: "/usr/sbin/nologin"
     group: alertmanager
     createhome: false
-    home: "{{ alertmanager_config_dir }}"
+    home: "{{ alertmanager_path }}"
   register: alertmanager_user
 
 - name: create alertmanager directories
@@ -24,21 +24,21 @@
     group: alertmanager
     mode: 0770
   with_items:
-    - "{{ alertmanager_config_dir }}"
-    - "{{ alertmanager_config_dir }}/templates"
+    - "{{ alertmanager_path }}"
+    - "{{ alertmanager_path }}/templates"
     - "{{ alertmanager_db_dir }}"
 
 - name: deploy compose
   template:
     src: 'docker-compose.yml.j2'
-    dest: '{{ alertmanager_config_dir }}/docker-compose.yml'
+    dest: '{{ alertmanager_path }}/docker-compose.yml'
     owner: alertmanager
     group: alertmanager
     mode: '0644'
 
 - name: deploy alertmanager templates
   copy:
-    dest: '{{ alertmanager_config_dir }}/templates/{{ item.name }}'
+    dest: '{{ alertmanager_path }}/templates/{{ item.name }}'
     content: '{{ item.content }}'
     owner: alertmanager
     group: alertmanager
@@ -49,7 +49,7 @@
 - name: deploy alertmanager config
   template:
     src: 'alertmanager.yml.j2'
-    dest: '{{ alertmanager_config_dir }}/alertmanager.yml'
+    dest: '{{ alertmanager_path }}/alertmanager.yml'
     owner: alertmanager
     group: alertmanager
     mode: '0644'
@@ -76,11 +76,15 @@
   # start new alertmanager container, entrypoint amtool
   command: 'docker-compose run -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
   args:
-    chdir: '{{ alertmanager_config_dir }}'
+    chdir: '{{ alertmanager_path }}'
   changed_when: False
+
+- name: include telegrambot tasks
+  import_tasks: telegrambot.yml
+  when: alertmanager_telegram_enabled
 
 - name: compose up
   docker_compose:
-    project_src: '{{ alertmanager_config_dir }}'
+    project_src: '{{ alertmanager_path }}'
     state: present
 ...

@@ -4,7 +4,7 @@
   # start new alertmanager container, entrypoint amtool
   command: 'docker-compose run -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
   args:
-    chdir: '{{ alertmanager_config_dir }}'
+    chdir: '{{ alertmanager_path }}'
   listen:
     - alertmanager reload
 
@@ -12,7 +12,7 @@
 - name: alertmanager reload
   command: 'docker-compose exec -T alertmanager kill -HUP 1'
   args:
-    chdir: '{{ alertmanager_config_dir }}'
+    chdir: '{{ alertmanager_path }}'
 
 # regenerates nginx conf from templates
 # this is not the same as just reloading the config

@@ -50,12 +50,24 @@ alertmanager_receivers:
           {{ end }}
           {% endraw %}
 
+  - name: telegram-alert
+    webhook_configs:
+      - url: http://telegram-bot:9087/alert/-123456789
+        send_resolved: True
+        max_alerts: 10
+
 alertmanager_route:
   receiver: slack-alerts # default receiver
   routes: # custom routers based on tag
     - receiver: slack-operations-alerts
       match_re:
         team: ops|operations
+    - receiver: telegram-alert
+      match_re:
+        label: critical
+
+alertmanager_telegram_enabled: True
+alertmanager_telegram_token: 1234567890:AABCCDEs123_bXYZ123xYZ
 
 ~~~
 
@@ -70,6 +82,18 @@ Playbook:
       tags:
         - alertmanager
 ~~~
+
+## Telegram Bot
+
+Setup instructions:
+
+* Go to BotFather, https://t.me/botfather
+* create new bot `/newbot`
+* Copy Token to `alertmanager_telegram_token`
+* Configure and start the bot container (apply the role)
+* Add Bot to your group or open direct conversation with the bot.
+* write `/help` in the group and the Bot will respond with the Chat ID. For Groups, the '-' is part of the ID.
+* use ID to create receiver like in the example above.
 
 ## Test Slack Alert Templates
 

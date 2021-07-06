@@ -2,7 +2,7 @@
 # default vars for alertmanager role
 alertmanager_image: prom/alertmanager
 alertmanager_version: v0.22.2
-alertmanager_config_dir: /container/alertmanager
+alertmanager_path: /container/alertmanager
 alertmanager_db_dir: /container/alertmanager/data
 
 # htpasswd for alertmanager api
@@ -64,12 +64,26 @@ alertmanager_templates_default:
       {{- end -}}
       {{- end }}
 
+      {{ define "common.icon.slack" -}}
+        {{- if eq .Status "firing" }}
+          {{- if .Labels.severity -}}
+            {{- if (eq .Labels.severity "warning") -}}:warning:
+            {{- else if eq .Labels.severity "critical" -}}:rotating_light:
+            {{- end -}}
+          {{- else -}}
+            :fire:
+          {{- end -}}
+        {{- else -}}
+          :ok:
+        {{- end -}}
+      {{- end }}
+
       {{ define "common.text.slack" -}}
         {{- if .CommonAnnotations.description -}}
         {{- "\n" }}> {{ .CommonAnnotations.description -}}
         {{- if .CommonLabels.severity }}{{ "\n" }}> _Severity:_ `{{ .CommonLabels.severity }}` {{ end -}}
         {{- range $i, $alert := .Alerts -}}
-          {{- if .Labels.host }}{{ "\n" }}*Host `{{ .Labels.host }}`* {{ end }}
+          {{- if .Labels.host }}{{ "\n" }}{{ template "common.icon.slack" . }}*Host `{{ .Labels.host }}`* {{ end }}
           {{- if .Labels.container_name }}{{ "\n" }}> _Container:_ `{{ .Labels.container_name }}` {{ end -}}
           {{- if .Annotations.dashboard }}{{ "\n" }}> _Dashboard:_ <{{ .Annotations.dashboard }}|:bar_chart:> {{ end -}}
           {{- "\n" }}> _Source:_ {{- if .Annotations.logurl }}<{{ .Annotations.logurl }}|:chart_with_upwards_trend:>{{ else }}<{{ .GeneratorURL }}|:chart_with_upwards_trend:>{{ end -}}
@@ -78,7 +92,7 @@ alertmanager_templates_default:
         {{- end -}}
         {{- else -}}
         {{- range $i, $alert := .Alerts -}}
-          *{{ if .Labels.host }}Host `{{ .Labels.host }}` {{ end }}{{- .Annotations.summary -}}*
+          *{{ if .Labels.host }}{{ template "common.icon.slack" . }}Host `{{ .Labels.host }}` {{ end }}{{- .Annotations.summary -}}*
           {{- "\n" }}> {{ .Annotations.description -}}
           {{- if .Labels.severity }}{{ "\n" }}> _Severity:_ `{{ .Labels.severity }}` {{ end -}}
           {{- if .Labels.container_name }}{{ "\n" }}> _Container:_ `{{ .Labels.container_name }}` {{ end -}}
@@ -98,3 +112,8 @@ alertmanager_templates: '{{ alertmanager_templates_default + alertmanager_templa
 
 # needed for auth config and whitelists
 webproxy_path: /container/webproxy
+
+
+# Telegram bot
+alertmanager_telegram_enabled: False
+alertmanager_telegram_token:

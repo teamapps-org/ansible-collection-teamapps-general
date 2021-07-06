@@ -1,0 +1,51 @@
+{{ define "common.status.telegram" -}}
+  {{- if eq .Status "firing" }}🔥{{ else }}✅{{ end }}[{{- .Status | str_UpperCase -}}]
+{{- end }}
+
+{{ define "common.icon.telegram" -}}
+  {{- if eq .Status "firing" }}
+    {{- if .Labels.severity -}}
+      {{- if (eq .Labels.severity "warning") -}}⚠️
+      {{- else if eq .Labels.severity "critical" -}}🚨
+      {{- end -}}
+    {{- else -}}
+      🔥
+    {{- end -}}
+  {{- else -}}
+    ✅
+  {{- end -}}
+{{- end }}
+
+{{ define "common.title.telegram" -}}
+  {{- if .CommonAnnotations.summary -}}
+    {{- .CommonAnnotations.summary -}}
+  {{- else -}}
+    {{- with index .Alerts 0 -}}
+        {{- .Annotations.summary }} and others
+    {{- end -}}
+  {{- end -}}
+{{- end }}
+
+
+<b><a href="{{ .ExternalURL }}">{{ template "common.status.telegram" . }} {{ template "common.title.telegram" . }}</a></b>
+{{- "\n" -}}
+
+{{- range $i, $alert := .Alerts -}}
+    {{- "\n" -}}
+    <b>{{ if .Labels.host }}{{ template "common.icon.telegram" . }}Host <code>{{ $alert.Labels.host }}</code> {{ end }}</b>
+    {{- "\n" }}<b>{{- .Annotations.summary -}}</b>
+    {{- "\n" }}{{ .Annotations.description -}}
+    {{- if .Labels.severity }}{{- "\n" }}Severity: <code>{{ .Labels.severity }}</code>{{- end -}}
+    {{- if .Labels.container_name }}{{ "\n" }}Container: <code>{{ .Labels.container_name }}</code> {{ end -}}
+    {{- if .Annotations.dashboard }}{{ "\n" }}<a href="{{ .Annotations.dashboard }}">Dashboard 📊</a>{{ end -}}
+    {{- "\n" }}
+    {{- if .Labels.alertname }}Alert: <code>{{ .Labels.alertname }}</code>{{ end -}}
+    {{- "\n" }}
+    {{- if .Annotations.logurl }}<a href="{{ .Annotations.logurl }}">Source 📈</a>{{ else }}<a href="{{ .GeneratorURL }}">Source 📈</a>{{ end -}}
+    {{- "\n" }}Active since {{ .StartsAt | str_FormatDate }}
+    {{- "\n" -}}
+{{- end -}}
+{{- if gt .TruncatedAlerts 0 -}}
+  {{- "\n" -}}
+  {{ .TruncatedAlerts }} additional alerts were truncated
+{{- end -}}

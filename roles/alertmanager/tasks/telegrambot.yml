@@ -1,0 +1,23 @@
+- name: create directory
+  file:
+    path: '{{ alertmanager_path }}/telegrambot/'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: template file
+  copy:
+    src: telegram.html.tmpl
+    dest: '{{ alertmanager_path }}/telegrambot/template.tmpl'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: telegrambot config
+  template:
+    src: telegram-bot-config.yaml
+    dest: '{{ alertmanager_path }}/telegrambot/config.yaml'
+    owner: root
+    group: nogroup
+    mode: '0640'

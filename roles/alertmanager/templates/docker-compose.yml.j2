@@ -9,7 +9,7 @@ services:
       LETSENCRYPT_HOST: '{{ alertmanager_domain }}'
       LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
     volumes:
-      - {{ alertmanager_config_dir }}:/etc/alertmanager/
+      - {{ alertmanager_path }}:/etc/alertmanager/
       - {{ alertmanager_db_dir }}:/alertmanager
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
@@ -20,6 +20,23 @@ services:
     restart: always
     networks:
       - webproxy
+
+{% if alertmanager_telegram_enabled %}
+  # telegram bot
+  telegram-bot:
+    # container_name: telegrambot
+    image: wolke77/alertmanager-telegram-bot:0.0.3
+    volumes:
+      - ./telegrambot/:/etc/telegrambot/
+    expose:
+      - 9087
+    ports:
+      - 9087:9087
+    restart: always
+    networks:
+      - webproxy
+    command:  ["/prometheus_bot", "-c", "/etc/telegrambot/config.yaml"] # add -d for debug mode
+{% endif %}
 
 networks:
   webproxy:
