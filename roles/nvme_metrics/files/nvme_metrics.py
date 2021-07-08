@@ -170,7 +170,8 @@ def print_prometheus_metrics(nvme_data):
 
         print(metric_entry('nvme_sector_size',  labels, nvme_device['info']['SectorSize']))
         print(metric_entry('nvme_used_bytes',  labels, nvme_device['info']['UsedBytes']))
-        # print(metric_entry('nvme_maximum_lba',  labels, nvme_device['info']['MaximumLBA']))
+        print(metric_entry('nvme_physical_size',  labels, nvme_device['info']['PhysicalSize']))
+        print(metric_entry('nvme_maximum_lba',  labels, nvme_device['info']['MaximumLBA']))
 
         for normalized_metric in [
             "critical_warning_avail_spare",

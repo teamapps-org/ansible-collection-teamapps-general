@@ -16,7 +16,7 @@
 - name: cronjob for nvme metrics
   cron:
     name: nvme_metrics
-    minute: "*/10"
+    minute: "*"
     hour: "*"
     user: root
     job: '/usr/local/bin/nvme_metrics.py -o prometheus > {{ node_exporter_textfile_dir }}/nvme.prom.new && mv {{ node_exporter_textfile_dir }}/nvme.prom.new {{ node_exporter_textfile_dir }}/nvme.prom'
