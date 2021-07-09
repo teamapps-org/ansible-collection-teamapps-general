@@ -1,0 +1,84 @@
+---
+groups:
+  - name: nvme storage device health checks
+    interval: 10m # evaluate these queries with reduced frequency
+    rules:
+      - alert: nvme_controller_not_ready
+        expr: "nvme_controller_ready != 1"
+        for: 0s
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "nvme device controller not ready"
+          description: "issue on '{{ $labels.device }}' host: '{{ $labels.host }}'"
+
+      - alert: nvme_controller_not_enabled
+        expr: "nvme_controller_enabled != 1"
+        for: 10m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "nvme device controller not enabled"
+          description: "issue on '{{ $labels.device }}' host: '{{ $labels.host }}'"
+
+      - alert: NvmeCriticalWarning
+        expr: '{job="node", __name__=~"nvme_critical_warning.*"} != 0'
+        for: 10m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "nvme device critical warning"
+          description: "{{ $labels.__name__ }} on '{{ $labels.device }}' host: '{{ $labels.host }}'"
+
+      - alert: NvmeAvailSpare
+        expr: 'nvme_smart_avail_spare < 20'
+        for: 10m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "nvme device low available spare sectors"
+          description: "warning for '{{ $labels.device }}' host: '{{ $labels.host }}'"
+
+      - alert: NvmeErrLogEntriesIncrease
+        expr: 'increase(nvme_smart_num_err_log_entries [1d]) > 2'
+        for: 10m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "nvme device new error log entries"
+          description: "nvme logged {{ $value }} errors for '{{ $labels.device }}' host: '{{ $labels.host }}' [1d]"
+
+      - alert: NvmeLifetimeReached
+        expr: 'nvme_smart_percent_used > 100'
+        for: 10m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "nvme device estimated endurance reached"
+          description: "reached {{ $value }}% of estimated endurance of the device '{{ $labels.device }}' on host '{{ $labels.host }}'"
+
+      - alert: NvmeMediaErrors
+        expr: 'increase(nvme_smart_media_errors [1d]) > 0'
+        for: 10m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "nvme device media errors"
+          description: "nvme logged {{ $value }} media errors for '{{ $labels.device }}' host: '{{ $labels.host }}' [1d]"
+
+      - alert: NvmeUnsafeShutdowns
+        expr: 'increase(nvme_unsafe_shutdowns [1d]) > 0'
+        for: 10m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "nvme device had unsafe shutdown"
+          description: "nvme logged {{ $value }} unsafe shutdownsfor '{{ $labels.device }}' host: '{{ $labels.host }}' [1d] "

@@ -53,6 +53,7 @@ grafana_default_dashboards:
   - default/netdata.json
   - default/alertmanager.json
   - default/blackbox.json
+  - default/nvme.json
 
 grafana_custom_dashboards: []
 
