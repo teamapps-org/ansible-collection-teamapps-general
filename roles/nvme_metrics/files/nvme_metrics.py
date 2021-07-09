@@ -113,9 +113,19 @@ def normalize_raw_data(smart_log_json, ctrl_json):
     else:
         normalized_data['critical_warning_persistent_memory_read_only'] = 0
 
+    # temperature in celsius
+    if 'temperature_sensor_1' in smart_log_json:
+        normalized_data['temperature_sensor_1_celcius'] = round(
+            smart_log_json['temperature_sensor_1'] - 273.15, 2)
+
+    if 'temperature_sensor_2' in smart_log_json:
+        normalized_data['temperature_sensor_2_celcius'] = round(
+            smart_log_json['temperature_sensor_2'] - 273.15, 2)
+
     normalized_data['temperature_celcius'] = round(
         smart_log_json['temperature'] - 273.15, 2)
 
+    # controller status
     if not 'error' in ctrl_json:
         # cc = controller configuration
         if ctrl_json['cc'] & 1:
@@ -127,6 +137,10 @@ def normalize_raw_data(smart_log_json, ctrl_json):
             normalized_data['controller_ready'] = 1
         else:
             normalized_data['controller_ready'] = 1
+
+    # data_units written is Thousand 512 byte blocks written.
+    normalized_data['data_bytes_written'] = smart_log_json['data_units_written'] * 1000*512
+    normalized_data['data_bytes_read'] = smart_log_json['data_units_read'] * 1000*512
 
     return normalized_data
 
@@ -171,46 +185,57 @@ def print_prometheus_metrics(nvme_data):
         print(metric_entry('nvme_sector_size',  labels, nvme_device['info']['SectorSize']))
         print(metric_entry('nvme_used_bytes',  labels, nvme_device['info']['UsedBytes']))
         print(metric_entry('nvme_physical_size',  labels, nvme_device['info']['PhysicalSize']))
-        print(metric_entry('nvme_maximum_lba',  labels, nvme_device['info']['MaximumLBA']))
+        if 'MaximumLBA' in nvme_device['info']:
+            print(metric_entry('nvme_maximum_lba',  labels, nvme_device['info']['MaximumLBA']))
+        elif 'MaximiumLBA' in nvme_device['info']: # typo in older nvme-cli version
+            print(metric_entry('nvme_maximum_lba',  labels, nvme_device['info']['MaximiumLBA']))
+
 
         for normalized_metric in [
-            "critical_warning_avail_spare",
-            "critical_warning_temp_threshold",
-            "critical_warning_nvm_subsystem_reliability",
-            "critical_warning_read_only",
-            "critical_warning_volatile_backup_failed",
-            "critical_warning_persistent_memory_read_only",
-            'controller_enabled',
-            'controller_ready',
+            "temperature_celcius",
+            "temperature_sensor_1_celcius",
+            "temperature_sensor_2_celcius",
+            "critical_warning_avail_spare", # Available Spare is below Threshold
+            "critical_warning_temp_threshold", # Temperature has exceeded Threshold
+            "critical_warning_nvm_subsystem_reliability", # Reliability is degraded due to excessive media or internal errors
+            "critical_warning_read_only", # Media is placed in Read- Only Mode
+            "critical_warning_volatile_backup_failed", # Volatile Memory Backup System has failed (e.g., enhanced power loss capacitor test failure)
+            "critical_warning_persistent_memory_read_only", #
+            "controller_enabled",
+            "controller_ready",
+            "data_bytes_written",
+            "data_bytes_read"
         ]:
             if normalized_metric in nvme_device['normalized_data']:
                 print(metric_entry('nvme_%s'%normalized_metric,  labels, nvme_device['normalized_data'][normalized_metric]))
 
-        smart_metrics = [
+        for smart_metric in [
             # "critical_warning",
             # "temperature",
-            "avail_spare",
-            "spare_thresh",
-            "percent_used",
-            "data_units_read",
-            "data_units_written",
+            "avail_spare",  # percentage, starts at 100
+            "spare_thresh", # percentage, usually 10
+            "percent_used", # percentage of estimated endurance of the device, can exceed 100
+            "data_units_read", # Thousand 512 byte blocks
+            "data_units_written", # Thousand 512 byte blocks
             "host_read_commands",
             "host_write_commands",
-            "controller_busy_time",
+            "controller_busy_time", # minutes
             "power_cycles",
             "power_on_hours",
             "unsafe_shutdowns",
             "media_errors",
             "num_err_log_entries",
-            "warning_temp_time",
-            "critical_comp_time",
+            "warning_temp_time", # Warning Composite Temperature Time, minutes
+            "critical_comp_time", # Critical Composite Temperature Time, minutes
+            # "temperature_sensor_1",
+            # "temperature_sensor_2",
             "thm_temp1_trans_count",
             "thm_temp2_trans_count",
-            "thm_temp1_total_time",
-            "thm_temp2_total_time"
-        ]
-        for smart_metric in smart_metrics:
-            print(metric_entry('nvme_smart_%s'%smart_metric,  labels, nvme_device['smart_log'][smart_metric]))
+            "thm_temp1_total_time", # minutes
+            "thm_temp2_total_time", # minutes
+        ]:
+            if smart_metric in nvme_device['smart_log']:
+                print(metric_entry('nvme_smart_%s'%smart_metric,  labels, nvme_device['smart_log'][smart_metric]))
 
 
 def parse_args():
@@ -237,8 +262,6 @@ def parse_args():
     return parser.parse_args()
 
 if __name__ == '__main__':
-
-
     try:
         args = parse_args()
         # nvme_list_json = get_nvme_list("/dev/nmve0")
