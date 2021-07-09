@@ -16,8 +16,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 1,
-  "id": 30,
-  "iteration": 1625840956767,
+  "iteration": 1625852688046,
   "links": [],
   "panels": [
     {
@@ -63,16 +62,22 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 10,
         "w": 24,
         "x": 0,
         "y": 1
       },
       "id": 4,
       "options": {
-        "showHeader": true
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "host"
+          }
+        ]
       },
-      "pluginVersion": "8.0.4",
+      "pluginVersion": "8.0.5",
       "targets": [
         {
           "exemplar": true,
@@ -562,7 +567,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 125
+                "value": 140
               },
               {
                 "id": "custom.displayMode",
@@ -647,14 +652,117 @@
                 }
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "unsafe shutdowns"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 144
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "size"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 62
+              },
+              {
+                "id": "unit",
+                "value": "decbytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "used"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 72
+              },
+              {
+                "id": "unit",
+                "value": "decbytes"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "percentage",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 80
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "max"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "used%"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 77
+              },
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "yellow",
+                      "value": 0.9
+                    },
+                    {
+                      "color": "orange",
+                      "value": 0.99
+                    }
+                  ]
+                }
+              }
+            ]
           }
         ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 12,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 11
       },
       "id": 10,
       "options": {
@@ -662,11 +770,11 @@
         "sortBy": [
           {
             "desc": false,
-            "displayName": "percentage used"
+            "displayName": "host"
           }
         ]
       },
-      "pluginVersion": "8.0.4",
+      "pluginVersion": "8.0.5",
       "targets": [
         {
           "exemplar": true,
@@ -700,13 +808,23 @@
         },
         {
           "exemplar": true,
+          "expr": "nvme_smart_unsafe_shutdowns{host=~\"$host\",device=~\"$device\"}",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "unsafe_shutdowns"
+        },
+        {
+          "exemplar": true,
           "expr": "increase(nvme_smart_num_err_log_entries{host=~\"$host\",device=~\"$device\"} [1d])",
           "format": "table",
           "hide": false,
           "instant": true,
           "interval": "",
           "legendFormat": "",
-          "refId": "num_err_log_entries"
+          "refId": "nvme_smart_num_err_log_entries"
         },
         {
           "exemplar": true,
@@ -727,16 +845,6 @@
           "interval": "",
           "legendFormat": "",
           "refId": "nvme_smart_avail_spare"
-        },
-        {
-          "exemplar": true,
-          "expr": "increase(nvme_smart_num_err_log_entries{host=~\"$host\",device=~\"$device\"} [1d])",
-          "format": "table",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "",
-          "refId": "nvme_smart_num_err_log_entries"
         },
         {
           "exemplar": true,
@@ -773,6 +881,7 @@
           "expr": "nvme_temperature_celcius{host=~\"$host\",device=~\"$device\"}",
           "format": "table",
           "hide": false,
+          "instant": true,
           "interval": "",
           "legendFormat": "",
           "refId": "nvme_temperature_celcius"
@@ -782,9 +891,40 @@
           "expr": "nvme_data_bytes_written{host=~\"$host\",device=~\"$device\"}",
           "format": "table",
           "hide": false,
+          "instant": true,
           "interval": "",
           "legendFormat": "",
           "refId": "nvme_data_bytes_written"
+        },
+        {
+          "exemplar": true,
+          "expr": "nvme_physical_size{host=~\"$host\",device=~\"$device\"}",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "nvme_physical_size"
+        },
+        {
+          "exemplar": true,
+          "expr": "nvme_used_bytes{host=~\"$host\",device=~\"$device\"}",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "nvme_used_bytes"
+        },
+        {
+          "exemplar": true,
+          "expr": "nvme_used_bytes{host=~\"$host\",device=~\"$device\"}/nvme_physical_size{host=~\"$host\",device=~\"$device\"}",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "",
+          "refId": "used_ratio"
         }
       ],
       "title": "Health Status",
@@ -839,6 +979,12 @@
                 ],
                 "operation": "aggregate"
               },
+              "Value #nvme_physical_size": {
+                "aggregations": [
+                  "last"
+                ],
+                "operation": "aggregate"
+              },
               "Value #nvme_smart_avail_spare": {
                 "aggregations": [
                   "last"
@@ -875,6 +1021,24 @@
                 ],
                 "operation": "aggregate"
               },
+              "Value #nvme_used_bytes": {
+                "aggregations": [
+                  "last"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #unsafe_shutdowns": {
+                "aggregations": [
+                  "last"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #used_ratio": {
+                "aggregations": [
+                  "last"
+                ],
+                "operation": "aggregate"
+              },
               "device": {
                 "aggregations": [],
                 "operation": "groupby"
@@ -905,15 +1069,15 @@
               "Value #controller_ready (last)": 13,
               "Value #critical_warning (last)": 2,
               "Value #media_errors (last)": 3,
-              "Value #num_err_log_entries (last)": 4,
               "Value #nvme_controller_enabled (last)": 12,
-              "Value #nvme_data_bytes_written (last)": 7,
-              "Value #nvme_smart_avail_spare (last)": 8,
-              "Value #nvme_smart_num_err_log_entries (last)": 5,
-              "Value #nvme_smart_percent_used (last)": 6,
-              "Value #nvme_smart_power_cycles (last)": 10,
+              "Value #nvme_data_bytes_written (last)": 6,
+              "Value #nvme_smart_avail_spare (last)": 7,
+              "Value #nvme_smart_num_err_log_entries (last)": 4,
+              "Value #nvme_smart_percent_used (last)": 5,
+              "Value #nvme_smart_power_cycles (last)": 9,
               "Value #nvme_smart_power_on_hours (last)": 11,
-              "Value #nvme_temperature_celcius (last)": 9,
+              "Value #nvme_temperature_celcius (last)": 8,
+              "Value #unsafe_shutdowns (last)": 10,
               "device": 1,
               "host": 0
             },
@@ -931,6 +1095,7 @@
               "Value #nvme_controller_enabled": "ctrl enabled",
               "Value #nvme_controller_enabled (last)": "",
               "Value #nvme_data_bytes_written (last)": "total data written",
+              "Value #nvme_physical_size (last)": "size",
               "Value #nvme_smart_avail_spare": "avail spare",
               "Value #nvme_smart_avail_spare (last)": "",
               "Value #nvme_smart_num_err_log_entries": "error logs (1d)",
@@ -940,6 +1105,9 @@
               "Value #nvme_smart_power_cycles (last)": "power_cycles",
               "Value #nvme_smart_power_on_hours (last)": "power_on_hours",
               "Value #nvme_temperature_celcius (last)": "temperature",
+              "Value #nvme_used_bytes (last)": "used",
+              "Value #unsafe_shutdowns (last)": "unsafe shutdowns",
+              "Value #used_ratio (last)": "used%",
               "__name__": "",
               "scraper_instance": ""
             }
@@ -1095,14 +1263,14 @@
         "h": 6,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 23
       },
       "id": 12,
       "options": {
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "8.0.4",
+      "pluginVersion": "8.0.5",
       "targets": [
         {
           "exemplar": false,
@@ -1180,7 +1348,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 29
       },
       "id": 14,
       "panels": [],
@@ -1245,7 +1413,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 30
       },
       "id": 17,
       "options": {
@@ -1329,7 +1497,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 30
       },
       "id": 16,
       "options": {
@@ -1414,7 +1582,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 38
       },
       "id": 24,
       "options": {
@@ -1498,7 +1666,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 38
       },
       "id": 23,
       "options": {
@@ -1583,7 +1751,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 37
+        "y": 46
       },
       "id": 19,
       "options": {
@@ -1666,7 +1834,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 37
+        "y": 46
       },
       "id": 22,
       "options": {
@@ -1722,7 +1890,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 45
+        "y": 54
       },
       "id": 21,
       "options": {
@@ -1740,7 +1908,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.0.4",
+      "pluginVersion": "8.0.5",
       "repeat": null,
       "targets": [
         {
@@ -1819,9 +1987,13 @@
       {
         "allValue": ".*",
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "${ds}",
         "definition": "label_values(nvme_info{host=~\"$host\"}, device)",
@@ -1853,5 +2025,5 @@
   "timezone": "",
   "title": "NVMe Dashboard",
   "uid": "7ES1GVmnk",
-  "version": 19
+  "version": 2
 }

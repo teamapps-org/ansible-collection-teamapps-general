@@ -33,6 +33,10 @@ vmagent_scrape_config:
           labels:
             instance: '{{ ansible_fqdn }}'
             host: '{{ ansible_hostname }}'
+    - job_name: node
+      file_sd_configs:
+        - files:
+            - "{{ vmagent_sd_config_dir }}/*.node.yml"
 
 # use control or remote host to download installation archive
 vmagent_install_download_to_control: true
