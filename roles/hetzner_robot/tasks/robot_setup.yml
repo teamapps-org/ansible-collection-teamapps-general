@@ -1,0 +1,214 @@
+# Hetzner Robot Setup
+
+- name: remove ssh hostkey (before connecting to rescue system)
+  delegate_to: localhost
+  command: ssh-keygen -R '{{ item }}'
+  check_mode: no
+  with_items:
+    - '{{ ansible_host }}'
+    - '{{ inventory_hostname }}'
+  tags:
+    - skip_ansible_lint
+
+- name: gather_facts
+  gather_facts: {}
+
+- name: check if connected to rescue system
+  stat:
+    path: /root/.oldroot/nfs/
+  register: stat_oldroot
+
+# - assert:
+#     that:  stat_oldroot.stat.exists
+#     fail_msg: "Not a Hetzner Rescue system"
+
+- name: rescue system block
+  when: stat_oldroot.stat.exists
+  block:
+    - name: print hetzner_robot_installimage_command
+      debug:
+        var: hetzner_robot_installimage_command
+      changed_when: true
+
+    - name: prompt before continue
+      pause:
+        prompt: |
+          Please confirm the installation procedure of "{{ inventory_hostname }}"
+
+          Enter "yes" to continue. Press ENTER to exit now.
+      register: prompt_install
+
+    - name: Cancel if not confirmed
+      fail:
+        msg: "Exit now"
+      when:
+        - prompt_install.user_input != "yes"
+
+    - name: installimage
+      shell: '{{ hetzner_robot_installimage_command }}'
+      environment:
+        TERM: xterm
+      tags:
+        - skip_ansible_lint
+
+    - name: Create a new primary partition at disk's end for l2arc
+      community.general.parted:
+        device: '{{ item }}'
+        number: 4
+        state: present
+        fs_type: zfs
+        part_start: '-{{ zfsbulk_cache_size }}'
+      with_items: '{{ hetzner_robot_raid_disks }}'
+      when: hetzner_robot_zfsbulk_cache
+
+    - name: create additional partition with rest of disk for zfs raid
+      shell: 'echo -e "n\np\n\n\n\nw" | fdisk {{ item }}'
+      args:
+        executable: /bin/bash
+      with_items: '{{ hetzner_robot_raid_disks }}'
+      # manually:
+      # fdisk /dev/nvme0n1
+      # # n .... w y
+
+    - name: remove ssh hostkey
+      delegate_to: localhost
+      command: ssh-keygen -R '{{ item }}'
+      with_items:
+        - '{{ ansible_host }}'
+        - '{{ inventory_hostname }}'
+      tags:
+        - skip_ansible_lint
+
+    - name: reboot to installed system
+      reboot:
+        post_reboot_delay: 30 # wait after reboot to allow system to be fully ready
+
+    - name: new facts after reboot
+      gather_facts: {}
+
+- name: check that fqdn is correct
+  assert:
+    that: ansible_fqdn == inventory_hostname
+
+- name: ensure apt list dir exists
+  file:
+    path: /var/lib/apt/lists/
+    state: directory
+    mode: 0755
+
+# Sometimes apt tasks fail because apt is locked by an autoupdate or by a race condition on a thread.
+# To check for a lock file before executing, and keep trying until the lock file is released:
+- name: update apt list
+  apt:
+    update_cache: yes
+  register: apt_update_cache
+  retries: 10
+  delay: 5
+  until: apt_update_cache is success or ('Failed to lock apt for exclusive operation' not in apt_update_cache.msg and '/var/lib/dpkg/lock' not in apt_update_cache.msg)
+
+- name: install zfs tools
+  apt:
+    name: zfsutils-linux
+    state: present
+
+- name: create zpool zfsdata
+  command: "zpool create zfsdata mirror {{ hetzner_robot_zfsdata_partitions_by_id | join(' ') }} -o ashift=12 -O compression=lz4"
+  register: create_zfsdata
+  args:
+    creates: /zfsdata
+
+# extend pool with more vdevs (for mirror: extend by pairs of 2 devices)
+- name: extend zpool zfsdata
+  command: "zpool add zfsdata mirror {{ item | join(' ') }} -o ashift=12"
+  loop: '{{ hetzner_robot_zfsdata_extend_groups }}'
+  when:
+    - create_zfsdata.changed
+
+- name: create zpool zfsbulk
+  command: "zpool create zfsbulk {{ hetzner_robot_zfsbulk_pool_type }} {{ hetzner_robot_zfsbulk_partitions_by_id | join(' ') }} -o ashift=12 -O compression=lz4"
+  args:
+    creates: /zfsbulk
+  register: create_zfsbulk
+  when: hetzner_robot_zfsbulk
+
+# extend pool with more vdevs (for mirror: extend by pairs of 2 devices)
+- name: extend zpool zfsbulk
+  command: "zpool add zfsbulk {{ hetzner_robot_zfsbulk_pool_type }} {{ item | join(' ') }} -o ashift=12"
+  loop: '{{ hetzner_robot_zfsbulk_extend_groups }}'
+  when:
+    - hetzner_robot_zfsbulk
+    - create_zfsbulk.changed
+
+- name: zfsbulk add cache devices
+  command: "zpool add zfsbulk cache {{ hetzner_robot_zfsbulk_cache_partitions_by_id | join(' ') }} -o ashift=12"
+  when:
+    - hetzner_robot_zfsbulk
+    - hetzner_robot_zfsbulk_cache
+    - create_zfsbulk.changed
+
+- name: create zfs write intent log file
+  command: dd if=/dev/zero of=/zfs_log_file bs=1M count=4000
+  args:
+    creates: /zfs_log_file
+  register: zfsbulk_log_file
+  when: hetzner_robot_zfsbulk_writelog_file
+
+- name: add zfs write intent log
+  command: zpool add zfsbulk log /zfs_log_file
+  when:
+    - hetzner_robot_zfsbulk_writelog_file
+    - zfsbulk_log_file.changed
+
+- name: collect zpool facts
+  zpool_facts: {}
+  register: zpool_facts_register
+
+- name: print zpool facts
+  debug:
+    var: zpool_facts_register
+
+- name: set zfs dataset properties for zfsdata
+  zfs:
+    name: zfsdata
+    state: present
+    extra_zfs_properties:
+      relatime: on
+
+- name: create zfs volume for docker
+  zfs:
+    name: zfsdata/docker
+    state: present
+    extra_zfs_properties:
+      mountpoint: /var/lib/docker
+
+- name: create zfs volume
+  zfs:
+    name: zfsdata/container
+    state: present
+    extra_zfs_properties:
+      mountpoint: /container
+
+# - name: create zfsbulk /data volume
+#   zfs:
+#     name: zfsbulk/data
+#     state: present
+#     extra_zfs_properties:
+#       mountpoint: /data
+#       relatime: on
+
+# - name: create zfs volume test
+#   zfs:
+#     name: zfsdata/container/test
+#     state: present
+#     extra_zfs_properties:
+#       mountpoint: /container/test
+#       relatime: on
+#   tags: zfstest
+
+# - name: set zfs dataset properties for zfsdata
+#   zfs:
+#     name: zfsdata
+#     state: present
+#     extra_zfs_properties:
+#       relatime: on
+#   tags: zfstest

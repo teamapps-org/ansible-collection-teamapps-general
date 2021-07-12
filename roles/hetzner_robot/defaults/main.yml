@@ -1,0 +1,53 @@
+# Hetzner System Installation from robot
+
+hetzner_robot_swap_size: '20G'
+hetzner_robot_root_size: '50G'
+hetzner_robot_raid_disks:
+  - /dev/nvme0n1
+  - /dev/nvme1n1
+hetzner_robot_zfsdata_partitions_by_id:
+  - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part3"
+  - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part3"
+
+# groups of devices, extending the pool,
+# for pool type mirror
+# list of lists with 2 devices.
+hetzner_robot_zfsdata_extend_groups: []
+  # - - "{{ ansible_device_links.ids['sdc'][0] }}"
+  #   - "{{ ansible_device_links.ids['sdd'][0] }}"
+
+hetzner_robot_zfsbulk: False
+hetzner_robot_zfsbulk_pool_type: mirror
+hetzner_robot_zfsbulk_writelog_file: true
+# for type mirror, only define 2 and add more disks to the variable hetzner_robot_zfsbulk_extend_groups
+# mirror with more devices means more mirrors, but not more space!
+hetzner_robot_zfsbulk_partitions_by_id:
+  - "{{ ansible_device_links.ids['sda'][0] }}"
+  - "{{ ansible_device_links.ids['sdb'][0] }}"
+
+# groups of devices, extending the pool,
+# for pool type mirror
+# list of lists with 2 devices.
+hetzner_robot_zfsbulk_extend_groups: []
+  # - - "{{ ansible_device_links.ids['sdc'][0] }}"
+  #   - "{{ ansible_device_links.ids['sdd'][0] }}"
+
+# create partitions on the nvme disks and configure those as l2arc cache for zfsbulk
+hetzner_robot_zfsbulk_cache: False
+zfsbulk_cache_size: 100GiB # x2, two disks
+hetzner_robot_zfsbulk_cache_partitions_by_id:
+  - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part4"
+  - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part4"
+
+
+hetzner_robot_installimage_partitions: 'swap:swap:{{ hetzner_robot_swap_size }},/:ext4:{{ hetzner_robot_root_size }}' # ,/srv:ext4:200G
+hetzner_robot_installimage_command: |
+  /root/.oldroot/nfs/install/installimage -a \
+        -n {{ inventory_hostname }} \
+        -b grub \
+        -r yes \
+        -p {{ hetzner_robot_installimage_partitions }} \
+        -i /root/.oldroot/nfs/images/Ubuntu-2004-focal-64-minimal.tar.gz \
+        -d {{ hetzner_robot_raid_disks | join(',') | regex_replace('/dev/') }} \
+        -s en \
+        -t yes
