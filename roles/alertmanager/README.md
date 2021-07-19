@@ -59,12 +59,13 @@ alertmanager_receivers:
 alertmanager_route:
   receiver: slack-alerts # default receiver
   routes: # custom routers based on tag
-    - receiver: slack-operations-alerts
-      match_re:
-        team: ops|operations
     - receiver: telegram-alert
-      match_re:
-        label: critical
+      matchers:
+        - label="critical"
+      continue: True
+    - receiver: slack-operations-alerts
+      matchers:
+        - team=~"ops|operations"
 
 alertmanager_telegram_enabled: True
 alertmanager_telegram_token: 1234567890:AABCCDEs123_bXYZ123xYZ
