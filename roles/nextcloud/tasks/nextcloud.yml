@@ -68,6 +68,15 @@
     mode: 0640
   notify: nextcloud_docker-compose-restart
 
+- name: Nextcloud DB Tuning mysql.conf
+  template:
+    src: mysql.conf
+    dest: '{{ nextcloud_path }}/mysql.conf'
+    owner: root
+    group: root
+    mode: 0644
+  notify: nextcloud_docker-compose-restart
+
 - name: occ wrapper
   copy:
     content: |

@@ -24,3 +24,10 @@ nextcloud_worker_processes: 8
 
 # pull docker images (docker-compose pull)
 nextcloud_docker_pull: '{{ global_docker_pull | default(False) }}'
+
+# Database Tuning
+nextcloud_mysqld_max_connections: 300
+nextcloud_mysqld_query_cache_size: 104857600  # 256MiB: 268435456
+
+# custom database tuning added to mysql.conf
+nextcloud_mysql_custom_options: ''
