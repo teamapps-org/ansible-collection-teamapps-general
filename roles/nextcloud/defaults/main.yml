@@ -1,0 +1,26 @@
+---
+# defaults file for nextcloud
+
+nextcloud_mysql_root_password:
+nextcloud_mysql_password:
+
+nextcloud_version: 22
+nextcloud_notify_push_version: v0.2.1
+nextcloud_mariadb_version: 10.5
+
+container_path: /container
+nextcloud_path: '{{ container_path }}/nextcloud'
+nextcloud_domain: 'nextcloud.{{ ansible_fqdn }}'
+
+nextcloud_php_memory_limit: 512M
+
+# nextcloud_admin_user: nextcloud-admin
+# nextcloud_admin_password:
+
+nextcloud_data_dir: './nextcloud-data'
+
+# worker processes for nginx and php
+nextcloud_worker_processes: 8
+
+# pull docker images (docker-compose pull)
+nextcloud_docker_pull: '{{ global_docker_pull | default(False) }}'

@@ -1,0 +1,124 @@
+---
+# tasks file for nextcloud
+
+# https://github.com/nextcloud/docker/tree/master/.examples/docker-compose/with-nginx-proxy/postgres/fpm
+# https://github.com/nextcloud/docker/blob/master/stack.yml
+
+
+# https://github.com/nextcloud/docker/blob/master/.examples/docker-compose/with-nginx-proxy/mariadb-cron-redis/fpm/docker-compose.yml
+
+# documentation: https://github.com/nextcloud/docker
+
+- name: Creates directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - '{{ container_path }}'
+    - '{{ nextcloud_path }}'
+    - '{{ nextcloud_path }}/docker-build'
+    - '{{ nextcloud_path }}/notify_push'
+
+- name: docker-compose.yml
+  template:
+    src: docker-compose.yml
+    dest: '{{ nextcloud_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: 0640
+  notify: nextcloud_docker-compose-up
+
+- name: Nextcloud Dockerfile
+  template:
+    src: Dockerfile
+    dest: '{{ nextcloud_path }}/docker-build/Dockerfile'
+    owner: root
+    group: root
+    mode: 0640
+  notify: nextcloud_docker-compose-build
+
+- name: notify_push Dockerfile
+  template:
+    src: notify_push/Dockerfile
+    dest: '{{ nextcloud_path }}/notify_push/Dockerfile'
+    owner: root
+    group: root
+    mode: 0640
+  notify: nextcloud_docker-compose-build
+
+  # originally from https://github.com/nextcloud/docker/blob/master/.examples/docker-compose/with-nginx-proxy/mariadb-cron-redis/fpm/web/nginx.conf
+- name: nextcloud nginx.conf
+  template:
+    src: templates/nginx.conf
+    dest: '{{ nextcloud_path }}/nginx.conf'
+    owner: root
+    group: root
+    mode: 0640
+  notify: nextcloud_docker-compose-restart
+
+- name: php.conf
+  template:
+    src: templates/php.conf
+    dest: '{{ nextcloud_path }}/php.conf'
+    owner: root
+    group: www-data
+    mode: 0640
+  notify: nextcloud_docker-compose-restart
+
+- name: occ wrapper
+  copy:
+    content: |
+      #!/bin/bash
+      set -eu
+      dir="$(dirname $(readlink -f $0))"
+      cd $dir
+      docker-compose exec --user www-data nextcloud php occ $@
+    dest: '{{ nextcloud_path }}/occ'
+    owner: root
+    group: root
+    mode: 0750
+
+- name: mysqldump wrapper
+  copy:
+    content: |
+      #!/bin/bash
+      set -eux
+      dir="$(dirname $(readlink -f $0))"
+      cd $dir
+      docker-compose exec -T db sh -c "mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" nextcloud  --default-character-set=utf8mb4 --skip-dump-date | \
+        sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' | \
+        gzip --rsyncable > /db-dumps/nextcloud.sql.gz"
+    dest: '{{ nextcloud_path }}/mysqldump.sh'
+    owner: root
+    group: root
+    mode: 0750
+
+
+- name: Nextcloud backup prebackup
+  lineinfile:
+    path: /usr/local/bin/prebackup.sh
+    line: '{{ nextcloud_path }}/mysqldump.sh'
+    regex: '^{{ nextcloud_path }}'
+
+- name: Flush handler before up
+  meta: flush_handlers
+
+- name: nextcloud docker-compose-up
+  docker_compose:
+    project_src: '{{ nextcloud_path }}'
+    state: present
+    build: '{{ nextcloud_docker_pull }}'
+    pull: '{{ nextcloud_docker_pull }}'
+
+# todo:
+#  - mysql backup
+
+
+# ./occ config:system:set overwritehost --value="mydomain.com"
+# ./occ config:system:set overwriteprotocol --value="https"
+# ./occ config:system:set overwrite.cli.url --value="https://mydomain.com/"
+
+# https://github.com/nextcloud/nextcloud-snap/wiki/Putting-the-snap-behind-a-reverse-proxy

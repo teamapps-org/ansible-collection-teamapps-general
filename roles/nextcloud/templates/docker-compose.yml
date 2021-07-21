@@ -1,0 +1,109 @@
+version: '3'
+
+services:
+  db:
+    image: mariadb:{{ nextcloud_mariadb_version }}
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    volumes:
+      - ./db-data:/var/lib/mysql
+      - ./db-dumps:/db-dumps
+    environment:
+      TZ: Europe/Berlin
+      MYSQL_ROOT_PASSWORD: '{{ nextcloud_mysql_root_password }}'
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: '{{ nextcloud_mysql_password }}'
+
+  redis:
+    image: redis
+    restart: always
+    environment:
+      TZ: Europe/Berlin
+
+  nextcloud:
+    # image: nextcloud:{{ nextcloud_version }}-fpm
+    build: docker-build
+    # image: nextcloud-custom:{{ nextcloud_version }}-fpm
+    restart: always
+    volumes:
+      - ./nextcloud:/var/www/html
+      - ./nextcloud-apps:/var/www/html/custom_apps
+      - ./nextcloud-config:/var/www/html/config
+      - ./php.conf:/usr/local/etc/php-fpm.d/zz-custom.conf:ro
+      - '{{ nextcloud_data_dir }}:/var/www/html/data'
+      # - ./theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
+    environment:
+      TZ: Europe/Berlin
+      MYSQL_HOST: db
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_PASSWORD: '{{ nextcloud_mysql_password }}'
+      REDIS_HOST: redis
+      NEXTCLOUD_TRUSTED_DOMAINS: 'localhost,{{ nextcloud_domain }}'
+      # NEXTCLOUD_ADMIN_USER:  # doesn't work, configure manually with web setup
+      # NEXTCLOUD_ADMIN_PASSWORD:
+      # SMTP_HOST: 172.28.0.1 # configure email manually with mail account
+    depends_on:
+      - db
+      - redis
+
+  nginx:
+    image: nginx
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nextcloud:/var/www/html
+      - ./nextcloud-apps:/var/www/html/custom_apps
+      - ./nextcloud-config:/var/www/html/config
+      - '{{ nextcloud_data_dir }}:/var/www/html/data'
+    environment:
+      TZ: Europe/Berlin
+      VIRTUAL_HOST: {{ nextcloud_domain }}
+      LETSENCRYPT_HOST: {{ nextcloud_domain }}
+      LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
+    depends_on:
+      - nextcloud
+    networks:
+      - webproxy
+      - default
+
+  cron:
+    image: nextcloud:{{ nextcloud_version }}-fpm
+    restart: always
+    volumes:
+      - ./nextcloud:/var/www/html
+      - ./nextcloud-apps:/var/www/html/custom_apps
+      - ./nextcloud-config:/var/www/html/config
+      - '{{ nextcloud_data_dir }}:/var/www/html/data'
+    entrypoint: /cron.sh
+    environment:
+      TZ: Europe/Berlin
+    depends_on:
+      - db
+      - redis
+
+  notify_push:
+    build: ./notify_push
+    restart: always
+    environment:
+      - NEXTCLOUD_URL=http://nginx/
+      # - LOG=debug
+    volumes:
+      - ./nextcloud-config/config.php:/var/www/html/config/config.php:ro
+    expose:
+      - 7867
+    networks:
+      - webproxy
+      - default
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.16.238.0/24"
+  webproxy:
+    external:
+      name: webproxy
