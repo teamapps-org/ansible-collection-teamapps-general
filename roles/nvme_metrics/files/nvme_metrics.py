@@ -25,6 +25,7 @@ def get_nvme_list(device_path=""):
     proc = subprocess.Popen("/usr/sbin/nvme list %s -o json" % device_path,
                             shell=True,
                             stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
                             encoding='utf-8')
     err = proc.wait()
 
@@ -45,6 +46,7 @@ def get_smart_log(device_path):
     proc = subprocess.Popen("/usr/sbin/nvme smart-log %s -o json" % device_path,
                             shell=True,
                             stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
                             encoding='utf-8')
     err = proc.wait()
 
@@ -64,13 +66,15 @@ def get_ctrl_regs(device_path):
     proc = subprocess.Popen("/usr/sbin/nvme show-regs %s -o json" % device_path,
                             shell=True,
                             stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
                             encoding='utf-8')
     err = proc.wait()
 
     (stdout, stderr) = proc.communicate()
 
     if proc.returncode != 0:
-        eprint("nvme command failed %d %s %s" % (proc.returncode, stdout, stderr))
+        ## don't log error in cronjob on systems not supporting the command
+        # eprint("nvme command failed %d %s %s" % (proc.returncode, stdout, stderr))
         json_data = {'error': "nvme command failed %d %s %s" % (
             proc.returncode, stdout, stderr)}
     else:
