@@ -123,13 +123,13 @@ groups:
           /
           sum by (host)(netdata_system_ram_MiB_average)
           *100
-          < 10
+          < 5
         for: 5m
         labels:
           severity: warning
         annotations:
           summary: "Low Mem available on host {{ $labels.host }}"
-          description: "{{ $labels.host }} available RAM was below 10% for more than 5 minutes"
+          description: "{{ $labels.host }} available RAM was below 5% for more than 5 minutes"
 
   # - name:
   #   rules:
