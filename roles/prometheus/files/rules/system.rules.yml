@@ -51,7 +51,7 @@ groups:
       - alert: DiskUsagePercentage
         expr: |
           (
-            sum by (host, family)(netdata_disk_space_GiB_average{dimension="used", family!~"/boot/efi|/dev/shm|/run|/dev|/run/lock"})
+            sum by (host, family)(netdata_disk_space_GiB_average{dimension="used", family!~"/boot/efi|/dev/shm|/run|/dev|/run/lock|/var/lib/lxd.*"})
             /
             sum by (host, family)(netdata_disk_space_GiB_average{})
           )
@@ -67,7 +67,7 @@ groups:
       - alert: DiskSpacePrediction36h
         expr: |
           predict_linear(
-            netdata_disk_space_GiB_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*"}
+            netdata_disk_space_GiB_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*|/var/lib/lxd.*"}
             [36h], 3600 * 36
             )
           < 5
@@ -81,7 +81,7 @@ groups:
       - alert: DiskSpacePrediction72h
         expr: |
           predict_linear(
-            netdata_disk_space_GiB_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*"}
+            netdata_disk_space_GiB_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*|/var/lib/lxd.*"}
             [36h], 3600 * 72
             )
           < 5
@@ -95,7 +95,7 @@ groups:
       - alert: DiskInodesPrediction72h
         expr: |
           predict_linear(
-            netdata_disk_inodes_inodes_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*"}
+            netdata_disk_inodes_inodes_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*|/var/lib/lxd.*"}
             [36h], 3600 * 72
             )
           < 20000
