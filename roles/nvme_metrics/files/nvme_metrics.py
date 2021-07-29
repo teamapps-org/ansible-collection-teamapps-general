@@ -36,8 +36,10 @@ def get_nvme_list(device_path=""):
         json_data = {'error': "nvme command failed %d %s %s" % (
             proc.returncode, stdout, stderr)}
         exit(1)
-    else:
+    elif stdout.find('Devices') != -1:
         json_data = json.loads(stdout)
+    else:
+        json_data = {'Devices': [],}
 
     return json_data
 
