@@ -52,6 +52,7 @@ backuppc_files_exclude_default:
   - '/var/tmp'
   - '/var/lib/yum/yumdb/'
   - '/zfs_log_file'
+  - '.zfs'
 
 # var to configure additional excludes
 backuppc_files_exclude_extra: []
