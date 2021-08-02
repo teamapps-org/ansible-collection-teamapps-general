@@ -10,7 +10,6 @@ Role to install and configure vmagent. Installs by using binare from Github rele
     - all
   vars:
     # local vmagent to scrape netdata and send to victoriametrics
-    vmagent_version: v1.59.0
     vmagent_remotewrite_url: https://metrics.vic1.example.com/api/v1/write
     vmagent_remotewrite_username: vmagent-to-vic-write
     vmagent_remotewrite_password: password
