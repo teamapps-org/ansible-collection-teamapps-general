@@ -1,5 +1,10 @@
 ---
 
+- name: vector_daemon_reload_systemd
+  become: true
+  systemd:
+    daemon_reload: true
+
 - name: validate vector config
   command: /usr/bin/vector validate --config-toml /etc/vector/*.toml
   listen:

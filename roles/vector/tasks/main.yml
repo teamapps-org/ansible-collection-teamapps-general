@@ -54,6 +54,29 @@
   notify: reload vector
   when: vector_docker_to_loki | default(False)
 
+- name: systemd override directory
+  file:
+    path: /etc/systemd/system/vector.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+
+# Workaround for validate PreStart Command not respecting /etc/default/vector
+# disable validate command
+# https://github.com/timberio/vector/issues/8560
+- name: systemd override
+  template:
+    src: systemd.override.conf
+    dest: /etc/systemd/system/vector.service.d/override.conf
+    owner: root
+    group: root
+    mode: 0640
+  notify: vector_daemon_reload_systemd
+
+- name: reload systemd now
+  meta: flush_handlers
+
 - name: Add vector user to systemd-journal group
   user:
     name: vector
