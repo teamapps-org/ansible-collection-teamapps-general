@@ -118,7 +118,7 @@
     creates: /zfsdata
 
 # extend pool with more vdevs (for mirror: extend by pairs of 2 devices)
-- name: extend zpool zfsdata
+- name: extend zpool zfsdata # noqa no-handler
   command: "zpool add zfsdata mirror {{ item | join(' ') }} -o ashift=12"
   loop: '{{ hetzner_robot_zfsdata_extend_groups }}'
   when:
@@ -151,11 +151,14 @@
   args:
     creates: /zfs_log_file
   register: zfsbulk_log_file
-  when: hetzner_robot_zfsbulk_writelog_file
+  when:
+    - hetzner_robot_zfsbulk
+    - hetzner_robot_zfsbulk_writelog_file
 
 - name: add zfs write intent log
   command: zpool add zfsbulk log /zfs_log_file
   when:
+    - hetzner_robot_zfsbulk
     - hetzner_robot_zfsbulk_writelog_file
     - zfsbulk_log_file.changed
 
