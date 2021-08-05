@@ -4,13 +4,33 @@ Open Source Website statistics.
 
 Wrapper for webserver role
 
+## Variables
+
+See [defaults.yml](defaults/main.yml)
+
+Required configuration:
+
+* `matomo_domain:` (default: `'{{ ansible_fqdn }}'` )
+* `matomo_mysql_root_password:`
+* `matomo_mysql_password:`
+
 ## Setup
 
-First time, requires manual installation of matomo software:
+First time, requires manual configuration of matomo software:
 
-* wget https://builds.matomo.org/matomo.zip && unzip matomo.zip
-* move matomo folder to /container/matomo/code/matomo
-* chown www-data: -R /container/matomo/code/
+* Open matomo domain and configure database, admin account etc.
+
+Database Configuration:
+
+Host: `db`
+User: `matomo`
+Password: (value of `matomo_mysql_password` )
+Database: `matomo`
+Prefix: `matomo_`
+
+## Matomo Configuration
+
+* System/General: Disable Auto Archiving. a cronjob is configured by the ansible role.
 
 ## SSL
 
