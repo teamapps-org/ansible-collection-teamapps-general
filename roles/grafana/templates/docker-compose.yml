@@ -99,18 +99,27 @@ services:
 
   # https://github.com/grafana/grafana-image-renderer/blob/master/docs/remote_rendering_using_docker.md
   grafana-image-renderer:
-    image: grafana/grafana-image-renderer:latest
+    image: {{ grafana_image_renderer_image }}:{{ grafana_image_renderer_version }}
     environment:
+      HTTP_PORT: 8081
       ENABLE_METRICS: 'true'
       RENDERING_VERBOSE_LOGGING: 'false'
       LOG_LEVEL: 'warning'
       RENDERING_MODE: 'clustered'
       RENDERING_CLUSTERING_MODE: 'context'
-      RENDERING_CLUSTERING_MAX_CONCURRENCY: '5'
+      RENDERING_CLUSTERING_MAX_CONCURRENCY: '3'
     expose:
       - 8081
+    ports:
+      - {{ grafana_image_renderer_port }}:8081
     networks:
       - grafana
+    deploy:
+      resources:
+        limits:
+          cpus: '{{ grafana_image_renderer_cpu_limit }}'
+          memory: '{{ grafana_image_renderer_mem_limit }}'
+
 
 networks:
   grafana:

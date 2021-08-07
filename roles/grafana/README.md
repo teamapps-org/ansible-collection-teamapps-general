@@ -98,3 +98,20 @@ roles/grafana_custom/
 └── tasks
     └── main.yml
 ~~~
+
+## Grafana Image Renderer
+
+This role installs grafana-image-renderer as docker container. The container exposes metrics on the configured port. (default `127.0.0.8:18081`)
+There's [dashboard](https://grafana.com/grafana/dashboards/12203) published that explains the details of how to configure and monitor the rendering service using Prometheus as a data source.
+
+You can monitor the metrics exposed by the service on that port. Example using vmagent role in this collection:
+
+Add to host_vars:
+
+~~~yaml
+vmagent_scrape_configs_custom:
+  - job_name: 'grafana-image-rendering-service'
+    static_configs:
+      - targets: ['127.0.0.8:18081']
+        instance: '{{ grafana_domain }}'
+~~~

@@ -58,3 +58,11 @@ grafana_default_dashboards:
 grafana_custom_dashboards: []
 
 grafana_dashboards: '{{ grafana_default_dashboards + grafana_custom_dashboards }}'
+
+# use bitnami build: https://hub.docker.com/r/bitnami/grafana-image-renderer
+# non-root and automated build of grafana/grafana-image-renderer
+grafana_image_renderer_image: bitnami/grafana-image-renderer
+grafana_image_renderer_version: latest
+grafana_image_renderer_cpu_limit: 0.8
+grafana_image_renderer_mem_limit: 200M
+grafana_image_renderer_port: 127.0.0.8:18081 # port for metric scraping
