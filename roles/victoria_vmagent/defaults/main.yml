@@ -21,22 +21,28 @@ vmagent_service_args:
   remoteWrite.basicAuth.username: '{{ vmagent_remotewrite_username }}'
   remoteWrite.basicAuth.password: '{{ vmagent_remotewrite_password }}'
 
-vmagent_scrape_config:
+vmagent_scrape_configs_default:
+  - job_name: "vmagent"
+    static_configs:
+      - targets: [127.0.0.9:8429]
+        labels:
+          instance: '{{ ansible_fqdn }}'
+          host: '{{ ansible_hostname }}'
+  - job_name: node
+    file_sd_configs:
+      - files:
+          - "{{ vmagent_sd_config_dir }}/*.node.yml"
+
+# can be used to override/extend on host/group
+vmagent_scrape_configs_custom: []
+vmagent_scrape_configs: '{{ vmagent_scrape_configs_default + vmagent_scrape_configs_custom }}'
+
+vmagent_promscrape_config:
   global:
     scrape_interval: 10s
     external_labels:
       scraper_instance: "{{ ansible_fqdn | default(ansible_host) | default(inventory_hostname) }}"
-  scrape_configs:
-    - job_name: "vmagent"
-      static_configs:
-        - targets: [127.0.0.9:8429]
-          labels:
-            instance: '{{ ansible_fqdn }}'
-            host: '{{ ansible_hostname }}'
-    - job_name: node
-      file_sd_configs:
-        - files:
-            - "{{ vmagent_sd_config_dir }}/*.node.yml"
+  scrape_configs: '{{ vmagent_scrape_configs }}'
 
 # use control or remote host to download installation archive
 vmagent_install_download_to_control: true
