@@ -4,6 +4,7 @@
 
 groups:
   - name: http checks
+    interval: 1m
     rules:
       - alert: EndpointDown
         expr: probe_success == 0
@@ -16,6 +17,7 @@ groups:
 
       - alert: http probe 2xx
         expr: "probe_http_status_code{job=~'http_2xx(_redirect)?'} > 299 OR probe_http_status_code{job=~'http_2xx(_redirect)?'} < 200"
+        for: 1m
         annotations:
           summary: "HTTP Not OK: {{ $labels.host }}"
           description: "Expected HTTP status 2xx, got {{ $value }} for {{ $labels.instance }}"
@@ -24,6 +26,7 @@ groups:
 
       - alert: http probe 3xx
         expr: "probe_http_status_code{job='http_3xx'} > 399 OR probe_http_status_code{job='http_3xx'} < 300"
+        for: 1m
         annotations:
           summary: "HTTP Not 3xx: {{ $labels.host }}"
           description: "Expected HTTP status 3xx, got {{ $value }} for {{ $labels.instance }}"
@@ -32,6 +35,7 @@ groups:
 
       - alert: http probe 403
         expr: "probe_success{job='http_403'} == 0"
+        for: 1m
         annotations:
           summary: "HTTP failure - {{ $labels.host }}"
           description: "HTTP failure - {{ $labels.instance }}"
@@ -48,11 +52,11 @@ groups:
           severity: warning
 
       - alert: http probe zammad
+        expr: probe_failed_due_to_regex{job='http_zammad'} == 1
+        for: 5m
         annotations:
           summary: 'Zammad check failed: {{ $labels.host }}'
           description: 'Zammad health check failed: {{ $labels.instance }}'
-        expr: probe_failed_due_to_regex{job='http_zammad'} == 1
-        for: 5m
         labels:
           severity: warning
 
