@@ -113,6 +113,7 @@ vmagent_scrape_configs_custom:
   - job_name: 'grafana-image-rendering-service'
     static_configs:
       - targets: ['127.0.0.8:18081']
-        instance: '{{ grafana_domain }}'
-        host: '{{ ansible_hostname }}'
+        labels:
+          instance: '{{ grafana_domain }}'
+          host: '{{ ansible_hostname }}'
 ~~~
