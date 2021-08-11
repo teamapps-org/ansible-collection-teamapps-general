@@ -23,3 +23,9 @@ webproxy_loki_user: '{{ global_loki_user | default() }}'
 webproxy_loki_password: '{{ global_loki_password | default() }}'
 
 webproxy_letsencrypt_companion_tag: latest
+
+# Proxy Timeout options
+# https://nginx.org/en/docs/http/ngx_http_proxy_module.html
+webproxy_proxy_read_timeout: 60s
+webproxy_proxy_connect_timeout: 60s
+webproxy_proxy_send_timeout: 60s

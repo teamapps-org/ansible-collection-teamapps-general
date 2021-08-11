@@ -58,7 +58,7 @@
     owner: root
     group: root
     mode: '0640'
-  notify: webproxy_docker-compose-restart
+  notify: webproxy_nginx_reload
 
 - name: 'Nginx custom_options.conf'
   template:
@@ -67,7 +67,7 @@
     owner: root
     group: root
     mode: '0640'
-  notify: webproxy_docker-compose-restart
+  notify: webproxy_nginx_reload
 
   # from evertramos, with tuned listen backlog=65536
 - name: 'Copy template for generated server config, nginx.tmpl'
@@ -77,7 +77,7 @@
     owner: root
     group: root
     mode: '0640'
-  notify: webproxy_docker-compose-restart
+  notify: webproxy_generator_restart
 
 - name: webproxy_docker-compose-up
   docker_compose:
