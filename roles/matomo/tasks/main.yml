@@ -30,7 +30,9 @@
     # mode: 0640
     owner: www-data
     group: www-data
-    creates: '{{ matomo_path }}/code/index.php'
+    creates: '{{ matomo_path }}/code/matomo/index.php'
+  tags:
+    - matomo
 
 ## if config file exists, the first-run setup does not work anymore. # TODO: How to preconfigure database for installer?
 # - name: copy initial config file
