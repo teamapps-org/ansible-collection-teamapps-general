@@ -56,6 +56,7 @@ backuppc_files_exclude_default:
   - '/var/lib/yum/yumdb/'
   - '/zfs_log_file'
   - '.zfs'
+  # warning: these options are overwritten by backuppcclient settings
 
 # var to configure additional excludes
 backuppc_files_exclude_extra: []
