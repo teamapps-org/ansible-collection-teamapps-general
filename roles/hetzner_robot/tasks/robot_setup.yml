@@ -175,7 +175,24 @@
     name: zfsdata
     state: present
     extra_zfs_properties:
+      atime: on
       relatime: on
+      # snapdir: visible
+      xattr: sa
+      acltype: posixacl
+
+- name: set zfs dataset properties for zfsbulk
+  zfs:
+    name: zfsbulk
+    state: present
+    extra_zfs_properties:
+      atime: on
+      relatime: on
+      # snapdir: visible
+      xattr: sa
+      acltype: posixacl
+  when:
+    - hetzner_robot_zfsbulk
 
 - name: create zfs volume for docker
   zfs:

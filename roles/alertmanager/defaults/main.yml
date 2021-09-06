@@ -1,7 +1,7 @@
 ---
 # default vars for alertmanager role
 alertmanager_image: prom/alertmanager
-alertmanager_version: v0.22.2
+alertmanager_version: v0.23.0
 alertmanager_path: /container/alertmanager
 alertmanager_db_dir: /container/alertmanager/data
 

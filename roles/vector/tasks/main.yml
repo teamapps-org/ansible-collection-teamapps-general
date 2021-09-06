@@ -73,6 +73,14 @@
     group: root
     mode: 0640
   notify: vector_daemon_reload_systemd
+  when: vector_systemd_override | default(False)
+
+- name: remove validate workaround
+  file:
+    path: /etc/systemd/system/vector.service.d/override.conf
+    state: absent
+  notify: vector_daemon_reload_systemd
+  when: not (vector_systemd_override | default(False))
 
 - name: reload systemd now
   meta: flush_handlers
