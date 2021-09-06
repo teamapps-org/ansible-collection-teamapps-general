@@ -1705,7 +1705,7 @@ $Conf{PingCmd} = '$pingPath -c 1 $host';
 # WAN or dialup connections the round-trip time will be typically more
 # than 20msec.  Tune if necessary.
 #
-$Conf{PingMaxMsec} = 20;
+$Conf{PingMaxMsec} = {{ backuppc_ping_max_msec }};
 
 #
 # Compression level to use on files.  0 means no compression.  Compression

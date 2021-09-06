@@ -32,6 +32,9 @@ backuppc_blackout_periods:
 backuppc_df_max_usage_pct: 95
 backuppc_df_max_inode_pct: 95
 
+# max roud-trip time for ping check
+backuppc_ping_max_msec: 20
+
 # file excludes default (for / backups) (is overwritten by backuppcclient config)
 backuppc_files_exclude_default:
   - '.cache'
