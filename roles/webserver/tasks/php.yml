@@ -1,4 +1,4 @@
-- name: php config directory
+- name: php config directory ({{ webserver_domain }})
   file:
     path: '{{ webserver_path }}/php'
     state: directory
@@ -6,7 +6,7 @@
     group: root
     mode: '0755'
 
-- name: deploy config
+- name: deploy php config ({{ webserver_domain }})
   template:
     src: '{{ item }}'
     dest: '{{ webserver_path }}/{{ item }}'
@@ -19,7 +19,7 @@
     - php/php-override.ini
   notify: webserver_restart_php
 
-- name: remove old files
+- name: remove old php files ({{ webserver_domain }})
   file:
     path: '{{ webserver_path }}/{{ item }}'
     state: absent

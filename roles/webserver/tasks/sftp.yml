@@ -1,14 +1,12 @@
-- name: webserver_directories
+- name: create sftp directory ({{ webserver_domain }})
   file:
-    path: '{{ item }}'
+    path: '{{ webserver_path }}/sftp/'
     state: directory
     owner: root
     group: root
     mode: '0755'
-  with_items:
-    - '{{ webserver_path }}/sftp/'
 
-- name: generate host keys
+- name: sftp generate host keys ({{ webserver_domain }})
   command: ssh-keygen -t {{ item }} -f {{ webserver_path }}/sftp/ssh_host_{{ item }}_key
   args:
     creates: "{{ webserver_path }}/sftp/ssh_host_{{ item }}_key"
@@ -17,7 +15,7 @@
     - ed25519
   notify: webserver_recreate_sftp
 
-- name: authorized_keys
+- name: sftp authorized_keys ({{ webserver_domain }})
   copy:
     content: '{{ webserver_sftp_authorized_keys }}'
     dest: "{{ webserver_path }}/sftp/authorized_keys"

@@ -1,4 +1,4 @@
-- name: Database Data Directory
+- name: Database Data Directory ({{ webserver_domain }})
   file:
     path: '{{ webserver_path }}/db'
     state: directory
@@ -6,7 +6,7 @@
     group: '999'
     mode: '0755'
 
-- name: Dbdump Directory
+- name: Dbdump Directory ({{ webserver_domain }})
   file:
     path: '{{ webserver_path }}/dbdumps'
     state: directory
@@ -14,7 +14,7 @@
     group: '999'
     mode: '0755'
 
-- name: mysqldump wrapper
+- name: mysqldump wrapper ({{ webserver_domain }})
   copy:
     content: |
       #!/bin/bash
@@ -30,13 +30,13 @@
     group: root
     mode: 0750
 
-- name: Mysql backup prebackup
+- name: Mysql backup prebackup ({{ webserver_domain }})
   lineinfile:
     path: /usr/local/bin/prebackup.sh
     line: '{{ webserver_path }}/mysqldump.sh'
     regex: '^{{ webserver_path }}'
 
-- name: mysqlrestore wrapper
+- name: mysqlrestore wrapper ({{ webserver_domain }})
   copy:
     content: |
       #!/bin/bash

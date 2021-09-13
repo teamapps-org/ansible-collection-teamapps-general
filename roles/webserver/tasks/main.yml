@@ -1,7 +1,7 @@
 # nginx webserver
 
 # config based on https://github.com/mikechernev/dockerised-php/tree/feature/log-to-stdout
-- name: webserver_directories
+- name: create directories ({{ webserver_domain }})
   file:
     path: '{{ item }}'
     state: directory
@@ -11,7 +11,7 @@
   with_items:
     - '{{ webserver_path }}'
 
-- name: deploy docker-compose.yml
+- name: deploy docker-compose.yml ({{ webserver_domain }})
   template:
     src: docker-compose.yml.j2
     dest: '{{ webserver_path }}/docker-compose.yml'
@@ -19,7 +19,7 @@
     group: root
     mode: '0640'
 
-- name: create user owned files
+- name: create user owned files ({{ webserver_domain }})
   file:
     path: '{{ item }}'
     state: directory
@@ -30,7 +30,7 @@
     - '{{ webserver_path }}/code'
     - '{{ webserver_path }}/code/{{ webserver_document_root }}' # document root
 
-- name: deploy nginx config
+- name: deploy nginx config ({{ webserver_domain }})
   template:
     src: '{{ webserver_nginx_template }}'
     dest: '{{ webserver_path }}/site.conf'
@@ -47,16 +47,19 @@
 #     group: root
 #     mode: '0640'
 
-- include_tasks: mysql.yml
+- name: Include MySQL Tasks ({{ webserver_domain }})
+  include_tasks: mysql.yml
   when: webserver_mysql_enable
 
-- include_tasks: php.yml
+- name: Include PHP Config ({{ webserver_domain }})
+  include_tasks: php.yml
   when: webserver_php_enable
 
-- include_tasks: sftp.yml
+- name: Include FTP Access Tasks ({{ webserver_domain }})
+  include_tasks: sftp.yml
   when: webserver_sftp_enable
 
-- name: configure basic auth htpasswd in webproxy
+- name: configure basic auth htpasswd in webproxy ({{ webserver_domain }})
   copy:
     content: "{{ webserver_basic_auth }}\n"
     dest: '{{ webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
@@ -67,7 +70,7 @@
     - webserver_basic_auth != ''
   notify: webserver_restart_nginx
 
-- name: Remove basic auth
+- name: Remove basic auth ({{ webserver_domain }})
   file:
     path: '{{ webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
     state: absent
@@ -76,7 +79,7 @@
   notify: webserver_restart_nginx
 
 
-- name: configure basic auth for myadmin if configured
+- name: configure basic auth for myadmin if configured ({{ webserver_domain }})
   copy:
     content: "{{ webserver_myadmin_htpasswd }}\n"
     dest: '{{ webserver_path }}/htpasswd_myadmin'
@@ -86,7 +89,7 @@
   when:
     - webserver_myadmin_enable
 
-- name: webserver_docker-compose-up
+- name: docker-compose-up ({{ webserver_domain }} in {{ webserver_path }})
   docker_compose:
     project_src: '{{ webserver_path }}'
     state: present
