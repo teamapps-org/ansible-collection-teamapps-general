@@ -63,7 +63,7 @@ services:
 {% endif %}
 {% if webserver_mysql_enable %}
   db:
-    image: mariadb:latest
+    image: mariadb:{{ webserver_mariadb_version }}
     restart: always
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-allowed-packet=64M
     volumes:

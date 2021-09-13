@@ -37,6 +37,7 @@ webserver_sftp_port: 2222
 webserver_sftp_authorized_keys: ''
 
 webserver_mysql_enable: False
+webserver_mariadb_version: latest
 # webserver_mysql_root_password:
 # webserver_mysql_database:
 # webserver_mysql_user:
