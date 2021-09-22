@@ -59,12 +59,23 @@
     group: root
     mode: '0640'
 
+- name: include elasticsearch expose tasks
+  include_tasks: elasticsearch.yml
+  when: zammad_elasticsearch_expose
+
+- name: remove override when not exposed
+  file:
+    path: '{{ zammad_path }}/docker-compose.override.yml'
+    state: absent
+  when: not zammad_elasticsearch_expose
+
 - name: zammad_docker-compose-up
   docker_compose:
     project_src: '{{ zammad_path }}'
     state: present
     pull: '{{ zammad_docker_pull }}'
     debug: True
+    remove_orphans: True
   register: zammad_compose_return
   changed_when: zammad_compose_return.actions | count > 1 # workaround. zammad-init is always started and stops after init
 

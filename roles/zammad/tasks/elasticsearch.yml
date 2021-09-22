@@ -1,0 +1,33 @@
+- name: elasticsearch basic auth
+  copy:
+    dest: '{{ webproxy_path }}/data/htpasswd/{{ zammad_elasticsearch_domain }}'
+    content: "{{ zammad_elasticsearch_htpasswd }}\n"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - webproxy_nginx_reload
+    - webproxy_generator_restart
+
+- name: elasticsearch webproxy security (limited)
+  copy:
+    dest: '{{ webproxy_path }}/data/vhost.d/{{ zammad_elasticsearch_domain }}_location'
+    content: |
+      # only allow GET and POST Requests to elasticsearch
+      limit_except GET POST {
+        deny all;
+      }
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - webproxy_nginx_reload
+    - webproxy_generator_restart
+
+- name: elasticsearch docker-compose override
+  template:
+    src: docker-compose.override.yml
+    dest: '{{ zammad_path }}/docker-compose.override.yml'
+    owner: root
+    group: root
+    mode: 0640

@@ -1,0 +1,18 @@
+# add dependency so we can notify the handlers
+dependencies:
+  - role: teamapps.general.webproxy
+
+galaxy_info:
+  author: Philipp Gassmann
+  company: ""
+  description: Zammad
+  galaxy_tags:
+    - "zammad"
+  license: Apache 2.0
+  min_ansible_version: '3.0'
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - bionic
+        - xenial
