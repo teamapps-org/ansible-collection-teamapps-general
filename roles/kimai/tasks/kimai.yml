@@ -119,6 +119,6 @@
   command: 'docker-compose run --user 33 php /usr/local/bin/composer install --no-dev --optimize-autoloader'
   args:
     chdir: '{{ kimai_path }}'
-    creates: '{{ kimai_path }}/code/vendor/kimai'
+    creates: '{{ kimai_path }}/code/vendor/autoload.php'
   notify:
     - kimai_update
