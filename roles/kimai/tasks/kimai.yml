@@ -48,8 +48,9 @@
     webserver_domain: '{{ kimai_domain }}'
     webserver_php_enable: True
     webserver_mysql_enable: True
-    webserver_php_version: '7' # https://github.com/kevinpapst/kimai2/pull/2158
+    webserver_php_version: '{{ kimai_php_version }}'
     webserver_php_extensions: '{{ kimai_php_extensions }}'
+    webserver_mariadb_version: '{{ kimai_mariadb_version }}'
     webserver_mysql_root_password: '{{ kimai_mysql_root_password }}'
     webserver_mysql_database: '{{ kimai_mysql_database }}'
     webserver_mysql_user: '{{ kimai_mysql_user }}'

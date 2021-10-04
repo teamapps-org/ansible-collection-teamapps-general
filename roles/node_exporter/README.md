@@ -14,7 +14,7 @@ Node Exporter and Victoriametrics vmagent integration
 ~~~yaml
 ## node_exporter vars
 manage_node_exporter: '{{ ansible_virtualization_role in [ "host", "NA" ] }}' # only on physical servers
-node_exporter_version: 1.1.2 # or latest
+node_exporter_version: 1.2.2 # or latest
 node_exporter_web_listen_address: "127.0.0.9:9100"
 node_exporter_web_telemetry_path: "/metrics"
 
@@ -27,8 +27,8 @@ node_exporter_enabled_collectors:
   - textfile:
       directory: "{{ node_exporter_textfile_dir }}"
   - filesystem:
-      ignored-mount-points: "^/(sys|proc|dev)($|/)"
-      ignored-fs-types: "^(sysfs|procfs|autofs|overlay|nsfs|nfs)$"
+      mount-points-exclude: "^/(sys|proc|dev)($|/)"
+      fs-types-exclude: "^(sysfs|procfs|autofs|overlay|nsfs|nfs)$"
   - netdev:
       device-exclude: "^(docker[0-9]|br-.{12}|veth.{7})$"
   - netclass:
