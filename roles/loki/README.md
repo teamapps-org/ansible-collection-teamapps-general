@@ -47,6 +47,7 @@ Playbook
   hosts:
     - loki1.example.com
   roles:
+    - role: teamapps.general.webproxy
     - role: teamapps.general.loki
       tags:
         - logserver
@@ -55,14 +56,15 @@ Playbook
 
 ## Docker logging driver
 
-UPDATE: recommend using [vector](https://vector.dev) to send logs instead of loki log driver. driver was unstable, locking up and difficult to upgrade.
+UPDATE: We recommend using [vector](https://vector.dev) to send logs instead of using the loki log driver. The driver was unstable, locking up and difficult to upgrade.
 
 There's a ansible role for installing and configuring [vector](../vector/README.md)
 
-Install https://github.com/grafana/loki/blob/v1.6.0/docs/sources/clients/docker-driver/_index.md
-docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+[Installation and Upgrade of the Docker Driver](https://grafana.com/docs/loki/latest/clients/docker-driver/)
 
-Use/Configure https://github.com/grafana/loki/blob/v1.6.0/docs/sources/clients/docker-driver/configuration.md
+`docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions`
+
+[Configuration of the Docker Driver](https://grafana.com/docs/loki/latest/clients/docker-driver/configuration/#configuring-the-docker-driver)
 
 ~~~yaml
 version: "3.7"

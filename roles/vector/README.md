@@ -26,8 +26,8 @@ There are more variables that allow any configuration. You can also deploy confi
 
 ## Example query for docker logs in loki
 
-Log parsing.
+Log parsing. The logs can be printed in human friendly format by using the `json` filter and `line_format` to output the message field.
 
 ~~~json
-{category="dockerlogs", compose_service="foo"} | json | line_format "{{.message}}" | logfmt | line_format "{{.compose_project}}/{{.compose_service}}: {{.msg}}"
+{category="dockerlogs", compose_service="foo"} | json | line_format "{{.compose_project}}/{{.compose_service}} {{ .source }} {{.message}}"
 ~~~
