@@ -32,3 +32,7 @@ loki_auth_request_cache_time_403: 30s
 loki_nginx_gateway_conf_template: '{{ "auth_basic-site.conf" if loki_auth == "basic" else "auth_request-site.conf" }}'
 
 loki_rules: []
+
+loki_storage_boltdb_shipper_cache_ttl: 24h  # Can be increased for faster performance over longer query periods, uses more disk space
+loki_chunk_store_max_look_back_period: 90d
+loki_table_manager_retention_period: 91d # needs to be bigger than look back period
