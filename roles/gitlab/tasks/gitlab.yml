@@ -47,3 +47,14 @@
     path: /usr/local/bin/prebackup.sh
     line: 'gitlab-backup create BACKUP=auto GZIP_RSYNCABLE=yes CRON=1 SKIP={{ gitlab_backup_skip }}'
     regex: '^gitlab'
+
+- name: cronjob for gitlab registry garbage collect
+  cron:
+    name: gitlab-registry-garbage-collect
+    minute: "25"
+    hour: "04"
+    day: "1" # monthly
+    user: root
+    job: '/usr/bin/gitlab-ctl registry-garbage-collect {{ gitlab_registry_garbage_collect_options }}'
+    cron_file: registry_garbage_collect
+    state: '{{ gitlab_registry_garbage_collect_state }}'

@@ -21,3 +21,9 @@ gitlab_mail_password: '{{ base_mail_password }}'
 
 gitlab_backup_skip: "artifacts,registry,builds"
 gitlab_registry_path: /var/opt/gitlab/gitlab-rails/shared/registry
+
+# https://docs.gitlab.com/ee/administration/packages/container_registry.html#running-the-garbage-collection-on-schedule
+# cronjob to cleanup registry
+# executed monthly when enabled
+gitlab_registry_garbage_collect_state: absent # set to present to enable
+gitlab_registry_garbage_collect_options: --delete-manifests --delete-untagged
