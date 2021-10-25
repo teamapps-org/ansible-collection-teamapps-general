@@ -36,3 +36,6 @@ loki_rules: []
 loki_storage_boltdb_shipper_cache_ttl: 24h  # Can be increased for faster performance over longer query periods, uses more disk space
 loki_chunk_store_max_look_back_period: 90d
 loki_table_manager_retention_period: 91d # needs to be bigger than look back period
+
+loki_limits_ingestion_rate_mb: 4
+loki_limits_ingestion_burst_size_mb: 6

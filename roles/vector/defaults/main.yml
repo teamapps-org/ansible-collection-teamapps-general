@@ -39,3 +39,4 @@ vector_sinks: {}
 # vector GraphQL API https://vector.dev/docs/reference/api/
 vector_enable_api: False
 vector_api_address: 127.0.0.1:8686
+vector_loki_batch_max_bytes: 1024000 # 1mb. vector default 102400 (0.1mb)
