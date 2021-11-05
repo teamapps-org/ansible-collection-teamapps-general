@@ -39,3 +39,5 @@ loki_table_manager_retention_period: 91d # needs to be bigger than look back per
 
 loki_limits_ingestion_rate_mb: 4
 loki_limits_ingestion_burst_size_mb: 6
+
+loki_log_level: info # Supported values [debug, info, warn, error]

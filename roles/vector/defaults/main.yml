@@ -40,3 +40,12 @@ vector_sinks: {}
 vector_enable_api: False
 vector_api_address: 127.0.0.1:8686
 vector_loki_batch_max_bytes: 1024000 # 1mb. vector default 102400 (0.1mb)
+
+
+# enable sending metrics to prometheus/victoriametrics
+vector_metrics_enabled: False
+vector_metrics_endpoint: https://localhost:8087/
+vector_metrics_username:
+vector_metrics_password:
+
+vector_debug_mode: False

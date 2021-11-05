@@ -21,6 +21,10 @@ server:
   grpc_server_max_recv_msg_size: 15728640 # 15 MiB (int bytes), default 4MB
   grpc_server_max_send_msg_size: 15728640 # 15 MiB (int bytes), default 4MB
 
+  # Log only messages with the given severity or above. Supported values [debug,
+  # info, warn, error]
+  # CLI flag: -log.level
+  log_level: {{ loki_log_level }}
 
 # Configures the ingester and how the ingester will register itself to a
 # key value store.

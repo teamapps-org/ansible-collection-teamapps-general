@@ -45,7 +45,7 @@
   when: vector_add_docker_group | default(False)
   notify: restart vector
 
-- name: Copy docker to loki config
+- name: Copy docker-to-loki config
   template:
     src: 'docker-to-loki.toml.j2'
     dest: '/etc/vector/docker-to-loki.toml'
@@ -53,6 +53,29 @@
     validate: '/usr/bin/vector validate --config-toml /etc/vector/vector.toml --config-toml %s'
   notify: reload vector
   when: vector_docker_to_loki | default(False)
+
+- name: Remove docker-to-loki config
+  file:
+    path: '/etc/vector/docker-to-loki.toml'
+    state: absent
+  notify: reload vector
+  when: not vector_docker_to_loki | default(False)
+
+- name: Copy metrics-to-prom config
+  template:
+    src: 'metrics-to-prom.toml.j2'
+    dest: '/etc/vector/metrics-to-prom.toml'
+    mode: 0644
+    validate: '/usr/bin/vector validate --config-toml /etc/vector/vector.toml --config-toml %s'
+  notify: reload vector
+  when: vector_metrics_enabled | default(False)
+
+- name: Remove metrics-to-prom config
+  file:
+    path: '/etc/vector/metrics-to-prom.toml'
+    state: absent
+  notify: reload vector
+  when: not vector_metrics_enabled | default(False)
 
 - name: reload systemd now
   meta: flush_handlers

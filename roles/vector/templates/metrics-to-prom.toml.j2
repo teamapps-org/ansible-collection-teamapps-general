@@ -1,0 +1,18 @@
+[sources.metrics_vector_internal]
+  type = "internal_metrics"
+  scrape_interval_secs = 20
+  tags.host_key = "{{ ansible_hostname }}"
+
+
+[sinks.metrics_prom]
+  type = "prometheus_remote_write"
+  inputs = [ "metrics_vector_internal" ]
+  endpoint = "{{ vector_metrics_endpoint }}"
+  default_namespace = "service"
+
+  # Auth
+  auth.strategy = "basic" # required
+  auth.user = "{{ vector_metrics_username }}" # required
+  auth.password = "{{ vector_metrics_password }}" # required
+
+  healthcheck.enabled = {{ vector_metrics_healthcheck | default ('true')}} # optional, default
