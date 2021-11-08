@@ -48,4 +48,15 @@ vector_metrics_endpoint: https://localhost:8087/
 vector_metrics_username:
 vector_metrics_password:
 
+vector_prometheus_exporter_address: 127.0.0.9:9598
+
+# enable debug log and backtraces
 vector_debug_mode: False
+# install nightly build of vector (no automatic update, if already installed)
+vector_install_nightly: False
+
+# apt pin, lock version
+vector_version: '' # ''=install/keep current, latest=upgrade, 0.18.0
+vector_apt_force: False # Set temporarily to True for downgrades
+
+vector_pin_version: '{{ "*" if vector_version == "latest" else vector_version|string + "*" }}'

@@ -16,3 +16,9 @@
   auth.password = "{{ vector_metrics_password }}" # required
 
   healthcheck.enabled = {{ vector_metrics_healthcheck | default ('true')}} # optional, default
+
+[sinks.localhost_prometheus_exporter]
+  type = "prometheus_exporter"
+  inputs = [ "internal_metric_without_distribution" ]
+  address = "{{ vector_prometheus_exporter_address }}"
+  default_namespace = "service"
