@@ -19,6 +19,6 @@
 
 [sinks.localhost_prometheus_exporter]
   type = "prometheus_exporter"
-  inputs = [ "internal_metric_without_distribution" ]
+  inputs = [ "metrics_vector_internal" ]
   address = "{{ vector_prometheus_exporter_address }}"
   default_namespace = "service"
