@@ -60,6 +60,7 @@
     mode: '0640'
   notify: webproxy_nginx_reload
 
+  # from evertramos, with tuned listen backlog=65536
 - name: 'Nginx custom_options.conf'
   template:
     src: custom_options.conf
@@ -69,15 +70,15 @@
     mode: '0640'
   notify: webproxy_nginx_reload
 
-  # from evertramos, with tuned listen backlog=65536
-- name: 'Copy template for generated server config, nginx.tmpl'
-  copy:
-    src: nginx.tmpl
-    dest: '{{ webproxy_path }}/nginx.tmpl'
+- name: default_location
+  template:
+    src: default_location.j2
+    dest: '{{ webproxy_path }}/data/vhost.d/default_location'
     owner: root
     group: root
     mode: '0640'
-  notify: webproxy_generator_restart
+  notify: webproxy_nginx_reload
+  when: webproxy_access_log_off or webproxy_default_location_custom
 
 - name: webproxy_docker-compose-up
   docker_compose:

@@ -1,0 +1,7 @@
+{% if webproxy_access_log_off %}
+# disable access_log
+access_log off;
+{% endif %}
+{% if webproxy_default_location_custom %}
+{{ webproxy_default_location_custom }}
+{% endif %}

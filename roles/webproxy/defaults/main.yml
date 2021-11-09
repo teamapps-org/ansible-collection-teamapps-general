@@ -7,6 +7,11 @@ webproxy_path: '{{ container_path }}/webproxy'
 # set access_log off; in nginx
 webproxy_access_log_off: False
 
+# custom nginx config (http section) added to custom_options.conf in conf.d/
+webproxy_nginx_custom_options:
+# custom config for default location (included in every generated location)
+webproxy_default_location_custom:
+
 # pull docker images (docker-compose pull)
 webproxy_docker_pull: '{{ global_docker_pull | default(False) }}'
 
