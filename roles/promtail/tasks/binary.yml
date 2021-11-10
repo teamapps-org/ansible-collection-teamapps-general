@@ -88,6 +88,7 @@
     group: root
     mode: 0644
   notify:
+    - promtail_daemon_reload_systemd
     - restart promtail
 
 - name: Enable service promtail

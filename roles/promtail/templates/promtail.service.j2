@@ -6,7 +6,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=promtail
+User={{ promtail_user }}
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStart=/usr/local/bin/promtail \
   --config.file={{ promtail_config_dir }}/promtail.yml

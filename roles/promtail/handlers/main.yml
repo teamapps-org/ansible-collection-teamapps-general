@@ -18,3 +18,8 @@
     state: restarted
   listen: restart promtail
   when: promtail_deploy_mode == 'binary'
+
+- name: promtail_daemon_reload_systemd
+  become: true
+  systemd:
+    daemon_reload: true

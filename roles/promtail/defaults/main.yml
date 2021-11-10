@@ -77,3 +77,6 @@ promtail_server_http_listen_address: 0.0.0.0
 promtail_additional_groups:
   - adm
   - systemd-journal
+
+# run promtail with user. Allows overriding to root (for debugging)
+promtail_user: promtail
