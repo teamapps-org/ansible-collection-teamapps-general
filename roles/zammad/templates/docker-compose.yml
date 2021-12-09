@@ -81,6 +81,12 @@ services:
     restart: always
     volumes:
       - ./data/zammad-data:/opt/zammad
+{% if zammad_kb_html_custom %}
+      - type: bind
+        source: ./knowledge_base.html.erb
+        target: /opt/zammad/app/views/layouts/knowledge_base.html.erb
+        read_only: true
+{% endif %}
 
   zammad-scheduler:
     command: ["zammad-scheduler"]

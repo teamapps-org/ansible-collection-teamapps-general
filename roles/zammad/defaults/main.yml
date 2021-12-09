@@ -21,3 +21,7 @@ zammad_elasticsearch_expose: False
 # zammad_elasticsearch_htpasswd:
 zammad_elasticsearch_domain: 'es.{{ zammad_domain }}'
 webproxy_path: /container/webproxy
+
+# customize knowledge base html template.
+zammad_kb_html_custom: False
+# zammad_kb_html:
