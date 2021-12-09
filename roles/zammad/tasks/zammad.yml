@@ -69,6 +69,15 @@
     state: absent
   when: not zammad_elasticsearch_expose
 
+- name: custom knowledge base html
+  copy:
+    content: "{{ zammad_kb_html }}\n"
+    dest: '{{ zammad_path }}/knowledge_base.html.erb'
+    owner: root
+    group: root
+    mode: '0644'
+  when: zammad_kb_html_custom
+
 - name: zammad_docker-compose-up
   docker_compose:
     project_src: '{{ zammad_path }}'
