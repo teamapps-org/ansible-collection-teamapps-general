@@ -8,3 +8,6 @@ matomo_mysql_user: matomo
 # matomo_mysql_password:
 
 matomo_max_execution_time: 30
+
+matomo_php_version: 8.0
+matomo_mariadb_version: 10.7
