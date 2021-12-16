@@ -39,8 +39,11 @@ services:
 
 {% if webserver_php_enable %}
   php:
-    # image: php:fpm
+{% if webserver_php_image != "" %}
+    image: {{ webserver_php_image }}
+{% else %}
     build: ./php
+{% endif %}
     restart: always
     volumes:
       - type: bind
