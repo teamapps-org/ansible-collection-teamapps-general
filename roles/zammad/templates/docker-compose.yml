@@ -86,6 +86,10 @@ services:
         source: ./knowledge_base.html.erb
         target: /opt/zammad/app/views/layouts/knowledge_base.html.erb
         read_only: true
+      - type: bind
+        source: ./content_security_policy.rb
+        target: /opt/zammad/config/initializers/content_security_policy.rb
+        read_only: true
 {% endif %}
 
   zammad-scheduler:
