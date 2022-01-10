@@ -42,14 +42,10 @@
     mode: '0640'
   notify: webproxy_docker-compose-up
 
-- name: 'Webproxy environment variables, .env file'
-  template:
-    src: env.j2
-    dest: '{{ webproxy_path }}/.env'
-    owner: root
-    group: root
-    mode: '0640'
-  notify: webproxy_docker-compose-up
+- name: 'remove old .env file'
+  file:
+    path: '{{ webproxy_path }}/.env'
+    state: absent
 
 - name: 'Custom nginx.conf with performance tuning'
   template:
@@ -93,4 +89,5 @@
   docker_compose:
     project_src: '{{ webproxy_path }}'
     state: present
+    remove_orphans: True
     pull: '{{ webproxy_docker_pull }}'

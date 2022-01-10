@@ -7,7 +7,7 @@
     state: present
 
 - name: webproxy_nginx_reload
-  command: 'docker-compose exec nginx-web nginx -s reload'
+  command: 'docker-compose exec nginx nginx -s reload'
   args:
     chdir: '{{ webproxy_path }}'
 
@@ -16,7 +16,7 @@
     project_src: '{{ webproxy_path }}'
     state: present
     services:
-      - nginx-gen
+      - docker-gen
     restarted: yes
 
 - name: webproxy_docker-compose-restart
