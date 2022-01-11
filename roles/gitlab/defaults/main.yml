@@ -27,3 +27,6 @@ gitlab_registry_path: /var/opt/gitlab/gitlab-rails/shared/registry
 # executed monthly when enabled
 gitlab_registry_garbage_collect_state: absent # set to present to enable
 gitlab_registry_garbage_collect_options: --delete-manifests --delete-untagged
+
+# custom config appended to gitlab.rb
+gitlab_custom_config: ''
