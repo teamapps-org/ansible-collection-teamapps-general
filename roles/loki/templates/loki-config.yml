@@ -100,8 +100,14 @@ limits_config:
   # CLI flag: -store.max-query-length
   max_query_length: {{ loki_limits_max_query_length }} # <duration> | default = 721h
 
-chunk_store_config:
-  max_look_back_period: {{ loki_chunk_store_max_look_back_period }}
+  # Limit how far back in time series data and metadata can be queried,
+  # up until lookback duration ago.
+  # This limit is enforced in the query frontend, the querier and the ruler.
+  # If the requested time range is outside the allowed range, the request will not fail,
+  # but will be modified to only query data within the allowed time range.
+  # The default value of 0 does not set a limit.
+  # CLI flag: -querier.max-query-lookback
+  max_query_lookback: {{ loki_limits_max_query_lookback }}
 
 # # no longer used by default. retention is done by compactor
 # table_manager:
