@@ -5,7 +5,7 @@ loki_path: '{{ container_path }}/loki'
 
 # loki_domain: '{{ ansible_fqdn }}'
 loki_domain: "loki.{{ ansible_fqdn }}"
-loki_version: 2.3.0
+loki_version: 2.4.0
 
 # htpasswd -B -n username
 loki_htpasswd: |
@@ -39,5 +39,7 @@ loki_table_manager_retention_period: 91d # needs to be bigger than look back per
 
 loki_limits_ingestion_rate_mb: 4
 loki_limits_ingestion_burst_size_mb: 6
+loki_limits_max_query_length: 721h
+loki_limits_retention_period: 91d # needs to be bigger than look back period
 
 loki_log_level: info # Supported values [debug, info, warn, error]

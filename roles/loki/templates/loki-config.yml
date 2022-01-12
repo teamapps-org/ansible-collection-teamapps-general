@@ -30,11 +30,6 @@ server:
 # key value store.
 ingester:
   lifecycler:
-    address: 127.0.0.1
-    ring:
-      kvstore:
-        store: inmemory
-      replication_factor: 1
     final_sleep: 0s
   chunk_idle_period: 1h       # Any chunk not receiving new logs in this time will be flushed
   max_chunk_age: 1h           # All chunks will be flushed when they hit this age, default is 1h
@@ -68,8 +63,13 @@ storage_config:
 compactor:
   working_directory: /data/loki/boltdb-shipper-compactor
   shared_store: filesystem
+  compaction_interval: 10m
+  retention_enabled: true
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 150
 
 limits_config:
+  retention_period: {{ loki_limits_retention_period }}
   enforce_metric_name: false
   reject_old_samples: true
   reject_old_samples_max_age: 168h
@@ -85,12 +85,28 @@ limits_config:
   # CLI flag: -distributor.ingestion-burst-size-mb
   ingestion_burst_size_mb: {{ loki_limits_ingestion_burst_size_mb }} # <int> | default = 6]
 
+  # Maximum byte rate per second per stream,
+  # also expressible in human readable forms (1MB, 256KB, etc).
+  # CLI flag: -ingester.per-stream-rate-limit
+  # per_stream_rate_limit: <string|int> | default = "3MB"
+
+  # Maximum burst bytes per stream,
+  # also expressible in human readable forms (1MB, 256KB, etc).
+  # This is how far above the rate limit a stream can "burst" before the stream is limited.
+  # CLI flag: -ingester.per-stream-rate-limit-burst
+  # per_stream_rate_limit_burst: <string|int> | default = "15MB"
+
+  # The limit to length of chunk store queries. 0 to disable.
+  # CLI flag: -store.max-query-length
+  max_query_length: {{ loki_limits_max_query_length }} # <duration> | default = 721h
+
 chunk_store_config:
   max_look_back_period: {{ loki_chunk_store_max_look_back_period }}
 
-table_manager:
-  retention_deletes_enabled: true
-  retention_period: {{ loki_table_manager_retention_period }}
+# # no longer used by default. retention is done by compactor
+# table_manager:
+#   retention_deletes_enabled: true
+#   retention_period: {{ loki_table_manager_retention_period }}
 
 ruler:
   storage:
@@ -99,8 +115,20 @@ ruler:
       directory: /data/loki/rules # volume, directory to scan for rules
   rule_path: /data/loki/rules-temp # volume, store temporary rule files
   alertmanager_url: "{{ loki_alertmanager_url }}"
+  enable_alertmanager_v2: true
+
+
+# Common config to be shared between multiple modules.
+# If a more specific config is given in other sections, the related config under this section
+# will be ignored.
+common:
+  path_prefix: /data/loki
+  # storage:
+  #   filesystem:
+  #     chunks_directory: /data/loki/chunks
+  #     rules_directory: /data/loki/rules
+  replication_factor: 1
   ring:
+    instance_addr: 127.0.0.1
     kvstore:
       store: inmemory
-  enable_api: true
-  enable_alertmanager_v2: true
