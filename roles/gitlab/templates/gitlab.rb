@@ -56,7 +56,7 @@ sidekiq['shutdown_timeout'] = 5
 letsencrypt['enable'] = true
 letsencrypt['contact_emails'] = [ '{{ letsencrypt_email }}' ] # This should be an array of email addresses to add as contacts
 
-nginx['client_max_body_size'] = "512m"
+nginx['client_max_body_size'] = "{{ gitlab_max_body_size }}"
 #nginx['redirect_http_to_https'] = true
 #nginx['ssl_certificate'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
 #nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
@@ -73,7 +73,7 @@ gitlab_rails['registry_path'] = "{{ gitlab_registry_path }}"
 # Registry NGINX #
 ##################
 
-registry_nginx['client_max_body_size'] = "512m"
+registry_nginx['client_max_body_size'] = "{{ gitlab_registry_max_body_size }}"
 #registry_nginx['redirect_http_to_https'] = true
 #registry_nginx['ssl_certificate'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
 #registry_nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.key"

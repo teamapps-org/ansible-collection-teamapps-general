@@ -28,5 +28,9 @@ gitlab_registry_path: /var/opt/gitlab/gitlab-rails/shared/registry
 gitlab_registry_garbage_collect_state: absent # set to present to enable
 gitlab_registry_garbage_collect_options: --delete-manifests --delete-untagged
 
+# Maximum upload sizes for registry and everything else (for example CI artifacts)
+gitlab_max_body_size: '512m'
+gitlab_registry_max_body_size: '512m'
+
 # custom config appended to gitlab.rb
 gitlab_custom_config: ''
