@@ -17,6 +17,8 @@ loki_htpasswd_push_only: |
 loki_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 loki_alertmanager_url: "" # http://alertmanager:9093
+loki_alertmanager_username: loki
+loki_alertmanager_password:
 
 loki_push_access_log: False
 

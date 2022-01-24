@@ -166,6 +166,9 @@ ruler:
   alertmanager_url: "{{ loki_alertmanager_url }}"
   enable_alertmanager_v2: true
 
+  alertmanager_client:
+    basic_auth_username: "{{ loki_alertmanager_username }}"
+    basic_auth_password: "{{ loki_alertmanager_password }}"
 
 # Common config to be shared between multiple modules.
 # If a more specific config is given in other sections, the related config under this section

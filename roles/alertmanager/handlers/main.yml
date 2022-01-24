@@ -16,8 +16,15 @@
 
 # regenerates nginx conf from templates
 # this is not the same as just reloading the config
-- name: nginx gen
-  command: 'docker-compose restart nginx-gen'
-  args:
-    chdir: '{{ webproxy_path }}'
+- name: restart nginx config generator of webproxy
+  docker_compose:
+    project_src: '{{ webproxy_path }}'
+    services:
+      - 'docker-gen'
+      - 'nginx'
+    state: present
+    restarted: yes
+  listen:
+    - alertmanager_regenerate_webproxy_config
+
 ...

@@ -70,7 +70,7 @@
     owner: root
     group: root
     mode: 0644
-  notify: nginx gen
+  notify: alertmanager_regenerate_webproxy_config
 
 - name: alertmanager-check-config
   # start new alertmanager container, entrypoint amtool
