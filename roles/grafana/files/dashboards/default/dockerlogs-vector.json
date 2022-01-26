@@ -20,15 +20,15 @@
   },
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "gnetId": null,
   "graphTooltip": 0,
-  "id": 39,
-  "iteration": 1634223879178,
+  "iteration": 1643201578343,
   "links": [],
   "liveNow": false,
   "panels": [
     {
-      "datasource": "${loki}",
+      "datasource": {
+        "uid": "${loki}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -91,7 +91,6 @@
       },
       "id": 11,
       "interval": "10s",
-      "maxDataPoints": null,
       "options": {
         "graph": {},
         "legend": {
@@ -116,15 +115,15 @@
           "resolution": 5
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Message counts by host ",
       "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
     {
-      "datasource": "${loki}",
+      "datasource": {
+        "uid": "${loki}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -220,7 +219,6 @@
       },
       "id": 9,
       "interval": "10s",
-      "maxDataPoints": null,
       "options": {
         "graph": {},
         "legend": {
@@ -253,15 +251,16 @@
           "resolution": 1
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Message counts by service",
       "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
     {
-      "datasource": "$loki",
+      "datasource": {
+        "type": "loki",
+        "uid": "$loki"
+      },
       "description": "note on query: label_format: multiple remap values to remove original labels.",
       "gridPos": {
         "h": 17,
@@ -270,8 +269,6 @@
         "y": 13
       },
       "id": 3,
-      "interval": "",
-      "maxDataPoints": 100000,
       "options": {
         "dedupStrategy": "none",
         "enableLogDetails": false,
@@ -287,17 +284,16 @@
         {
           "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| json | line_format \"{{.compose_project}}/{{.compose_service}} | {{.message}}\"",
           "legendFormat": "",
+          "maxLines": null,
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "log messages",
       "type": "logs"
     }
   ],
   "refresh": false,
-  "schemaVersion": 31,
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -305,10 +301,8 @@
       {
         "current": {},
         "description": "Loki Datasource",
-        "error": null,
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "loki",
         "options": [],
@@ -330,13 +324,12 @@
             "$__all"
           ]
         },
-        "datasource": "$loki",
+        "datasource": {
+          "uid": "$loki"
+        },
         "definition": "label_values(host)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
-        "label": null,
         "multi": true,
         "name": "host",
         "options": [],
@@ -361,13 +354,12 @@
             "$__all"
           ]
         },
-        "datasource": "${loki}",
+        "datasource": {
+          "uid": "${loki}"
+        },
         "definition": "label_values({host=~\"$host\"}, compose_project)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
-        "label": null,
         "multi": true,
         "name": "project",
         "options": [],
@@ -392,10 +384,10 @@
             "$__all"
           ]
         },
-        "datasource": "${loki}",
+        "datasource": {
+          "uid": "${loki}"
+        },
         "definition": "label_values({host=~\"$host\",compose_project=~\"$project\"}, compose_service)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "",
@@ -414,14 +406,12 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "",
           "value": ""
         },
         "description": "Custom LogQL line filter expressions, added to the query, before formatting",
-        "error": null,
         "hide": 0,
-        "label": null,
         "name": "filter",
         "options": [
           {
@@ -441,9 +431,7 @@
           "value": ""
         },
         "description": "only lines with that string (regex)",
-        "error": null,
         "hide": 0,
-        "label": null,
         "name": "search",
         "options": [
           {
@@ -479,5 +467,6 @@
   "timezone": "",
   "title": "Docker Logs Dashboard",
   "uid": "_PfW8xQGz",
-  "version": 9
+  "version": 5,
+  "weekStart": ""
 }
