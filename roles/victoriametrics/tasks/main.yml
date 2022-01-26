@@ -8,6 +8,7 @@
     mode: 0755
   with_items:
     - "{{ victoriametrics_path }}"
+    - "{{ victoriametrics_storage_path }}"
 
 - name: deploy docker-compose.yml
   template:
@@ -28,16 +29,6 @@
 
 - name: include authproxy config
   include_tasks: authproxy.yml
-
-# - name: alertmanager config (temp)
-#   template:
-#     src: '{{ item }}.j2'
-#     dest: '{{ victoriametrics_path }}/{{ item }}'
-#     owner: root
-#     group: root
-#     mode: '0644'
-#   with_items:
-#     - alertmanager.yml
 
 - name: victoriametrics_docker-compose-up
   docker_compose:

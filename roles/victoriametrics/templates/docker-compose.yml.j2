@@ -44,7 +44,10 @@ services:
     expose:
       - 8428
     volumes:
-      - ./vmdata:/storage
+      - type: bind
+        source: '{{ victoriametrics_storage_path }}'
+        target: /storage
+        read_only: false
     command:
       - '-storageDataPath=/storage'
       # - '-graphiteListenAddr=:2003'
@@ -52,6 +55,7 @@ services:
       - '-httpListenAddr=:8428'
       # - '-influxListenAddr=:8089'
       - '-retentionPeriod={{ victoriametrics_retention_period }}'
+      - '-bigMergeConcurrency={{ victoriametrics_big_merge_concurrency }}'
     networks:
       - vm_net
       - webproxy
