@@ -55,6 +55,8 @@ services:
     restart: always
     environment:
       DEFAULT_HOST: "{{ webproxy_default_host }}"
+      ENABLE_IPV6: "true"
+      RESOLVER: "127.0.0.11"
     volumes:
       - ./data/conf.d:/etc/nginx/conf.d
       - ./data/vhost.d:/etc/nginx/vhost.d

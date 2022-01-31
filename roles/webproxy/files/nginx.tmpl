@@ -109,6 +109,23 @@ log_format vhost '$host $remote_addr - $remote_user [$time_local] '
                  '"$request" $status $body_bytes_sent '
                  '"$http_referer" "$http_user_agent"';
 
+# log format with application performance metrics in logfmt style
+log_format apm 't="$time_iso8601" h=$host u=$remote_user client=$remote_addr '
+  'status=$status '
+  'request="$request" '
+  'req_time=$request_time '
+  'ua="$http_user_agent" '
+  'method=$request_method '
+  'req_length=$request_length '
+  'bytes_sent=$bytes_sent '
+  'body_bytes_sent=$body_bytes_sent '
+  'referer="$http_referer" '
+  'us_addr=$upstream_addr '
+  'us_status=$upstream_status '
+  'us_connect_time=$upstream_connect_time '
+  'us_header_time=$upstream_header_time '
+  'us_response_time=$upstream_response_time ';
+
 access_log off;
 
 {{/* Get the SSL_POLICY defined by this container, falling back to "Mozilla-Intermediate" */}}
@@ -138,7 +155,7 @@ proxy_set_header X-Forwarded-Port $proxy_x_forwarded_port;
 proxy_set_header Proxy "";
 {{ end }}
 
-{{ $access_log := (or (and (not $.Env.DISABLE_ACCESS_LOGS) "access_log /var/log/nginx/access.log vhost;") "") }}
+{{ $access_log := (or (and (not $.Env.DISABLE_ACCESS_LOGS) "access_log /var/log/nginx/access.log apm;") "") }}
 
 {{ $enable_ipv6 := eq (or ($.Env.ENABLE_IPV6) "") "true" }}
 server {
