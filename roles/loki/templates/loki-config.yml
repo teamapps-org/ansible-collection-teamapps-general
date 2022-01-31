@@ -156,6 +156,7 @@ query_scheduler:
 
 query_range:
   split_queries_by_interval: 0 # 720h # 30d
+  parallelise_shardable_queries: False
 
 ruler:
   storage:

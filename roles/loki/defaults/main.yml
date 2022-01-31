@@ -43,7 +43,7 @@ loki_limits_ingestion_rate_mb: 4 # int in MB, no unit
 loki_limits_ingestion_burst_size_mb: 6 # int in MB, no unit
 loki_limits_per_stream_rate_limit: 3MB # unit required
 loki_limits_per_stream_rate_limit_burst: 15MB # unit required
-loki_limits_max_query_length: 721h
+loki_limits_max_query_length: 730h # 30d
 loki_limits_retention_period: 91d # needs to be bigger than look back period
 
 loki_log_level: info # Supported values [debug, info, warn, error]
