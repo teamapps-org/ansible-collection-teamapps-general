@@ -21,7 +21,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1643201578343,
+  "iteration": 1643791659816,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -271,7 +271,7 @@
       "id": 3,
       "options": {
         "dedupStrategy": "none",
-        "enableLogDetails": false,
+        "enableLogDetails": true,
         "prettifyLogMessage": false,
         "showCommonLabels": false,
         "showLabels": false,
@@ -284,7 +284,6 @@
         {
           "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| json | line_format \"{{.compose_project}}/{{.compose_service}} | {{.message}}\"",
           "legendFormat": "",
-          "maxLines": null,
           "refId": "A"
         }
       ],
@@ -467,6 +466,6 @@
   "timezone": "",
   "title": "Docker Logs Dashboard",
   "uid": "_PfW8xQGz",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }
