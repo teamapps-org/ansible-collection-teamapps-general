@@ -27,7 +27,7 @@
   encoding.codec = "json" # required
 
   # Healthcheck
-  healthcheck.enabled = true # optional, default
+  healthcheck.enabled = false # optional, default true
 
   batch.max_bytes = {{ vector_loki_batch_max_bytes }} # default 102400 (0.1mb)
 
