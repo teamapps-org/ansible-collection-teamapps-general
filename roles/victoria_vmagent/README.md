@@ -14,7 +14,7 @@ Role to install and configure vmagent. Installs by using binare from Github rele
     vmagent_remotewrite_username: vmagent-to-vic-write
     vmagent_remotewrite_password: password
 
-    vmagent_scrape_config:
+    vmagent_promscrape_config:
       global:
         scrape_interval: 10s
         external_labels:

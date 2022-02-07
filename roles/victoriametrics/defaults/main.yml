@@ -28,6 +28,9 @@ victoriametrics_alertmanager_url: '{{ victoriametrics_alertmanager_scheme }}://{
 victoriametrics_alertmanager_user: ''
 victoriametrics_alertmanager_password: ''
 
+victoriametrics_scrape_interval: 10s
+victoriametrics_scrape_timeout: 10s
+
 # Alertmanager source can link to graph in grafana.
 victoriametrics_grafana_datasource_name: VictoriaMetrics
 victoriametrics_vmalert_evaluation_interval: 1m

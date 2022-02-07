@@ -1,5 +1,6 @@
 global:
-  scrape_interval: 10s
+  scrape_interval: {{ victoriametrics_scrape_interval }}
+  scrape_timeout: {{ victoriametrics_scrape_timeout }}
   external_labels:
     scraper_instance: victoriametrics-{{ ansible_fqdn }}
 
