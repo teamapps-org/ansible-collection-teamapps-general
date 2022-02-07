@@ -8,20 +8,30 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "description": "Blackbox exporter HTTP prober dashboard",
   "editable": true,
+  "fiscalYearStartMonth": 0,
   "gnetId": 13659,
   "graphTooltip": 0,
   "id": 25,
-  "iteration": 1624444179546,
+  "iteration": 1644229579125,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -112,20 +122,15 @@
                 "id": "mappings",
                 "value": [
                   {
-                    "from": "",
-                    "id": 1,
-                    "text": "DOWN",
-                    "to": "",
-                    "type": 1,
-                    "value": "0"
-                  },
-                  {
-                    "from": "",
-                    "id": 2,
-                    "text": "UP",
-                    "to": "",
-                    "type": 1,
-                    "value": "1"
+                    "options": {
+                      "0": {
+                        "text": "DOWN"
+                      },
+                      "1": {
+                        "text": "UP"
+                      }
+                    },
+                    "type": "value"
                   }
                 ]
               },
@@ -193,12 +198,12 @@
                 "id": "mappings",
                 "value": [
                   {
-                    "from": "",
-                    "id": 1,
-                    "text": "",
-                    "to": "",
-                    "type": 1,
-                    "value": "0"
+                    "options": {
+                      "0": {
+                        "text": ""
+                      }
+                    },
+                    "type": "value"
                   }
                 ]
               },
@@ -218,20 +223,15 @@
                 "id": "mappings",
                 "value": [
                   {
-                    "from": "",
-                    "id": 1,
-                    "text": "NO",
-                    "to": "",
-                    "type": 1,
-                    "value": "0"
-                  },
-                  {
-                    "from": "",
-                    "id": 2,
-                    "text": "OK",
-                    "to": "",
-                    "type": 1,
-                    "value": "1"
+                    "options": {
+                      "0": {
+                        "text": "NO"
+                      },
+                      "1": {
+                        "text": "OK"
+                      }
+                    },
+                    "type": "value"
                   }
                 ]
               },
@@ -390,18 +390,24 @@
         ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 7,
         "w": 24,
         "x": 0,
         "y": 0
       },
       "id": 2,
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "7.5.7",
-      "repeat": null,
+      "pluginVersion": "8.3.4",
       "repeatDirection": "h",
       "targets": [
         {
@@ -463,8 +469,6 @@
           "refId": "G"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "HTTP Probe Overview",
       "transformations": [
         {
@@ -583,19 +587,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${ds}",
-      "description": "Returns how long the probe took to complete in seconds",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "uid": "${ds}"
       },
+      "description": "Returns how long the probe took to complete in seconds",
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 7
       },
       "hiddenSeries": false,
       "id": 4,
@@ -619,7 +621,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.3.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -638,9 +640,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "HTTP Probe Duration",
       "tooltip": {
         "shared": true,
@@ -649,30 +649,21 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "$$hashKey": "object:80",
-          "decimals": null,
           "format": "s",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "$$hashKey": "object:81",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
@@ -683,12 +674,14 @@
     },
     {
       "collapsed": false,
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 16
       },
       "id": 8,
       "panels": [],
@@ -701,19 +694,17 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${ds}",
-      "description": "Duration of http request by phase, summed over all redirects",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "uid": "${ds}"
       },
+      "description": "Duration of http request by phase, summed over all redirects",
       "fill": 10,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 17
       },
       "hiddenSeries": false,
       "id": 6,
@@ -735,7 +726,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "8.3.4",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -753,9 +744,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "HTTP Probe Phases Duration",
       "tooltip": {
         "shared": true,
@@ -765,9 +754,7 @@
       "transformations": [],
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -775,30 +762,24 @@
         {
           "$$hashKey": "object:1946",
           "format": "s",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "$$hashKey": "object:1947",
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 27,
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [
     "blackbox",
@@ -808,8 +789,6 @@
     "list": [
       {
         "current": {},
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Datasource",
@@ -830,10 +809,10 @@
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "${ds}",
+        "datasource": {
+          "uid": "${ds}"
+        },
         "definition": "label_values(probe_success, job)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "Job",
@@ -849,26 +828,21 @@
         "skipUrlSync": false,
         "sort": 2,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
         "allValue": ".+",
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+        "current": {},
+        "datasource": {
+          "uid": "${ds}"
         },
-        "datasource": "${ds}",
         "definition": "label_values(probe_success{job=~\"$job\"}, instance)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "Instance",
-        "multi": false,
+        "multi": true,
         "name": "instance",
         "options": [],
         "query": {
@@ -880,7 +854,6 @@
         "skipUrlSync": false,
         "sort": 2,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -888,12 +861,13 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Blackbox Exporter (HTTP prober)",
   "uid": "NEzutrbMk",
-  "version": 7
+  "version": 9,
+  "weekStart": ""
 }
