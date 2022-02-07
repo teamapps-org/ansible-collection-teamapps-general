@@ -24,7 +24,7 @@
   "gnetId": 13659,
   "graphTooltip": 0,
   "id": 25,
-  "iteration": 1644229579125,
+  "iteration": 1644229579161,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -411,7 +411,7 @@
       "repeatDirection": "h",
       "targets": [
         {
-          "expr": "probe_success{job=~\"$job\", instance=~\"$instance\"}",
+          "expr": "probe_success{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -419,7 +419,7 @@
           "refId": "A"
         },
         {
-          "expr": "probe_http_ssl{job=~\"$job\", instance=~\"$instance\"} > 0",
+          "expr": "probe_http_ssl{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"} > 0",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -427,7 +427,7 @@
           "refId": "B"
         },
         {
-          "expr": "(probe_ssl_earliest_cert_expiry{job=~\"$job\", instance=~\"$instance\"} - time()) / 3600 / 24",
+          "expr": "(probe_ssl_earliest_cert_expiry{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"} - time()) / 3600 / 24",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -435,7 +435,7 @@
           "refId": "C"
         },
         {
-          "expr": "probe_http_status_code{job=~\"$job\", instance=~\"$instance\"} > 0",
+          "expr": "probe_http_status_code{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"} > 0",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -443,7 +443,7 @@
           "refId": "D"
         },
         {
-          "expr": "avg_over_time(probe_duration_seconds{job=~\"$job\", instance=~\"$instance\"}[1m])",
+          "expr": "avg_over_time(probe_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}[1m])",
           "format": "table",
           "hide": false,
           "instant": false,
@@ -453,7 +453,7 @@
           "refId": "E"
         },
         {
-          "expr": "probe_tls_version_info{job=~\"$job\", instance=~\"$instance\"}",
+          "expr": "probe_tls_version_info{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -461,7 +461,7 @@
           "refId": "F"
         },
         {
-          "expr": "avg_over_time(probe_dns_lookup_time_seconds{job=~\"$job\", instance=~\"$instance\"}[1m])",
+          "expr": "avg_over_time(probe_dns_lookup_time_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}[1m])",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -631,7 +631,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(probe_http_duration_seconds{job=~\"$job\", instance=~\"$instance\"}) by (instance)",
+          "expr": "sum(probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}) by (instance)",
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
@@ -736,7 +736,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "probe_http_duration_seconds{job=~\"$job\", instance=~\"$instance\"}",
+          "expr": "probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ phase }}",
@@ -833,8 +833,48 @@
         "useTags": false
       },
       {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${ds}"
+        },
+        "definition": "label_values(probe_success{job=~\"$job\"}, group)",
+        "description": "filter instances by group",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "group",
+        "options": [],
+        "query": {
+          "query": "label_values(probe_success{job=~\"$job\"}, group)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
         "allValue": ".+",
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": {
           "uid": "${ds}"
         },

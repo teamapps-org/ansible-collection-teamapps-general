@@ -47,11 +47,13 @@ victoriametrics_file_sd_config:
     config:
       - labels:
           environment: testing
+          group: test
         targets:
           - https://test.example.com
 
       - labels:
           environment: production
+          group: website
         targets:
           - https://example.com/home.html
 
