@@ -27,6 +27,7 @@ scrape_configs:
           host: '{{ ansible_hostname }}'
 
   - job_name: 'alertmanager'
+    scrape_interval: 1m
     scheme: '{{ victoriametrics_alertmanager_scheme }}'
     basic_auth:
       username: '{{ victoriametrics_alertmanager_user }}'
@@ -39,6 +40,7 @@ scrape_configs:
 
   - job_name: 'http_2xx'
     metrics_path: /probe
+    scrape_interval: {{ victoriametrics_http_scrape_interval }}
     params:
       module: [http_2xx]  # look for a HTTP 200 response.
     # every blackbox job needs relabel_configs
@@ -58,6 +60,7 @@ scrape_configs:
 
   - job_name: 'http_401'
     metrics_path: /probe
+    scrape_interval: {{ victoriametrics_http_scrape_interval }}
     params:
       module: [http_401]  # look for a HTTP 401 (Authentication Required) response.
     # every blackbox job needs relabel_configs
@@ -77,6 +80,7 @@ scrape_configs:
 
   - job_name: "http_zammad"
     metrics_path: /probe
+    scrape_interval: {{ victoriametrics_http_scrape_interval }}
     params:
       module: [http_zammad]
     relabel_configs:
