@@ -13,6 +13,18 @@
     webserver_php_apt_packages:
       - gawk
       - procps
+    webserver_php_extensions:
+      - gd
+      - intl
+      - imagick
+      - opcache
+      - zip
+      - mcrypt
+      - pdo_mysql
+      - mysqli
+      # - xdebug
+      - soap
+      - apcu
     webserver_mysql_enable: True
     webserver_mariadb_version: '{{ matomo_mariadb_version }}'
     webserver_mysql_root_password: '{{ matomo_mysql_root_password }}'

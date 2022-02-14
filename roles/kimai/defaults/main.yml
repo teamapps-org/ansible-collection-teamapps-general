@@ -32,7 +32,6 @@ kimai_php_extensions:
   - mcrypt
   - pdo_mysql
   - mysqli
-  - xdebug
-  - soap
-  - apcu
+  # - xdebug
   - xsl
+  - mbstring

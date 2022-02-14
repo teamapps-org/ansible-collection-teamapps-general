@@ -30,8 +30,8 @@ webserver_php_extensions:
   - mcrypt
   - pdo_mysql
   - mysqli
-  - xdebug
-  - soap
+  # - xdebug
+  # - soap
   - apcu
 webserver_sftp_enable: False
 webserver_sftp_port: 2222
