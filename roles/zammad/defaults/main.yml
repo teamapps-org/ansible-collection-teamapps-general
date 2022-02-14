@@ -22,6 +22,10 @@ zammad_elasticsearch_expose: False
 zammad_elasticsearch_domain: 'es.{{ zammad_domain }}'
 webproxy_path: /container/webproxy
 
+# Elasticsearch RAM allocation (Java Xms, Xmx). valid format: 512m, 2g
+# default: 40% of total memory
+zammad_elasticsearch_memory: '{{ (ansible_memtotal_mb * 0.4) | round | int }}m'
+
 # customize knowledge base html template.
 zammad_kb_html_custom: False
 # zammad_kb_html:

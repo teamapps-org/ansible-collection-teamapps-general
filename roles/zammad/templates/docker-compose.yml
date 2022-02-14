@@ -24,6 +24,7 @@ services:
     restart: always
     environment:
       - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms{{ zammad_elasticsearch_memory }} -Xmx{{ zammad_elasticsearch_memory }}"
     hostname: zammad-elasticsearch
     volumes:
       - ./data/elasticsearch-data:/usr/share/elasticsearch/data
