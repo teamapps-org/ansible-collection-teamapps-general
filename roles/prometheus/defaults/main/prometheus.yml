@@ -42,7 +42,7 @@ prometheus_scrape_configs:
           - "{{ prometheus_config_dir_container }}/file_sd/*.netdata.yml"
 
   - job_name: 'http_2xx'
-    scrape_interval: {{ prometheus_http_scrape_interval }}
+    scrape_interval: "{{ prometheus_http_scrape_interval }}"
     metrics_path: /probe
     params:
       module: [http_2xx]  # look for a HTTP 200 response.
@@ -62,7 +62,7 @@ prometheus_scrape_configs:
           - "{{ prometheus_config_dir_container }}/file_sd/*.http_2xx.yml"
 
   - job_name: 'http_401'
-    scrape_interval: {{ prometheus_http_scrape_interval }}
+    scrape_interval: "{{ prometheus_http_scrape_interval }}"
     metrics_path: /probe
     params:
       module: [http_401]  # look for a HTTP 401 (Authentication Required) response.
@@ -82,7 +82,7 @@ prometheus_scrape_configs:
           - "{{ prometheus_config_dir_container }}/file_sd/*.http_401.yml"
 
   - job_name: "http_zammad"
-    scrape_interval: {{ prometheus_http_scrape_interval }}
+    scrape_interval: "{{ prometheus_http_scrape_interval }}"
     metrics_path: /probe
     params:
       module: [http_zammad]
