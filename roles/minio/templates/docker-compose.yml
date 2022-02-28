@@ -1,7 +1,7 @@
 ---
 version: '3'
 services:
-  minio1:
+  minio:
     image: minio/minio:{{ minio_version }}
     volumes:
       - ./data:/data
@@ -10,6 +10,7 @@ services:
     environment:
       MINIO_ACCESS_KEY: '{{ minio_access_key }}'
       MINIO_SECRET_KEY: '{{ minio_secret_key }}'
+      MINIO_BROWSER: 'off'
       VIRTUAL_HOST: '{{ minio_domain }}'
       LETSENCRYPT_HOST: '{{ minio_letsencrypt_host }}'
       LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
@@ -17,6 +18,24 @@ services:
     restart: always
     networks:
       - webproxy
+{% if minio_console_enable %}
+  console:
+    image: minio/console:{{ minio_console_version }}
+    expose:
+      - 9090
+    environment:
+      CONSOLE_PBKDF_PASSPHRASE: '{{ minio_console_secret_key }}'
+      CONSOLE_PBKDF_SALT: '{{ minio_console_secret_key_salt }}'
+      CONSOLE_MINIO_SERVER: 'https://{{ minio_domain }}'
+      MINIO_BROWSER_REDIRECT_URL: 'https://{{ minio_console_domain }}'
+      VIRTUAL_HOST: '{{ minio_console_domain }}'
+      LETSENCRYPT_HOST: '{{ minio_console_letsencrypt_host }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    command: server
+    restart: always
+    networks:
+      - webproxy
+{% endif %}
 
 networks:
   webproxy:
