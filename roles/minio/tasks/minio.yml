@@ -1,3 +1,30 @@
+- name: verify that the minio secrets are set
+  assert:
+    that:
+      - "{{ assert_var }} is defined"
+      - "{{ assert_var }} | length > 0"
+      - "{{ assert_var }} != None"
+    fail_msg: "{{ assert_var }} needs to be set!"
+  loop_control:
+    loop_var: assert_var
+  with_items:
+    - minio_access_key
+    - minio_secret_key
+
+- name: verify that the minio console secrets are set
+  when: minio_console_enable
+  assert:
+    that:
+      - "{{ assert_var }} is defined"
+      - "{{ assert_var }} | length > 0"
+      - "{{ assert_var }} != None"
+    fail_msg: "{{ assert_var }} needs to be set!"
+  loop_control:
+    loop_var: assert_var
+  with_items:
+    - minio_console_secret_key
+    - minio_console_secret_key_salt
+
 - name: minio_directories
   file:
     path: '{{ item }}'
@@ -24,3 +51,4 @@
     project_src: '{{ minio_path }}'
     state: present
     pull: '{{ minio_docker_pull }}'
+    remove_orphans: yes
