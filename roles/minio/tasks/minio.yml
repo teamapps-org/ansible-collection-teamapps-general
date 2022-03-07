@@ -22,8 +22,8 @@
   loop_control:
     loop_var: assert_var
   with_items:
-    - minio_console_secret_key
-    - minio_console_secret_key_salt
+    - minio_console_pbkdf_passphrase
+    - minio_console_pbkdf_salt
 
 - name: minio_directories
   file:

@@ -24,8 +24,8 @@ services:
     expose:
       - 9090
     environment:
-      CONSOLE_PBKDF_PASSPHRASE: '{{ minio_console_secret_key }}'
-      CONSOLE_PBKDF_SALT: '{{ minio_console_secret_key_salt }}'
+      CONSOLE_PBKDF_PASSPHRASE: '{{ minio_console_pbkdf_passphrase }}'
+      CONSOLE_PBKDF_SALT: '{{ minio_console_pbkdf_salt }}'
       CONSOLE_MINIO_SERVER: 'https://{{ minio_domain }}'
       MINIO_BROWSER_REDIRECT_URL: 'https://{{ minio_console_domain }}'
       VIRTUAL_HOST: '{{ minio_console_domain }}'
