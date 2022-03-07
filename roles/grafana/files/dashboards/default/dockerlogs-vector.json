@@ -109,13 +109,13 @@
         {
           "expr": "sum by (host) (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
           "instant": false,
-          "legendFormat": "{{ host }} / {{ $__interval }}",
+          "legendFormat": "{{ host }}",
           "range": true,
           "refId": "A",
           "resolution": 5
         }
       ],
-      "title": "Message counts by host ",
+      "title": "Message counts by host / $__interval",
       "transformations": [],
       "transparent": true,
       "type": "timeseries"
@@ -237,7 +237,7 @@
         {
           "expr": "sum by (compose_service)(count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
           "instant": false,
-          "legendFormat": "{{ compose_service }} / {{ $__interval }}",
+          "legendFormat": "{{ compose_service }}",
           "range": true,
           "refId": "A"
         },
@@ -245,7 +245,8 @@
           "expr": "sum (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} [$__interval]))",
           "hide": false,
           "instant": false,
-          "legendFormat": "unfiltered",
+      "title": "Message counts by service / $__interval",
+          "legendFormat": "unfiltered ",
           "range": true,
           "refId": "unfiltered",
           "resolution": 1
@@ -466,6 +467,6 @@
   "timezone": "",
   "title": "Docker Logs Dashboard",
   "uid": "_PfW8xQGz",
-  "version": 6,
+  "version": 7,
   "weekStart": ""
 }
