@@ -7,7 +7,7 @@
     mode: '0755'
 
 - name: sftp generate host keys ({{ webserver_domain }})
-  command: ssh-keygen -t {{ item }} -f {{ webserver_path }}/sftp/ssh_host_{{ item }}_key
+  command: ssh-keygen -t {{ item }} -f {{ webserver_path }}/sftp/ssh_host_{{ item }}_key -P ""
   args:
     creates: "{{ webserver_path }}/sftp/ssh_host_{{ item }}_key"
   with_items:
