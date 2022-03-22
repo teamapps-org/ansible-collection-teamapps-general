@@ -1,0 +1,8 @@
+- name: deploy scrape config for vmagent
+  template:
+    src: loki_metrics_job.yml.j2
+    dest: '{{ loki_vmagent_scrape_config_dir }}/loki.yml'
+    owner: root
+    group: root
+    mode: 0644
+  notify: loki-vmagent-restart

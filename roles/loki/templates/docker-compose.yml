@@ -30,6 +30,8 @@ services:
     restart: always
     expose:
       - 3100
+    ports:
+      - "{{ loki_host_port_bind_to }}:3100"
     volumes:
       - ./loki-config.yml:/etc/loki/config.yml:ro
       - ./data/loki:/data/loki

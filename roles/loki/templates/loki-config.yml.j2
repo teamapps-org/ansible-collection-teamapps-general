@@ -171,6 +171,17 @@ ruler:
     basic_auth_username: "{{ loki_alertmanager_username }}"
     basic_auth_password: "{{ loki_alertmanager_password }}"
 
+  remote_write:
+    enabled: {{ loki_ruler_remote_write_enabled | ternary( 'true', 'false') }}
+{% if loki_ruler_remote_write_enabled %}
+    client:
+      url: {{ loki_ruler_remote_write_url }}
+      basic_auth:
+        username: '{{ loki_ruler_remote_write_username }}'
+        password: '{{ loki_ruler_remote_write_password }}'
+{% endif %}
+
+
 # Common config to be shared between multiple modules.
 # If a more specific config is given in other sections, the related config under this section
 # will be ignored.

@@ -22,7 +22,7 @@
 
 - name: Loki Configuration File
   template:
-    src: loki-config.yml
+    src: loki-config.yml.j2
     dest: '{{ loki_path }}/loki-config.yml'
     owner: '10001'
     group: '10001'
@@ -86,3 +86,7 @@
     state: present
     remove_orphans: True
     pull: '{{ loki_docker_pull }}'
+
+- name: import monitoring integration
+  when: loki_monitoring_integration
+  import_tasks: monitoring.yml

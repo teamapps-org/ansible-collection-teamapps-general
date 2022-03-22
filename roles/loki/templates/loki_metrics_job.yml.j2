@@ -1,0 +1,12 @@
+- job_name: '({{ loki_domain }})/loki'
+  scrape_interval: 1m
+  scrape_timeout: 30s
+  metrics_path: '/metrics'
+  static_configs:
+    - targets:
+        - {{ loki_host_port_bind_to }}
+      labels:
+        instance: '{{ ansible_fqdn }}'
+        host: '{{ ansible_hostname }}'
+        cluster: '{{ loki_domain }}'
+        namespace: '{{ loki_domain }}'

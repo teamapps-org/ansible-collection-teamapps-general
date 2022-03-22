@@ -15,3 +15,10 @@
     services:
       - nginx-gateway
     restarted: yes
+
+
+- name: loki-vmagent-restart
+  become: true
+  service:
+    name: vic-vmagent
+    state: restarted
