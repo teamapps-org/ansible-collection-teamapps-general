@@ -7,6 +7,14 @@
     group: root
     mode: 0755
 
+- name: create scrape_configs directory
+  file:
+    path: "{{ victoriametrics_path }}/scrape_configs"
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+
 - name: create file discovery configuration
   copy:
     content: |

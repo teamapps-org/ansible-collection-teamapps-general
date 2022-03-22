@@ -25,6 +25,14 @@
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
 
+- name: Prepare scrape_configs dir
+  file:
+    state: directory
+    path: "{{ vmagent_scrape_config_dir }}"
+    mode: 0751
+    owner: "{{ vmagent_system_user }}"
+    group: "{{ vmagent_system_group }}"
+
 - name: Prepare sd configuration dir
   file:
     state: directory
@@ -50,7 +58,7 @@
   template:
     src: prometheus_scrape.yml.j2
     dest: "{{ vmagent_config_dir }}/config.yml"
-    mode: 0751
+    mode: 0640
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
     validate: /usr/local/bin/vmagent-prod -dryRun -promscrape.config %s

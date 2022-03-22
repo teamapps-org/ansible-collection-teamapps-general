@@ -13,8 +13,14 @@ services:
       LETSENCRYPT_HOST: '{{ victoriametrics_domain }}'
       LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
     volumes:
-      - ./htaccess:/etc/nginx/conf.d/htaccess:ro
-      - ./authproxy-basic-site.conf:/etc/nginx/conf.d/default.conf:ro
+      - type: bind
+        source: ./htaccess
+        target: /etc/nginx/conf.d/htaccess
+        read_only: true
+      - type: bind
+        source: ./authproxy-basic-site.conf
+        target: /etc/nginx/conf.d/default.conf
+        read_only: true
     networks:
       vm_net:
       webproxy:
@@ -77,9 +83,22 @@ services:
     ports:
       - 127.0.0.3:8429:8429
     volumes:
-      - ./vmagentdata:/vmagentdata
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./file_sd:/etc/prometheus/file_sd
+      - type: bind
+        source: ./vmagentdata
+        target: /vmagentdata
+        read_only: false
+      - type: bind
+        source: ./prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+        read_only: true
+      - type: bind
+        source: ./file_sd
+        target: /etc/prometheus/file_sd
+        read_only: true
+      - type: bind
+        source: ./scrape_configs
+        target: /etc/prometheus/scrape_configs
+        read_only: true
     command:
       - '-promscrape.config=/etc/prometheus/prometheus.yml'
       - '-remoteWrite.url=http://victoriametrics:8428/api/v1/write'
@@ -106,7 +125,10 @@ services:
     ports:
       - 127.0.0.3:8880:8880
     volumes:
-      - ./rules/:/etc/alerts/
+      - type: bind
+        source: ./rules
+        target: /etc/alerts
+        read_only: true
     command:
       - '-datasource.url=http://victoriametrics:8428/'
       - '-remoteRead.url=http://victoriametrics:8428/'
@@ -131,7 +153,10 @@ services:
     user: 997:998
     image: {{ victoriametrics_blackbox_image }}:{{ victoriametrics_blackbox_version }}
     volumes:
-    - ./blackbox.yml:/config/blackbox.yml:ro
+      - type: bind
+        source: ./blackbox.yml
+        target: /config/blackbox.yml
+        read_only: true
     command:
       - '--config.file=/config/blackbox.yml'
     expose:

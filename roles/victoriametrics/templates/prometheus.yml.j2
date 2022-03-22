@@ -4,6 +4,9 @@ global:
   external_labels:
     scraper_instance: victoriametrics-{{ ansible_fqdn }}
 
+scrape_config_files:
+  - /etc/prometheus/scrape_configs/*.yml
+
 scrape_configs:
   - job_name: 'vmagent'
     static_configs:
