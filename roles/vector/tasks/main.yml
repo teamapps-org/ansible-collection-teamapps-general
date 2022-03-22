@@ -40,6 +40,9 @@
 - name: apt pin vector version
   copy:
     dest: /etc/apt/preferences.d/vector
+    owner: root
+    group: root
+    mode: 0640
     content: |
       Package: *
       Pin: origin cloudsmith/timber/vector-nightly
@@ -51,7 +54,7 @@
 
 - name: install specific vector version
   apt:
-    name: 'vector={{vector_pin_version}}'
+    name: 'vector={{ vector_pin_version }}'
     state: present
     force: '{{ vector_apt_force }}'
   when: vector_version != ''
