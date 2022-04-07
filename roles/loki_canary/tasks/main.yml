@@ -1,0 +1,39 @@
+
+- name: create directories for loki
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ loki_canary_path }}'
+
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: '{{ loki_canary_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: deploy .env
+  no_log: True
+  template:
+    src: default.env.j2
+    dest: '{{ loki_canary_path }}/.env'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: loki_canary_docker-compose-up
+  docker_compose:
+    project_src: '{{ loki_canary_path }}'
+    state: present
+    remove_orphans: True
+    pull: '{{ loki_canary_docker_pull }}'
+
+
+- name: import monitoring integration
+  when: loki_canary_monitoring_integration
+  import_tasks: monitoring.yml

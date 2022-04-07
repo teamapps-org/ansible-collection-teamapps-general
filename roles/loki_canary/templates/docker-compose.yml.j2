@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  canary:
+    image: grafana/loki-canary:{{ loki_canary_version }}
+    restart: unless-stopped
+    container_name: {{ loki_canary_container_name }}
+    command:
+      # https://grafana.com/docs/loki/latest/operations/loki-canary/#configuration
+      - '-addr={{ loki_canary_loki_domain }}:443'
+      - '-tls=true'
+      - '-user=${LOKIUSER}'
+      - '-pass=${LOKIPASS}'
+      - -interval=10s
+      - -pruneinterval=1m
+      - -wait=1m
+      - -spot-check-interval=5m # default: 15m
+      - -spot-check-max=30m # (default 4h) if vector is stopped, missed logs will be lost
+      - -spot-check-query-rate=5m
+      - -buckets=5
+      - -labelname=container_name
+      - -labelvalue={{ loki_canary_container_name }}
+      - -streamname=source
+      - -streamvalue=stdout
+    networks:
+      default:
+    ports:
+      - '{{ loki_canary_port_bind_to }}:3500'

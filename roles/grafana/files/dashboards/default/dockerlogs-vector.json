@@ -21,12 +21,41 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1643791659816,
-  "links": [],
+  "iteration": 1649167496988,
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": true,
+      "keepTime": true,
+      "tags": [
+        "logs"
+      ],
+      "targetBlank": false,
+      "title": "Log Dashboards",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 13,
+      "panels": [],
+      "title": "Statistics",
+      "type": "row"
+    },
+    {
       "datasource": {
+        "type": "loki",
         "uid": "${loki}"
       },
       "description": "",
@@ -87,7 +116,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "id": 11,
       "interval": "10s",
@@ -101,12 +130,17 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "multi"
+          "mode": "multi",
+          "sort": "none"
         }
       },
       "pluginVersion": "7.5.5",
       "targets": [
         {
+          "datasource": {
+            "type": "loki",
+            "uid": "000000001"
+          },
           "expr": "sum by (host) (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
           "instant": false,
           "legendFormat": "{{ host }}",
@@ -115,13 +149,14 @@
           "resolution": 5
         }
       ],
-      "title": "Message counts by host / $__interval",
+      "title": "Message counts by host [$__interval]",
       "transformations": [],
       "transparent": true,
       "type": "timeseries"
     },
     {
       "datasource": {
+        "type": "loki",
         "uid": "${loki}"
       },
       "description": "",
@@ -215,7 +250,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 6
       },
       "id": 9,
       "interval": "10s",
@@ -229,12 +264,17 @@
           "placement": "bottom"
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "7.5.5",
       "targets": [
         {
+          "datasource": {
+            "type": "loki",
+            "uid": "000000001"
+          },
           "expr": "sum by (compose_service)(count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
           "instant": false,
           "legendFormat": "{{ compose_service }}",
@@ -242,32 +282,48 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "type": "loki",
+            "uid": "000000001"
+          },
           "expr": "sum (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} [$__interval]))",
           "hide": false,
           "instant": false,
-      "title": "Message counts by service / $__interval",
-          "legendFormat": "unfiltered ",
+          "legendFormat": "unfiltered",
           "range": true,
           "refId": "unfiltered",
           "resolution": 1
         }
       ],
-      "title": "Message counts by service",
+      "title": "Message counts by service [$__interval]",
       "transformations": [],
       "transparent": true,
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 15,
+      "panels": [],
+      "title": "Logs",
+      "type": "row"
     },
     {
       "datasource": {
         "type": "loki",
         "uid": "$loki"
       },
-      "description": "note on query: label_format: multiple remap values to remove original labels.",
+      "description": "",
       "gridPos": {
         "h": 17,
         "w": 24,
         "x": 0,
-        "y": 13
+        "y": 15
       },
       "id": 3,
       "options": {
@@ -283,9 +339,24 @@
       "pluginVersion": "7.1.5",
       "targets": [
         {
-          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| json | line_format \"{{.compose_project}}/{{.compose_service}} | {{.message}}\"",
+          "datasource": {
+            "type": "loki",
+            "uid": "$loki"
+          },
+          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# capture original message with pattern matcher\n| pattern \"<MESSAGE>\" \n| line_format \"{{.compose_project }}/{{.compose_service }}\\t| {{ .MESSAGE }}\"",
+          "hide": false,
           "legendFormat": "",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "$loki"
+          },
+          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# capture original message with pattern matcher\n| pattern \"<MESSAGE>\"\n# parse container_labels json\n| line_format \"{{ .container_labels }}\" | json\n# format printed line\n| line_format \"{{ .com_docker_compose_project | trunc 6 }}/{{.compose_service | trunc 6 }}\\t| {{ .MESSAGE }}\"",
+          "hide": true,
+          "legendFormat": "",
+          "refId": "B"
         }
       ],
       "title": "log messages",
@@ -293,13 +364,21 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 34,
+  "schemaVersion": 35,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "loki",
+    "logs",
+    "docker"
+  ],
   "templating": {
     "list": [
       {
-        "current": {},
+        "current": {
+          "selected": false,
+          "text": "Loki",
+          "value": "Loki"
+        },
         "description": "Loki Datasource",
         "hide": 0,
         "includeAll": false,
@@ -316,13 +395,6 @@
       {
         "allValue": ".+",
         "current": {
-          "selected": true,
-          "text": [
-            "All"
-          ],
-          "value": [
-            "$__all"
-          ]
         },
         "datasource": {
           "uid": "$loki"
@@ -426,7 +498,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "",
           "value": ""
         },
@@ -465,8 +537,8 @@
     ]
   },
   "timezone": "",
-  "title": "Docker Logs Dashboard",
+  "title": "Docker Logs Dashboard Vector",
   "uid": "_PfW8xQGz",
-  "version": 7,
+  "version": 15,
   "weekStart": ""
 }

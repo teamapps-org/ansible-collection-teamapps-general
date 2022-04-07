@@ -24,20 +24,79 @@
   auth.password = "{{ vector_loki_password }}" # required
 
   # Encoding
-  encoding.codec = "json" # required
+  # encoding.codec = "json" # Content = all info as json structure
+  encoding.codec = "text"   # Content = only the actual log line, message field from the event.
 
   # Healthcheck
   healthcheck.enabled = false # optional, default true
 
   batch.max_bytes = {{ vector_loki_batch_max_bytes }} # default 102400 (0.1mb)
 
-{% raw %}
   # Labels
+
+  labels.instance = '{{ ansible_fqdn }}'
+{% raw %}
   labels.forwarder = 'vector'
-  labels.host = '{{ host }}'
-  labels.container_name = '{{ container_name }}'
-  labels.compose_service = '{{ label.com\.docker\.compose\.service }}'
-  labels.compose_project = '{{ label.com\.docker\.compose\.project }}'
-  labels.source = '{{ stream }}'
   labels.category = 'dockerlogs'
+  labels.host = '{{ host }}'
+  labels.source_type =  '{{ source_type }}'
+
+  labels.source = '{{ stream }}'
+  labels.stream = '{{ stream }}'
+
+  labels.container_created_at = '{{ container_created_at }}'
+  labels.container_id = '{{ container_id }}'
+  labels.container_name = '{{ container_name }}'
+  labels.container_image = '{{ image }}'
+
+  ## add all labels as json, see ansible vector role Readme.
+  labels.container_labels = '{{ label }}'
+
+  ## add labels useful for log filtering
+  labels.compose_container_number = '{{ label.com\.docker\.compose\.container-number }}'
+  labels.compose_oneoff = '{{ label.com\.docker\.compose\.oneoff }}'
+  labels.compose_project = '{{ label.com\.docker\.compose\.project }}'
+  labels.compose_project_working_dir = '{{ label.com\.docker\.compose\.project\.working_dir }}'
+  labels.compose_service = '{{ label.com\.docker\.compose\.service }}'
+
+  ## container labels not useful for log filtering. info can be extracted from container_labels
+  # labels.compose_config_hash = '{{ label.com\.docker\.compose\.config-hash }}'
+  # labels.compose_project_config_files = '{{ label.com\.docker\.compose\.project\.config_files }}'
+  # labels.compose_version = '{{ label.com\.docker\.compose\.version }}'
+
+  # labels.container_image_created = '{{ label.org\.opencontainers\.image\.created }}'
+  # labels.container_image_revision = '{{ label.org\.opencontainers\.image\.revision }}'
+  # labels.container_image_source = '{{ label.org\.opencontainers\.image\.source }}'
+  # labels.container_image_url = '{{ label.org\.opencontainers\.image\.url }}'
+
+  # remove_label_fields = true
 {% endraw %}
+
+{#- (jinja comment, won't appear )
+# original event structure with encoding.codec = "json"
+{
+  "container_created_at": "2022-03-29T14:39:48.925912154Z",
+  "container_id": "237a4235d3c97da8c2faeec8ea318b6689d363240f368bb9a1cee0d2e4e82beb",
+  "container_name": "loki-canary_loki-canary_1",
+  "host": "logserver1",
+  "image": "grafana/loki-canary:2.4.2",
+  "label": {
+    "com.docker.compose.config-hash": "c32cc5fcd69a0dc9c632510fdb36096fbf7366df9e09f0d68c466decf5f91608",
+    "com.docker.compose.container-number": "1",
+    "com.docker.compose.oneoff": "False",
+    "com.docker.compose.project": "loki-canary",
+    "com.docker.compose.project.config_files": "docker-compose.yml",
+    "com.docker.compose.project.working_dir": "/container/loki-canary",
+    "com.docker.compose.service": "loki-canary",
+    "com.docker.compose.version": "1.29.2",
+    "org.opencontainers.image.created": "2022-01-12T16:55:53Z",
+    "org.opencontainers.image.revision": "525040a3265715ca8cfb52cd39108ccfac9f8af6",
+    "org.opencontainers.image.source": "https://github.com/grafana/loki.git",
+    "org.opencontainers.image.url": "https://github.com/grafana/loki"
+  },
+  "message": "1648564959737014786 ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+  "source_type": "docker",
+  "stream": "stdout"
+}
+
+#}

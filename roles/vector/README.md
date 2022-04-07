@@ -26,8 +26,18 @@ There are more variables that allow any configuration. You can also deploy confi
 
 ## Example query for docker logs in loki
 
-Log parsing. The logs can be printed in human friendly format by using the `json` filter and `line_format` to output the message field.
+~~~go
+{category="dockerlogs", compose_service="foo"}
+~~~
 
-~~~json
-{category="dockerlogs", compose_service="foo"} | json | line_format "{{.compose_project}}/{{.compose_service}} {{ .source }} {{.message}}"
+### extended LogQL example
+
+~~~go
+{host=~"$host",category="dockerlogs",compose_project=~"$project",compose_service=~"$service"} |~ "$search"
+  # capture entire original message with pattern matcher
+  | pattern "<MESSAGE>"
+  # parse container_labels json, values are added as individual labels
+  | line_format "{{ .container_labels }}" | json
+  # format printed line
+  | line_format "{{ .com_docker_compose_project }}/{{ .compose_service }}\t| {{ .MESSAGE }}"
 ~~~

@@ -1,0 +1,64 @@
+#
+# Managed by Ansible
+#
+groups:
+  - name: loki_canary
+    interval: 1m
+    rules:
+      - alert: websocket missing entries
+        # alerts and resolves quickly
+        expr: |
+          increase(loki_canary_websocket_missing_entries_total{job="loki-canary"} [1m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Loki Canary Missing Entries (Tail)'
+          description: '{{ $value }} new missing entries on websocket connection (tail) on {{ $labels.host }}'
+
+      - alert: missing entries
+        expr: |
+          increase(loki_canary_missing_entries_total{job="loki-canary"} [1m]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Loki Canary Missing Entries'
+          description: '{{ $value }} new missing entries on {{ $labels.host }}'
+
+      - alert: missing spot check entries
+        expr: |
+          increase(loki_canary_spot_check_missing_entries_total{job="loki-canary"} [1m]) > 1
+          # currently > 1 because with vector if a message is lost, its lost forever
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Loki Canary Spot Check Missing Entries'
+          description: '{{ $value }} new missing entries on {{ $labels.host }}'
+
+      - alert: response latency
+        expr: |
+          sum by (host)(rate(loki_canary_response_latency_seconds_sum [1m]))
+          /
+          sum by (host)(rate(loki_canary_response_latency_seconds_count [1m]))
+          > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Loki Canary high latency'
+          description: 'Latency of logs appearing in loki is {{ $value }}s on {{ $labels.host }}'
+
+      - alert: metric test difference
+        expr: |
+          abs(
+            sum by (host)(delta(loki_canary_metric_test_expected[5m]))
+            -
+            sum by (host)(delta(loki_canary_metric_test_actual[5m]))
+          )
+          > 100
+        labels:
+          severity: warning
+        annotations:
+          summary: 'Loki Canary Log Count Difference'
+          description: 'Difference of {{ $value }} between expected and actual metric test result on {{ $labels.host }}'

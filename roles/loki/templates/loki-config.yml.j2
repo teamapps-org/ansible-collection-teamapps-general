@@ -181,6 +181,16 @@ ruler:
         password: '{{ loki_ruler_remote_write_password }}'
 {% endif %}
 
+  wal:
+    # The directory in which to write tenant WAL files. Each tenant will have its own
+    # directory one level below this directory.
+    dir: /data/loki/ruler-wal
+
+  wal_cleaner:
+    # The minimum age of a WAL to consider for cleaning.
+    min_age: 12h
+    # How often to run the WAL cleaner.
+    period: 6h
 
 # Common config to be shared between multiple modules.
 # If a more specific config is given in other sections, the related config under this section

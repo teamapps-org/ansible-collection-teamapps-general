@@ -1,0 +1,6 @@
+# Loki Canary handlers
+
+- name: loki-canary-vmagent-restart
+  service:
+    name: vic-vmagent
+    state: restarted
