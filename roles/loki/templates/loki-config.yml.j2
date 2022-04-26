@@ -46,6 +46,13 @@ schema_config:
       index:
         prefix: index_
         period: 24h
+    - from: {{ loki_schema_v12_from }}
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v12
+      index:
+        prefix: index_
+        period: 24h
 
 storage_config:
   boltdb:
@@ -99,6 +106,8 @@ limits_config:
   # The limit to length of chunk store queries. 0 to disable.
   # CLI flag: -store.max-query-length
   max_query_length: {{ loki_limits_max_query_length }} # <duration> | default = 721h
+
+  split_queries_by_interval: 0 # 720h # 30d
 
   # Limit how far back in time series data and metadata can be queried,
   # up until lookback duration ago.
@@ -155,7 +164,6 @@ query_scheduler:
     max_recv_msg_size: 33554432
 
 query_range:
-  split_queries_by_interval: 0 # 720h # 30d
   parallelise_shardable_queries: False
 
 ruler:

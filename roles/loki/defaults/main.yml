@@ -5,7 +5,7 @@ loki_path: '{{ container_path }}/loki'
 
 # loki_domain: '{{ ansible_fqdn }}'
 loki_domain: "loki.{{ ansible_fqdn }}"
-loki_version: 2.4.0
+loki_version: 2.5.0
 
 # htpasswd -B -n username
 loki_htpasswd: |
@@ -58,3 +58,5 @@ loki_ruler_remote_write_enabled: False
 loki_ruler_remote_write_url: "{{ vmagent_remotewrite_url }}"
 loki_ruler_remote_write_username: '{{ vmagent_remotewrite_username }}'
 loki_ruler_remote_write_password: '{{ vmagent_remotewrite_password }}'
+
+loki_schema_v12_from: 2022-04-27
