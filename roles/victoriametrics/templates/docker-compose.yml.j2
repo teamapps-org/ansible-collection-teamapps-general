@@ -100,6 +100,7 @@ services:
         target: /etc/prometheus/scrape_configs
         read_only: true
     command:
+      - '-http.pathPrefix=/vmagent'
       - '-promscrape.config=/etc/prometheus/prometheus.yml'
       - '-remoteWrite.url=http://victoriametrics:8428/api/v1/write'
       # - '-remoteWrite.basicAuth.username='
@@ -130,6 +131,7 @@ services:
         target: /etc/alerts
         read_only: true
     command:
+      - '-http.pathPrefix=/vmalert'
       - '-datasource.url=http://victoriametrics:8428/'
       - '-remoteRead.url=http://victoriametrics:8428/'
       - '-remoteWrite.url=http://victoriametrics:8428/'

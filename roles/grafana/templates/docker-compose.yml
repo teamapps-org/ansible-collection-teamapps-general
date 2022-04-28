@@ -29,9 +29,9 @@ services:
     image: grafana/grafana:{{ grafana_version }}
     restart: always
     environment:
-      VIRTUAL_HOST: {{ grafana_domain }}
-      LETSENCRYPT_HOST: {{ grafana_domain }}
-      LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
+      VIRTUAL_HOST: '{{ grafana_domain }}'
+      LETSENCRYPT_HOST: '{{ grafana_domain }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
 
       # https://grafana.com/docs/grafana/latest/installation/configuration/
       # https://github.com/grafana/grafana/tree/master/devenv/docker/ha_test
@@ -55,7 +55,7 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: '{{ grafana_admin_password }}'
 
-      GF_FEATURE_TOGGLES_ENABLE: live # enable broadcast events when dashboard is saved
+      GF_FEATURE_TOGGLES_ENABLE: live,newNavigation # enable broadcast events when dashboard is saved
 
       GF_SMTP_ENABLED: "{{ grafana_smtp_enabled }}"
       GF_SMTP_HOST: "{{ grafana_smtp_host }}"
@@ -86,6 +86,8 @@ services:
       GF_ALERTING_CONCURRENT_RENDER_LIMIT: 5
       GF_ALERTING_EVALUATION_TIMEOUT_SECONDS: 60
       GF_ALERTING_MAX_ATTEMPTS: 5
+
+      GF_UNIFIED_ALERTING_ENABLED: 'true'
     expose:
       - 3000
     volumes:
@@ -99,7 +101,7 @@ services:
 
   # https://github.com/grafana/grafana-image-renderer/blob/master/docs/remote_rendering_using_docker.md
   grafana-image-renderer:
-    image: {{ grafana_image_renderer_image }}:{{ grafana_image_renderer_version }}
+    image: '{{ grafana_image_renderer_image }}:{{ grafana_image_renderer_version }}'
     environment:
       HTTP_PORT: 8081
       ENABLE_METRICS: 'true'
@@ -111,7 +113,7 @@ services:
     expose:
       - 8081
     ports:
-      - {{ grafana_image_renderer_port }}:8081
+      - '{{ grafana_image_renderer_port }}:8081'
     networks:
       - grafana
     deploy:
