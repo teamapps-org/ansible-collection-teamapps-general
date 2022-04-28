@@ -80,3 +80,11 @@ victoriametrics_vmalert_external_url: 'https://grafana.yourdomain.com'
 PromQL for Beginners and Humans:  https://valyala.medium.com/promql-tutorial-for-beginners-9ab455142085
 
 Inspiration for Alerting Rules: https://awesome-prometheus-alerts.grep.to/rules.html
+
+## Web User Interface
+
+Victoriametrics also provides Web User Interfaces. The following endpoints are exposed. These endpoints are protected by htpasswd_admin
+
+* VMUI <https://victoriametrics_domain/vmui>
+* vmalert <https://victoriametrics_domain/vmalert/>
+* vmagent <https://victoriametrics_domain/vmagent/>
