@@ -1,7 +1,8 @@
 [sources.metrics_vector_internal]
   type = "internal_metrics"
   scrape_interval_secs = 20
-  tags.host_key = "{{ ansible_hostname }}"
+  tags.host_key = "host"
+  tags.pid_key = "pid"
 
 
 [sinks.metrics_prom]
