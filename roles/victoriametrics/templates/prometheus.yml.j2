@@ -9,6 +9,7 @@ scrape_config_files:
 
 scrape_configs:
   - job_name: 'vmagent'
+    metrics_path: /vmagent/metrics
     static_configs:
       - targets: ['vmagent:8429']
         labels:
@@ -23,6 +24,7 @@ scrape_configs:
           host: '{{ ansible_hostname }}'
 
   - job_name: 'vmalert'
+    metrics_path: /vmalert/metrics
     static_configs:
       - targets: ['vmalert:8880']
         labels:
