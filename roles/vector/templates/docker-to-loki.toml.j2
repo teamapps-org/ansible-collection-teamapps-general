@@ -53,21 +53,21 @@
   labels.container_labels = '{{ label }}'
 
   ## add labels useful for log filtering
-  labels.compose_container_number = '{{ label.com\.docker\.compose\.container-number }}'
-  labels.compose_oneoff = '{{ label.com\.docker\.compose\.oneoff }}'
-  labels.compose_project = '{{ label.com\.docker\.compose\.project }}'
-  labels.compose_project_working_dir = '{{ label.com\.docker\.compose\.project\.working_dir }}'
-  labels.compose_service = '{{ label.com\.docker\.compose\.service }}'
+  labels.compose_container_number = '{{ label."com.docker.compose.container-number" }}'
+  labels.compose_oneoff = '{{ label."com.docker.compose.oneoff" }}'
+  labels.compose_project = '{{ label."com.docker.compose.project" }}'
+  labels.compose_project_working_dir = '{{ label."com.docker.compose.project.working_dir" }}'
+  labels.compose_service = '{{ label."com.docker.compose.service" }}'
 
   ## container labels not useful for log filtering. info can be extracted from container_labels
-  # labels.compose_config_hash = '{{ label.com\.docker\.compose\.config-hash }}'
-  # labels.compose_project_config_files = '{{ label.com\.docker\.compose\.project\.config_files }}'
-  # labels.compose_version = '{{ label.com\.docker\.compose\.version }}'
+  # labels.compose_config_hash = '{{ label."com.docker.compose.config-hash" }}'
+  # labels.compose_project_config_files = '{{ label."com.docker.compose.project.config_files" }}'
+  # labels.compose_version = '{{ label."com.docker.compose.version" }}'
 
-  # labels.container_image_created = '{{ label.org\.opencontainers\.image\.created }}'
-  # labels.container_image_revision = '{{ label.org\.opencontainers\.image\.revision }}'
-  # labels.container_image_source = '{{ label.org\.opencontainers\.image\.source }}'
-  # labels.container_image_url = '{{ label.org\.opencontainers\.image\.url }}'
+  # labels.container_image_created = '{{ label."org.opencontainers.image.created" }}'
+  # labels.container_image_revision = '{{ label."org.opencontainers.image.revision" }}'
+  # labels.container_image_source = '{{ label."org.opencontainers.image.source" }}'
+  # labels.container_image_url = '{{ label."org.opencontainers.image.url" }}'
 
   # remove_label_fields = true
 {% endraw %}
