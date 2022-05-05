@@ -1,0 +1,100 @@
+version: "3.8"
+
+x-environment: &environment_variables
+  REDIS_URL: redis://redis:6379
+  MONGODB_URL: mongodb:27017
+  RAILS_ENV: production
+  SENTRY_DSN:
+  SETTINGS__LOG_LEVEL: "{{ dependabot_log_level }}"
+  SETTINGS__GITLAB_URL: "{{ dependabot_gitlab_url }}"
+  SETTINGS__GITHUB_ACCESS_TOKEN: "{{ dependabot_github_access_token }}"
+  SETTINGS__GITLAB_ACCESS_TOKEN: "{{ dependabot_gitlab_access_token }}"
+  SETTINGS__GITLAB_AUTH_TOKEN: "{{ dependabot_gitlab_auth_token }}"
+  SETTINGS__DEPENDABOT_URL: "https://{{ dependabot_domain }}"
+  SETTINGS__CREATE_PROJECT_HOOK: "true"
+  SECRET_KEY_BASE: "{{ dependabot_secret_key_base }}"
+x-volumes: &service_volumes
+  volumes:
+    - ./tmp:/home/dependabot/app/tmp
+
+services:
+  redis:
+    image: '{{ dependabot_redis_image }}'
+    restart: unless-stopped
+    # ports:
+    #   - 6379:6379
+    volumes:
+      - ./redis-data:/bitnami/redis/data
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+  mongodb:
+    image: '{{ dependabot_mongodb_image }}'
+    restart: unless-stopped
+    # ports:
+    #   - 27017:27017
+    volumes:
+      - ./mongodb-data:/bitnami/mongodb
+    environment:
+      ALLOW_EMPTY_PASSWORD: "yes"
+
+  migration:
+    image: '{{ dependabot_app_image }}'
+    # restart: unless-stopped # migration container just runs once!
+    depends_on:
+      - mongodb
+    <<: *service_volumes
+    environment:
+      <<: *environment_variables
+    command: rails db:migrate
+
+  web:
+    image: '{{ dependabot_app_image }}'
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - migration
+    <<: *service_volumes
+    environment:
+      <<: *environment_variables
+      RAILS_SERVE_STATIC_FILES: "true"
+      LETSENCRYPT_HOST: '{{ dependabot_domain }}'
+      VIRTUAL_HOST: '{{ dependabot_domain }}'
+    ports:
+      - 127.0.0.1:3000:3000
+    expose:
+      - 3000
+    command: rails server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:3000/healthcheck"]
+      interval: 10s
+      timeout: 2s
+      retries: 10
+      start_period: 20s
+    networks:
+      - default
+      - webproxy
+
+  worker:
+    image: '{{ dependabot_app_image }}'
+    restart: unless-stopped
+    depends_on:
+      - redis
+      - migration
+    <<: *service_volumes
+    environment:
+      <<: *environment_variables
+    # ports:
+    #   - 7433:7433
+    command: sidekiq
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:7433/healthcheck"]
+      interval: 60s
+      timeout: 2s
+      retries: 10
+      start_period: 20s
+
+networks:
+  default:
+  webproxy:
+    external:
+      name: webproxy

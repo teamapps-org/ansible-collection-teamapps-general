@@ -1,0 +1,87 @@
+# dependabot tasks
+
+- name: create project directory
+  file:
+    path: "{{ dependabot_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0770
+
+- name: create mongodb and redis data directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: '1001'
+    group: root
+    mode: 0770
+  with_items:
+    - "{{ dependabot_path }}/mongodb-data"
+    - "{{ dependabot_path }}/redis-data"
+
+- name: create tmp directory
+  file:
+    path: "{{ dependabot_path }}/tmp"
+    state: directory
+    owner: '1000'
+    group: '1000'
+    mode: 0770
+
+- name: create htpasswd file
+  copy:
+    content: '{{ dependabot_htpasswd }}'
+    dest: '{{ webproxy_path }}/data/htpasswd/{{ dependabot_domain }}'
+    owner: root
+    group: root
+    mode: 0644
+
+- name: allow whitelisted hosts
+  template:
+    src: 'dependabot_location.conf.j2'
+    dest: '{{ webproxy_path }}/data/vhost.d/{{ dependabot_domain }}_location'
+    owner: root
+    group: root
+    mode: 0644
+  notify: dependabot_regenerate_webproxy_config
+
+- name: dependabot rake command wrapper
+  copy:
+    content: |
+      #!/bin/bash
+      set -eu
+      dir="$(dirname $(readlink -f $0))"
+      cd $dir
+      if [ -t 0 ] ; then
+        tty=""
+      else
+        tty="-T"
+      fi
+      /usr/local/bin/docker-compose exec ${tty} worker bundle exec rake "$@"
+    dest: '{{ dependabot_path }}/rake'
+    owner: root
+    group: root
+    mode: 0750
+
+- name: deploy compose
+  template:
+    src: 'docker-compose.yml'
+    dest: '{{ dependabot_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: dependabot_docker-compose-up
+  docker_compose:
+    project_src: '{{ dependabot_path }}'
+    state: present
+    pull: '{{ dependabot_docker_pull }}'
+    debug: True
+    remove_orphans: True
+  register: dependabot_compose_return
+  changed_when: dependabot_compose_return.actions | count > 1 # workaround. dependabot migration is always started and stops after init
+
+- name: print compose actions
+  debug:
+    var: dependabot_compose_return.actions
+  changed_when: true
+  when: dependabot_compose_return.actions | count > 1

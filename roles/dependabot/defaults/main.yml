@@ -1,0 +1,35 @@
+# dependabot configuration
+
+dependabot_domain: 'dependabot.{{ ansible_fqdn }}'
+
+dependabot_path: /container/dependabot
+# needed for auth config and whitelists
+webproxy_path: /container/webproxy
+
+# htpasswd for dependabot api
+dependabot_htpasswd:
+
+# white list hosts that do not require basic auth
+dependabot_allowed_hosts:
+  - gitlab.com
+
+# log level, example: debug, info, warn, error
+dependabot_log_level: 'info'
+
+dependabot_gitlab_url: https://git.example.com
+# get GitHub token from https://github.com/settings/tokens
+# select public_repo permission, and long expiration.
+dependabot_github_access_token: ghp_asdfasdfasdf # pgassmann
+# create dependabot user on gitlab and then get a token for that user. dependabot user needs to be added to repository
+dependabot_gitlab_access_token: glpat-_asdfasdfasdf
+dependabot_gitlab_auth_token: asdfasdfasdfasdfasdf # generate random passwor
+
+# generate rails secret_key_base using docker-compose exec worker bundle exec rake secret
+dependabot_secret_key_base: key
+
+dependabot_app_image: andrcuns/dependabot-gitlab:latest
+dependabot_mongodb_image: bitnami/mongodb:5.0-debian-10
+dependabot_redis_image: bitnami/redis:6.2-debian-10
+
+# pull docker images (docker-compose pull)
+dependabot_docker_pull: '{{ global_docker_pull | default(False) }}'

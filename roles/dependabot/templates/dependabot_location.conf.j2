@@ -1,0 +1,10 @@
+{{ ansible_managed | comment }}
+
+{% if dependabot_allowed_hosts | length > 0 %}
+satisfy any;
+{% for host in dependabot_allowed_hosts %}
+
+allow {{ lookup('dig', host) | ipaddr }}; # {{ host }}
+{% endfor %}
+deny all;
+{% endif %}
