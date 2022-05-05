@@ -1,0 +1,17 @@
+# zfs ansible defaults
+
+zfs_managed_pools:
+  - zfsdata
+  - zfsbulk
+
+zfs_zpool_properties:
+  atime: on
+  relatime: on
+  xattr: sa
+  acltype: posixacl
+  # snapdir: visible
+
+zfs_datasets: []
+
+zfs_extra_zfs_properties_default:
+  relatime: on

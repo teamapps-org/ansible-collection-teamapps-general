@@ -1,0 +1,19 @@
+
+# Exclude specific datasets which match the given regular expression.
+syncoid_exclude_default:
+  - /hotspare/
+  - /docker/
+
+# log all found snapshots on source and target
+syncoid_dumpsnaps_default: False
+
+syncoid_jobs: []
+# syncoid_jobs:
+#   - source_dataset: zfsbulk
+#     source_host: test1
+#     source_host_ssh: 'test1.example.com'
+#     source_bwlimit: 60m
+#     cron_minute: 35
+#     cron_hour: '*'
+#     dest_root_dataset: zfsbulk/hotspare
+#     # dest_dataset: 'zfsbulk/hotspare/{{ source_host }}/{{ source_dataset }}' # these variables are not available here!

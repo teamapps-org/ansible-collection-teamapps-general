@@ -1,0 +1,44 @@
+sanoid_conf_datasets: |
+  [zfsbulk]
+    recursive = yes
+    use_template = production
+
+  [zfsdata]
+    recursive = yes
+    use_template = production
+
+  [zfsdata/container]
+    recursive = yes
+    frequently = 200
+    # frequent_period in minutes
+    frequent_period = 15
+    pre_snapshot_script = /usr/local/bin/prebackup.sh
+    # script_timeout in seconds
+    script_timeout = 60
+
+  [zfsdata/docker]
+    recursive = yes
+    use_template = ignore
+    pre_snapshot_script = /bin/false
+
+  [zfsdata/hotspare]
+    recursive = yes
+    use_template = hotspare
+
+  [zfsbulk/hotspare]
+    recursive = yes
+    use_template = hotspare
+
+sanoid_conf_datasets_custom: ''
+
+sanoid_conf_templates: "{{ lookup('template', 'sanoid-conf-templates.conf.j2') }}"
+sanoid_conf_templates_custom: ''
+
+sanoid_conf: |
+  {{ sanoid_conf_datasets }}
+  {{ sanoid_conf_datasets_custom }}
+  {{ sanoid_conf_templates }}
+  {{ sanoid_conf_templates_custom }}
+
+sanoid_install_from_deb_source: True
+sanoid_deb_source: https://ftp.debian.org/debian/pool/main/s/sanoid/sanoid_2.1.0-1_all.deb

@@ -1,0 +1,53 @@
+- name: Check if zfs is installed
+  stat:
+    path: /usr/sbin/zpool
+  changed_when: false
+  check_mode: false
+  register: _zpool_stat
+  tags:
+    - zfs
+    - zpool
+
+- name: collect zpool facts
+  zpool_facts: {}
+  when: _zpool_stat.stat.exists | bool
+  tags:
+    - zfs
+    - zpool
+
+# - name: debug1
+#   changed_when: true
+#   debug:
+#     var: ansible_zfs_pools | json_query('[*].name')
+
+# - name: debug2
+#   changed_when: true
+#   debug:
+#     msg: "manage: {{ item }}"
+#   when: "item in ansible_zfs_pools | json_query('[*].name')"
+#   loop: "{{ zfs_managed_pools }}"
+
+# manage zpool settings:
+# loop over existing zpools, include tasks from zpool.yml if pool is listed in zfs_managed_pools
+- name: block loop over zpools
+  loop: '{{ ansible_zfs_pools | default([]) }}'
+  loop_control:
+    loop_var: zpool
+  when: "zpool.name in zfs_managed_pools"
+  include_tasks:
+    file: zpool.yml
+    apply:
+      tags:
+        - zfs
+        - zpool
+
+
+# manage zfs datasets
+- name: create zfs dataset {{ item.name }}
+  zfs:
+    name: '{{ item.name }}'
+    state: present
+    extra_zfs_properties: '{{ [zfs_extra_zfs_properties_default, item.extra_zfs_properties | default({}) ] | combine }}'
+  loop: '{{ zfs_datasets }}'
+  tags:
+    - zfs

@@ -1,0 +1,60 @@
+# Syncoid cronjobs
+
+- name: create syncoid log dir
+  file:
+    path: /var/log/syncoid/
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+
+- name: Configure syncoid Logs to be Rotated
+  copy:
+    dest: /etc/logrotate.d/syncoid
+    owner: root
+    group: root
+    mode: 0644
+    content: |
+      /var/log/syncoid/*.log {
+        rotate 14
+        maxage 30
+        daily
+        compress
+        missingok
+        notifempty
+      }
+
+- name: generate SSH keypair for syncoid
+  openssh_keypair:
+    path: "/root/.ssh/syncoid_id_ed25519"
+    type: ed25519
+    state: present
+    force: no
+    comment: syncoid@{{ ansible_fqdn }}
+  register: _syncoid_id_ed25519
+
+
+- name: manage syncoid jobs
+  loop: '{{ syncoid_jobs | default([]) }}'
+  loop_control:
+    loop_var: syncoid_job
+  vars:
+    syncoid_source_dataset: "{{ syncoid_job.source_dataset }}"
+    syncoid_source_host: "{{ syncoid_job.source_host }}"
+    syncoid_source_host_ssh: "{{ syncoid_job.source_host_ssh }}"
+    syncoid_source_bwlimit: "{{ syncoid_job.source_bwlimit | default('60m') }}"
+    syncoid_cron_minute: "{{ syncoid_job.cron_minute | default(35) }}"
+    syncoid_cron_hour: "{{ syncoid_job.cron_hour | default('*') }}"
+    syncoid_dest_root_dataset: "{{ syncoid_job.dest_root_dataset | default('zfsbulk/hotspare') }}"
+    syncoid_dest_dataset: "{{ syncoid_job.dest_dataset | default(syncoid_dest_root_dataset+'/'+syncoid_source_host+'/'+syncoid_source_dataset) }}"
+    syncoid_exclude: "{{ syncoid_job.exclude | default(syncoid_exclude_default) }}"
+    syncoid_dumpsnaps: "{{ syncoid_job.dumpsnaps | default(syncoid_dumpsnaps_default) }}"
+  include_tasks:
+    file: syncoid_job.yml
+    apply:
+      tags:
+        - syncoid
+        - syncoid_job
+  tags:
+    - syncoid
+    - syncoid_job
