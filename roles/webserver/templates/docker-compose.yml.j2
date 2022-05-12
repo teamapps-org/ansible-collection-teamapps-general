@@ -113,7 +113,7 @@ services:
 
 {% if webserver_myadmin_enable %}
   myadmin:
-    image: phpmyadmin
+    image: {{ webserver_myadmin_image }}
     restart: always
     environment:
       TZ: Etc/UTC

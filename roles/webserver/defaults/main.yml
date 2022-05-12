@@ -51,3 +51,4 @@ webserver_myadmin_enable: False
 # htpasswd file content (if webserver_basic_auth is used, it should also contain the myadmin_htpasswd credentials)
 webserver_myadmin_htpasswd: ''
 webserver_myadmin_absolute_uri: https://{{ webserver_domain }}/.myadmin/
+webserver_myadmin_image: phpmyadmin:latest
