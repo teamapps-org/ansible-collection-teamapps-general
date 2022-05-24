@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -21,7 +24,8 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "iteration": 1649167496988,
+  "id": 12,
+  "iteration": 1653412942927,
   "links": [
     {
       "asDropdown": true,
@@ -343,7 +347,7 @@
             "type": "loki",
             "uid": "$loki"
           },
-          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# capture original message with pattern matcher\n| pattern \"<MESSAGE>\" \n| line_format \"{{.compose_project }}/{{.compose_service }}\\t| {{ .MESSAGE }}\"",
+          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| line_format \"{{.compose_project }}/{{.compose_service }}\\t| {{ __line__ }}\"",
           "hide": false,
           "legendFormat": "",
           "refId": "A"
@@ -353,7 +357,7 @@
             "type": "loki",
             "uid": "$loki"
           },
-          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# capture original message with pattern matcher\n| pattern \"<MESSAGE>\"\n# parse container_labels json\n| line_format \"{{ .container_labels }}\" | json\n# format printed line\n| line_format \"{{ .com_docker_compose_project | trunc 6 }}/{{.compose_service | trunc 6 }}\\t| {{ .MESSAGE }}\"",
+          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# parse container_labels json\n| line_format \"{{ .container_labels }}\" | json\n# format printed line\n| line_format \"{{ .com_docker_compose_project | trunc 6 }}/{{.compose_service | trunc 6 }}\\t| {{ __line__ }}\"",
           "hide": true,
           "legendFormat": "",
           "refId": "B"
@@ -364,7 +368,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 35,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [
     "loki",
@@ -418,7 +422,7 @@
       {
         "allValue": ".+",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -448,7 +452,7 @@
       {
         "allValue": ".*",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -539,6 +543,6 @@
   "timezone": "",
   "title": "Docker Logs Dashboard",
   "uid": "_PfW8xQGz",
-  "version": 15,
+  "version": 10,
   "weekStart": ""
 }

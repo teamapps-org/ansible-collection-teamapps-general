@@ -34,10 +34,8 @@ There are more variables that allow any configuration. You can also deploy confi
 
 ~~~go
 {host=~"$host",category="dockerlogs",compose_project=~"$project",compose_service=~"$service"} |~ "$search"
-  # capture entire original message with pattern matcher
-  | pattern "<MESSAGE>"
   # parse container_labels json, values are added as individual labels
   | line_format "{{ .container_labels }}" | json
   # format printed line
-  | line_format "{{ .com_docker_compose_project }}/{{ .compose_service }}\t| {{ .MESSAGE }}"
+  | line_format "{{ .com_docker_compose_project }}/{{ .compose_service }}\t| {{ __line__ }}"
 ~~~
