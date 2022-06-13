@@ -30,7 +30,16 @@
   # Healthcheck
   healthcheck.enabled = false # optional, default true
 
+  buffer.max_events = {{  vector_loki_buffer_max_events }} # default: 500
+
   batch.max_bytes = {{ vector_loki_batch_max_bytes }} # default 102400 (0.1mb)
+  batch.max_events = {{ vector_loki_batch_max_events }}
+  batch.timeout_secs =  {{ vector_loki_batch_timeout_secs }} # default 1
+  request.retry_max_duration_secs = {{ vector_loki_request_retry_max_duration_secs }} # default 3600, 1h
+
+  compression = "gzip" # default none, promtail uses snappy (not available in vector)
+
+  out_of_order_action = "accept"
 
   # Labels
 
