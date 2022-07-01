@@ -4,8 +4,9 @@
 nextcloud_mysql_root_password:
 nextcloud_mysql_password:
 
-nextcloud_version: 22
-nextcloud_notify_push_version: v0.2.1
+nextcloud_version: 23
+# https://github.com/nextcloud/notify_push/releases/
+nextcloud_notify_push_version: v0.4.0
 nextcloud_mariadb_version: 10.5
 
 container_path: /container

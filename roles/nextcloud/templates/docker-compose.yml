@@ -32,6 +32,7 @@ services:
       - ./nextcloud-apps:/var/www/html/custom_apps
       - ./nextcloud-config:/var/www/html/config
       - ./php.conf:/usr/local/etc/php-fpm.d/zz-custom.conf:ro
+      - ./php.ini:/usr/local/etc/php/conf.d/zz-custom.ini:ro
       - '{{ nextcloud_data_dir }}:/var/www/html/data'
       # - ./theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
     environment:

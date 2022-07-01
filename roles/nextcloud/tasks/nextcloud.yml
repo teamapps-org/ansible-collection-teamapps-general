@@ -68,6 +68,15 @@
     mode: 0640
   notify: nextcloud_docker-compose-restart
 
+- name: php.ini
+  template:
+    src: templates/php.ini
+    dest: '{{ nextcloud_path }}/php.ini'
+    owner: root
+    group: www-data
+    mode: 0640
+  notify: nextcloud_docker-compose-restart
+
 - name: Nextcloud DB Tuning mysql.conf
   template:
     src: mysql.conf
