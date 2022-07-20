@@ -3,7 +3,10 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
@@ -23,8 +26,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 13659,
   "graphTooltip": 0,
-  "id": 25,
-  "iteration": 1644229579161,
+  "iteration": 1658328970947,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -41,7 +43,8 @@
           "custom": {
             "align": "left",
             "displayMode": "auto",
-            "filterable": true
+            "filterable": true,
+            "inspect": false
           },
           "mappings": [],
           "min": 0,
@@ -407,10 +410,13 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "8.3.4",
+      "pluginVersion": "9.0.2",
       "repeatDirection": "h",
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "probe_success{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
           "format": "table",
           "instant": true,
@@ -419,6 +425,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "probe_http_ssl{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"} > 0",
           "format": "table",
           "instant": true,
@@ -427,6 +436,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "(probe_ssl_earliest_cert_expiry{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"} - time()) / 3600 / 24",
           "format": "table",
           "instant": true,
@@ -435,6 +447,9 @@
           "refId": "C"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "probe_http_status_code{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"} > 0",
           "format": "table",
           "instant": true,
@@ -443,6 +458,9 @@
           "refId": "D"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "avg_over_time(probe_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}[1m])",
           "format": "table",
           "hide": false,
@@ -453,6 +471,9 @@
           "refId": "E"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "probe_tls_version_info{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
           "format": "table",
           "instant": true,
@@ -461,6 +482,9 @@
           "refId": "F"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "avg_over_time(probe_dns_lookup_time_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}[1m])",
           "format": "table",
           "instant": true,
@@ -583,54 +607,89 @@
       "type": "table"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "uid": "${ds}"
       },
       "description": "Returns how long the probe took to complete in seconds",
-      "fill": 0,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
       "gridPos": {
-        "h": 9,
+        "h": 13,
         "w": 24,
         "x": 0,
         "y": 7
       },
-      "hiddenSeries": false,
       "id": 4,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": false,
-        "max": true,
-        "min": true,
-        "rightSide": true,
-        "show": true,
-        "sort": "max",
-        "sortDesc": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
-      "percentage": false,
-      "pluginVersion": "8.3.4",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "9.0.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "sum(probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}) by (instance)",
           "instant": false,
           "interval": "",
@@ -639,38 +698,8 @@
           "refId": "A"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "HTTP Probe Duration",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:80",
-          "format": "s",
-          "logBase": 1,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:81",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": 0
-      }
+      "type": "timeseries"
     },
     {
       "collapsed": false,
@@ -681,61 +710,103 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "id": 8,
       "panels": [],
       "repeat": "instance",
+      "targets": [
+        {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "$instance",
       "type": "row"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": {
         "uid": "${ds}"
       },
       "description": "Duration of http request by phase, summed over all redirects",
-      "fill": 10,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 21
       },
-      "hiddenSeries": false,
       "id": 6,
-      "legend": {
-        "alignAsTable": false,
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 0,
-      "nullPointMode": "null",
       "options": {
-        "alertThreshold": true
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
-      "percentage": false,
-      "pluginVersion": "8.3.4",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
+      "pluginVersion": "9.0.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "expr": "probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
           "interval": "",
           "intervalFactor": 2,
@@ -743,43 +814,13 @@
           "refId": "A"
         }
       ],
-      "thresholds": [],
-      "timeRegions": [],
       "title": "HTTP Probe Phases Duration",
-      "tooltip": {
-        "shared": true,
-        "sort": 2,
-        "value_type": "individual"
-      },
       "transformations": [],
-      "type": "graph",
-      "xaxis": {
-        "mode": "time",
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:1946",
-          "format": "s",
-          "logBase": 1,
-          "min": "0",
-          "show": true
-        },
-        {
-          "$$hashKey": "object:1947",
-          "format": "short",
-          "logBase": 1,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false
-      }
+      "type": "timeseries"
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 34,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [
     "blackbox",
@@ -878,7 +919,7 @@
         "datasource": {
           "uid": "${ds}"
         },
-        "definition": "label_values(probe_success{job=~\"$job\"}, instance)",
+        "definition": "label_values(probe_success{job=~\"$job\",group=~\"$group\"}, instance)",
         "hide": 0,
         "includeAll": true,
         "label": "Instance",
@@ -886,7 +927,7 @@
         "name": "instance",
         "options": [],
         "query": {
-          "query": "label_values(probe_success{job=~\"$job\"}, instance)",
+          "query": "label_values(probe_success{job=~\"$job\",group=~\"$group\"}, instance)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -901,13 +942,13 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Blackbox Exporter (HTTP prober)",
   "uid": "NEzutrbMk",
-  "version": 9,
+  "version": 10,
   "weekStart": ""
 }
