@@ -3,7 +3,7 @@
 
 prometheus_domain: 'prometheus.{{ ansible_fqdn }}'
 prometheus_image: prom/prometheus # public image to be used
-prometheus_version: 2.35.0 # prometheus --version
+prometheus_version: 2.37.0 # prometheus --version
 prometheus_port: 9090
 
 prometheus_global:
