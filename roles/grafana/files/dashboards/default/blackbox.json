@@ -26,7 +26,6 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 13659,
   "graphTooltip": 0,
-  "iteration": 1658330717268,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -160,7 +159,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 76
+                "value": 55
               }
             ]
           },
@@ -213,7 +212,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 78
+                "value": 54
               }
             ]
           },
@@ -265,7 +264,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 77
+                "value": 46
               }
             ]
           },
@@ -387,7 +386,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 117
+                "value": 88
               }
             ]
           },
@@ -400,6 +399,42 @@
               {
                 "id": "custom.width",
                 "value": 323
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "environment"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 99
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "group"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 78
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "job"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 106
               }
             ]
           }
@@ -423,7 +458,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.0.3",
+      "pluginVersion": "9.0.5",
       "repeatDirection": "h",
       "targets": [
         {
@@ -431,7 +466,7 @@
             "uid": "${ds}"
           },
           "editorMode": "code",
-          "expr": "probe_success{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
+          "expr": "probe_success{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -443,7 +478,7 @@
             "uid": "${ds}"
           },
           "editorMode": "code",
-          "expr": "probe_http_ssl{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
+          "expr": "probe_http_ssl{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -455,7 +490,7 @@
           "datasource": {
             "uid": "${ds}"
           },
-          "expr": "(\n  probe_ssl_earliest_cert_expiry{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"} \n  - \n  time()\n) / 3600 / 24",
+          "expr": "(\n  probe_ssl_earliest_cert_expiry{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"} \n  - \n  time()\n) / 3600 / 24",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -468,7 +503,7 @@
             "uid": "${ds}"
           },
           "editorMode": "code",
-          "expr": "probe_http_status_code{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
+          "expr": "probe_http_status_code{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -480,7 +515,7 @@
           "datasource": {
             "uid": "${ds}"
           },
-          "expr": "avg_over_time(probe_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}[1m])",
+          "expr": "avg_over_time(probe_duration_seconds{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}[1m])",
           "format": "table",
           "hide": false,
           "instant": false,
@@ -493,7 +528,7 @@
           "datasource": {
             "uid": "${ds}"
           },
-          "expr": "probe_tls_version_info{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
+          "expr": "probe_tls_version_info{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -505,7 +540,7 @@
           "datasource": {
             "uid": "${ds}"
           },
-          "expr": "avg_over_time(probe_dns_lookup_time_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}[1m])",
+          "expr": "avg_over_time(probe_dns_lookup_time_seconds{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}[1m])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -631,6 +666,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${ds}"
       },
       "description": "Returns how long the probe took to complete in seconds",
@@ -686,7 +722,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 13,
+        "h": 11,
         "w": 24,
         "x": 0,
         "y": 9
@@ -713,7 +749,7 @@
           "datasource": {
             "uid": "${ds}"
           },
-          "expr": "sum(probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}) by (instance)",
+          "expr": "sum(probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}) by (instance)",
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
@@ -733,7 +769,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 20
       },
       "id": 8,
       "panels": [],
@@ -810,7 +846,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 21
       },
       "id": 6,
       "options": {
@@ -842,7 +878,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": false,
+  "refresh": "1m",
   "schemaVersion": 36,
   "style": "dark",
   "tags": [
@@ -946,7 +982,41 @@
         "datasource": {
           "uid": "${ds}"
         },
-        "definition": "label_values(probe_success{job=~\"$job\",group=~\"$group\"}, instance)",
+        "definition": "label_values(probe_success{job=~\"$job\",group=~\"$group\"}, environment)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Environment",
+        "multi": true,
+        "name": "environment",
+        "options": [],
+        "query": {
+          "query": "label_values(probe_success{job=~\"$job\",group=~\"$group\"}, environment)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 2,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": ".+",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "uid": "${ds}"
+        },
+        "definition": "label_values(probe_success{job=~\"$job\",group=~\"$group\",environment=~\"$environment\"}, instance)",
         "hide": 0,
         "includeAll": true,
         "label": "Instance",
@@ -954,7 +1024,7 @@
         "name": "instance",
         "options": [],
         "query": {
-          "query": "label_values(probe_success{job=~\"$job\",group=~\"$group\"}, instance)",
+          "query": "label_values(probe_success{job=~\"$job\",group=~\"$group\",environment=~\"$environment\"}, instance)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -980,13 +1050,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Blackbox Exporter (HTTP prober)",
   "uid": "NEzutrbMk",
-  "version": 3,
+  "version": 13,
   "weekStart": ""
 }
