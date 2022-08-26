@@ -40,6 +40,8 @@ hetzner_robot_zfsbulk_cache_partitions_by_id:
   - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part4"
 
 
+hetzner_robot_image: /root/.oldroot/nfs/images/Ubuntu-2204-jammy-amd64-base.tar.gz
+
 hetzner_robot_installimage_partitions: 'swap:swap:{{ hetzner_robot_swap_size }},/:ext4:{{ hetzner_robot_root_size }}' # ,/srv:ext4:200G
 hetzner_robot_installimage_command: |
   /root/.oldroot/nfs/install/installimage -a \
@@ -47,7 +49,7 @@ hetzner_robot_installimage_command: |
         -b grub \
         -r yes \
         -p {{ hetzner_robot_installimage_partitions }} \
-        -i /root/.oldroot/nfs/images/Ubuntu-2004-focal-64-minimal.tar.gz \
+        -i {{ hetzner_robot_image }} \
         -d {{ hetzner_robot_raid_disks | join(',') | regex_replace('/dev/') }} \
         -s en \
         -t yes
