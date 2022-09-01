@@ -7,7 +7,7 @@
     state: present
 
 - name: webproxy_nginx_reload
-  command: 'docker-compose exec nginx nginx -s reload'
+  command: 'docker-compose exec -T nginx nginx -s reload'
   args:
     chdir: '{{ webproxy_path }}'
 
