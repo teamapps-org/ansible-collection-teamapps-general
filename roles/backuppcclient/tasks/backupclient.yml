@@ -9,18 +9,6 @@
   tags:
     - backuppcclient_local
 
-- name: create prebackup.sh script
-  copy:
-    content: "#!/bin/bash\nset -exu"
-    dest: /usr/local/bin/prebackup.sh
-    force: false
-    owner: root
-    group: root
-    mode: '0750'
-  tags:
-    - backuppcclient_local
-
-
 - name: save original ssh_host as ansible_ssh_host_orig
   set_fact:
     ansible_ssh_host_orig: '{{ ansible_ssh_host }}'

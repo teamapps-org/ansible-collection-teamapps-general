@@ -6,3 +6,16 @@
   when: backuppcclient_manage
   tags:
     - backuppcclient
+
+# create prebackupscript always
+- name: create prebackup.sh script
+  copy:
+    content: "#!/bin/bash\nset -exu"
+    dest: /usr/local/bin/prebackup.sh
+    force: false
+    owner: root
+    group: root
+    mode: '0750'
+  tags:
+    - backuppcclient
+    - backuppcclient_local
