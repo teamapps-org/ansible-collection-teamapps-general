@@ -47,7 +47,7 @@
   zfs:
     name: '{{ item.name }}'
     state: present
-    extra_zfs_properties: '{{ [zfs_extra_zfs_properties_default, item.extra_zfs_properties | default({}) ] | combine }}'
+    extra_zfs_properties: '{{ [zfs_extra_zfs_properties_default, item.extra_zfs_properties | default({})] | combine }}'
   loop: '{{ zfs_datasets }}'
   tags:
     - zfs

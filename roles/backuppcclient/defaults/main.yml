@@ -16,7 +16,7 @@ backuppcclient_backup_admins: []
 backuppcclient_ssh_host: '{{ ansible_ssh_host_orig }}'
 backuppcclient_ssh_port: '{{ ansible_ssh_port_orig }}'
 # ssh options, default "" if ssh_port is 22, else "-p <ssh_port>"
-backuppcclient_ssh_args: '{{ "" if backuppcclient_ssh_port == "22" else "-p " + backuppcclient_ssh_port|string }}'
+backuppcclient_ssh_args: '{{ "" if backuppcclient_ssh_port == "22" else "-p " + backuppcclient_ssh_port | string }}'
 
 # Information about BackupPC Server
 # backuppcclient_server: <required>
@@ -48,5 +48,5 @@ backuppcclient_files_exclude_default:
 # var to configure additional excludes
 backuppcclient_files_exclude_extra: []
 # combine excludes
-backuppcclient_files_exclude: '{{ ( backuppcclient_files_exclude_default + backuppcclient_files_exclude_extra ) | unique }}'
+backuppcclient_files_exclude: '{{ (backuppcclient_files_exclude_default + backuppcclient_files_exclude_extra) | unique }}'
 backuppcclient_additional_config: ''

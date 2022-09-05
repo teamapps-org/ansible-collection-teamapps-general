@@ -23,7 +23,7 @@
   lineinfile:
     path: '{{ backuppcclient_server_hostsfile }}'
     regexp: '^{{ backuppcclient_clientname }}\s.*'
-    line: "{{ backuppcclient_clientname }}\t0\tansible\t{{ backuppcclient_backup_admins | join (',') }}"
+    line: "{{ backuppcclient_clientname }}\t0\tansible\t{{ backuppcclient_backup_admins | join(',') }}"
   notify: backuppcclient backuppc service reload
 
 - name: backup config on backuppc server

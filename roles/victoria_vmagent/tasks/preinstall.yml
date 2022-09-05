@@ -4,7 +4,7 @@
     that: ansible_service_mgr == 'systemd' or ansible_service_mgr == "upstart"
     msg: "This role only works with systemd and upstart"
 
-- name: Get systemd version # noqa 303
+- name: Get systemd version # noqa command-instead-of-module
   command: systemctl --version
   changed_when: false
   check_mode: false

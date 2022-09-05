@@ -1,14 +1,12 @@
 # Hetzner Robot Setup
 
-- name: remove ssh hostkey (before connecting to rescue system)
+- name: remove ssh hostkey (before connecting to rescue system) # noqa no-changed-when
   delegate_to: localhost
   command: ssh-keygen -R '{{ item }}'
   check_mode: no
   with_items:
     - '{{ ansible_host }}'
     - '{{ inventory_hostname }}'
-  tags:
-    - skip_ansible_lint
 
 - name: gather_facts
   gather_facts: {}
@@ -44,12 +42,10 @@
       when:
         - prompt_install.user_input != "yes"
 
-    - name: installimage
+    - name: installimage # noqa no-changed-when command-instead-of-shell
       shell: '{{ hetzner_robot_installimage_command }}'
       environment:
         TERM: xterm
-      tags:
-        - skip_ansible_lint
 
     - name: Create a new primary partition at disk's end for l2arc
       community.general.parted:
@@ -61,7 +57,7 @@
       with_items: '{{ hetzner_robot_raid_disks }}'
       when: hetzner_robot_zfsbulk_cache
 
-    - name: create additional partition with rest of disk for zfs raid
+    - name: create additional partition with rest of disk for zfs raid # noqa no-changed-when
       shell: 'echo -e "n\np\n\n\n\nw" | fdisk {{ item }}'
       args:
         executable: /bin/bash
@@ -70,14 +66,12 @@
       # fdisk /dev/nvme0n1
       # # n .... w y
 
-    - name: remove ssh hostkey
+    - name: remove ssh hostkey # noqa no-changed-when
       delegate_to: localhost
       command: ssh-keygen -R '{{ item }}'
       with_items:
         - '{{ ansible_host }}'
         - '{{ inventory_hostname }}'
-      tags:
-        - skip_ansible_lint
 
     - name: reboot to installed system
       reboot:

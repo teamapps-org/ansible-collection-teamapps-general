@@ -42,7 +42,7 @@
     mode: 0755
   check_mode: false
 
-- name: download promtail
+- name: download promtail # noqa risky-file-permissions
   delegate_to: localhost
   become: false
   get_url:
@@ -57,7 +57,7 @@
   with_items:
     - { name: promtail-linux-amd64, checksum: "{{ promtail_checksum }}" }
 
-- name: unpack promtail binaries # noqa 208
+- name: unpack promtail binaries # noqa risky-file-permissions
   delegate_to: localhost
   become: false
   unarchive:

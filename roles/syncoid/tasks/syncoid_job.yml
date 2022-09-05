@@ -27,4 +27,4 @@
       --sshoption StrictHostKeyChecking=accept-new
       root@{{ syncoid_source_host_ssh }}:{{ syncoid_source_dataset }}
       {{ syncoid_dest_dataset }}
-      >> /var/log/syncoid/cron-{{ syncoid_source_host }}-{{ syncoid_source_dataset | replace('/','_')  }}.log 2>&1
+      >> /var/log/syncoid/cron-{{ syncoid_source_host }}-{{ syncoid_source_dataset | replace('/', '_') }}.log 2>&1

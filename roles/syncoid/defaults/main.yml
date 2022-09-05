@@ -1,4 +1,3 @@
-
 # Exclude specific datasets which match the given regular expression.
 syncoid_exclude_default:
   - /hotspare/

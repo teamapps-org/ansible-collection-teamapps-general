@@ -1,4 +1,3 @@
-
 - name: create directories for loki
   file:
     path: '{{ item }}'

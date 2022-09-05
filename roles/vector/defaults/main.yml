@@ -62,4 +62,4 @@ vector_install_nightly: False
 vector_version: '' # ''=install/keep current, latest=upgrade, 0.18.0
 vector_apt_force: False # Set temporarily to True for downgrades
 
-vector_pin_version: '{{ "*" if vector_version == "latest" else vector_version|string + "*" }}'
+vector_pin_version: '{{ "*" if vector_version == "latest" else vector_version | string + "*" }}'
