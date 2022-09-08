@@ -24,8 +24,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 12,
-  "iteration": 1653412942927,
   "links": [
     {
       "asDropdown": true,
@@ -69,6 +67,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "axisSoftMin": 0,
@@ -131,11 +131,12 @@
             "sum"
           ],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc"
         }
       },
       "pluginVersion": "7.5.5",
@@ -170,6 +171,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -265,11 +268,12 @@
             "sum"
           ],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single",
-          "sort": "none"
+          "mode": "multi",
+          "sort": "desc"
         }
       },
       "pluginVersion": "7.5.5",
@@ -330,6 +334,7 @@
         "y": 15
       },
       "id": 3,
+      "maxDataPoints": 10000,
       "options": {
         "dedupStrategy": "none",
         "enableLogDetails": true,
@@ -347,9 +352,12 @@
             "type": "loki",
             "uid": "$loki"
           },
+          "editorMode": "code",
           "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| line_format \"{{.compose_project }}/{{.compose_service }}\\t| {{ __line__ }}\"",
           "hide": false,
           "legendFormat": "",
+          "maxLines": 0,
+          "queryType": "range",
           "refId": "A"
         },
         {
@@ -368,7 +376,7 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 36,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [
     "loki",
@@ -422,7 +430,7 @@
       {
         "allValue": ".+",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -452,7 +460,7 @@
       {
         "allValue": ".*",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -543,6 +551,6 @@
   "timezone": "",
   "title": "Docker Logs Dashboard",
   "uid": "_PfW8xQGz",
-  "version": 10,
+  "version": 11,
   "weekStart": ""
 }
