@@ -2,6 +2,7 @@
 # defaults file for minio
 minio_path: '{{ container_path }}/minio'
 
+minio_domain: 'minio.{{ ansible_fqdn }}'
 minio_addon_domains: []
 minio_domains: '{{ [minio_domain] + minio_addon_domains }}'
 
