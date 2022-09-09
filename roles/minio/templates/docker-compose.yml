@@ -11,8 +11,8 @@ services:
       MINIO_ACCESS_KEY: '{{ minio_access_key }}'
       MINIO_SECRET_KEY: '{{ minio_secret_key }}'
       MINIO_BROWSER: 'off'
-      VIRTUAL_HOST: '{{ minio_domain }}'
-      LETSENCRYPT_HOST: '{{ minio_letsencrypt_host }}'
+      VIRTUAL_HOST: '{{ minio_domains | join(",") }}'
+      LETSENCRYPT_HOST: '{{ minio_domains | join(",") }}'
       LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
     command: server /data
     restart: always
