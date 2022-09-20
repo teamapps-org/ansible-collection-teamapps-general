@@ -1,0 +1,10 @@
+- name: tileserver compose restart
+  listen: "tileserver restart"
+  docker_compose:
+    project_src: '{{ tileserver_path }}'
+    state: present
+    restarted: True
+
+- name: tileserver clear nginx cache # noqa deprecated-command-syntax
+  listen: "tileserver restart"
+  command: 'rm {{ tileserver_path }}/nginx/cache/* -rf'

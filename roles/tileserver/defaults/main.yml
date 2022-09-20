@@ -1,0 +1,21 @@
+# defaults for tileserver
+# tileserver_image: wifidb/tileserver-gl
+tileserver_image: maptiler/tileserver-gl # official, but not updated
+tileserver_domain: maps.{{ ansible_fqdn }}
+
+tileserver_path: /container/tileserver
+tileserver_data_path: '{{ tileserver_path }}/data'
+tileserver_styles_repository: https://github.com/pgassmann/maplibre-gl-styles.git
+tileserver_config_template: config.json
+
+# pull docker images (docker-compose pull)
+tileserver_docker_pull: '{{ global_docker_pull | default(False) }}'
+
+tileserver_nginx_cache_keys_zone_size: 50m # 8000 tile keys per 1m, in memory
+tileserver_nginx_cache_max_size: 20g # File storage
+tileserver_nginx_disable_cache: False
+
+# list of keys and referers that are not rate limited
+tileserver_allowed_keys: []
+tileserver_allowed_referers:
+  - '{{ tileserver_domain }}'

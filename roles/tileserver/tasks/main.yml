@@ -1,0 +1,97 @@
+- name: tileserver_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ tileserver_path }}'
+    - '{{ tileserver_path }}/nginx'
+    # - '{{ tileserver_path }}/nginx/cache'
+    # - '{{ tileserver_path }}/nginx/maps'
+    - '{{ tileserver_data_path }}'
+
+- name: tileserver directories for synchronize (styles)
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0775'
+  with_items:
+    - '{{ tileserver_data_path }}/styles'
+
+- name: deploy docker-compose.yml
+  template:
+    src: 'docker-compose.yml'
+    dest: '{{ tileserver_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: deploy config
+  template:
+    src: '{{ tileserver_config_template }}'
+    dest: '{{ tileserver_data_path }}/config.json'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: tileserver restart
+
+- name: deploy styles # noqa ignore-errors
+  git:
+    repo: '{{ tileserver_styles_repository }}'
+    dest: '{{ tileserver_data_path }}/styles/'
+    version: main
+  notify: tileserver restart
+
+# - name: download map data
+# source https://osm.dbtc.link/mbtiles/
+
+# download natural earth tiles
+# https://klokantech.github.io/naturalearthtiles/
+# https://github.com/lukasmartinelli/naturalearthtiles/releases/download/v1.0/natural_earth_2_shaded_relief.raster.mbtiles
+
+# download fonts:
+# download fonts from https://github.com/openmaptiles/fonts/releases/tag/v2.0
+# extract in data/fonts/
+
+- name: tileserver_directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: '101'
+    group: root
+    mode: '0755'
+  with_items:
+    - '{{ tileserver_path }}/nginx/cache'
+    - '{{ tileserver_path }}/nginx/maps'
+
+- name: Deploy nginx site.conf
+  template:
+    src: 'nginx/site.conf'
+    dest: '{{ tileserver_path }}/nginx/site.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: tileserver restart
+
+- name: Deploy nginx maps
+  template:
+    src: 'nginx/maps/{{ item }}'
+    dest: '{{ tileserver_path }}/nginx/maps/{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: tileserver restart
+  with_items:
+    - hostnames_no_rate_limit.conf
+    - key_no_rate_limit.conf
+
+- name: tileserver_docker-compose-up
+  docker_compose:
+    project_src: '{{ tileserver_path }}'
+    state: present
+    pull: '{{ tileserver_docker_pull }}'
+    remove_orphans: yes

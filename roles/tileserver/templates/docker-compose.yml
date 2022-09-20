@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:alpine
+    restart: always
+    expose:
+      - 80
+    environment:
+      VIRTUAL_HOST: "{{ tileserver_domain }}"
+      VIRTUAL_PORT: 80
+      LETSENCRYPT_HOST: "{{ tileserver_domain }}"
+      LETSENCRYPT_EMAIL: "{{ letsencrypt_email }}"
+    volumes:
+      # - ./htaccess:/etc/nginx/conf.d/htaccess:ro
+      - ./nginx/site.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/maps:/etc/nginx/maps:ro
+      - ./nginx/cache:/cache
+    networks:
+      tileserver:
+      webproxy:
+    depends_on:
+      - tileserver
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+
+  tileserver:
+    image: "{{ tileserver_image }}"
+    restart: always
+    volumes:
+      - type: bind
+        source: '{{ tileserver_data_path }}'
+        target: /data
+        read_only: false
+    expose:
+      - 8080
+    command: --verbose
+    networks:
+      - tileserver
+
+networks:
+  tileserver:
+    driver: bridge
+  webproxy:
+    external:
+      name: webproxy
