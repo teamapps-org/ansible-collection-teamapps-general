@@ -5,7 +5,7 @@ tileserver_domain: maps.{{ ansible_fqdn }}
 
 tileserver_path: /container/tileserver
 tileserver_data_path: '{{ tileserver_path }}/data'
-tileserver_styles_repository: https://github.com/pgassmann/maplibre-gl-styles.git
+tileserver_styles_repository: https://github.com/teamapps-org/maplibre-gl-styles.git
 tileserver_config_template: config.json
 
 # pull docker images (docker-compose pull)
