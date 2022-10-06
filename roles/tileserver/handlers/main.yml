@@ -8,3 +8,4 @@
 - name: tileserver clear nginx cache # noqa deprecated-command-syntax
   listen: "tileserver restart"
   command: 'rm {{ tileserver_path }}/nginx/cache/* -rf'
+  when: tileserver_clear_cache | bool
