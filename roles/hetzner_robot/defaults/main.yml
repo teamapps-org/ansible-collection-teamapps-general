@@ -5,6 +5,35 @@ hetzner_robot_root_size: '50G'
 hetzner_robot_raid_disks:
   - /dev/nvme0n1
   - /dev/nvme1n1
+
+# always use gpt partion table
+hetzner_robot_force_gpt: True
+
+# add partition for zfsdata. Will be created as mdraid by installer.
+# Mdraid stop and remove is configured below
+hetzner_robot_installimage_partitions: 'swap:swap:{{ hetzner_robot_swap_size }},/:ext4:{{ hetzner_robot_root_size }},none:none:all' # ,/srv:ext4:200G
+
+hetzner_robot_image: /root/.oldroot/nfs/images/Ubuntu-2204-jammy-amd64-base.tar.gz
+
+hetzner_robot_installimage_command: |
+  /root/install/installimage -a \
+        -n {{ inventory_hostname }} \
+        -r yes \
+        -p {{ hetzner_robot_installimage_partitions }} \
+        -i {{ hetzner_robot_image }} \
+        -d {{ hetzner_robot_raid_disks | join(',') | regex_replace('/dev/') }} \
+        -s en \
+        -t yes
+
+# disable mdraid for zfs partitions
+hetzner_robot_stop_mdraid:
+  - /dev/md2 # zfsdata
+
+hetzner_robot_clear_mdraid_partitions:
+  # partitions from /dev/md2 # zfsdata
+  - /dev/nvme0n1p3
+  - /dev/nvme1n1p3
+
 hetzner_robot_zfsdata_partitions_by_id:
   - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part3"
   - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part3"
@@ -16,9 +45,14 @@ hetzner_robot_zfsdata_extend_groups: []
   # - - "{{ ansible_device_links.ids['sdc'][0] }}"
   #   - "{{ ansible_device_links.ids['sdd'][0] }}"
 
+
+## zfsbulk configuration
+
 hetzner_robot_zfsbulk: False
 hetzner_robot_zfsbulk_pool_type: mirror
-hetzner_robot_zfsbulk_writelog_file: true
+hetzner_robot_zfsbulk_log_file: true
+hetzner_robot_zfsbulk_log_device: /zfs_log_file
+
 # for type mirror, only define 2 and add more disks to the variable hetzner_robot_zfsbulk_extend_groups
 # mirror with more devices means more mirrors, but not more space!
 hetzner_robot_zfsbulk_partitions_by_id:
@@ -34,22 +68,7 @@ hetzner_robot_zfsbulk_extend_groups: []
 
 # create partitions on the nvme disks and configure those as l2arc cache for zfsbulk
 hetzner_robot_zfsbulk_cache: False
-zfsbulk_cache_size: 100GiB # x2, two disks
+# to create partitions, add them to hetzner_robot_installimage_partitions
 hetzner_robot_zfsbulk_cache_partitions_by_id:
   - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part4"
   - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part4"
-
-
-hetzner_robot_image: /root/.oldroot/nfs/images/Ubuntu-2204-jammy-amd64-base.tar.gz
-
-hetzner_robot_installimage_partitions: 'swap:swap:{{ hetzner_robot_swap_size }},/:ext4:{{ hetzner_robot_root_size }}' # ,/srv:ext4:200G
-hetzner_robot_installimage_command: |
-  /root/.oldroot/nfs/install/installimage -a \
-        -n {{ inventory_hostname }} \
-        -b grub \
-        -r yes \
-        -p {{ hetzner_robot_installimage_partitions }} \
-        -i {{ hetzner_robot_image }} \
-        -d {{ hetzner_robot_raid_disks | join(',') | regex_replace('/dev/') }} \
-        -s en \
-        -t yes
