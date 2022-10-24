@@ -194,6 +194,7 @@ groups:
     rules:
       - alert: SMARTUncorrectableSectors
         expr: increase(netdata_smartd_log_offline_uncorrectable_sector_count_sectors_average [1d]) > 0
+        for: 5m
         labels:
           severity: warning
         annotations:
@@ -202,6 +203,7 @@ groups:
 
       - alert: SMARTReallocatedSectors
         expr: increase(netdata_smartd_log_reallocated_sectors_count_sectors_average [1d]) > 0
+        for: 5m
         labels:
           severity: warning
         annotations:
@@ -219,6 +221,7 @@ groups:
 
       - alert: SMARTCrCErrors
         expr: increase(netdata_smartd_log_udma_crc_error_count_errors_average [1d]) > 0
+        for: 5m
         labels:
           severity: warning
         annotations:
