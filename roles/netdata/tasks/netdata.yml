@@ -50,6 +50,16 @@
     - stream.conf
   notify: netdata_restart
 
+- name: deploy postgres monitoring configuration
+  template:
+    src: postgres.conf.j2
+    dest: /etc/netdata/go.d/postgres.conf
+    owner: root
+    group: netdata
+    mode: '0640'
+  notify: netdata_restart
+  when: netdata_postgres_enabled
+
 - name: check for cloud
   stat:
     path: /var/lib/netdata/cloud.d/
