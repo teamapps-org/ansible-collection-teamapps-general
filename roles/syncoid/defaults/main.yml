@@ -1,7 +1,7 @@
 # Exclude specific datasets which match the given regular expression.
 syncoid_exclude_default:
   - /hotspare/
-  - /docker/
+  - zfsdata/docker
 
 # log all found snapshots on source and target
 syncoid_dumpsnaps_default: False
