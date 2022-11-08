@@ -85,7 +85,7 @@ def get_ctrl_regs(device_path):
     return json_data
 
 
-def normalize_raw_data(smart_log_json, ctrl_json):
+def normalize_raw_data(smart_log_json, ctrl_json, nvme_info):
     normalized_data = {}
 
     # interpret bitfield critical_warning using bitshift
@@ -144,9 +144,9 @@ def normalize_raw_data(smart_log_json, ctrl_json):
         else:
             normalized_data['controller_ready'] = 1
 
-    # data_units written is Thousand 512 byte blocks written.
-    normalized_data['data_bytes_written'] = smart_log_json['data_units_written'] * 1000*512
-    normalized_data['data_bytes_read'] = smart_log_json['data_units_read'] * 1000*512
+    # data_units written is Thousand 'SectorSize' byte blocks written.
+    normalized_data['data_bytes_written'] = smart_log_json['data_units_written'] * 1000 * nvme_info.get("SectorSize", 512)
+    normalized_data['data_bytes_read'] = smart_log_json['data_units_read'] * 1000 * nvme_info.get("SectorSize", 512)
 
     return normalized_data
 
@@ -164,7 +164,7 @@ def collect_nvme_data(nvme_list_json):
             'info': nvme_info,
             'smart_log': smart_log_json,
             'ctrl_regs': ctrl_regs_json,
-            'normalized_data': normalize_raw_data(smart_log_json, ctrl_regs_json),
+            'normalized_data': normalize_raw_data(smart_log_json, ctrl_regs_json, nvme_info),
         }
         nvme_data.append(device_data)
 
