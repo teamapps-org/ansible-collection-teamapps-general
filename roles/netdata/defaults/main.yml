@@ -40,3 +40,13 @@ netdata_cloud_enabled: No
 netdata_cloud_base_url: https://app.netdata.cloud
 
 netdata_smartd_enabled: '{{ ansible_virtualization_role in ["host", "NA"] }}'
+
+netdata_postgres_enabled: False
+netdata_postgres_update_every: 1
+netdata_postgres_autodetection_retry: 0
+netdata_postgres_jobs: []
+
+## Example:
+# netdata_postgres_jobs:
+#  - name: postgres_local
+#    dsn: 'postgres://postgres:password@127.0.0.1:5432/postgres'
