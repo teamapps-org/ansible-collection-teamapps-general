@@ -62,13 +62,13 @@
       environment:
         TERM: xterm
 
-    - name: stop md raid
+    - name: stop md raid # noqa no-changed-when
       command: "mdadm --manage --stop {{ item }}"
       with_items: "{{ hetzner_robot_stop_mdraid }}"
       tags:
         - mdadm_stop
 
-    - name: remove md raid superblock
+    - name: remove md raid superblock # noqa no-changed-when
       command: "mdadm --misc --zero-superblock {{ item }}"
       with_items: "{{ hetzner_robot_clear_mdraid_partitions }}"
       tags:

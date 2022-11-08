@@ -59,4 +59,4 @@ loki_ruler_remote_write_url: "{{ vmagent_remotewrite_url }}"
 loki_ruler_remote_write_username: '{{ vmagent_remotewrite_username }}'
 loki_ruler_remote_write_password: '{{ vmagent_remotewrite_password }}'
 
-loki_schema_v12_from: 2022-04-27
+loki_schema_v12_from: '2022-04-27'

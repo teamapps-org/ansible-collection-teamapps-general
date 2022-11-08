@@ -31,6 +31,7 @@
     - vmagent_version not in vmagent_current_version.stdout
 
 - name: vmagent binary (via control host)
+  when: vmagent_install_download_to_control
   block:
     - name: Download and unarchive VMagent release binary
       environment:
@@ -59,9 +60,9 @@
         - not ansible_check_mode
         - not vmagent_is_installed.stat.exists or
           vmagent_version not in vmagent_current_version.stdout
-  when: vmagent_install_download_to_control
 
 - name: vmagent binary (direct download)
+  when: not vmagent_install_download_to_control
   block:
     - name: Download and unarchive VMagent release binary
       environment:
@@ -86,4 +87,3 @@
         - not ansible_check_mode
         - not vmagent_is_installed.stat.exists or
           vmagent_version not in vmagent_current_version.stdout
-  when: not vmagent_install_download_to_control

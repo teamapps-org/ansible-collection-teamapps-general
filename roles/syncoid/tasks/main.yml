@@ -1,1 +1,3 @@
-- import_tasks: syncoid.yml
+- name: Import tasks for syncoid
+  import_tasks: syncoid.yml
+  tags: syncoid

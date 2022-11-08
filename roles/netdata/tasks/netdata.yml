@@ -98,8 +98,10 @@
 - name: restart netdata service now if needed
   meta: flush_handlers
 
-- import_tasks: docker.yml
+- name: Import tasks for netdata-docker integration
+  import_tasks: docker.yml
   when: netdata_docker_integration
 
-- import_tasks: alarms.yml
+- name: Import tasks for netdata alarms
+  import_tasks: alarms.yml
   tags: netdata_alarms

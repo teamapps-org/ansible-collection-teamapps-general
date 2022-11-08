@@ -1,17 +1,21 @@
 ---
-- include_tasks: requisites.yml
+- name: Import tasks
+  include_tasks: requisites.yml
   tags:
     - prometheus
 
-- include_tasks: auth.yml
+- name: Import tasks
+  include_tasks: auth.yml
   tags:
     - prometheus
 
-- include_tasks: alert.yml
+- name: Import tasks
+  include_tasks: alert.yml
   tags:
     - prometheus
 
-- include_tasks: install.yml
+- name: Import tasks
+  include_tasks: install.yml
   tags:
     - prometheus
 ...

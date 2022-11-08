@@ -1,1 +1,2 @@
-- import_tasks: sanoid.yml
+- name: Import tasks for sanoid
+  import_tasks: sanoid.yml

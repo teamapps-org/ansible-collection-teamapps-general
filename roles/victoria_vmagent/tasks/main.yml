@@ -1,7 +1,11 @@
 ---
 
 # tasks file for VictoriaMetrics
-- import_tasks: preinstall.yml
-- import_tasks: install.yml
-- import_tasks: configure.yml
-- import_tasks: check.yml
+- name: Import Preinstall tasks
+  import_tasks: preinstall.yml
+- name: Import install tasks
+  import_tasks: install.yml
+- name: Import configure Tasks
+  import_tasks: configure.yml
+- name: Import check Tasks
+  import_tasks: check.yml

@@ -46,7 +46,7 @@
     syncoid_cron_minute: "{{ syncoid_job.cron_minute | default(35) }}"
     syncoid_cron_hour: "{{ syncoid_job.cron_hour | default('*') }}"
     syncoid_dest_root_dataset: "{{ syncoid_job.dest_root_dataset | default('zfsbulk/hotspare') }}"
-    syncoid_dest_dataset: "{{ syncoid_job.dest_dataset | default(syncoid_dest_root_dataset+'/'+syncoid_source_host+'/'+syncoid_source_dataset) }}"
+    syncoid_dest_dataset: "{{ syncoid_job.dest_dataset | default(syncoid_dest_root_dataset + '/' + syncoid_source_host + '/' + syncoid_source_dataset) }}"
     syncoid_exclude: "{{ syncoid_job.exclude | default(syncoid_exclude_default) }}"
     syncoid_dumpsnaps: "{{ syncoid_job.dumpsnaps | default(syncoid_dumpsnaps_default) }}"
   include_tasks:

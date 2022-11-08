@@ -11,4 +11,6 @@ exclude_paths:
 skip_list:
   - empty-string-compare
   - name[casing]
+  - name[template]
   - fqcn-builtins
+  - fqcn[action]

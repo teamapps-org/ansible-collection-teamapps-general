@@ -1,6 +1,8 @@
 ---
-- include_tasks: binary.yml
+- name: Import tasks for promtail binary installation
+  include_tasks: binary.yml
   when: promtail_deploy_mode == 'binary'
 
-- include_tasks: docker.yml
+- name: Import tasks for promtail installed with docker
+  include_tasks: docker.yml
   when: promtail_deploy_mode == 'docker'
