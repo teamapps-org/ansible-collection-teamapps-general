@@ -1,31 +1,12 @@
-# nginx reverse proxy based on evertramos github repository:
-# https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion
-
 version: '3.7'
 
-x-logging1:
-  &json-file
+x-logging:
+  &logging
   driver: json-file
   options:
     max-size: "4m"
     max-file: "10"
     mode: non-blocking
-
-x-logging2:
-  &loki
-  driver: loki
-  ##  requires loki driver plugin:
-  # docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
-  # docker plugin enable loki:latest
-  options:
-    loki-url: "https://{{ webproxy_loki_user }}:{{ webproxy_loki_password }}@{{ webproxy_loki_server }}/loki/api/v1/push"
-    loki-retries: '10'
-    loki-batch-size: '102400'
-    loki-external-labels: 'container_name={{ "{{.Name}}" }},category=dockerlogs'
-    max-size: "4m"
-    max-file: "10"
-    mode: non-blocking
-    max-buffer-size: 10m
 
 services:
   nginx:
@@ -46,7 +27,16 @@ services:
       - ./data/nginx.conf:/etc/nginx/nginx.conf
     sysctls:
       net.core.somaxconn: 65536
-    logging: *{{ webproxy_log_driver }}
+    logging: *logging
+    networks:
+      - webproxy
+{% for network in webproxy_additional_networks %}
+{%    if network in webproxy_register_docker_networks.stdout_lines %}
+      - {{ network }}
+{%    else %}
+      # - {{ network }}
+{%    endif %}
+{% endfor %}
 
   docker-gen:
     image: '{{ webproxy_dockergen_image }}'
@@ -65,11 +55,20 @@ services:
       - ./data/htpasswd:/etc/nginx/htpasswd:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro
-    logging: *{{ webproxy_log_driver }}
+    logging: *logging
     labels:
       - "com.github.jrcs.letsencrypt_nginx_proxy_companion.docker_gen"
     depends_on:
       - nginx
+    networks:
+      - webproxy
+{% for network in webproxy_additional_networks %}
+{%    if network in webproxy_register_docker_networks.stdout_lines %}
+      - {{ network }}
+{%    else %}
+      # - {{ network }}
+{%    endif %}
+{% endfor %}
 
   letsencrypt:
     image: {{ webproxy_letsencrypt_image }}
@@ -86,12 +85,34 @@ services:
       NGINX_DOCKER_GEN_CONTAINER: webproxy_docker-gen
       NGINX_PROXY_CONTAINER: webproxy_nginx
       DEFAULT_EMAIL: {{ webproxy_letsencrypt_default_email }}
-    logging: *{{ webproxy_log_driver }}
+    logging: *logging
     depends_on:
       - docker-gen
       - nginx
+    networks:
+      - webproxy
+{% for network in webproxy_additional_networks %}
+{%    if network in webproxy_register_docker_networks.stdout_lines %}
+      - {{ network }}
+{%    else %}
+      # - {{ network }}
+{%    endif %}
+{% endfor %}
 
 networks:
-  default:
+  webproxy:
     external:
       name: webproxy
+{% for network in webproxy_additional_networks %}
+{%    if network in webproxy_register_docker_networks.stdout_lines %}
+  {{ network }}:
+    external:
+      name: {{ network }}
+{%    else %}
+  ## ansible: not adding external network because it does not exist.
+  ## create it before adding to webproxy
+  # {{ network }}:
+  #   external:
+  #     name: {{ network }}
+{%    endif %}
+{% endfor %}

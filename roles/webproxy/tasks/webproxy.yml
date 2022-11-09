@@ -33,6 +33,13 @@
       - subnet: 172.28.0.0/16
         gateway: 172.28.0.1
 
+- name: List existing docker networks
+  # workaround Go Template Syntax in jinja: --format "{{.Name}}"
+  command: /usr/bin/docker network ls --no-trunc --format {{ "{{.Name}}" }}
+  register: webproxy_register_docker_networks
+  check_mode: False
+  changed_when: False
+
 - name: 'Webproxy docker-compose.yml'
   template:
     src: docker-compose.yml.j2
@@ -41,11 +48,6 @@
     group: root
     mode: '0640'
   notify: webproxy_docker-compose-up
-
-- name: 'remove old .env file'
-  file:
-    path: '{{ webproxy_path }}/.env'
-    state: absent
 
 - name: 'Custom nginx.conf with performance tuning'
   template:

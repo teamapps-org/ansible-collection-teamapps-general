@@ -24,13 +24,6 @@ nginx_worker_connections: 8096
 # Needs to be configured as first domain in VIRTUAL_HOST= for a service
 webproxy_default_host: ""
 
-webproxy_log_driver: "{{ global_log_driver | default('json-file') }}"
-
-webproxy_loki_server: '{{ global_loki_server | default() }}'
-webproxy_loki_user: '{{ global_loki_user | default() }}'
-webproxy_loki_password: '{{ global_loki_password | default() }}'
-
-
 # Proxy Timeout options
 # https://nginx.org/en/docs/http/ngx_http_proxy_module.html
 webproxy_proxy_read_timeout: 60s
@@ -43,3 +36,6 @@ webproxy_dockergen_image: nginxproxy/docker-gen:latest
 webproxy_letsencrypt_image: nginxproxy/acme-companion:latest
 
 webproxy_letsencrypt_default_email: '{{ letsencrypt_email }}'
+
+# list of additional external networks
+webproxy_additional_networks: []
