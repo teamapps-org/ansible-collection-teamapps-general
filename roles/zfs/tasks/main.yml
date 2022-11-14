@@ -34,6 +34,7 @@
   loop_control:
     loop_var: zpool
   when: "zpool.name in zfs_managed_pools"
+  tags: zfs
   include_tasks:
     file: zpool.yml
     apply:
@@ -43,11 +44,52 @@
 
 
 # manage zfs datasets
-- name: create zfs dataset {{ item.name }}
+- name: create zfs dataset {{ item.name }} # noqa jinja[spacing]
   zfs:
     name: '{{ item.name }}'
     state: present
     extra_zfs_properties: '{{ [zfs_extra_zfs_properties_default, item.extra_zfs_properties | default({})] | combine }}'
   loop: '{{ zfs_datasets }}'
+  tags:
+    - zfs
+
+# manage zfs admin delegation
+- name: set admin delegation for {{ item.key }}
+  community.general.zfs_delegate_admin:
+    name: "{{ item.key }}"
+    users: "{{ item.value['users'] }}"
+    permissions: "{{ item.value['permissions'] }}"
+    state: "{{ item.value['state'] }}"
+    descendents: "{{ item.value['descendents'] }}"
+    everyone: "{{ item.value['everyone'] }}"
+    local: "{{ item.value['local'] }}"
+    recursive: "{{ item.value['recursive'] }}"
+  loop: '{{ zfs_delegate | dict2items }}'
+  when: zfs_delegate is defined
+  tags:
+    - zfs
+
+- name: Deploy zfs snap metrics script
+  copy:
+    src: zfs_snap_metrics.sh
+    dest: /usr/local/bin/zfs_snap_metrics.sh
+    owner: root
+    group: root
+    mode: '0750'
+  when:
+    - _zpool_stat.stat.exists
+  tags:
+    - zfs
+
+- name: Cronjob for zfs snap metrics
+  cron:
+    name: zfs_snap_metrics
+    minute: "*/5"
+    hour: "*"
+    user: root
+    job: '/usr/local/bin/zfs_snap_metrics.sh > {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom.new && mv {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom.new {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom'
+    cron_file: zfs_snap_metrics
+  when:
+    - _zpool_stat.stat.exists
   tags:
     - zfs

@@ -36,6 +36,7 @@ zfs_zpool_properties:
 zfs_datasets:
   - name: zfsbulk/hotspare
   - name: zfsbulk/hotspare/test1
-    zfs_extra_properties: relatime=off
+    zfs_extra_properties:
+      relatime: off
 
 ~~~

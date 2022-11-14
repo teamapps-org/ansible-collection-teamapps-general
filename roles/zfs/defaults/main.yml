@@ -8,10 +8,28 @@ zfs_zpool_properties:
   atime: on
   relatime: on
   xattr: sa
-  acltype: posix # posixacl for Ubuntu < 22.04
+  acltype: posixacl
   # snapdir: visible
 
 zfs_datasets: []
 
 zfs_extra_zfs_properties_default:
   relatime: on
+
+# ZFS Permission delegation
+# zfs_delegate:
+#   'zfsdata/container/backuppc/data':
+#     descendents: no
+#     everyone: no
+#     local: no
+#     permissions:
+#       - send
+#       - hold
+#       - snapshot
+#       - destroy
+#     recursive: no
+#     state: present
+#     users:
+#       - officebackup
+
+zfs_metrics_textfile_dir: '{{ node_exporter_textfile_dir | default("/var/lib/node_exporter") }}'
