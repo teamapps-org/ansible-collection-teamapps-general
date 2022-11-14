@@ -30,7 +30,7 @@ zfs_zpool_properties:
   atime: on
   relatime: on
   xattr: sa
-  acltype: posix
+  acltype: posix # posixacl for older ZFS versions
   # snapdir: visible
 
 zfs_datasets:
