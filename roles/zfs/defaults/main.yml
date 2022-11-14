@@ -8,7 +8,7 @@ zfs_zpool_properties:
   atime: on
   relatime: on
   xattr: sa
-  acltype: posixacl
+  acltype: posix # posixacl for Ubuntu < 22.04
   # snapdir: visible
 
 zfs_datasets: []

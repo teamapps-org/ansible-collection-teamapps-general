@@ -181,7 +181,7 @@
       relatime: on
       # snapdir: visible
       xattr: sa
-      acltype: posixacl
+      acltype: posix
 
 - name: set zfs dataset properties for zfsbulk
   zfs:
@@ -192,7 +192,7 @@
       relatime: on
       # snapdir: visible
       xattr: sa
-      acltype: posixacl
+      acltype: posix
   when:
     - hetzner_robot_zfsbulk
 
