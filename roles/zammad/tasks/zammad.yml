@@ -9,6 +9,7 @@
     - '{{ zammad_path }}'
     - '{{ zammad_path }}/data'
     - '{{ zammad_path }}/data/zammad-backup'
+    - '{{ zammad_path }}/scripts'
 
 - name: zammad elastic search data directory
   file:
@@ -58,6 +59,14 @@
     owner: root
     group: root
     mode: '0640'
+
+- name: deploy zammad backup script
+  template:
+    src: backup.sh
+    dest: '{{ zammad_path }}/scripts/backup.sh'
+    owner: root
+    group: root
+    mode: '0750'
 
 - name: include elasticsearch expose tasks
   include_tasks: elasticsearch.yml

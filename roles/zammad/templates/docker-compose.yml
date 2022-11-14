@@ -1,4 +1,9 @@
 ---
+## Zammad docker-compose file based on
+# https://raw.githubusercontent.com/zammad/zammad-docker-compose/master/docker-compose.yml
+# configuration env vars:
+# https://docs.zammad.org/en/latest/install/docker-compose/environment.html
+
 version: '3'
 
 services:
@@ -7,22 +12,25 @@ services:
     command: ["zammad-backup"]
     depends_on:
       - zammad-railsserver
+      - zammad-postgresql
     entrypoint: /usr/local/bin/backup.sh
     environment:
       - BACKUP_SLEEP=86400
       - HOLD_DAYS={{ zammad_backup_hold_days }}
       - POSTGRESQL_USER=${POSTGRES_USER}
       - POSTGRESQL_PASSWORD=${POSTGRES_PASS}
-    image: zammad/zammad-docker-compose:zammad-postgresql-{{ zammad_version }}
+    image: '{{ zammad_postgres_image }}'
     restart: always
     volumes:
       - ./data/zammad-backup:/var/tmp/zammad
-      - ./data/zammad-data:/opt/zammad
+      - ./data/zammad-data:/opt/zammad:ro
+      - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
 
   zammad-elasticsearch:
-    image: zammad/zammad-docker-compose:zammad-elasticsearch-{{ zammad_version }}
+    image: '{{ zammad_elasticsearch_image }}'
     restart: always
     environment:
+      - ELASTICSEARCH_REINDEX=True
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms{{ zammad_elasticsearch_memory }} -Xmx{{ zammad_elasticsearch_memory }}"
     hostname: zammad-elasticsearch
@@ -34,8 +42,11 @@ services:
     depends_on:
       - zammad-postgresql
     environment:
+      - ELASTICSEARCH_REINDEX=true
+      - MEMCACHE_SERVERS=zammad-memcached:11211
       - POSTGRESQL_USER=${POSTGRES_USER}
       - POSTGRESQL_PASS=${POSTGRES_PASS}
+      - REDIS_URL=redis://zammad-redis:6379
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
     restart: on-failure
     volumes:
@@ -43,7 +54,7 @@ services:
 
   zammad-memcached:
     command: memcached -m 256M
-    image: memcached:1.6.9-alpine
+    image: '{{ zammad_memcached_image }}'
     restart: always
 
   zammad-nginx:
@@ -68,7 +79,7 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASS}
-    image: zammad/zammad-docker-compose:zammad-postgresql-{{ zammad_version }}
+    image: '{{ zammad_postgres_image }}'
     restart: always
     volumes:
       - ./data/postgresql-data:/var/lib/postgresql/data
@@ -78,6 +89,7 @@ services:
     depends_on:
       - zammad-memcached
       - zammad-postgresql
+      - zammad-redis
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
     restart: always
     volumes:
@@ -93,11 +105,18 @@ services:
         read_only: true
 {% endif %}
 
+  zammad-redis:
+    image: '{{ zammad_redis_image }}'
+    restart: ${RESTART}
   zammad-scheduler:
     command: ["zammad-scheduler"]
     depends_on:
       - zammad-memcached
       - zammad-railsserver
+      - zammad-redis
+    environment:
+      - MEMCACHE_SERVERS=zammad-memcached:11211
+      - REDIS_URL=redis://zammad-redis:6379
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
     restart: always
     volumes:
@@ -108,6 +127,10 @@ services:
     depends_on:
       - zammad-memcached
       - zammad-railsserver
+      - zammad-redis
+    environment:
+      - MEMCACHE_SERVERS=zammad-memcached:11211
+      - REDIS_URL=redis://zammad-redis:6379
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
     restart: always
     volumes:
