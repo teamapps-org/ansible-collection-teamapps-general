@@ -1,5 +1,4 @@
-zammad Help Desk
-=========
+# zammad Help Desk
 
 Community Edition. Deployment based on [zammad-docker-compose](https://github.com/zammad/zammad-docker-compose)
 
@@ -8,8 +7,7 @@ Community Edition. Deployment based on [zammad-docker-compose](https://github.co
 * [Admin Docs](https://admin-docs.zammad.org/en/latest/index.html)
 * [Zammad Docs](https://docs.zammad.org/en/latest/index.html)
 
-Backup and Restore
-------------------
+## Backup and Restore
 
 Backups are created by a separate container, that packs the files and the database in an archive in .`/data/zammad-backup`. Other directories can be excluded from the backup.
 
@@ -24,18 +22,15 @@ backuppcclient_files_exclude_extra:
   - /container/zammad/data/zammad-data
 ~~~
 
-Role Variables
---------------
+## Role Variables
 
 See `default/main.yml`
 
-Dependencies
-------------
+## Dependencies
 
 Docker, docker-compose. Designed for use with webproxy role
 
-Example Playbook
-----------------
+## Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
@@ -50,8 +45,7 @@ Including an example of how to use your role (for instance, with variables passe
     - role: teamapps.general.zammad
 ~~~
 
-Grafana Zammad Integration
---------------------------
+## Grafana Zammad Integration
 
 You can expose elasticsearch through the webproxy with basic auth and limit to GET and POST requests for connecting to Elasticsearch from Grafana.
 
@@ -147,4 +141,65 @@ datasources:
     jsonData:
       timeField: 'first_response_at'
       esVersion: '7.0.0'
+~~~
+
+## Postgres Update for new deployment. Postgres Backup restore
+
+these commands should be run manually
+
+~~~bash
+## upgrade postgres to version 15.
+
+cd /container/zammad
+
+. .env
+
+# stop services to prevent data change
+docker-compose stop zammad-scheduler zammad-nginx
+
+# create new backup
+docker-compose restart zammad-backup
+
+# watch backup directory until new backups are completed
+# wait for _db.psql.gz to have the same size as older backups
+ls data/zammad-backup/ -lah
+
+# stop everything
+docker-compose stop
+
+# save old postgres-data
+mv ./data/postgresql-data ./data/postgresql-data-old
+
+# create new postgres-data
+mkdir ./data/postgresql-data
+chown 77:0 ./data/postgresql-data
+
+# create temporary
+docker run -it --rm --name postgres-restore \
+  -v $PWD/data/zammad-backup:/var/tmp/zammad:ro \
+  -v $PWD/data/postgresql-data:/var/lib/postgresql/data \
+  -e POSTGRES_USER=$POSTGRES_USER \
+  -e POSTGRES_PASSWORD=$POSTGRES_PASS \
+  postgres:15.0-alpine
+
+# in separate shell:
+
+# create zammad_production db
+docker exec -it postgres-restore bash -c "psql -U zammad --command='CREATE DATABASE zammad_production'"
+
+# show available backups
+docker exec -it postgres-restore bash -c "ls -al /var/tmp/zammad/"
+
+
+# restore old data with adjusted filename you got from the ls command above
+# CHANGE filename!
+docker exec -it postgres-restore bash -c "gunzip -kc /var/tmp/zammad/20221117130512_zammad_db.psql.gz | psql -U zammad -d zammad_production"
+
+# stop the restore container
+docker stop postgres-restore
+
+## deploy new version of compose using ansible
+
+# delete old postgres data
+rm ./data/postgresql-data-old -rf
 ~~~

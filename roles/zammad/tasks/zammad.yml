@@ -62,7 +62,7 @@
 
 - name: deploy zammad backup script
   template:
-    src: backup.sh
+    src: scripts/backup.sh
     dest: '{{ zammad_path }}/scripts/backup.sh'
     owner: root
     group: root
