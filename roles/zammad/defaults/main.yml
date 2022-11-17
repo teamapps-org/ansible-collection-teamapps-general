@@ -20,6 +20,12 @@ zammad_backup_hold_days: 10
 # pull docker images (docker-compose pull)
 zammad_docker_pull: '{{ global_docker_pull | default(False) }}'
 
+# rebuild elasticsearch index on every fresh start
+# for big installations it can take more than 1h (27'000 Tickets)
+# alternative: reindex manually:
+# docker-compose exec zammad-railsserver rake zammad:searchindex:rebuild
+zammad_elasticsearch_reindex: True
+
 # expose elasticsearch readonly through webproxy (for Grafana integration)
 zammad_elasticsearch_expose: False
 # zammad_elasticsearch_htpasswd:

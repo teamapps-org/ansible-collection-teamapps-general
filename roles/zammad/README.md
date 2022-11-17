@@ -45,6 +45,20 @@ Including an example of how to use your role (for instance, with variables passe
     - role: teamapps.general.zammad
 ~~~
 
+## Disable automatic reindex on big instances
+
+by default, zammad rebuilds the elasticsearch index on every fresh start
+for big installations it can take more than 1h (27'000 Tickets)
+alternative: reindex manually.
+
+Set variable
+
+* `zammad_elasticsearch_reindex: False`
+
+and run after every update:
+
+* `docker-compose exec zammad-railsserver rake zammad:searchindex:rebuild`
+
 ## Grafana Zammad Integration
 
 You can expose elasticsearch through the webproxy with basic auth and limit to GET and POST requests for connecting to Elasticsearch from Grafana.

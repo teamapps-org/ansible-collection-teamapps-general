@@ -30,7 +30,6 @@ services:
     image: '{{ zammad_elasticsearch_image }}'
     restart: always
     environment:
-      - ELASTICSEARCH_REINDEX=True
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms{{ zammad_elasticsearch_memory }} -Xmx{{ zammad_elasticsearch_memory }}"
     hostname: zammad-elasticsearch
@@ -42,7 +41,7 @@ services:
     depends_on:
       - zammad-postgresql
     environment:
-      - ELASTICSEARCH_REINDEX=true
+      - ELASTICSEARCH_REINDEX={{ zammad_elasticsearch_reindex | ternary('true', 'false') }}
       - MEMCACHE_SERVERS=zammad-memcached:11211
       - POSTGRESQL_USER=${POSTGRES_USER}
       - POSTGRESQL_PASS=${POSTGRES_PASS}
