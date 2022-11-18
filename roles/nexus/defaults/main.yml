@@ -8,3 +8,6 @@ nexus_version: latest
 
 # pull docker images (docker-compose pull)
 nexus_docker_pull: '{{ global_docker_pull | default(False) }}'
+
+# leave blank for defaults, or override (e.g.: -Xms2703m -Xmx2703m -XX:MaxDirectMemorySize=2703m -Djava.util.prefs.userRoot=${NEXUS_DATA}/javaprefs)
+nexus_add_vm_params:
