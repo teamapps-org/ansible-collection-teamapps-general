@@ -3,7 +3,7 @@
 {% if alertmanager_allowed_hosts | length > 0 %}
 satisfy any;
 {% for item in alertmanager_allowed_hosts %}
-allow {{ lookup('dig', item) | ipaddr }};
+allow {{ lookup('dig', item) | ansible.utils.ipaddr }};
 {% endfor %}
 deny all;
 {% endif %}

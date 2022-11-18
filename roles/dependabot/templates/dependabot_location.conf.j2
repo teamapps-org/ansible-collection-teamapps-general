@@ -4,7 +4,7 @@
 satisfy any;
 {% for host in dependabot_allowed_hosts %}
 
-allow {{ lookup('dig', host) | ipaddr }}; # {{ host }}
+allow {{ lookup('dig', host) | ansible.utils.ipaddr }}; # {{ host }}
 {% endfor %}
 deny all;
 {% endif %}
