@@ -7,11 +7,20 @@ groups:
     interval: 1m
     rules:
       - alert: EndpointDown
-        expr: probe_success == 0
+        expr: probe_success == 0 AND probe_failed_due_to_regex != 1
         for: 5m
         annotations:
           summary: 'Endpoint down: {{ $labels.host }}'
           description: 'Target has been down for more than 5 minutes. Job: {{ $labels.job }} for {{ $labels.instance }}'
+        labels:
+          severity: critical
+
+      - alert: Probe Failed Due To Regex
+        expr: probe_failed_due_to_regex == 1
+        for: 5m
+        annotations:
+          summary: 'HTTP Check Failed: {{ $labels.host }}'
+          description: 'Check Failed for 5 minutes. Unexpected Content. Job: {{ $labels.job }} for {{ $labels.instance }}'
         labels:
           severity: critical
 
