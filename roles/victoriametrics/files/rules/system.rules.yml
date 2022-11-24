@@ -25,7 +25,7 @@ groups:
 
       # critical for job netdata if not reported up for 2 min.
       - alert: HostLastUpdate
-        expr: time()-tlast_over_time(up{job="netdata"}[1d]) > 60*2
+        expr: time()-tlast_over_time(up{job="netdata"}[7d]) > 60*2
         # for: 5m
         labels:
           severity: critical
@@ -35,7 +35,7 @@ groups:
 
       # generic, warning only if no update for 5 min
       - alert: HostLastUpdate
-        expr: time()-tlast_over_time(up{job!="netdata"}[1d]) > 60*5
+        expr: time()-tlast_over_time(up{job!="netdata"}[7d]) > 60*5
         # for: 5m
         labels:
           severity: warning
