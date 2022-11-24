@@ -15,7 +15,7 @@
   file:
     path: '{{ item }}'
     state: directory
-    owner: '1000'
+    owner: '1001'
     group: root
     mode: '0750'
   with_items:
