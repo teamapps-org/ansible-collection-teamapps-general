@@ -11,6 +11,14 @@
     - '{{ zammad_path }}/data/zammad-backup'
     - '{{ zammad_path }}/scripts'
 
+- name: manage sysctl for elasticsearch. increase maximum number of memory map areas a process may have
+  sysctl:
+    name: vm.max_map_count
+    value: '262144'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
 - name: zammad elastic search data directory
   file:
     path: '{{ item }}'
