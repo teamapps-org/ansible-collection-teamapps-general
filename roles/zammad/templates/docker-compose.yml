@@ -106,7 +106,7 @@ services:
 
   zammad-redis:
     image: '{{ zammad_redis_image }}'
-    restart: ${RESTART}
+    restart: always
   zammad-scheduler:
     command: ["zammad-scheduler"]
     depends_on:
