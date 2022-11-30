@@ -44,7 +44,9 @@ groups:
           description: The job {{ $labels.job }} host {{ $labels.host }}, instance {{ $labels.instance }} last reported 'up' {{ $value | humanizeDuration }} ago
 
       - alert: HostNotUp
-        expr: count(up{host!=""} offset 60m) by (host,instance,job,scraper_instance) unless count(up{host!=""}) by (host,instance,job,scraper_instance)
+        expr: |
+          count(up{host!=""} offset 60m) by (host,instance,job,scraper_instance)
+          unless count(up{host!=""}) by (host,instance,job,scraper_instance)
         for: 5m
         labels:
           severity: warning
@@ -91,6 +93,10 @@ groups:
             [36h], 3600 * 36
             )
           < 5
+          # filter out small partitions
+          AND on(host,family) (
+            sum by(host,family) (netdata_disk_space_GiB_average{}) > 20
+          )
         for: 2m
         labels:
           severity: warning
@@ -105,6 +111,10 @@ groups:
             [36h], 3600 * 72
             )
           < 5
+          # filter out small partitions
+          AND on(host,family) (
+            sum by(host,family) (netdata_disk_space_GiB_average{}) > 20
+          )
         for: 2m
         labels:
           severity: warning
@@ -119,6 +129,10 @@ groups:
             [36h], 3600 * 72
             )
           < 20000
+          # filter out small partitions
+          AND on(host,family) (
+            sum by(host,family) (netdata_disk_space_GiB_average{}) > 20
+          )
         for: 2m
         labels:
           severity: warning
