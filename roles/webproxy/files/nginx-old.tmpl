@@ -3,6 +3,27 @@
 {{ $external_http_port := coalesce $.Env.HTTP_PORT "80" }}
 {{ $external_https_port := coalesce $.Env.HTTPS_PORT "443" }}
 
+{{ define "upstream" }}
+	{{ if .Address }}
+		{{/* If we got the containers from swarm and this container's port is published to host, use host IP:PORT */}}
+		{{ if and .Container.Node.ID .Address.HostPort }}
+			# {{ .Container.Node.Name }}/{{ .Container.Name }}
+			server {{ .Container.Node.Address.IP }}:{{ .Address.HostPort }};
+		{{/* If there is no swarm node or the port is not published on host, use container's IP:PORT */}}
+		{{ else if .Network }}
+			# {{ .Container.Name }}
+			server {{ .Network.IP }}:{{ .Address.Port }};
+		{{ end }}
+	{{ else if .Network }}
+		# {{ .Container.Name }}
+		{{ if .Network.IP }}
+			server {{ .Network.IP }} down;
+		{{ else }}
+			server 127.0.0.1 down;
+		{{ end }}
+	{{ end }}
+
+{{ end }}
 
 {{ define "ssl_policy" }}
 	{{ if eq .ssl_policy "Mozilla-Modern" }}
@@ -47,27 +68,6 @@
 	{{ end }}
 {{ end }}
 
-{{ define "upstream" }}
-	{{ if .Address }}
-		{{/* If we got the containers from swarm and this container's port is published to host, use host IP:PORT */}}
-		{{ if and .Container.Node.ID .Address.HostPort }}
-			# {{ .Container.Node.Name }}/{{ .Container.Name }}
-			server {{ .Container.Node.Address.IP }}:{{ .Address.HostPort }};
-		{{/* If there is no swarm node or the port is not published on host, use container's IP:PORT */}}
-		{{ else if .Network }}
-			# {{ .Container.Name }}
-			server {{ .Network.IP }}:{{ .Address.Port }};
-		{{ end }}
-	{{ else if .Network }}
-		# {{ .Container.Name }}
-		{{ if .Network.IP }}
-			server {{ .Network.IP }} down;
-		{{ else }}
-			server 127.0.0.1 down;
-		{{ end }}
-	{{ end }}
-
-{{ end }}
 # If we receive X-Forwarded-Proto, pass it through; otherwise, pass along the
 # scheme used to connect to this server
 map $http_x_forwarded_proto $proxy_x_forwarded_proto {
