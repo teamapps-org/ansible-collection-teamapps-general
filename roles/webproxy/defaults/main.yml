@@ -37,5 +37,7 @@ webproxy_letsencrypt_image: nginxproxy/acme-companion:latest
 
 webproxy_letsencrypt_default_email: '{{ letsencrypt_email }}'
 
+webproxy_nginx_tmpl_file: nginx.tmpl
+
 # list of additional external networks
 webproxy_additional_networks: []

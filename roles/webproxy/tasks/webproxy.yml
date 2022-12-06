@@ -70,7 +70,7 @@
   # from evertramos, with tuned listen backlog=65536
 - name: 'Copy template for generated server config, nginx.tmpl'
   copy:
-    src: nginx.tmpl
+    src: '{{ webproxy_nginx_tmpl_file }}'
     dest: '{{ webproxy_path }}/nginx.tmpl'
     owner: root
     group: root

@@ -3,6 +3,13 @@ Webproxy
 
 Role for Webproxy based on https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion
 
+Documentation
+-------------
+
+* nginx-proxy Project: https://github.com/nginx-proxy/nginx-proxy
+* docker-gen https://hub.docker.com/r/nginxproxy/docker-gen
+* acme-companion: https://github.com/nginx-proxy/acme-companion
+
 Requirements
 ------------
 
