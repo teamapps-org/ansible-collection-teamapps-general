@@ -1,6 +1,5 @@
 # defaults for tileserver
-# tileserver_image: wifidb/tileserver-gl
-tileserver_image: maptiler/tileserver-gl # official, but not updated
+tileserver_image: maptiler/tileserver-gl:latest
 tileserver_domain: maps.{{ ansible_fqdn }}
 
 tileserver_path: /container/tileserver

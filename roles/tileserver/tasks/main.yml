@@ -95,3 +95,4 @@
     state: present
     pull: '{{ tileserver_docker_pull }}'
     remove_orphans: yes
+  notify: tileserver clear nginx cache

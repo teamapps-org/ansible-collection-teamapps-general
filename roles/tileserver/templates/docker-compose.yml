@@ -37,7 +37,7 @@ services:
         read_only: false
     expose:
       - 8080
-    command: --verbose
+    command: --config /data/config.json --silent # --verbose
     networks:
       - tileserver
 
