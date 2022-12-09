@@ -62,8 +62,8 @@
 
 - name: download composer
   get_url:
-    url: https://getcomposer.org/download/2.0.11/composer.phar
-    sha256sum: d6eee0d4637f4bd82bdae098fceda300dcb3ec35bf502604fbe7510933b8f952
+    url: https://getcomposer.org/download/2.4.4/composer.phar
+    checksum: sha256:c252c2a2219956f88089ffc242b42c8cb9300a368fd3890d63940e4fc9652345
     dest: '{{ kimai_path }}/composer.phar'
     owner: '33' # www-data
     group: '33'
