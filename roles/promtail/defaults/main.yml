@@ -65,10 +65,10 @@ promtail_deploy_mode: binary
 promtail_config_dir: "{{ '/container/promtail' if promtail_deploy_mode == 'docker' else '/etc/promtail' }}"
 promtail_positions_path: "{{ '/data/promtail' if promtail_deploy_mode == 'docker' else '/var/log/promtail' }}"
 
-promtail_version: 2.7.0 # also update checksum!
+promtail_version: 2.7.1 # also update checkum
 # checksum of promtail-linux-amd64.zip from https://github.com/grafana/loki/releases
-# wget -q -O - https://github.com/grafana/loki/releases/download/v2.4.0/SHA256SUMS | grep promtail-linux-amd64.zip
-promtail_checksum: dbc09f99ffa09cee0b5015b3fa5f8de3a700c87ff80b59cf53e2326d6851590f
+# wget -q -O - https://github.com/grafana/loki/releases/download/v2.7.1/SHA256SUMS | grep promtail-linux-amd64.zip
+promtail_checksum: aeccf5c2ac067210e7737ab408f1e36cd55be4dfc521a56f0cc5ee01582e71d6
 
 promtail_server_disable: True
 promtail_server_http_listen_address: 0.0.0.0
