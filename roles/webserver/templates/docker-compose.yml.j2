@@ -121,7 +121,7 @@ services:
       PMA_USER: '{{ webserver_mysql_user }}'
       PMA_PASSWORD: '{{ webserver_mysql_password }}'
       HIDE_PHP_VERSION: 'yes'
-      UPLOAD_LIMIT: 100M
+      UPLOAD_LIMIT: 200M
       PMA_ABSOLUTE_URI: '{{ webserver_myadmin_absolute_uri }}'
     networks:
       - code-network

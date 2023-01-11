@@ -52,3 +52,10 @@ webserver_myadmin_enable: False
 webserver_myadmin_htpasswd: ''
 webserver_myadmin_absolute_uri: https://{{ webserver_domain }}/.myadmin/
 webserver_myadmin_image: phpmyadmin:latest
+
+# manage robots.txt
+webserver_manage_robots_txt: False
+# robots.txt is deleted when set to emtpty string ""
+webserver_robots_txt: |
+  User-agent: *
+  Disallow: /

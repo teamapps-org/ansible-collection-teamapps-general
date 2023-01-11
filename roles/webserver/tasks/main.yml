@@ -39,6 +39,26 @@
     mode: '0640'
   notify: webserver_restart_nginx
 
+- name: deploy robots.txt
+  copy:
+    content: "{{ webserver_robots_txt }}\n"
+    dest: '{{ webserver_path }}/code/{{ webserver_document_root }}/robots.txt'
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - webserver_manage_robots_txt
+    - webserver_robots_txt is defined
+    - webserver_robots_txt != ""
+
+- name: remove robots.txt
+  file:
+    path: '{{ webserver_path }}/code/{{ webserver_document_root }}/robots.txt'
+    state: absent
+  when:
+    - webserver_manage_robots_txt
+    - (webserver_robots_txt is not defined) or webserver_robots_txt == ""
+
 # - name: deploy info.php
 #   template:
 #     src: info.php
