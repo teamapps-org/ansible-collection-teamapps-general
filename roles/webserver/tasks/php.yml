@@ -1,3 +1,9 @@
+- name: assert mariadb_version is a string (otherwise 10.10 = 10.1)
+  assert:
+    that: webserver_mariadb_version is string
+    # that: (item | type_debug == "string" )
+  tags: type_assert
+
 - name: php config directory ({{ webserver_domain }})
   file:
     path: '{{ webserver_path }}/php'

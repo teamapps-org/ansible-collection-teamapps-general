@@ -9,5 +9,5 @@ matomo_mysql_user: matomo
 
 matomo_max_execution_time: 30
 
-matomo_php_version: 8.0
-matomo_mariadb_version: 10.7
+matomo_php_version: '8.2'
+matomo_mariadb_version: '10.10'
