@@ -4,8 +4,8 @@ kimai_path: '{{ container_path }}/kimai'
 kimai_domain: '{{ ansible_fqdn }}'
 
 kimai_version: '1.16.10' # https://www.kimai.org/documentation/installation.html
-kimai_php_version: 8
-kimai_mariadb_version: 10.6
+kimai_php_version: '8'
+kimai_mariadb_version: '10.6'
 
 kimai_mysql_database: kimai
 kimai_mysql_user: kimai

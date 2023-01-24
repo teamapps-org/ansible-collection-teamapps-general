@@ -1,6 +1,6 @@
-- name: assert webserver_php_version is a string (otherwise 10.10 = 10.1)
+- name: assert mariadb_version is a string (otherwise 10.10 = 10.1)
   assert:
-    that: webserver_php_version is string
+    that: webserver_mariadb_version is string
     # that: (item | type_debug == "string" )
   tags: type_assert
 
