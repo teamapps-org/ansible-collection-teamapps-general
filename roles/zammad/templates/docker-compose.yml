@@ -45,7 +45,7 @@ services:
       - MEMCACHE_SERVERS=zammad-memcached:11211
       - POSTGRESQL_USER=${POSTGRES_USER}
       - POSTGRESQL_PASS=${POSTGRES_PASS}
-      - REDIS_URL=redis://zammad-redis:6379
+#      - REDIS_URL=redis://zammad-redis:6379
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
     restart: on-failure
     volumes:
@@ -88,7 +88,7 @@ services:
     depends_on:
       - zammad-memcached
       - zammad-postgresql
-      - zammad-redis
+      # - zammad-redis
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
     restart: always
     volumes:
@@ -104,18 +104,19 @@ services:
         read_only: true
 {% endif %}
 
-  zammad-redis:
-    image: '{{ zammad_redis_image }}'
-    restart: always
+  # zammad-redis:
+  #   image: '{{ zammad_redis_image }}'
+  #   restart: always
+
   zammad-scheduler:
     command: ["zammad-scheduler"]
     depends_on:
       - zammad-memcached
       - zammad-railsserver
-      - zammad-redis
+      # - zammad-redis
     environment:
       - MEMCACHE_SERVERS=zammad-memcached:11211
-      - REDIS_URL=redis://zammad-redis:6379
+      # - REDIS_URL=redis://zammad-redis:6379
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
     restart: always
     volumes:
@@ -126,10 +127,10 @@ services:
     depends_on:
       - zammad-memcached
       - zammad-railsserver
-      - zammad-redis
+      # - zammad-redis
     environment:
       - MEMCACHE_SERVERS=zammad-memcached:11211
-      - REDIS_URL=redis://zammad-redis:6379
+      # - REDIS_URL=redis://zammad-redis:6379
     image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
     restart: always
     volumes:
