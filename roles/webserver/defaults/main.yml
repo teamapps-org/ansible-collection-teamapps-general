@@ -52,6 +52,7 @@ webserver_myadmin_enable: False
 webserver_myadmin_htpasswd: ''
 webserver_myadmin_absolute_uri: https://{{ webserver_domain }}/.myadmin/
 webserver_myadmin_image: phpmyadmin:latest
+webserver_myadmin_max_upload_size: 200M
 
 # manage robots.txt
 webserver_manage_robots_txt: False
