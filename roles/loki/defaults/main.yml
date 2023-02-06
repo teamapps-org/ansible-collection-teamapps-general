@@ -5,7 +5,7 @@ loki_path: '{{ container_path }}/loki'
 
 # loki_domain: '{{ ansible_fqdn }}'
 loki_domain: "loki.{{ ansible_fqdn }}"
-loki_version: 2.7.0
+loki_version: 2.7.3
 
 # htpasswd -B -n username
 loki_htpasswd: |

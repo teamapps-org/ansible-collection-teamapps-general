@@ -27,7 +27,7 @@ webserver_php_extensions:
   - imagick
   - opcache
   - zip
-  - mcrypt
+  # - mcrypt
   - pdo_mysql
   - mysqli
   # - xdebug

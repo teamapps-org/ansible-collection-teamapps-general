@@ -19,7 +19,7 @@
       - imagick
       - opcache
       - zip
-      - mcrypt
+      # - mcrypt
       - pdo_mysql
       - mysqli
       # - xdebug
