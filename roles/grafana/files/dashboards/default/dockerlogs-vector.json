@@ -334,14 +334,14 @@
         "y": 15
       },
       "id": 3,
-      "maxDataPoints": 10000,
+      "maxDataPoints": 5000,
       "options": {
         "dedupStrategy": "none",
         "enableLogDetails": true,
         "prettifyLogMessage": false,
         "showCommonLabels": false,
         "showLabels": false,
-        "showTime": false,
+        "showTime": true,
         "sortOrder": "Ascending",
         "wrapLogMessage": false
       },
@@ -355,8 +355,8 @@
           "editorMode": "code",
           "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| line_format \"{{.compose_project }}/{{.compose_service }}\\t| {{ __line__ }}\"",
           "hide": false,
-          "legendFormat": "",
-          "maxLines": 0,
+          "legendFormat": "dockerlogs",
+          "maxLines": 5000,
           "queryType": "range",
           "refId": "A"
         },
@@ -365,9 +365,12 @@
             "type": "loki",
             "uid": "$loki"
           },
+          "editorMode": "code",
           "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# parse container_labels json\n| line_format \"{{ .container_labels }}\" | json\n# format printed line\n| line_format \"{{ .com_docker_compose_project | trunc 6 }}/{{.compose_service | trunc 6 }}\\t| {{ __line__ }}\"",
           "hide": true,
           "legendFormat": "",
+          "maxLines": 5000,
+          "queryType": "range",
           "refId": "B"
         }
       ],
@@ -388,8 +391,8 @@
       {
         "current": {
           "selected": false,
-          "text": "Loki",
-          "value": "Loki"
+          "text": "loki:logs.aviloo.com",
+          "value": "loki:logs.aviloo.com"
         },
         "description": "Loki Datasource",
         "hide": 0,
@@ -407,6 +410,13 @@
       {
         "allValue": ".+",
         "current": {
+          "selected": true,
+          "text": [
+            "test2"
+          ],
+          "value": [
+            "test2"
+          ]
         },
         "datasource": {
           "uid": "$loki"
@@ -551,6 +561,6 @@
   "timezone": "",
   "title": "Docker Logs Dashboard",
   "uid": "_PfW8xQGz",
-  "version": 11,
+  "version": 12,
   "weekStart": ""
 }
