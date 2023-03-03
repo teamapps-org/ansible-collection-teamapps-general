@@ -390,9 +390,7 @@
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "loki:logs.aviloo.com",
-          "value": "loki:logs.aviloo.com"
+          "selected": true
         },
         "description": "Loki Datasource",
         "hide": 0,
@@ -410,13 +408,7 @@
       {
         "allValue": ".+",
         "current": {
-          "selected": true,
-          "text": [
-            "test2"
-          ],
-          "value": [
-            "test2"
-          ]
+          "selected": true
         },
         "datasource": {
           "uid": "$loki"
