@@ -27,7 +27,6 @@ backuppcclient_server_known_hosts: '/container/backuppc/data/home/.ssh/known_hos
 backuppcclient_files_exclude_default:
   - '.cache'
   - '.Trash*'
-  - 'Cache'
   - '/dev'
   - '/proc'
   - '/run'

@@ -39,7 +39,6 @@ backuppc_ping_max_msec: 20
 backuppc_files_exclude_default:
   - '.cache'
   - '.Trash*'
-  - 'Cache'
   - '/dev'
   - '/proc'
   - '/run'
