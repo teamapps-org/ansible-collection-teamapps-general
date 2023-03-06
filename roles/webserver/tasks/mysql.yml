@@ -24,13 +24,15 @@
   copy:
     content: |
       #!/bin/bash
+      # usage: ./mysqldump.sh [dbdumps/customdump.sql.gz]
       set -eux
       set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
+      dump_file=${1:-dbdumps/{{ webserver_mysql_database }}.sql.gz}
       docker-compose exec -T db sh -c "exec mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" {{ webserver_mysql_database }}  --default-character-set=utf8mb4 --skip-dump-date | \
         sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
-        gzip --rsyncable > dbdumps/{{ webserver_mysql_database }}.sql.gz
+        gzip --rsyncable > ${dump_file}
     dest: '{{ webserver_path }}/mysqldump.sh'
     owner: root
     group: root
@@ -46,11 +48,13 @@
   copy:
     content: |
       #!/bin/bash
+      # usage: ./mysqlrestore.sh [dbdumps/customdump.sql.gz]
       set -eux
       set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
-      zcat dbdumps/{{ webserver_mysql_database }}.sql.gz | \
+      dump_file=${1:-dbdumps/{{ webserver_mysql_database }}.sql.gz}
+      zcat ${dump_file} | \
       docker-compose exec -T db sh -c 'exec mysql -p"$MYSQL_ROOT_PASSWORD" {{ webserver_mysql_database }}'
     dest: '{{ webserver_path }}/mysqlrestore.sh'
     owner: root
