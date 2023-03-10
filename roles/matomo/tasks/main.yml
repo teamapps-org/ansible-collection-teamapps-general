@@ -103,7 +103,7 @@
     minute: "*/10"
     hour: "*"
     user: root
-    job: '{{ matomo_path }}/matomo-console.sh core:archive --concurrent-requests-per-website=3 -vvv --url=http://web:8080/ > /var/log/matomo-archive.log'
+    job: '{{ matomo_path }}/matomo-console.sh core:archive --concurrent-requests-per-website=3 -vvv > /var/log/matomo-archive.log'
     cron_file: matomo
   tags:
     - matomo
