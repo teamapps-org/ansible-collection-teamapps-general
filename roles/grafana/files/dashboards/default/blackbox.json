@@ -761,6 +761,92 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "uid": "${ds}",
+        "type": "prometheus"
+      },
+      "description": "HTTP Response Code History",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "lineWidth": 0,
+            "fillOpacity": 70,
+            "spanNulls": false
+          },
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "transparent",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 200
+              },
+              {
+                "value": 300,
+                "color": "blue"
+              },
+              {
+                "value": 400,
+                "color": "red"
+              },
+              {
+                "value": 500,
+                "color": "dark-red"
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 153,
+      "options": {
+        "mergeValues": false,
+        "showValue": "always",
+        "alignValue": "left",
+        "rowHeight": 0.9,
+        "legend": {
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "expr": "probe_http_status_code {job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{ instance }}",
+          "refId": "A",
+          "editorMode": "code"
+        }
+      ],
+      "title": "HTTP Status",
+      "type": "state-timeline"
+    },
+    {
       "collapsed": false,
       "datasource": {
         "uid": "${ds}"
