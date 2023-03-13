@@ -20,7 +20,6 @@
     - '{{ container_path }}'
     - '{{ nextcloud_path }}'
     - '{{ nextcloud_path }}/docker-build'
-    - '{{ nextcloud_path }}/notify_push'
 
 - name: docker-compose.yml
   template:
@@ -35,15 +34,6 @@
   template:
     src: Dockerfile
     dest: '{{ nextcloud_path }}/docker-build/Dockerfile'
-    owner: root
-    group: root
-    mode: 0640
-  notify: nextcloud_docker-compose-build
-
-- name: notify_push Dockerfile
-  template:
-    src: notify_push/Dockerfile
-    dest: '{{ nextcloud_path }}/notify_push/Dockerfile'
     owner: root
     group: root
     mode: 0640

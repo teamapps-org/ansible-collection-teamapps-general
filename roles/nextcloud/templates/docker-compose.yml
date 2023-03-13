@@ -61,9 +61,9 @@ services:
       - '{{ nextcloud_data_dir }}:/var/www/html/data'
     environment:
       TZ: Europe/Berlin
-      VIRTUAL_HOST: {{ nextcloud_domain }}
-      LETSENCRYPT_HOST: {{ nextcloud_domain }}
-      LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
+      VIRTUAL_HOST: '{{ nextcloud_domain }}'
+      LETSENCRYPT_HOST: '{{ nextcloud_domain }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
     depends_on:
       - nextcloud
     networks:
@@ -86,13 +86,16 @@ services:
       - redis
 
   notify_push:
-    build: ./notify_push
+    image: '{{ nextcloud_notify_push_image }}'
     restart: always
     environment:
-      - NEXTCLOUD_URL=http://nginx/
-      # - LOG=debug
+      NEXTCLOUD_URL: http://nginx/
+      # LOG: debug
     volumes:
-      - ./nextcloud-config/config.php:/var/www/html/config/config.php:ro
+      - ./nextcloud-config/config.php:/config/config.php:ro
+    entrypoint:
+      - /notify_push
+      - /config/config.php
     expose:
       - 7867
     networks:
