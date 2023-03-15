@@ -143,14 +143,14 @@
     group: root
     mode: 0640
   notify: vector_daemon_reload_systemd
-  when: vector_systemd_override | default(False)
+  when: vector_systemd_override
 
 - name: remove systemd override
   file:
     path: /etc/systemd/system/vector.service.d/override.conf
     state: absent
   notify: vector_daemon_reload_systemd
-  when: not (vector_systemd_override | default(False))
+  when: not vector_systemd_override
 
 - name: reload systemd now
   meta: flush_handlers
