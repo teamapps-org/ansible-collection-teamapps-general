@@ -126,6 +126,32 @@
   notify: reload vector
   when: not vector_metrics_enabled | default(False)
 
+- name: systemd override directory
+  file:
+    path: /etc/systemd/system/vector.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0750
+
+# Workaround for vector issue when started befor docker
+- name: systemd override
+  template:
+    src: systemd.override.conf
+    dest: /etc/systemd/system/vector.service.d/override.conf
+    owner: root
+    group: root
+    mode: 0640
+  notify: vector_daemon_reload_systemd
+  when: vector_systemd_override | default(False)
+
+- name: remove systemd override
+  file:
+    path: /etc/systemd/system/vector.service.d/override.conf
+    state: absent
+  notify: vector_daemon_reload_systemd
+  when: not (vector_systemd_override | default(False))
+
 - name: reload systemd now
   meta: flush_handlers
 
