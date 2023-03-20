@@ -41,3 +41,4 @@ webproxy_nginx_tmpl_file: nginx.tmpl
 
 # list of additional external networks
 webproxy_additional_networks: []
+webproxy_ignore_missing_network: True

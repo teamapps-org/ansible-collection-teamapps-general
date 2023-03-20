@@ -40,6 +40,15 @@
   check_mode: False
   changed_when: False
 
+- name: Warning if network does not exist
+  fail:
+    msg: "addtional network '{{ additional_network }}' is currently not available, startup will fail."
+  when: not additional_network in webproxy_register_docker_networks.stdout_lines
+  loop: "{{ webproxy_additional_networks }}"
+  loop_control:
+    loop_var: additional_network
+  ignore_errors: '{{ webproxy_ignore_missing_network }}'
+
 - name: 'Webproxy docker-compose.yml'
   template:
     src: docker-compose.yml.j2

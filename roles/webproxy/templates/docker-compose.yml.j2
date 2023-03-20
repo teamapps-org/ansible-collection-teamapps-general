@@ -31,12 +31,9 @@ services:
     networks:
       - webproxy
 {% for network in webproxy_additional_networks %}
-{%    if network in webproxy_register_docker_networks.stdout_lines %}
       - {{ network }}
-{%    else %}
-      # - {{ network }}
-{%    endif %}
 {% endfor %}
+
 
   docker-gen:
     image: '{{ webproxy_dockergen_image }}'
@@ -63,12 +60,9 @@ services:
     networks:
       - webproxy
 {% for network in webproxy_additional_networks %}
-{%    if network in webproxy_register_docker_networks.stdout_lines %}
       - {{ network }}
-{%    else %}
-      # - {{ network }}
-{%    endif %}
 {% endfor %}
+
 
   letsencrypt:
     image: {{ webproxy_letsencrypt_image }}
@@ -92,11 +86,7 @@ services:
     networks:
       - webproxy
 {% for network in webproxy_additional_networks %}
-{%    if network in webproxy_register_docker_networks.stdout_lines %}
       - {{ network }}
-{%    else %}
-      # - {{ network }}
-{%    endif %}
 {% endfor %}
 
 networks:
@@ -104,15 +94,7 @@ networks:
     external:
       name: webproxy
 {% for network in webproxy_additional_networks %}
-{%    if network in webproxy_register_docker_networks.stdout_lines %}
   {{ network }}:
     external:
       name: {{ network }}
-{%    else %}
-  ## ansible: not adding external network because it does not exist.
-  ## create it before adding to webproxy
-  # {{ network }}:
-  #   external:
-  #     name: {{ network }}
-{%    endif %}
 {% endfor %}
