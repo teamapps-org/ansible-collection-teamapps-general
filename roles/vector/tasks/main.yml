@@ -132,7 +132,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 # Workaround for vector issue when started befor docker
 - name: systemd override
@@ -141,7 +141,7 @@
     dest: /etc/systemd/system/vector.service.d/override.conf
     owner: root
     group: root
-    mode: 0640
+    mode: '0644'
   notify: vector_daemon_reload_systemd
   when: vector_systemd_override
 
