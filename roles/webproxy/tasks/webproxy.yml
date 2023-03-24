@@ -40,7 +40,7 @@
   check_mode: False
   changed_when: False
 
-- name: Warning if network does not exist
+- name: Warning if network does not exist # noqa ignore-errors
   fail:
     msg: "addtional network '{{ additional_network }}' is currently not available, startup will fail."
   when: not additional_network in webproxy_register_docker_networks.stdout_lines

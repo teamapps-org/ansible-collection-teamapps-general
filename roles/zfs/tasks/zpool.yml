@@ -1,17 +1,25 @@
 ## Manage properties of a zfs zpool
 ## inner tasks file, included by loop in main.yml
 
-# - name: debug
-#   debug:
-#     var: zpool
-#   changed_when: True
+- name: print zpool facts for {{ zpool }}
+  debug:
+    var: zpool_facts
+  # changed_when: True
 
-- name: set zfs dataset properties for "{{ zpool.name }}"
+- name: set zfs dataset properties for {{ zpool }}
   zfs:
-    name: "{{ zpool.name }}"
+    name: "{{ zpool }}"
     state: present
     extra_zfs_properties: '{{ zfs_zpool_properties }}'
 
-- name: zpool set autotrim=on for "{{ zpool.name }}"
-  command: /usr/sbin/zpool set autotrim=on {{ zpool.name }}
-  when: zpool.autotrim == "off"
+- name: zpool set autotrim=on {{ zpool }} # noqa no-changed-when
+  command: /usr/sbin/zpool set autotrim=on {{ zpool }}
+  when:
+    - zpool_facts.autotrim == "off"
+    - zfs_zpool_autotrim
+
+- name: zpool set autotrim=off {{ zpool }} # noqa no-changed-when
+  command: /usr/sbin/zpool set autotrim=off {{ zpool }}
+  when:
+    - zpool_facts.autotrim == "on"
+    - not zfs_zpool_autotrim

@@ -15,10 +15,20 @@
     - zfs
     - zpool
 
+
+# - name: debug0
+#   changed_when: true
+#   debug:
+#     var: ansible_zfs_pools
+
 # - name: debug1
 #   changed_when: true
 #   debug:
 #     var: ansible_zfs_pools | json_query('[*].name')
+
+- name: list of zpools on system
+  set_fact:
+    _zfs_pools: "{{ ansible_zfs_pools | json_query('[*].name') }}"
 
 # - name: debug2
 #   changed_when: true
@@ -27,14 +37,16 @@
 #   when: "item in ansible_zfs_pools | json_query('[*].name')"
 #   loop: "{{ zfs_managed_pools }}"
 
-# manage zpool settings:
-# loop over existing zpools, include tasks from zpool.yml if pool is listed in zfs_managed_pools
-- name: block loop over zpools
-  loop: '{{ ansible_zfs_pools | default([]) }}'
+- name: manage zpools
+  loop: '{{ zfs_managed_pools }}'
   loop_control:
     loop_var: zpool
-  when: "zpool.name in zfs_managed_pools"
+  when:
+    - "ansible_zfs_pools is defined"
+    - "zpool in _zfs_pools"
   tags: zfs
+  vars:
+    zpool_facts: "{{ ansible_zfs_pools | selectattr('name', 'equalto', zpool) | list | first }}"
   include_tasks:
     file: zpool.yml
     apply:
@@ -42,9 +54,8 @@
         - zfs
         - zpool
 
-
 # manage zfs datasets
-- name: create zfs dataset {{ item.name }} # noqa jinja[spacing]
+- name: create zfs datasets
   zfs:
     name: '{{ item.name }}'
     state: present

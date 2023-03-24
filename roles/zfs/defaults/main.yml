@@ -11,6 +11,8 @@ zfs_zpool_properties:
   acltype: posix
   # snapdir: visible
 
+zfs_zpool_autotrim: on
+
 zfs_datasets: []
 
 zfs_extra_zfs_properties_default:
