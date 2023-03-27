@@ -36,7 +36,7 @@ victoriametrics_http_scrape_interval: 1m
 victoriametrics_grafana_datasource_name: VictoriaMetrics
 victoriametrics_vmalert_evaluation_interval: 1m
 victoriametrics_vmalert_external_url: 'https://grafana.yourdomain.com'
-victoriametrics_vmalert_external_source: explore?orgId=1&left=["now-1h","now","{{ victoriametrics_grafana_datasource_name }}",{"expr":"{% raw %}{{$$expr|quotesEscape|crlfEscape|pathEscape}}{% endraw %}"}]
+victoriametrics_vmalert_external_source: explore?orgId=1&left={"datasource":"{{ victoriametrics_grafana_datasource_name }}","queries":[{"expr":{% raw %}{{.Expr|jsonEscape|queryEscape}}{% endraw %},"refId":"A"}],"range":{"from":"now-24h","to":"now"}}
 
 # external labels added to all alerts. To see and filter in alertmanager where the alert is coming from
 victoriametrics_vmalert_external_labels:
