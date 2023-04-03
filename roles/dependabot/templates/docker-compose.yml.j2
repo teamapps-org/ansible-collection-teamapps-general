@@ -83,6 +83,9 @@ services:
     <<: *service_volumes
     environment:
       <<: *environment_variables
+{% for key,value in dependabot_custom_env_vars.items()|sort(attribute='0') %}
+      {{ key }}: "{{ value }}"
+{% endfor %}
     # ports:
     #   - 7433:7433
     command: sidekiq

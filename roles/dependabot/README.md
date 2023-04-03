@@ -4,6 +4,8 @@ Deployment of [dependabot-gitlab](https://gitlab.com/dependabot-gitlab/dependabo
 
 Uses basic auth feature of webproxy and whitelist of gitlab host ip to secure access to api and web UI.
 
+* web UI with list of registered projects. Basic auth. https://dependabot.example.com/
+
 ## Usage example
 
 Playbook:
@@ -11,6 +13,8 @@ Playbook:
 ~~~yaml
 
 - name: Dependabot Play
+  vars:
+    dependabot_domain: dependabot.example.com
   hosts:
     - server1.example.com
   roles:
@@ -30,14 +34,20 @@ curl -s -H "X-Gitlab-Token: $SETTINGS__GITLAB_AUTH_TOKEN" localhost:3000/api/pro
 
 ## Setup
 
-Create a dependabot user in gitlab to have commits as dependabot and not in your personal name.
+Once:
 
-configure dependabot in repository file of the project you want to be updated by dependabot
+* create dependabot user in gitlab to have commits as dependabot and not as your personal user
+* Get Access token
 
-Example `.gitlab/dependabot.yml`. See [detailed documentation](https://gitlab.com/dependabot-gitlab/dependabot#dependabotyml) for more information
+To configure a project:
+
+See [detailed documentation](https://gitlab.com/dependabot-gitlab/dependabot#dependabotyml) for more information
+
+* configure dependabot in repository file:
+
+`.gitlab/dependabot.yml`:
 
 ~~~yaml
-
 # dependabot configuration
 version: 2
 
@@ -63,12 +73,12 @@ updates:
       prefix: "depbot"
 ~~~
 
-* add dependabot user as maintainer to project
-* docker-compose exec worker bash
-* run `./rake 'dependabot:validate[example/example-project]'`
-* run `bundle exec rake 'dependabot:register[example/example-project]'`
+* add dependabot user to project as Maintainer (temporary for setup)
+* run `docker-compose exec worker bundle exec rake 'dependabot:validate[aviloo/signal-db]'`
+* run `docker-compose exec worker bundle exec rake 'dependabot:register[aviloo/aviloo-platform]'`
+* (Optional) change dependabot Role in Project to Developer
 
-manually trigger check: `./rake 'dependabot:update[example/example-project,maven,/]'`
+manually trigger check: `docker-compose exec worker bundle exec rake 'dependabot:update[example/example-project,maven,/]'`
 
 ## Web UI
 

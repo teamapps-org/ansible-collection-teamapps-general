@@ -64,7 +64,7 @@
 
 - name: deploy compose
   template:
-    src: 'docker-compose.yml'
+    src: 'docker-compose.yml.j2'
     dest: '{{ dependabot_path }}/docker-compose.yml'
     owner: root
     group: root

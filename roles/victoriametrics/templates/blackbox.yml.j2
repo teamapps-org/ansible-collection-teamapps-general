@@ -17,7 +17,7 @@ modules:
     timeout: 10s
     http:
       preferred_ip_protocol: "ip4"
-      no_follow_redirects: false
+      follow_redirects: true
       headers:
         Accept: "*/*"
 
@@ -26,7 +26,7 @@ modules:
     timeout: 5s
     http:
       preferred_ip_protocol: "ip4"
-      no_follow_redirects: true
+      follow_redirects: false
       valid_status_codes: [301, 302]
 
   http_401:
@@ -34,7 +34,7 @@ modules:
     timeout: 10s
     http:
       preferred_ip_protocol: "ip4"
-      no_follow_redirects: false
+      follow_redirects: true
       valid_status_codes: [401]
       headers:
         Accept: "*/*"
@@ -44,7 +44,7 @@ modules:
     timeout: 10s
     http:
       preferred_ip_protocol: "ip4"
-      no_follow_redirects: false
+      follow_redirects: true
       valid_status_codes: [403]
       headers:
         Accept: "*/*"
