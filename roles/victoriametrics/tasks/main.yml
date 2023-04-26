@@ -19,16 +19,16 @@
     mode: '0640'
 
 - name: include vmagent scraper config
-  include_tasks: vmagent.yml
+  import_tasks: vmagent.yml
 
 - name: include blackbox exporter config
-  include_tasks: blackbox_exporter.yml
+  import_tasks: blackbox_exporter.yml
 
 - name: include alerts config
-  include_tasks: vmalert.yml
+  import_tasks: vmalert.yml
 
 - name: include authproxy config
-  include_tasks: authproxy.yml
+  import_tasks: authproxy.yml
 
 - name: victoriametrics_docker-compose-up
   docker_compose:

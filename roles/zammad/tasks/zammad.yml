@@ -77,7 +77,7 @@
     mode: '0750'
 
 - name: include elasticsearch expose tasks
-  include_tasks: elasticsearch.yml
+  import_tasks: elasticsearch.yml
   when: zammad_elasticsearch_expose
 
 - name: remove override when not exposed

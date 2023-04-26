@@ -68,15 +68,15 @@
 #     mode: '0640'
 
 - name: Include MySQL Tasks ({{ webserver_domain }})
-  include_tasks: mysql.yml
+  import_tasks: mysql.yml
   when: webserver_mysql_enable
 
 - name: Include PHP Config ({{ webserver_domain }})
-  include_tasks: php.yml
+  import_tasks: php.yml
   when: webserver_php_enable
 
 - name: Include FTP Access Tasks ({{ webserver_domain }})
-  include_tasks: sftp.yml
+  import_tasks: sftp.yml
   when: webserver_sftp_enable
 
 - name: configure basic auth htpasswd in webproxy ({{ webserver_domain }})
