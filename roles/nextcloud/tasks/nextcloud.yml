@@ -9,6 +9,12 @@
 
 # documentation: https://github.com/nextcloud/docker
 
+- name: assert mariadb_version is a string (otherwise 10.10 = 10.1)
+  assert:
+    that: nextcloud_mariadb_version is string
+    # that: (item | type_debug == "string" )
+  tags: type_assert
+
 - name: Creates directory
   file:
     path: '{{ item }}'
