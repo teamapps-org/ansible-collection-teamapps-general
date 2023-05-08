@@ -3,25 +3,37 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "description": "NVMe Storage Device Health Dashboard, data from nvme_metrics.py",
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "iteration": 1625852688046,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P608B360C0C0284E4"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -30,11 +42,23 @@
       },
       "id": 2,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P608B360C0C0284E4"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Overview",
       "type": "row"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds}"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -42,7 +66,10 @@
           },
           "custom": {
             "align": "auto",
-            "displayMode": "auto"
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -59,7 +86,20 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ModelNumber"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 326
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 10,
@@ -69,6 +109,14 @@
       },
       "id": 4,
       "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true,
         "sortBy": [
           {
@@ -77,11 +125,15 @@
           }
         ]
       },
-      "pluginVersion": "8.0.5",
+      "pluginVersion": "9.4.7",
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_info{host=~\"$host\"}",
+          "expr": "last_over_time(nvme_info{host=~\"$host\"}[$__range])",
           "instant": true,
           "interval": "",
           "legendFormat": "",
@@ -93,6 +145,10 @@
       "transformations": [
         {
           "id": "labelsToFields",
+          "options": {}
+        },
+        {
+          "id": "merge",
           "options": {}
         },
         {
@@ -125,7 +181,10 @@
       "type": "table"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -134,8 +193,11 @@
           },
           "custom": {
             "align": "auto",
-            "displayMode": "auto",
-            "filterable": true
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -160,8 +222,11 @@
             },
             "properties": [
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "thresholds",
@@ -200,8 +265,11 @@
                 "value": 85
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "thresholds",
@@ -240,8 +308,11 @@
             },
             "properties": [
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "thresholds",
@@ -280,8 +351,11 @@
             },
             "properties": [
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "thresholds",
@@ -352,8 +426,11 @@
                 "value": 83
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "thresholds",
@@ -416,8 +493,11 @@
                 }
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "displayName",
@@ -436,8 +516,11 @@
                 "value": 96
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "thresholds",
@@ -476,8 +559,11 @@
             },
             "properties": [
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "thresholds",
@@ -534,8 +620,10 @@
                 }
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-text"
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
               },
               {
                 "id": "thresholds",
@@ -570,8 +658,11 @@
                 "value": 140
               },
               {
-                "id": "custom.displayMode",
-                "value": "lcd-gauge"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "lcd",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "thresholds",
@@ -642,8 +733,11 @@
                 "value": "decbytes"
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "color",
@@ -731,8 +825,10 @@
                 "value": "percentunit"
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-text"
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
               },
               {
                 "id": "thresholds",
@@ -766,6 +862,14 @@
       },
       "id": 10,
       "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true,
         "sortBy": [
           {
@@ -774,11 +878,15 @@
           }
         ]
       },
-      "pluginVersion": "8.0.5",
+      "pluginVersion": "9.4.7",
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_controller_ready{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_controller_ready{host=~\"$host\", device=~\"$device\"}\n[$__range])",
           "format": "table",
           "instant": true,
           "interval": "",
@@ -787,8 +895,12 @@
           "refId": "controller_ready"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_controller_enabled{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_controller_enabled{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -797,8 +909,12 @@
           "refId": "nvme_controller_enabled"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_smart_media_errors{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_smart_media_errors{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -807,8 +923,12 @@
           "refId": "media_errors"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_smart_unsafe_shutdowns{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_smart_unsafe_shutdowns{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -817,8 +937,12 @@
           "refId": "unsafe_shutdowns"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(nvme_smart_num_err_log_entries{host=~\"$host\",device=~\"$device\"} [1d])",
+          "expr": "last_over_time(\n    increase(nvme_smart_num_err_log_entries{host=~\"$host\",device=~\"$device\"} [1d])\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -827,8 +951,12 @@
           "refId": "nvme_smart_num_err_log_entries"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_smart_percent_used{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_smart_percent_used{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -837,8 +965,12 @@
           "refId": "nvme_smart_percent_used"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_smart_avail_spare{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_smart_avail_spare{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -847,8 +979,12 @@
           "refId": "nvme_smart_avail_spare"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "sum by (host, device) ({__name__=~\"nvme_critical_warning.*\", host=~\"$host\",device=~\"$device\"})",
+          "expr": "last_over_time(\n    sum by (host, device) ({__name__=~\"nvme_critical_warning.*\", host=~\"$host\",device=~\"$device\"})\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -857,8 +993,12 @@
           "refId": "critical_warning"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_smart_power_cycles{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_smart_power_cycles{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -867,8 +1007,12 @@
           "refId": "nvme_smart_power_cycles"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_smart_power_on_hours{host=~\"$host\",device=~\"$device\"}*3600",
+          "expr": "last_over_time(\n    nvme_smart_power_on_hours{host=~\"$host\",device=~\"$device\"}\n[$__range])\n*3600",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -877,8 +1021,12 @@
           "refId": "nvme_smart_power_on_hours"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_temperature_celcius{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_temperature_celcius{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -887,8 +1035,12 @@
           "refId": "nvme_temperature_celcius"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_data_bytes_written{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_data_bytes_written{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -897,8 +1049,12 @@
           "refId": "nvme_data_bytes_written"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_physical_size{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_physical_size{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -907,8 +1063,12 @@
           "refId": "nvme_physical_size"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_used_bytes{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_used_bytes{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -917,8 +1077,12 @@
           "refId": "nvme_used_bytes"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "nvme_used_bytes{host=~\"$host\",device=~\"$device\"}/nvme_physical_size{host=~\"$host\",device=~\"$device\"}",
+          "expr": "last_over_time(\n    nvme_used_bytes{host=~\"$host\",device=~\"$device\"}\n[$__range])\n/\nlast_over_time(\n    nvme_physical_size{host=~\"$host\",device=~\"$device\"}\n[$__range])",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -1117,7 +1281,10 @@
       "type": "table"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1126,8 +1293,12 @@
           },
           "custom": {
             "align": "auto",
-            "displayMode": "color-background-solid",
-            "filterable": true
+            "cellOptions": {
+              "mode": "basic",
+              "type": "color-background"
+            },
+            "filterable": true,
+            "inspect": false
           },
           "mappings": [],
           "thresholds": {
@@ -1267,14 +1438,26 @@
       },
       "id": 12,
       "options": {
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "8.0.5",
+      "pluginVersion": "9.4.7",
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": false,
-          "expr": "sum by (__name__)({host=~\"$host\",device=~\"$device\",__name__=~\"nvme_critical_warning_.*\"})",
+          "expr": "last_over_time(\n    sum by (__name__)({host=~\"$host\",device=~\"$device\",__name__=~\"nvme_critical_warning_.*\"})\n[$__range])",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -1284,8 +1467,12 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
           "exemplar": false,
-          "expr": "{host=~\"$host\",device=~\"$device\",__name__=~\"nvme_critical_warning_.*\"} != 0",
+          "expr": "last_over_time(\n    {host=~\"$host\",device=~\"$device\",__name__=~\"nvme_critical_warning_.*\"} != 0\n[$__range])",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -1302,6 +1489,10 @@
           "options": {
             "valueLabel": "__name__"
           }
+        },
+        {
+          "id": "merge",
+          "options": {}
         },
         {
           "id": "organize",
@@ -1343,7 +1534,10 @@
     },
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "P608B360C0C0284E4"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -1352,11 +1546,22 @@
       },
       "id": 14,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P608B360C0C0284E4"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Utilization",
       "type": "row"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1364,6 +1569,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1420,14 +1627,19 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "exemplar": true,
           "expr": "increase(nvme_smart_data_units_read{host=~\"$host\",device=~\"$device\"} [10m])*1000",
           "hide": false,
@@ -1440,7 +1652,9 @@
       "type": "timeseries"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1448,6 +1662,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1504,14 +1720,19 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "exemplar": true,
           "expr": "increase(nvme_smart_data_units_written{host=~\"$host\",device=~\"$device\"} [10m])*1000",
           "hide": false,
@@ -1525,7 +1746,9 @@
       "type": "timeseries"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1533,6 +1756,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1589,14 +1814,19 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "exemplar": true,
           "expr": "increase(nvme_data_bytes_read{host=~\"$host\",device=~\"$device\"} [10m])",
           "hide": false,
@@ -1609,7 +1839,9 @@
       "type": "timeseries"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "description": "data units written *1000+512bytes",
       "fieldConfig": {
         "defaults": {
@@ -1617,6 +1849,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1673,14 +1907,19 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "exemplar": true,
           "expr": "increase(nvme_data_bytes_written{host=~\"$host\",device=~\"$device\"} [10m])",
           "hide": false,
@@ -1695,7 +1934,9 @@
       "type": "timeseries"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1703,6 +1944,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1758,14 +2001,19 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "exemplar": true,
           "expr": "increase(nvme_smart_host_read_commands{host=~\"$host\",device=~\"$device\"} [10m])",
           "hide": false,
@@ -1778,7 +2026,9 @@
       "type": "timeseries"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1786,6 +2036,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1841,14 +2093,19 @@
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
         "tooltip": {
-          "mode": "single"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "exemplar": true,
           "expr": "increase(nvme_smart_host_write_commands{host=~\"$host\",device=~\"$device\"} [10m])",
           "hide": false,
@@ -1861,7 +2118,9 @@
       "type": "timeseries"
     },
     {
-      "datasource": "${ds}",
+      "datasource": {
+        "uid": "${ds}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -1908,10 +2167,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "8.0.5",
-      "repeat": null,
+      "pluginVersion": "9.4.7",
       "targets": [
         {
+          "datasource": {
+            "uid": "${ds}"
+          },
           "exemplar": true,
           "expr": "nvme_used_bytes{host=~\"$host\",device=~\"$device\"}",
           "interval": "10m",
@@ -1925,7 +2186,8 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 30,
+  "revision": 1,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [
     "nvme",
@@ -1938,8 +2200,6 @@
         "current": {
           "selected": true
         },
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "datasource",
@@ -1964,10 +2224,10 @@
             "$__all"
           ]
         },
-        "datasource": "${ds}",
+        "datasource": {
+          "uid": "${ds}"
+        },
         "definition": "label_values(nvme_info,host)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "host",
@@ -1995,13 +2255,12 @@
             "$__all"
           ]
         },
-        "datasource": "${ds}",
+        "datasource": {
+          "uid": "${ds}"
+        },
         "definition": "label_values(nvme_info{host=~\"$host\"}, device)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
-        "label": null,
         "multi": true,
         "name": "device",
         "options": [],
@@ -2018,12 +2277,13 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "NVMe Dashboard",
   "uid": "7ES1GVmnk",
-  "version": 2
+  "version": 2,
+  "weekStart": ""
 }
