@@ -1,0 +1,16 @@
+#
+# Managed by Ansible, from victoriametrics_aviloo role
+#
+groups:
+  - name: zfspool_state
+    interval: 5m
+    rules:
+      - alert: ZFS Pool state not OK
+        expr: |
+          netdata_zfspool_state_boolean_average{dimension!="online"} != 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ZFS Pool: pool state not OK"
+          description: "ZFS Pool '{{ $labels.family }}' on '{{ $labels.host }}' is in state '{{ $labels.dimension }}'"
