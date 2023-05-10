@@ -5,7 +5,7 @@
   systemd:
     daemon_reload: true
 
-- name: validate vector config
+- name: validate vector config # noqa no-changed-when
   command: /usr/bin/vector validate --config-toml /etc/vector/*.toml
   listen:
     - restart vector

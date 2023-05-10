@@ -1,7 +1,7 @@
 ---
 
 # use compose to send a SIGHUP to blacbox's process (PID=1)
-- name: dependabot reload
+- name: dependabot reload # noqa no-changed-when
   command: 'docker-compose exec -T dependabot kill -HUP 1'
   args:
     chdir: '{{ dependabot_path }}'

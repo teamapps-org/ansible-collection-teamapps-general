@@ -55,8 +55,8 @@ netdata_postgres_jobs: []
 # a server has 3000-6000 metrics.
 # get the number of metrics: curl -s 'http://localhost:19999/api/v1/allmetrics?format=prometheus' | wc -l
 # for 6000 metrics and ~1 day retention: 82.4M*6 = 495 M
-netdata_dbengine_disk_space_MB_tier0: 256 # 1 point every second, ~82.4 MiB for 1000 metrics for a full day
-netdata_dbengine_disk_space_MB_tier1: 128 # 1 point every minute, 4 bytes per point per point ~ 5.5 MiB per 1000 metrics per DAY.
-netdata_dbengine_disk_space_MB_tier2: 64  # 1 point every hour, 4 bytes per point, ~ 0.64 MiB per 1000 metrics per WEEK.
+netdata_dbengine_disk_space_mb_tier0: 256 # 1 point every second, ~82.4 MiB for 1000 metrics for a full day
+netdata_dbengine_disk_space_mb_tier1: 128 # 1 point every minute, 4 bytes per point per point ~ 5.5 MiB per 1000 metrics per DAY.
+netdata_dbengine_disk_space_mb_tier2: 64  # 1 point every hour, 4 bytes per point, ~ 0.64 MiB per 1000 metrics per WEEK.
 
-netdata_dbengine_page_cache_size_MB: 64
+netdata_dbengine_page_cache_size_mb: 64

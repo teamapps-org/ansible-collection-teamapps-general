@@ -120,13 +120,13 @@
     creates: /zfsdata
 
 # extend pool with more vdevs (for mirror: extend by pairs of 2 devices)
-- name: extend zpool zfsdata # noqa no-handler
+- name: extend zpool zfsdata # noqa no-handler no-changed-when
   command: "zpool add zfsdata mirror {{ item | join(' ') }} -o ashift=12"
   loop: '{{ hetzner_robot_zfsdata_extend_groups }}'
   when:
     - create_zfsdata.changed
 
-- name: create zpool zfsbulk
+- name: create zpool zfsbulk # noqa no-changed-when
   command: "zpool create zfsbulk {{ hetzner_robot_zfsbulk_pool_type }} {{ hetzner_robot_zfsbulk_partitions_by_id | join(' ') }} -o ashift=12 -O compression=lz4"
   args:
     creates: /zfsbulk
@@ -134,21 +134,21 @@
   when: hetzner_robot_zfsbulk
 
 # extend pool with more vdevs (for mirror: extend by pairs of 2 devices)
-- name: extend zpool zfsbulk
+- name: extend zpool zfsbulk # noqa no-changed-when no-handler
   command: "zpool add zfsbulk {{ hetzner_robot_zfsbulk_pool_type }} {{ item | join(' ') }} -o ashift=12"
   loop: '{{ hetzner_robot_zfsbulk_extend_groups }}'
   when:
     - hetzner_robot_zfsbulk
     - create_zfsbulk.changed
 
-- name: zfsbulk add cache devices
+- name: zfsbulk add cache devices # noqa no-changed-when no-handler
   command: "zpool add zfsbulk cache {{ hetzner_robot_zfsbulk_cache_partitions_by_id | join(' ') }} -o ashift=12"
   when:
     - hetzner_robot_zfsbulk
     - hetzner_robot_zfsbulk_cache
     - create_zfsbulk.changed
 
-- name: create zfs write intent log file
+- name: create zfs write intent log file # noqa no-changed-when no-handler
   command: dd if=/dev/zero of=/zfs_log_file bs=1M count=4000
   args:
     creates: /zfs_log_file
@@ -157,7 +157,7 @@
     - hetzner_robot_zfsbulk
     - hetzner_robot_zfsbulk_log_file
 
-- name: add zfs write intent log
+- name: add zfs write intent log # noqa no-changed-when no-handler
   command: zpool add zfsbulk log {{ hetzner_robot_zfsbulk_log_device }}
   when:
     - hetzner_robot_zfsbulk

@@ -3,7 +3,7 @@
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
 # promtool check config actually validates config AND alerting rules
-- name: validate config
+- name: validate config # noqa no-changed-when
   command: docker-compose exec -T prometheus promtool check config {{ prometheus_config_dir_container }}/prometheus.yml
   args:
     chdir: "{{ prometheus_config_dir }}" # to run docker-compose in the correct directory
@@ -14,13 +14,13 @@
     restarted: true
 
 # use compose to send a SIGHUP to prometheus' process (PID=1)
-- name: prometheus reload
+- name: prometheus reload # noqa no-changed-when
   command: 'docker-compose exec -T prometheus kill -HUP 1'
   args:
     chdir: '{{ prometheus_config_dir }}'
 
 # use compose to send a SIGHUP to blacbox's process (PID=1)
-- name: blackbox reload
+- name: blackbox reload # noqa no-changed-when
   command: 'docker-compose exec -T blackbox kill -HUP 1'
   args:
     chdir: '{{ prometheus_config_dir }}'

@@ -1,5 +1,5 @@
 ---
-- name: gitlab-ctl reconfigure
+- name: gitlab-ctl reconfigure # noqa no-changed-when
   command: gitlab-ctl reconfigure
   register: gitlab_restart
   failed_when: 'gitlab_restart.rc != 0'

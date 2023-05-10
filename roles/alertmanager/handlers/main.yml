@@ -1,6 +1,6 @@
 ---
 
-- name: alertmanager-check-config
+- name: alertmanager-check-config # noqa no-changed-when
   # start new alertmanager container, entrypoint amtool
   command: 'docker-compose run -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
   args:
@@ -9,7 +9,7 @@
     - alertmanager reload
 
 # use compose to send a SIGHUP to blacbox's process (PID=1)
-- name: alertmanager reload
+- name: alertmanager reload # noqa no-changed-when
   command: 'docker-compose exec -T alertmanager kill -HUP 1'
   args:
     chdir: '{{ alertmanager_path }}'

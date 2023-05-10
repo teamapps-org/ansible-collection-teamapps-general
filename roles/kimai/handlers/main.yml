@@ -1,18 +1,18 @@
-- name: kimai_composer_install
+- name: kimai_composer_install # noqa no-changed-when
   command: 'docker-compose run --user 33 php /usr/local/bin/composer install --no-dev --optimize-autoloader'
   args:
     chdir: '{{ kimai_path }}'
   listen:
     - kimai_update
 
-- name: kimai_console_install
+- name: kimai_console_install # noqa no-changed-when
   command: 'docker-compose run --user 33 php bin/console kimai:install -n'
   args:
     chdir: '{{ kimai_path }}'
   listen:
     - kimai_update
 
-- name: kimai_console_update
+- name: kimai_console_update # noqa no-changed-when
   command: 'docker-compose run --user 33 php bin/console kimai:update -n'
   args:
     chdir: '{{ kimai_path }}'

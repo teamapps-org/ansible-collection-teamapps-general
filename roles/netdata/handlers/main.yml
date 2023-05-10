@@ -19,7 +19,7 @@
     state: present
     restarted: yes
 
-- name: netdata_reload_alarms
+- name: netdata_reload_alarms # noqa no-changed-when
   command: pkill -SIGUSR2 netdata
 
 - name: netdata-smartd-restart

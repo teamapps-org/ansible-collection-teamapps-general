@@ -77,7 +77,7 @@
         - not vmagent_is_installed.stat.exists or
           vmagent_version not in vmagent_current_version.stdout
 
-    - name: Replace vmagent binary at target dir
+    - name: Replace vmagent binary at target dir # noqa no-changed-when
       notify: vmagent-restart
       shell: |
         mv /tmp/vmagent-prod /usr/local/bin/vmagent-prod

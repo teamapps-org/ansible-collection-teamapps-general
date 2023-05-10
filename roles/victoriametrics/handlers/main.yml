@@ -7,18 +7,18 @@
     restarted: yes
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
-- name: vmalert validate config
+- name: vmalert validate config # noqa no-changed-when
   command: docker-compose run --rm -T vmalert -dryRun -rule=/etc/alerts/*.yml
   args:
     chdir: "{{ victoriametrics_path }}" # to run docker-compose in the correct directory
 
 # use compose to send a SIGHUP to vmalert' process (PID=1)
-- name: vmalert reload
+- name: vmalert reload # noqa no-changed-when
   command: 'docker-compose exec -T vmalert kill -HUP 1'
   args:
     chdir: '{{ victoriametrics_path }}'
 
-- name: victoriametrics-vmagent-reload
+- name: victoriametrics-vmagent-reload # noqa no-changed-when
   command: 'docker-compose exec -T vmagent kill -HUP 1'
   args:
     chdir: '{{ victoriametrics_path }}'
@@ -32,7 +32,7 @@
     restarted: yes
 
 # use compose to send a SIGHUP to blacbox's process (PID=1)
-- name: blackbox reload
+- name: blackbox reload # noqa no-changed-when
   command: 'docker-compose exec -T blackbox kill -HUP 1'
   args:
     chdir: '{{ victoriametrics_path }}'

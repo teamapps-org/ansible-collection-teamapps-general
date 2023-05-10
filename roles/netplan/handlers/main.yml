@@ -1,8 +1,8 @@
 ---
-- name: Netplan generate configuration
+- name: Netplan generate configuration # noqa no-changed-when
   command: netplan generate
   listen: netplan apply
 
-- name: Applying Netplan Configuration
+- name: Applying Netplan Configuration # noqa no-changed-when
   command: netplan apply
   listen: netplan apply

@@ -6,7 +6,7 @@
     project_src: '{{ webproxy_path }}'
     state: present
 
-- name: webproxy_nginx_reload
+- name: webproxy_nginx_reload # noqa no-changed-when
   command: 'docker-compose exec -T nginx nginx -s reload'
   args:
     chdir: '{{ webproxy_path }}'

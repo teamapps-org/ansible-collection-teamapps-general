@@ -7,7 +7,7 @@
     restarted: true
   register: backuppc_restart
 
-- name: backuppc reload config
+- name: backuppc reload config  # noqa no-changed-when
   command: 'docker-compose exec -T backuppc pkill -SIGHUP -x BackupPC'
   args:
     chdir: '{{ backuppc_path }}'

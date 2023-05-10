@@ -1,7 +1,7 @@
 ---
 # handlers file for backuppcclient
 
-- name: backuppcclient backuppc service reload
+- name: backuppcclient backuppc service reload # noqa no-changed-when
   delegate_to: '{{ backuppcclient_server }}'
   command: 'docker-compose exec -T backuppc pkill -SIGHUP -x BackupPC'
   args:
