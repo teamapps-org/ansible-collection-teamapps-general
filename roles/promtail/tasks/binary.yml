@@ -37,17 +37,17 @@
 - name: Create download directory
   delegate_to: localhost
   file:
-    path: "{{ local_cache_dir }}/promtail"
+    path: "{{ local_cache_dir }}/promtail-{{ promtail_version }}"
     state: directory
     mode: 0755
   check_mode: false
 
-- name: download promtail # noqa risky-file-permissions
+- name: download promtail version {{ promtail_version }} # noqa risky-file-permissions
   delegate_to: localhost
   become: false
   get_url:
     url: "https://github.com/grafana/loki/releases/download/v{{ promtail_version }}/{{ item.name }}.zip"
-    dest: "{{ local_cache_dir }}/promtail/{{ item.name }}.zip"
+    dest: "{{ local_cache_dir }}/promtail-{{ promtail_version }}/{{ item.name }}.zip"
     checksum: "sha256:{{ item.checksum }}"
   register: _download_archive
   until: _download_archive is succeeded
@@ -62,17 +62,17 @@
   become: false
   unarchive:
     remote_src: true
-    src: "{{ local_cache_dir }}/promtail/{{ item }}.zip"
-    dest: "{{ local_cache_dir }}/promtail"
-    creates: "{{ local_cache_dir }}/promtail/{{ item }}"
+    src: "{{ local_cache_dir }}/promtail-{{ promtail_version }}/{{ item }}.zip"
+    dest: "{{ local_cache_dir }}/promtail-{{ promtail_version }}"
+    creates: "{{ local_cache_dir }}/promtail-{{ promtail_version }}/{{ item }}"
   check_mode: false
   with_items:
     - promtail-linux-amd64
 
-- name: copy promtail
+- name: copy promtail-{{ promtail_version }}
   copy:
     remote_src: false
-    src: "{{ local_cache_dir }}/promtail/promtail-linux-amd64"
+    src: "{{ local_cache_dir }}/promtail-{{ promtail_version }}/promtail-linux-amd64"
     dest: "/usr/local/bin/promtail"
     mode: 0755
     owner: root
