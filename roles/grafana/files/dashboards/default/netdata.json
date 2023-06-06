@@ -4008,7 +4008,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "netdata_disk_qops_operations_average{host=~\"$host\"}",
+              "expr": "netdata_disk_ops_operations_persec_average{host=~\"$host\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{family}} {{dimension}}",
@@ -10439,7 +10439,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "netdata_apps_cpu_cpu_time___average{host=~\"$host\"}",
+              "expr": "netdata_apps_cpu_percentage_average{host=~\"$host\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{dimension}}",
@@ -10527,7 +10527,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "netdata_apps_cpu_user_cpu_time___average{host=~\"$host\"}",
+              "expr": "netdata_apps_cpu_user_percentage_average{host=~\"$host\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{dimension}}",
@@ -10615,7 +10615,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "netdata_apps_cpu_system_cpu_time___average{host=~\"$host\"}",
+              "expr": "netdata_apps_cpu_system_percentage_average{host=~\"$host\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{dimension}}",
@@ -10719,7 +10719,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "netdata_apps_preads_kilobytes_persec_average{host=\"$host\"}",
+              "expr": "netdata_apps_preads_KiB_persec_average{host=\"$host\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{dimension}}",
@@ -10806,7 +10806,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "netdata_apps_pwrites_kilobytes_persec_average{host=\"$host\"}",
+              "expr": "netdata_apps_pwrites_KiB_persec_average{host=\"$host\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{dimension}}",
@@ -10893,7 +10893,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "netdata_apps_lreads_kilobytes_persec_average{host=\"$host\"}",
+              "expr": "netdata_apps_lreads_KiB_persec_average{host=\"$host\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{dimension}}",
@@ -10980,7 +10980,7 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "netdata_apps_lwrites_kilobytes_persec_average{host=\"$host\"}",
+              "expr": "netdata_apps_lwrites_KiB_persec_average{host=\"$host\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{dimension}}",
