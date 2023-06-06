@@ -74,8 +74,8 @@ updates:
 ~~~
 
 * add dependabot user to project as Maintainer (temporary for setup)
-* run `docker-compose exec worker bundle exec rake 'dependabot:validate[aviloo/signal-db]'`
-* run `docker-compose exec worker bundle exec rake 'dependabot:register[aviloo/aviloo-platform]'`
+* run `docker-compose exec worker bundle exec rake 'dependabot:validate[example/project]'`
+* run `docker-compose exec worker bundle exec rake 'dependabot:register[example/project]'`
 * (Optional) change dependabot Role in Project to Developer
 
 manually trigger check: `docker-compose exec worker bundle exec rake 'dependabot:update[example/example-project,maven,/]'`

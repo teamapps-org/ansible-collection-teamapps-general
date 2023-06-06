@@ -1,5 +1,5 @@
 #
-# Managed by Ansible, from victoriametrics_aviloo role
+# Managed by Ansible, from victoriametrics role
 #
 groups:
   - name: zfspool_state
