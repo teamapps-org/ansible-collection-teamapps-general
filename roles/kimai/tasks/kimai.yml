@@ -87,7 +87,7 @@
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       docker-compose exec --user 33 php bin/console "$@"
-    dest: '{{ webserver_path }}/bin/console'
+    dest: '{{ kimai_path }}/bin/console'
     owner: root
     group: root
     mode: 0750
@@ -100,7 +100,7 @@
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       docker-compose exec --user 33 php composer "$@"
-    dest: '{{ webserver_path }}/bin/composer'
+    dest: '{{ kimai_path }}/bin/composer'
     owner: root
     group: root
     mode: 0750
