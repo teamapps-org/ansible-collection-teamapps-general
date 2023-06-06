@@ -9,13 +9,13 @@
   tags:
     - backuppcclient_local
 
-- name: save original ssh_host as ansible_ssh_host_orig
+- name: save original ssh_host as backuppcclient_ansible_ssh_host_orig
   set_fact:
-    ansible_ssh_host_orig: '{{ ansible_ssh_host }}'
+    backuppcclient_ansible_ssh_host_orig: '{{ ansible_ssh_host }}'
 
-- name: save original ssh_port as ansible_ssh_port_orig
+- name: save original ssh_port as backuppcclient_ansible_ssh_port_orig
   set_fact:
-    ansible_ssh_port_orig: '{{ ansible_ssh_port | default(22) }}'
+    backuppcclient_ansible_ssh_port_orig: '{{ backuppcclient_ansible_ssh_port | default(22) }}'
 
 - name: Create hosts file entry on backuppc server # noqa no-tabs
   delegate_to: '{{ backuppcclient_server }}'

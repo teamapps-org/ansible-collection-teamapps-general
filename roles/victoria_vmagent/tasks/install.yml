@@ -27,8 +27,8 @@
     path: /usr/local/bin/vmagent-prod
     state: absent
   when:
-    - vmagent_is_installed.stat.exists | bool
-    - vmagent_version not in vmagent_current_version.stdout
+    - victoria_vmagent_reg__vmagent_is_installed.stat.exists | bool
+    - vmagent_version not in victoria_vmagent_reg__vmagent_current_version.stdout
 
 - name: vmagent binary (via control host)
   when: vmagent_install_download_to_control
@@ -45,8 +45,8 @@
       become: no
       when:
         - not ansible_check_mode
-        - not vmagent_is_installed.stat.exists or
-          vmagent_version not in vmagent_current_version.stdout
+        - not victoria_vmagent_reg__vmagent_is_installed.stat.exists or
+          vmagent_version not in victoria_vmagent_reg__vmagent_current_version.stdout
 
     - name: Copy vmagent binary to target host
       notify: vmagent-restart
@@ -58,8 +58,8 @@
         group: "{{ vmagent_system_group }}"
       when:
         - not ansible_check_mode
-        - not vmagent_is_installed.stat.exists or
-          vmagent_version not in vmagent_current_version.stdout
+        - not victoria_vmagent_reg__vmagent_is_installed.stat.exists or
+          vmagent_version not in victoria_vmagent_reg__vmagent_current_version.stdout
 
 - name: vmagent binary (direct download)
   when: not vmagent_install_download_to_control
@@ -74,8 +74,8 @@
         remote_src: yes
       when:
         - not ansible_check_mode
-        - not vmagent_is_installed.stat.exists or
-          vmagent_version not in vmagent_current_version.stdout
+        - not victoria_vmagent_reg__vmagent_is_installed.stat.exists or
+          vmagent_version not in victoria_vmagent_reg__vmagent_current_version.stdout
 
     - name: Replace vmagent binary at target dir # noqa no-changed-when
       notify: vmagent-restart
@@ -85,5 +85,5 @@
         chown {{ vmagent_system_user }}:{{ vmagent_system_group }} /usr/local/bin/vmagent-prod
       when:
         - not ansible_check_mode
-        - not vmagent_is_installed.stat.exists or
-          vmagent_version not in vmagent_current_version.stdout
+        - not victoria_vmagent_reg__vmagent_is_installed.stat.exists or
+          vmagent_version not in victoria_vmagent_reg__vmagent_current_version.stdout

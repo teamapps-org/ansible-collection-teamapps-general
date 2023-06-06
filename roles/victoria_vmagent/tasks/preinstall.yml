@@ -8,12 +8,12 @@
   command: systemctl --version
   changed_when: false
   check_mode: false
-  register: __systemd_version
+  register: victoria_vmagent_reg__systemd_version
   when: ansible_service_mgr == 'systemd'
 
 - name: Set systemd version fact
   set_fact:
-    vmagent_systemd_version: "{{ __systemd_version.stdout_lines[0].split(' ')[-1] }}"
+    victoria_vmagent_systemd_version: "{{ victoria_vmagent_reg__systemd_version.stdout_lines[0].split(' ')[-1] }}"
   when: ansible_service_mgr == 'systemd'
 
 - name: Check if VMagent is installed
@@ -21,12 +21,12 @@
     path: /usr/local/bin/vmagent-prod
   changed_when: false
   check_mode: false
-  register: vmagent_is_installed
+  register: victoria_vmagent_reg__vmagent_is_installed
 
 - name: Check current VMagent version
   command: /usr/local/bin/vmagent-prod --version
   changed_when: false
   failed_when: false
   check_mode: false
-  register: vmagent_current_version
-  when: vmagent_is_installed.stat.exists | bool
+  register: victoria_vmagent_reg__vmagent_current_version
+  when: victoria_vmagent_reg__vmagent_is_installed.stat.exists | bool

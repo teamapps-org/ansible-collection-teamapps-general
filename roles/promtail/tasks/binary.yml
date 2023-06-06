@@ -49,8 +49,8 @@
     url: "https://github.com/grafana/loki/releases/download/v{{ promtail_version }}/{{ item.name }}.zip"
     dest: "{{ local_cache_dir }}/promtail-{{ promtail_version }}/{{ item.name }}.zip"
     checksum: "sha256:{{ item.checksum }}"
-  register: _download_archive
-  until: _download_archive is succeeded
+  register: promtail_reg__download_archive
+  until: promtail_reg__download_archive is succeeded
   retries: 5
   delay: 2
   check_mode: false

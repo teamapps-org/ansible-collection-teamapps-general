@@ -1,15 +1,24 @@
 # Inner Task file for syncoid
 
+- name: create user
+  ansible.builtin.user:
+    name: '{{ syncoid_source_host_ssh_user }}'
+    password_lock: True
+  delegate_to: '{{ syncoid_source_host_ssh }}'
+  when: syncoid_source_host_ssh_user != "root"
+
 - name: copy public key # noqa:no-handler
   authorized_key:
-    user: root
-    key: '{{ _syncoid_id_ed25519.public_key }}'
+    user: '{{ syncoid_source_host_ssh_user }}'
+    key: '{{ syncoid_reg__id_ed25519.public_key }}'
     comment: 'syncoid@{{ ansible_fqdn }} {{ base_authorized_keys_marker }}'
   delegate_to: '{{ syncoid_source_host_ssh }}'
   when:
-    - not ansible_check_mode or not _syncoid_id_ed25519.changed # on
+    - not ansible_check_mode or not syncoid_reg__id_ed25519.changed # on
 
-- name: "create cronjob for syncoid pull {{ syncoid_dataset }}"
+- name: "create cronjob for syncoid pull {{ syncoid_job_id }}" # noqa:no-role-prefix
+  vars:
+    syncoid_job_id: "{{ syncoid_source_host }}-{{ syncoid_source_dataset | replace('/', '_') }}"
   cron:
     cron_file: syncoid_{{ syncoid_source_host }}
     name: syncoid pull {{ syncoid_source_dataset }} from {{ syncoid_source_host }}
@@ -17,14 +26,16 @@
     hour: "{{ syncoid_cron_hour }}"
     user: root
     job: >
-      /usr/sbin/syncoid
+      {{ syncoid_command }}
       --source-bwlimit={{ syncoid_source_bwlimit }}
       --recursive
       {% if syncoid_dumpsnaps %}--dumpsnaps{% endif %}
+      {% if not syncoid_sync_snapshot %}--no-sync-snap{% endif %}
+      {% if not syncoid_source_privilege_elevation %}--no-privilege-elevation{% endif %}
       {{ ['--exclude='] | product(syncoid_exclude) | map('join') | list | join(' ') }}
       --sendoptions="Lc e w"
       --sshkey=/root/.ssh/syncoid_id_ed25519
       --sshoption StrictHostKeyChecking=accept-new
-      root@{{ syncoid_source_host_ssh }}:{{ syncoid_source_dataset }}
+      {{ syncoid_source_host_ssh_user }}@{{ syncoid_source_host_ssh }}:{{ syncoid_source_dataset }}
       {{ syncoid_dest_dataset }}
-      >> /var/log/syncoid/cron-{{ syncoid_source_host }}-{{ syncoid_source_dataset | replace('/', '_') }}.log 2>&1
+      >> /var/log/syncoid/cron-{{ syncoid_job_id }}.log 2>&1

@@ -19,7 +19,7 @@ NoNewPrivileges=yes
 
 ProtectSystem=full
 
-{% if vmagent_systemd_version | int >= 232 %}
+{% if victoria_vmagent_systemd_version | int >= 232 %}
 ProtectControlGroups=true
 ProtectKernelModules=true
 ProtectKernelTunables=yes

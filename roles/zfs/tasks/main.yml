@@ -3,14 +3,14 @@
     path: /usr/sbin/zpool
   changed_when: false
   check_mode: false
-  register: _zpool_stat
+  register: zfs_reg__zpool_stat
   tags:
     - zfs
     - zpool
 
 - name: collect zpool facts
   zpool_facts: {}
-  when: _zpool_stat.stat.exists | bool
+  when: zfs_reg__zpool_stat.stat.exists | bool
   tags:
     - zfs
     - zpool
@@ -28,7 +28,7 @@
 
 - name: list of zpools on system
   set_fact:
-    _zfs_pools: "{{ ansible_zfs_pools | json_query('[*].name') }}"
+    zfs_fact_zfs_pools: "{{ ansible_zfs_pools | json_query('[*].name') }}"
 
 # - name: debug2
 #   changed_when: true
@@ -43,10 +43,10 @@
     loop_var: zpool
   when:
     - "ansible_zfs_pools is defined"
-    - "zpool in _zfs_pools"
+    - "zpool in zfs_fact_zfs_pools"
   tags: zfs
   vars:
-    zpool_facts: "{{ ansible_zfs_pools | selectattr('name', 'equalto', zpool) | list | first }}"
+    zfs_zpool__zpool_facts: "{{ ansible_zfs_pools | selectattr('name', 'equalto', zpool) | list | first }}"
   include_tasks:
     file: zpool.yml
     apply:
@@ -88,7 +88,7 @@
     group: root
     mode: '0750'
   when:
-    - _zpool_stat.stat.exists
+    - zfs_reg__zpool_stat.stat.exists
   tags:
     - zfs
 
@@ -101,6 +101,6 @@
     job: '/usr/local/bin/zfs_snap_metrics.sh > {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom.new && mv {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom.new {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom'
     cron_file: zfs_snap_metrics
   when:
-    - _zpool_stat.stat.exists
+    - zfs_reg__zpool_stat.stat.exists
   tags:
     - zfs

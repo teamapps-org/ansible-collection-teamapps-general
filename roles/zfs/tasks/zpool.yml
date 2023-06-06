@@ -3,7 +3,7 @@
 
 - name: print zpool facts for {{ zpool }}
   debug:
-    var: zpool_facts
+    var: zfs_zpool__zpool_facts
   # changed_when: True
 
 - name: set zfs dataset properties for {{ zpool }}
@@ -15,11 +15,11 @@
 - name: zpool set autotrim=on {{ zpool }} # noqa no-changed-when
   command: /usr/sbin/zpool set autotrim=on {{ zpool }}
   when:
-    - zpool_facts.autotrim == "off"
+    - zfs_zpool__zpool_facts.autotrim == "off"
     - zfs_zpool_autotrim
 
 - name: zpool set autotrim=off {{ zpool }} # noqa no-changed-when
   command: /usr/sbin/zpool set autotrim=off {{ zpool }}
   when:
-    - zpool_facts.autotrim == "on"
+    - zfs_zpool__zpool_facts.autotrim == "on"
     - not zfs_zpool_autotrim

@@ -14,16 +14,16 @@
 - name: check if connected to rescue system
   stat:
     path: /root/.oldroot/nfs/
-  register: stat_oldroot
+  register: hetzner_robot_reg__stat_oldroot
   tags:
     - always
 
 # - assert:
-#     that:  stat_oldroot.stat.exists
+#     that:  hetzner_robot_reg__stat_oldroot.stat.exists
 #     fail_msg: "Not a Hetzner Rescue system"
 
 - name: rescue system block
-  when: stat_oldroot.stat.exists
+  when: hetzner_robot_reg__stat_oldroot.stat.exists
   block:
     - name: copy install scripts to writable path
       ansible.posix.synchronize:
@@ -49,13 +49,13 @@
           Please confirm the installation procedure of "{{ inventory_hostname }}"
 
           Enter "yes" to continue. Press ENTER to exit now.
-      register: prompt_install
+      register: hetzner_robot_reg__prompt_install
 
     - name: Cancel if not confirmed
       fail:
         msg: "Exit now"
       when:
-        - prompt_install.user_input != "yes"
+        - hetzner_robot_reg__prompt_install.user_input != "yes"
 
     - name: installimage # noqa no-changed-when command-instead-of-shell
       shell: '{{ hetzner_robot_installimage_command }}'
@@ -103,10 +103,10 @@
 - name: update apt list
   apt:
     update_cache: yes
-  register: apt_update_cache
+  register: hetzner_robot_reg__apt_update_cache
   retries: 10
   delay: 5
-  until: apt_update_cache is success or ('Failed to lock apt for exclusive operation' not in apt_update_cache.msg and '/var/lib/dpkg/lock' not in apt_update_cache.msg)
+  until: hetzner_robot_reg__apt_update_cache is success or ('Failed to lock apt for exclusive operation' not in hetzner_robot_reg__apt_update_cache.msg and '/var/lib/dpkg/lock' not in hetzner_robot_reg__apt_update_cache.msg)
 
 - name: install zfs tools
   apt:
@@ -115,7 +115,7 @@
 
 - name: create zpool zfsdata
   command: "zpool create zfsdata mirror {{ hetzner_robot_zfsdata_partitions_by_id | join(' ') }} -o ashift=12 -O compression=lz4"
-  register: create_zfsdata
+  register: hetzner_robot_reg__create_zfsdata
   args:
     creates: /zfsdata
 
@@ -124,13 +124,13 @@
   command: "zpool add zfsdata mirror {{ item | join(' ') }} -o ashift=12"
   loop: '{{ hetzner_robot_zfsdata_extend_groups }}'
   when:
-    - create_zfsdata.changed
+    - hetzner_robot_reg__create_zfsdata.changed
 
 - name: create zpool zfsbulk # noqa no-changed-when
   command: "zpool create zfsbulk {{ hetzner_robot_zfsbulk_pool_type }} {{ hetzner_robot_zfsbulk_partitions_by_id | join(' ') }} -o ashift=12 -O compression=lz4"
   args:
     creates: /zfsbulk
-  register: create_zfsbulk
+  register: hetzner_robot_reg__create_zfsbulk
   when: hetzner_robot_zfsbulk
 
 # extend pool with more vdevs (for mirror: extend by pairs of 2 devices)
@@ -139,38 +139,38 @@
   loop: '{{ hetzner_robot_zfsbulk_extend_groups }}'
   when:
     - hetzner_robot_zfsbulk
-    - create_zfsbulk.changed
+    - hetzner_robot_reg__create_zfsbulk.changed
 
 - name: zfsbulk add cache devices # noqa no-changed-when no-handler
   command: "zpool add zfsbulk cache {{ hetzner_robot_zfsbulk_cache_partitions_by_id | join(' ') }} -o ashift=12"
   when:
     - hetzner_robot_zfsbulk
     - hetzner_robot_zfsbulk_cache
-    - create_zfsbulk.changed
+    - hetzner_robot_reg__create_zfsbulk.changed
 
 - name: create zfs write intent log file # noqa no-changed-when no-handler
   command: dd if=/dev/zero of=/zfs_log_file bs=1M count=4000
   args:
     creates: /zfs_log_file
-  register: zfsbulk_log_file
+  register: hetzner_robot_reg__zfsbulk_log_file
   when:
     - hetzner_robot_zfsbulk
-    - hetzner_robot_zfsbulk_log_file
+    - hetzner_robot_hetzner_robot_reg__zfsbulk_log_file
 
 - name: add zfs write intent log # noqa no-changed-when no-handler
   command: zpool add zfsbulk log {{ hetzner_robot_zfsbulk_log_device }}
   when:
     - hetzner_robot_zfsbulk
-    - create_zfsbulk.changed
+    - hetzner_robot_reg__create_zfsbulk.changed
     - hetzner_robot_zfsbulk_log_device
 
 - name: collect zpool facts
   zpool_facts: {}
-  register: zpool_facts_register
+  register: hetzner_robot_reg__zpool_facts
 
 - name: print zpool facts
   debug:
-    var: zpool_facts_register
+    var: hetzner_robot_reg__zpool_facts
 
 - name: set zfs dataset properties for zfsdata
   zfs:

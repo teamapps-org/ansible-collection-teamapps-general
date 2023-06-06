@@ -1,34 +1,28 @@
-# Sanoid / Syncoid Ansible role
+# Sanoid Ansible role
 
 * [Sanoid Project and Documentation](https://github.com/jimsalterjrs/sanoid)
 
 ## Usage Example
 
-Example for sanoid and syncoid setup
-
 ~~~yaml
 
-- name: zfs Play
+- name: sanoid
   hosts:
     - test1.example.com
     - spare1.example.com
-  roles:
-    - role: teamapps.general.zfs
-
-- name: sanoid Play
-  hosts:
-    - test1.example.com
-    - spare1.example.com
-  roles:
-    - role: teamapps.general.sanoid
+  tasks:
+    - import_role:
+        name: sanoid
       tags: sanoid
 
-- name: sanoid sync target Play
+- name: syncoid sync target
   hosts:
     - spare1.example.com
-  roles:
-    - role: teamapps.general.syncoid
+  tasks:
+    - import_role:
+        name: syncoid
       tags:
+        - sanoid
         - syncoid
 ~~~
 
@@ -67,7 +61,7 @@ sanoid_conf_datasets: |
     use_template = hotspare
 
 
-# requires teamapps.general.zfs role to be applied before syncoid
+# requires zfs role to be applied before syncoid
 zfs_datasets:
   - name: zfsbulk/hotspare
   - name: zfsbulk/hotspare/test1

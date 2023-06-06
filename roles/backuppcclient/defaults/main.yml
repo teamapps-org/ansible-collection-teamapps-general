@@ -13,8 +13,8 @@ backuppcclient_user: root
 backuppcclient_backup_admins: []
 
 # ssh host for backuppc to connect, fact is copied in task for use in delegation
-backuppcclient_ssh_host: '{{ ansible_ssh_host_orig }}'
-backuppcclient_ssh_port: '{{ ansible_ssh_port_orig }}'
+backuppcclient_ssh_host: '{{ backuppcclient_ansible_ssh_host_orig }}'
+backuppcclient_ssh_port: '{{ backuppcclient_ansible_ssh_port_orig }}'
 # ssh options, default "" if ssh_port is 22, else "-p <ssh_port>"
 backuppcclient_ssh_args: '{{ "" if backuppcclient_ssh_port == "22" else "-p " + backuppcclient_ssh_port | string }}'
 
