@@ -1,8 +1,2 @@
 - name: Import Sanoid Tasks
   import_tasks: sanoid.yml
-
-# - name: authorized_key for pulling
-#   authorized_key:
-#     user: root
-#     key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBFQ2r6FB7RCeqfZsnKwEiBD2/Vs0UpVK2pcncphfH1q
-#     comment: 'root@hel1 syncoid pull {{ base_authorized_keys_marker }}'

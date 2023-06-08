@@ -1,14 +1,16 @@
 # Sanoid Configuration (automatic snapshotting of zfs datasets)
 
-# - name: install sanoid
-#   apt:
-#     name: sanoid
-#     state: present
+- name: install sanoid
+  apt:
+    name: sanoid
+    state: present
+  when: not sanoid_install_from_deb_source
 
 - name: Install new version of sanoid
   apt:
-    deb: https://ftp.debian.org/debian/pool/main/s/sanoid/sanoid_2.1.0-1.1_all.deb
+    deb: '{{ sanoid_deb_source }}'
     state: present
+  when: sanoid_install_from_deb_source
 
 - name: create conf directory
   file:

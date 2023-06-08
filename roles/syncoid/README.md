@@ -12,7 +12,7 @@
     - spare1.example.com
   tasks:
     - import_role:
-        name: sanoid
+        name: teamapps.general.sanoid
       tags: sanoid
 
 - name: syncoid sync target
@@ -20,7 +20,7 @@
     - spare1.example.com
   tasks:
     - import_role:
-        name: syncoid
+        name: teamapps.general.syncoid
       tags:
         - sanoid
         - syncoid

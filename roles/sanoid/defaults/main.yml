@@ -39,3 +39,6 @@ sanoid_conf: |
   {{ sanoid_conf_datasets_custom }}
   {{ sanoid_conf_templates }}
   {{ sanoid_conf_templates_custom }}
+
+sanoid_install_from_deb_source: True
+sanoid_deb_source: https://ftp.debian.org/debian/pool/main/s/sanoid/sanoid_2.1.0-1.1_all.deb

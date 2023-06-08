@@ -5,6 +5,12 @@
 ## Usage Example
 
 ~~~yaml
+- name: zfs Play
+  hosts:
+    - test1.example.com
+    - spare1.example.com
+  roles:
+    - role: teamapps.general.zfs
 
 - name: sanoid
   hosts:
@@ -12,7 +18,7 @@
     - spare1.example.com
   tasks:
     - import_role:
-        name: sanoid
+        name: teamapps.general.sanoid
       tags: sanoid
 
 - name: syncoid sync target
@@ -20,9 +26,8 @@
     - spare1.example.com
   tasks:
     - import_role:
-        name: syncoid
+        name: teamapps.general.syncoid
       tags:
-        - sanoid
         - syncoid
 ~~~
 
@@ -61,7 +66,7 @@ sanoid_conf_datasets: |
     use_template = hotspare
 
 
-# requires zfs role to be applied before syncoid
+# requires teamapps.general.zfs role to be applied before syncoid
 zfs_datasets:
   - name: zfsbulk/hotspare
   - name: zfsbulk/hotspare/test1
