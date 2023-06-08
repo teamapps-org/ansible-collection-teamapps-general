@@ -10,17 +10,15 @@
   hosts:
     - test1.example.com
     - spare1.example.com
-  tasks:
-    - import_role:
-        name: teamapps.general.sanoid
+  roles:
+    - role: teamapps.general.sanoid
       tags: sanoid
 
 - name: syncoid sync target
   hosts:
     - spare1.example.com
-  tasks:
-    - import_role:
-        name: teamapps.general.syncoid
+  roles:
+    - role: teamapps.general.syncoid
       tags:
         - sanoid
         - syncoid

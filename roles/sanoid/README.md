@@ -4,29 +4,30 @@
 
 ## Usage Example
 
+Example for sanoid and syncoid setup
+
 ~~~yaml
-- name: zfs Play
+- name: ZFS Play
   hosts:
     - test1.example.com
     - spare1.example.com
   roles:
     - role: teamapps.general.zfs
+      tags: zfs
 
-- name: sanoid
+- name: Sanoid Play
   hosts:
     - test1.example.com
     - spare1.example.com
-  tasks:
-    - import_role:
-        name: teamapps.general.sanoid
+  roles:
+    - role: teamapps.general.sanoid
       tags: sanoid
 
-- name: syncoid sync target
+- name: Syncoid sync target Play
   hosts:
     - spare1.example.com
-  tasks:
-    - import_role:
-        name: teamapps.general.syncoid
+  roles:
+    - role: teamapps.general.syncoid
       tags:
         - syncoid
 ~~~
