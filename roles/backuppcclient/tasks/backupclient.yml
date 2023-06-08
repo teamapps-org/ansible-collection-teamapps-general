@@ -15,7 +15,7 @@
 
 - name: save original ssh_port as backuppcclient_ansible_ssh_port_orig
   set_fact:
-    backuppcclient_ansible_ssh_port_orig: '{{ backuppcclient_ansible_ssh_port | default(22) }}'
+    backuppcclient_ansible_ssh_port_orig: '{{ ansible_ssh_port | default(22) }}'
 
 - name: Create hosts file entry on backuppc server # noqa no-tabs
   delegate_to: '{{ backuppcclient_server }}'
