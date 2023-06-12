@@ -4,7 +4,7 @@ version: '3.7'
 
 services:
   web:
-    image: nginxinc/nginx-unprivileged:stable-alpine
+    image: '{{ webserver_nginx_image }}'
     user: "33"
     restart: always
     expose:

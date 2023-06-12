@@ -30,7 +30,7 @@ loki_auth_request_uri: # https://validator.example.com/api/logserveraccess
 loki_auth_request_cache_time: 15m
 loki_auth_request_cache_time_403: 30s
 
-
+loki_nginx_image: nginx:alpine
 loki_nginx_gateway_conf_template: '{{ "auth_basic-site.conf" if loki_auth == "basic" else "auth_request-site.conf" }}'
 
 loki_rules: []

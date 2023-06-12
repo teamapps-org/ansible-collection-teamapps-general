@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nginx:
-    image: nginx:alpine
+    image: '{{ tileserver_nginx_image }}'
     restart: always
     expose:
       - 80

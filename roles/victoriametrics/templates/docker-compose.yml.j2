@@ -4,7 +4,7 @@ services:
 
 
   authproxy:
-    image: nginx:alpine
+    image: '{{ victoriametrics_nginx_image }}'
     restart: always
     expose:
       - 80

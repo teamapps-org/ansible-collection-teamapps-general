@@ -9,6 +9,7 @@ webserver_addon_domains: []
 webserver_domains: '{{ [webserver_domain] + webserver_addon_domains }}'
 
 webserver_document_root: httpdocs
+webserver_nginx_image: nginxinc/nginx-unprivileged:stable-alpine
 webserver_nginx_template: site.conf
 webserver_client_max_body_size: 10M
 

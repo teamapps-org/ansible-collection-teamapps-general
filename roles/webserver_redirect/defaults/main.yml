@@ -8,6 +8,8 @@ webserver_redirect_domains: '{{ [webserver_redirect_domain] + webserver_redirect
 webserver_redirect_destination: 'https://{{ ansible_domain }}'
 webserver_redirect_code: '301' # 301: permanent, 302: temporary
 
+webserver_redirect_nginx_image: nginxinc/nginx-unprivileged:stable-alpine
+
 # location specific redirects
 webserver_redirect_locations: []
 

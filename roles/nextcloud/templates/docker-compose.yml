@@ -51,7 +51,7 @@ services:
       - redis
 
   nginx:
-    image: nginx
+    image: '{{ nextcloud_nginx_image }}'
     restart: always
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro

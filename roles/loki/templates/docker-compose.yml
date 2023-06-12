@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   nginx-gateway:
-    image: nginx:alpine
+    image: '{{ loki_nginx_image }}'
     restart: always
     expose:
       - 80

@@ -6,6 +6,8 @@ victoriametrics_vmalert_version: '{{ victoriametrics_version }}'
 
 victoriametrics_domain: 'metrics.{{ ansible_fqdn }}'
 
+victoriametrics_nginx_image: nginx:alpine
+
 # retention period (months) https://victoriametrics.github.io/#retention
 victoriametrics_retention_period: 3
 victoriametrics_big_merge_concurrency: 0

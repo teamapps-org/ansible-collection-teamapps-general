@@ -2,6 +2,8 @@
 tileserver_image: maptiler/tileserver-gl:latest
 tileserver_domain: maps.{{ ansible_fqdn }}
 
+tileserver_nginx_image: nginx:alpine
+
 tileserver_path: /container/tileserver
 tileserver_data_path: '{{ tileserver_path }}/data'
 tileserver_styles_repository: https://github.com/teamapps-org/maplibre-gl-styles.git

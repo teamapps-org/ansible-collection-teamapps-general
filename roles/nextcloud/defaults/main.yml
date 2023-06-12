@@ -5,6 +5,7 @@ nextcloud_mysql_root_password:
 nextcloud_mysql_password:
 
 nextcloud_version: 26
+nextcloud_nginx_image: nginx
 nextcloud_notify_push_image: icewind1991/notify_push:latest
 nextcloud_mariadb_version: 10.8
 
