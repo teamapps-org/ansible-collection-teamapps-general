@@ -19,14 +19,34 @@ Open Source (Vector) Map Tiles Self Hosted
         - tileserver
 ~~~
 
-you currently need to manually install the data
+## Map Data
 
-* download map data, source https://osm.dbtc.link/mbtiles/
+you need to manually install the data
+
+* download map data, source https://osm.dbtc.link/mbtiles/ (check current file)
+  * `wget https://osm.dbtc.link/mbtiles/2023-05-29-planet.mbtiles.lz4`
+  * `lz4 -d *-planet.mbtiles.lz4 planet.mbtiles`
 * download natural earth tiles: https://klokantech.github.io/naturalearthtiles/
+  * create png version of natural_earth tiles. (see below)
 * download fonts from https://github.com/openmaptiles/fonts/releases/tag/v2.0
-* extract in data/fonts/
+  extract in data/fonts/
+
+  ~~~bash
+  cd /container/tileserver/data/
+  mkdir fonts
+  wget https://github.com/openmaptiles/fonts/releases/download/v2.0/v2.0.zip
+  unzip v2.0.zip -d fonts/
+  ~~~
 
 see more in Section Data
+
+### create natural earth PNG version mbtiles
+
+~~~bash
+cd /container/tileserver/data
+git clone --depth=1 -b gh-pages https://github.com/lukasmartinelli/naturalearthtiles.git
+docker run -it  -v /container/tileserver/data/:/data/:rw jskeates/mbutil --image_format=png /data/naturalearthtiles/tiles/natural_earth_2_shaded_relief.raster /data/natural_earth_2_shaded_relief.raster.png.mbtiles
+~~~
 
 ## About
 
@@ -59,15 +79,6 @@ Download and reference in config.json
 
 relief raster data: https://klokantech.github.io/naturalearthtiles/
 download to data folder: https://github.com/lukasmartinelli/naturalearthtiles/releases/download/v1.0/natural_earth_2_shaded_relief.raster.mbtiles
-
-### create natural earth PNG version mbtiles
-
-~~~bash
-cd /container/tileserver/data
-git clone --depth=1 -b gh-pages https://github.com/lukasmartinelli/naturalearthtiles.git
-cd naturalearthtiles
-docker run -it  -v /container/tileserver/data/naturalearthtiles/:/data/:rw jskeates/mbutil --image_format=png /data/tiles/natural_earth_2_shaded_relief.raster /data/natural_earth_2_shaded_relief.raster.png.mbtiles
-~~~
 
 ## Styles
 

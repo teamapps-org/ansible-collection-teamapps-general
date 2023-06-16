@@ -95,7 +95,7 @@
   },
   "data": {
     "v3": {
-      "mbtiles": "2022-09-03-planet.mbtiles"
+      "mbtiles": "planet.mbtiles"
     },
     "natural_earth_2": {
       "mbtiles": "natural_earth_2.raster.mbtiles"
