@@ -11,10 +11,42 @@
   multiline.start_pattern = '^\x{200B}' # required
   multiline.timeout_ms = 1000 # required, milliseconds
 
+[transforms.docker-local_with_defaults]
+  inputs = ["docker-local"]
+  type   = "remap"
+  source = '''
+      # workaround for missing fallback option.
+      if exists(.label."com.docker.compose.container-number") {
+        .compose_container_number = .label."com.docker.compose.container-number"
+      } else {
+        .compose_container_number = "999"
+      }
+      if exists(.label."com.docker.compose.project") {
+        .compose_project = .label."com.docker.compose.project"
+      } else {
+        .compose_project = ""
+      }
+      if exists(.label."com.docker.compose.project.working_dir") {
+        .compose_project_working_dir = .label."com.docker.compose.project.working_dir"
+      } else {
+        .compose_project_working_dir = ""
+      }
+      if exists(.label."com.docker.compose.oneoff") {
+        .compose_oneoff = .label."com.docker.compose.oneoff"
+      } else {
+        .compose_oneoff = ""
+      }
+      if exists(.label."com.docker.compose.service") {
+        .compose_service = .label."com.docker.compose.service"
+      } else {
+        .compose_service = ""
+      }
+  '''
+
 [sinks.loki]
   # General
   type = "loki" # required
-  inputs = ["docker-local"] # required
+  inputs = ["docker-local_with_defaults"] # required
   endpoint = "{{ vector_loki_endpoint }}" # required
 
 
@@ -62,11 +94,11 @@
   labels.container_labels = '{{ label }}'
 
   ## add labels useful for log filtering
-  labels.compose_container_number = '{{ label."com.docker.compose.container-number" }}'
-  labels.compose_oneoff = '{{ label."com.docker.compose.oneoff" }}'
-  labels.compose_project = '{{ label."com.docker.compose.project" }}'
-  labels.compose_project_working_dir = '{{ label."com.docker.compose.project.working_dir" }}'
-  labels.compose_service = '{{ label."com.docker.compose.service" }}'
+  labels.compose_container_number = '{{ compose_container_number }}'
+  labels.compose_oneoff = '{{ compose_oneoff }}'
+  labels.compose_project = '{{ compose_project }}'
+  labels.compose_project_working_dir = '{{ compose_project_working_dir }}'
+  labels.compose_service = '{{ compose_service }}'
 
   ## container labels not useful for log filtering. info can be extracted from container_labels
   # labels.compose_config_hash = '{{ label."com.docker.compose.config-hash" }}'
