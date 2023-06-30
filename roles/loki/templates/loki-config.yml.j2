@@ -32,10 +32,11 @@ ingester:
   lifecycler:
     final_sleep: 0s
   chunk_idle_period: 1h       # Any chunk not receiving new logs in this time will be flushed
-  max_chunk_age: 1h           # All chunks will be flushed when they hit this age, default is 1h
-  chunk_target_size: 1048576  # Loki will attempt to build chunks up to 1.5MB, flushing first if chunk_idle_period or max_chunk_age is reached first
+  max_chunk_age: 2h           # All chunks will be flushed when they hit this age, default is 2h
+  chunk_target_size: 1572864  # Loki will attempt to build chunks up to 1.5MB, flushing first if chunk_idle_period or max_chunk_age is reached first
   chunk_retain_period: 30s    # Must be greater than index read cache TTL if using an index cache (Default index read cache TTL is 5m)
-  max_transfer_retries: 0     # Chunk transfers disabled
+  max_transfer_retries: 0     # Chunk transfers disabled, default
+  chunk_encoding: zstd        # default: gzip # The algorithm to use for compressing chunk. (none, gzip, lz4-64k, snappy, lz4-256k, lz4-1M, lz4, flate, zstd)
 
 schema_config:
   configs:
@@ -53,6 +54,13 @@ schema_config:
       index:
         prefix: index_
         period: 24h
+    - from: {{ loki_schema_tsdb_from }}
+      store: tsdb
+      object_store: filesystem
+      schema: v12
+      index:
+        period: 24h
+        prefix: index_
 
 storage_config:
   boltdb:
@@ -65,6 +73,11 @@ storage_config:
     active_index_directory: /data/loki/boltdb-shipper-active
     cache_location: /data/loki/boltdb-shipper-cache
     cache_ttl: {{ loki_storage_boltdb_shipper_cache_ttl }}         # Can be increased for faster performance over longer query periods, uses more disk space
+    shared_store: filesystem
+
+  tsdb_shipper:
+    active_index_directory: /data/loki/tsdb-index
+    cache_location: /data/loki/tsdb-cache
     shared_store: filesystem
 
 compactor:
@@ -131,7 +144,7 @@ frontend:
   # Maximum number of outstanding requests per tenant per frontend; requests
   # beyond this error with HTTP 429.
   # CLI flag: -querier.max-outstanding-requests-per-tenant
-  max_outstanding_per_tenant: 2048 # default = 100]
+  max_outstanding_per_tenant: 2048 # default = 2048]
 
   # Compress HTTP responses.
   # CLI flag: -querier.compress-http-responses
@@ -157,7 +170,9 @@ ingester_client:
     max_recv_msg_size: 67108864
 
 query_scheduler:
-  max_outstanding_requests_per_tenant: 2048
+  # the TSDB index dispatches many more, but each individually smaller, requests.
+  # We increase the pending request queue sizes to compensate.
+  max_outstanding_requests_per_tenant: 32768
   grpc_client_config:
     # The maximum size in bytes the client can send.
     # CLI flag: -<prefix>.grpc-max-send-msg-size
