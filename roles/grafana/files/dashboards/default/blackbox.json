@@ -42,7 +42,9 @@
           },
           "custom": {
             "align": "left",
-            "displayMode": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
             "filterable": false,
             "inspect": false
           },
@@ -98,8 +100,11 @@
                 }
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "min",
@@ -154,8 +159,11 @@
                 }
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "custom.width",
@@ -194,8 +202,11 @@
                 }
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "mappings",
@@ -259,8 +270,11 @@
                 }
               },
               {
-                "id": "custom.displayMode",
-                "value": "color-background"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "color-background"
+                }
               },
               {
                 "id": "custom.width",
@@ -295,8 +309,11 @@
                 }
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "custom.filterable",
@@ -343,8 +360,11 @@
                 "value": 0.3
               },
               {
-                "id": "custom.displayMode",
-                "value": "basic"
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
               },
               {
                 "id": "custom.filterable",
@@ -448,7 +468,9 @@
       },
       "id": 2,
       "options": {
+        "cellHeight": "sm",
         "footer": {
+          "countRows": false,
           "fields": "",
           "reducer": [
             "sum"
@@ -458,7 +480,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.0.5",
+      "pluginVersion": "10.0.1",
       "repeatDirection": "h",
       "targets": [
         {
@@ -676,6 +698,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -736,7 +760,10 @@
             "min"
           ],
           "displayMode": "table",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true,
+          "sortBy": "Mean",
+          "sortDesc": true
         },
         "tooltip": {
           "mode": "multi",
@@ -749,32 +776,47 @@
           "datasource": {
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "expr": "sum(probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}) by (instance)",
+          "hide": true,
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ instance }}",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
+          "expr": "probe_duration_seconds{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{ instance }}",
+          "refId": "B"
         }
       ],
-      "title": "HTTP Probe Duration",
+      "title": "Probe Duration",
       "type": "timeseries"
     },
     {
       "datasource": {
-        "uid": "${ds}",
-        "type": "prometheus"
+        "type": "prometheus",
+        "uid": "${ds}"
       },
       "description": "HTTP Response Code History",
       "fieldConfig": {
         "defaults": {
-          "custom": {
-            "lineWidth": 0,
-            "fillOpacity": 70,
-            "spanNulls": false
-          },
           "color": {
             "mode": "thresholds"
+          },
+          "custom": {
+            "fillOpacity": 70,
+            "lineWidth": 0,
+            "spanNulls": false
           },
           "mappings": [],
           "thresholds": {
@@ -785,20 +827,36 @@
                 "value": null
               },
               {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              },
+              {
                 "color": "green",
                 "value": 200
               },
               {
-                "value": 300,
-                "color": "blue"
+                "color": "blue",
+                "value": 300
               },
               {
-                "value": 400,
-                "color": "red"
+                "color": "red",
+                "value": 400
               },
               {
-                "value": 500,
-                "color": "dark-red"
+                "color": "#EAB839",
+                "value": 401
+              },
+              {
+                "color": "red",
+                "value": 404
+              },
+              {
+                "color": "dark-red",
+                "value": 500
               }
             ]
           },
@@ -807,22 +865,22 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 11,
+        "h": 14,
         "w": 24,
         "x": 0,
         "y": 20
       },
       "id": 153,
       "options": {
-        "mergeValues": false,
-        "showValue": "always",
         "alignValue": "left",
-        "rowHeight": 0.9,
         "legend": {
-          "showLegend": true,
           "displayMode": "list",
-          "placement": "bottom"
+          "placement": "bottom",
+          "showLegend": true
         },
+        "mergeValues": false,
+        "rowHeight": 0.9,
+        "showValue": "never",
         "tooltip": {
           "mode": "single",
           "sort": "none"
@@ -834,16 +892,17 @@
           "datasource": {
             "uid": "${ds}"
           },
-          "expr": "probe_http_status_code {job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
+          "editorMode": "code",
+          "expr": "probe_http_status_code {job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"} \nor \nprobe_success {job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ instance }}",
-          "refId": "A",
-          "editorMode": "code"
+          "refId": "A"
         }
       ],
       "title": "HTTP Status",
+      "transformations": [],
       "type": "state-timeline"
     },
     {
@@ -855,7 +914,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 34
       },
       "id": 8,
       "panels": [],
@@ -873,6 +932,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${ds}"
       },
       "description": "Duration of http request by phase, summed over all redirects",
@@ -882,6 +942,8 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -932,14 +994,15 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 35
       },
       "id": 6,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "list",
-          "placement": "right"
+          "placement": "right",
+          "showLegend": true
         },
         "tooltip": {
           "mode": "multi",
@@ -952,10 +1015,13 @@
           "datasource": {
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "expr": "probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", instance=~\"$instance\"}",
+          "hide": false,
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ phase }}",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -965,7 +1031,7 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 36,
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [
     "blackbox",
@@ -1143,6 +1209,6 @@
   "timezone": "",
   "title": "Blackbox Exporter (HTTP prober)",
   "uid": "NEzutrbMk",
-  "version": 13,
+  "version": 15,
   "weekStart": ""
 }

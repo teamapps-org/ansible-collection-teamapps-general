@@ -49,7 +49,8 @@ grafana_datasources: []
 grafana_default_dashboards:
   - default/dockerlogs-vector.json
   - default/victoriametrics.json
-  - default/vmagent.json
+  - default/victoriametrics-vmagent.json
+  - default/victoriametrics-vmalert.json
   - default/netdata.json
   - default/alertmanager.json
   - default/blackbox.json
@@ -58,6 +59,9 @@ grafana_default_dashboards:
 grafana_custom_dashboards: []
 
 grafana_dashboards: '{{ grafana_default_dashboards + grafana_custom_dashboards }}'
+
+grafana_remove_dashboards:
+  - default/vmagent.json
 
 # use bitnami build: https://hub.docker.com/r/bitnami/grafana-image-renderer
 # non-root and automated build of grafana/grafana-image-renderer

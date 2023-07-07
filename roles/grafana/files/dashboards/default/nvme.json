@@ -109,6 +109,7 @@
       },
       "id": 4,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "fields": "",
@@ -125,7 +126,7 @@
           }
         ]
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.0.1",
       "targets": [
         {
           "datasource": {
@@ -399,7 +400,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 75
+                "value": null
               }
             ]
           },
@@ -744,6 +745,10 @@
                 "value": {
                   "mode": "continuous-BlPu"
                 }
+              },
+              {
+                "id": "custom.width",
+                "value": null
               }
             ]
           },
@@ -862,6 +867,7 @@
       },
       "id": 10,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "fields": "",
@@ -878,7 +884,7 @@
           }
         ]
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.0.1",
       "targets": [
         {
           "datasource": {
@@ -1438,6 +1444,7 @@
       },
       "id": 12,
       "options": {
+        "cellHeight": "sm",
         "footer": {
           "countRows": false,
           "fields": "",
@@ -1449,7 +1456,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.0.1",
       "targets": [
         {
           "datasource": {
@@ -2167,7 +2174,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "9.4.7",
+      "pluginVersion": "10.0.1",
       "targets": [
         {
           "datasource": {
@@ -2185,7 +2192,7 @@
       "type": "stat"
     }
   ],
-  "refresh": false,
+  "refresh": "",
   "revision": 1,
   "schemaVersion": 38,
   "style": "dark",
@@ -2198,7 +2205,9 @@
     "list": [
       {
         "current": {
-          "selected": true
+          "selected": true,
+          "text": "default",
+          "value": "default"
         },
         "hide": 0,
         "includeAll": false,
@@ -2284,6 +2293,6 @@
   "timezone": "",
   "title": "NVMe Dashboard",
   "uid": "7ES1GVmnk",
-  "version": 2,
+  "version": 22,
   "weekStart": ""
 }

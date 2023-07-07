@@ -50,336 +50,401 @@
         "x": 0,
         "y": 0
       },
-      "id": 13,
+      "id": 16,
       "panels": [],
-      "title": "Statistics",
+      "title": "Usage Help",
       "type": "row"
     },
     {
       "datasource": {
-        "type": "loki",
-        "uid": "${loki}"
+        "type": "prometheus",
+        "uid": ""
       },
       "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "axisSoftMin": 0,
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 70,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "stepBefore",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "log": 2,
-              "type": "log"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 5,
-        "w": 24,
+        "w": 9,
         "x": 0,
         "y": 1
       },
-      "id": 11,
-      "interval": "10s",
+      "id": 17,
       "options": {
-        "graph": {},
-        "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "content": "### Logs Dashboard for docker container logs\n\nFor best performance, narrow search using the filters above before opening the log panels.\n",
+        "mode": "markdown"
       },
-      "pluginVersion": "7.5.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "000000001"
-          },
-          "expr": "sum by (host) (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
-          "instant": false,
-          "legendFormat": "{{ host }}",
-          "range": true,
-          "refId": "A",
-          "resolution": 5
-        }
-      ],
-      "title": "Message counts by host [$__interval]",
-      "transformations": [],
-      "transparent": true,
-      "type": "timeseries"
+      "pluginVersion": "10.0.1",
+      "type": "text"
     },
     {
       "datasource": {
-        "type": "loki",
-        "uid": "${loki}"
+        "type": "prometheus",
+        "uid": ""
       },
       "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 70,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "graph": false,
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "stepBefore",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "unfiltered"
-            },
-            "properties": [
-              {
-                "id": "custom.axisPlacement",
-                "value": "right"
-              },
-              {
-                "id": "unit",
-                "value": "string"
-              },
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-blue",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "custom.gradientMode",
-                "value": "opacity"
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "fill": "solid"
-                }
-              }
-            ]
-          }
-        ]
-      },
       "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 6
+        "h": 5,
+        "w": 15,
+        "x": 9,
+        "y": 1
       },
-      "id": 9,
-      "interval": "10s",
+      "id": 18,
       "options": {
-        "graph": {},
-        "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
         },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "content": "### Filtering loki logs\n\n* search: simple content string/regex filter\n* filter: [advanced log parsing and filtering](https://grafana.com/docs/loki/latest/logql/log_queries/#log-pipeline)\n\nFilter example for filtering and parsing logs:\n`| service=\"gitlab\" | json | duration_s >= 0.05 and ua !=\"\" | line_format \"{{ .ua }}: {{ __line__ }}\" !~\"Blackbox\"`",
+        "mode": "markdown"
       },
-      "pluginVersion": "7.5.5",
-      "targets": [
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "000000001"
-          },
-          "expr": "sum by (compose_service)(count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
-          "instant": false,
-          "legendFormat": "{{ compose_service }}",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "loki",
-            "uid": "000000001"
-          },
-          "expr": "sum (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} [$__interval]))",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "unfiltered",
-          "range": true,
-          "refId": "unfiltered",
-          "resolution": 1
-        }
-      ],
-      "title": "Message counts by service [$__interval]",
-      "transformations": [],
-      "transparent": true,
-      "type": "timeseries"
+      "pluginVersion": "10.0.1",
+      "type": "text"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 6
       },
-      "id": 15,
-      "panels": [],
-      "title": "Logs",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "loki",
-        "uid": "$loki"
-      },
-      "description": "",
-      "gridPos": {
-        "h": 17,
-        "w": 24,
-        "x": 0,
-        "y": 15
-      },
-      "id": 3,
-      "maxDataPoints": 5000,
-      "options": {
-        "dedupStrategy": "none",
-        "enableLogDetails": true,
-        "prettifyLogMessage": false,
-        "showCommonLabels": false,
-        "showLabels": false,
-        "showTime": true,
-        "sortOrder": "Ascending",
-        "wrapLogMessage": false
-      },
-      "pluginVersion": "7.1.5",
-      "targets": [
+      "id": 13,
+      "panels": [
         {
           "datasource": {
             "type": "loki",
-            "uid": "$loki"
+            "uid": "${loki}"
           },
-          "editorMode": "code",
-          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| line_format \"{{.compose_project }}/{{.compose_service }}\\t| {{ __line__ }}\"",
-          "hide": false,
-          "legendFormat": "dockerlogs",
-          "maxLines": 5000,
-          "queryType": "range",
-          "refId": "A"
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "axisSoftMin": 0,
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 70,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "stepBefore",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "log": 2,
+                  "type": "log"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 24,
+            "x": 0,
+            "y": 17
+          },
+          "id": 11,
+          "interval": "10s",
+          "options": {
+            "graph": {},
+            "legend": {
+              "calcs": [
+                "sum"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "7.5.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "000000001"
+              },
+              "expr": "sum by (host) (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
+              "instant": false,
+              "legendFormat": "{{ host }}",
+              "range": true,
+              "refId": "A",
+              "resolution": 5
+            }
+          ],
+          "title": "Message counts by host [$__interval]",
+          "transformations": [],
+          "transparent": true,
+          "type": "timeseries"
         },
         {
           "datasource": {
             "type": "loki",
-            "uid": "$loki"
+            "uid": "${loki}"
           },
-          "editorMode": "code",
-          "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# parse container_labels json\n| line_format \"{{ .container_labels }}\" | json\n# format printed line\n| line_format \"{{ .com_docker_compose_project | trunc 6 }}/{{.compose_service | trunc 6 }}\\t| {{ __line__ }}\"",
-          "hide": true,
-          "legendFormat": "",
-          "maxLines": 5000,
-          "queryType": "range",
-          "refId": "B"
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 70,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "graph": false,
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "stepBefore",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "unfiltered"
+                },
+                "properties": [
+                  {
+                    "id": "custom.axisPlacement",
+                    "value": "right"
+                  },
+                  {
+                    "id": "unit",
+                    "value": "string"
+                  },
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "dark-blue",
+                      "mode": "fixed"
+                    }
+                  },
+                  {
+                    "id": "custom.gradientMode",
+                    "value": "opacity"
+                  },
+                  {
+                    "id": "custom.lineStyle",
+                    "value": {
+                      "fill": "solid"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 22
+          },
+          "id": 9,
+          "interval": "10s",
+          "options": {
+            "graph": {},
+            "legend": {
+              "calcs": [
+                "sum"
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "7.5.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "000000001"
+              },
+              "expr": "sum by (compose_service)(count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
+              "instant": false,
+              "legendFormat": "{{ compose_service }}",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "000000001"
+              },
+              "expr": "sum (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} [$__interval]))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "unfiltered",
+              "range": true,
+              "refId": "unfiltered",
+              "resolution": 1
+            }
+          ],
+          "title": "Message counts by service [$__interval]",
+          "transformations": [],
+          "transparent": true,
+          "type": "timeseries"
         }
       ],
-      "title": "log messages",
-      "type": "logs"
+      "title": "Log Volume Statistics",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 15,
+      "panels": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "$loki"
+          },
+          "description": "",
+          "gridPos": {
+            "h": 17,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          },
+          "id": 3,
+          "maxDataPoints": 5000,
+          "options": {
+            "dedupStrategy": "none",
+            "enableLogDetails": true,
+            "prettifyLogMessage": false,
+            "showCommonLabels": false,
+            "showLabels": false,
+            "showTime": true,
+            "sortOrder": "Ascending",
+            "wrapLogMessage": false
+          },
+          "pluginVersion": "7.1.5",
+          "targets": [
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "$loki"
+              },
+              "editorMode": "code",
+              "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| line_format \"{{.compose_project }}/{{.compose_service }}\\t| {{ __line__ }}\"",
+              "hide": false,
+              "legendFormat": "dockerlogs",
+              "maxLines": 5000,
+              "queryType": "range",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "loki",
+                "uid": "$loki"
+              },
+              "editorMode": "code",
+              "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# parse container_labels json\n| line_format \"{{ .container_labels }}\" | json\n# format printed line\n| line_format \"{{ .com_docker_compose_project | trunc 6 }}/{{.compose_service | trunc 6 }}\\t| {{ __line__ }}\"",
+              "hide": true,
+              "legendFormat": "",
+              "maxLines": 5000,
+              "queryType": "range",
+              "refId": "B"
+            }
+          ],
+          "title": "log messages",
+          "type": "logs"
+        }
+      ],
+      "title": "Logs",
+      "type": "row"
     }
   ],
-  "refresh": false,
-  "schemaVersion": 37,
+  "refresh": "",
+  "schemaVersion": 38,
   "style": "dark",
   "tags": [
     "loki",
@@ -408,7 +473,9 @@
       {
         "allValue": ".+",
         "current": {
-          "selected": true
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
         },
         "datasource": {
           "uid": "$loki"
@@ -529,6 +596,19 @@
         "query": "",
         "skipUrlSync": false,
         "type": "textbox"
+      },
+      {
+        "datasource": {
+          "type": "loki",
+          "uid": "${loki}"
+        },
+        "description": "additional filtering by log stream labels",
+        "filters": [],
+        "hide": 1,
+        "label": "label filter",
+        "name": "loki_filter",
+        "skipUrlSync": false,
+        "type": "adhoc"
       }
     ]
   },
@@ -553,6 +633,6 @@
   "timezone": "",
   "title": "Docker Logs Dashboard",
   "uid": "_PfW8xQGz",
-  "version": 12,
+  "version": 15,
   "weekStart": ""
 }

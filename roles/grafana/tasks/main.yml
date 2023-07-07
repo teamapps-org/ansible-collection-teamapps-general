@@ -83,6 +83,14 @@
   tags:
     - grafana_dashboards
 
+- name: remove dashboards
+  file:
+    path: "{{ grafana_path }}/dashboards/{{ item }}"
+    state: absent
+  with_items: '{{ grafana_remove_dashboards }}'
+  tags:
+    - grafana_dashboards
+
 - name: mysqldump wrapper
   copy:
     content: |
