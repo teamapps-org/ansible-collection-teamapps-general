@@ -3,7 +3,7 @@ version: "3.7"
 
 services:
   grafanadb:
-    image: mariadb
+    image: mariadb:{{ grafana_mariadb_version }}
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: '{{ grafana_mysql_rootpass }}'

@@ -7,6 +7,8 @@ grafana_docker_pull: '{{ global_docker_pull | default(False) }}'
 grafana_domain: 'grafana.{{ ansible_fqdn }}'
 
 grafana_version: latest
+grafana_mariadb_version: latest # Note: after mariadb version upgrade run:
+# docker-compose exec grafanadb sh -c "exec mariadb-upgrade -u root -p\"\$MYSQL_ROOT_PASSWORD\" --verbose"
 
 grafana_mysql_rootpass:
 grafana_mysql_password:
