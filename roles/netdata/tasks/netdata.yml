@@ -74,7 +74,7 @@
   template:
     src: cloud.conf
     dest: /var/lib/netdata/cloud.d/cloud.conf
-    owner: root
+    owner: netdata
     group: netdata
     mode: '0640'
   when: netdata_cloud_stat.stat.isdir is defined and netdata_cloud_stat.stat.isdir
