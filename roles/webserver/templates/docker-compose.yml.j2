@@ -54,6 +54,10 @@ services:
         source: ./php/fpm-custom.ini
         target: /usr/local/etc/php-fpm.d/zz-custom.conf
         read_only: true
+      - type: bind
+        source: ./php/php-override.ini
+        target: /usr/local/etc/php/conf.d/override.ini
+        read_only: true
     working_dir: /code
     networks:
       - code-network

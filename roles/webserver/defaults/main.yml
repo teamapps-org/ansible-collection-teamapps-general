@@ -17,6 +17,8 @@ webserver_client_max_body_size: 10M
 webserver_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 webserver_php_enable: False
+# custom php override config
+webserver_php_override_custom: ''
 webserver_php_image: '' # if set, use image from registry, else build image
 webserver_php_version: '8'
 webserver_php_memory_limit: 4G
