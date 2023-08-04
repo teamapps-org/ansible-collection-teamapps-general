@@ -14,8 +14,8 @@
   loop_control:
     loop_var: assert_var
   with_items:
-    - minio_access_key
-    - minio_secret_key
+    - minio_root_user
+    - minio_root_password
 
 - name: verify that the minio console secrets are set
   when: minio_console_enable

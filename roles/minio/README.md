@@ -21,8 +21,8 @@ Including an example of how to use your role (for instance, with variables passe
 - name: Minio S3 Play
   vars:
     minio_domain: minio.example.com
-    minio_access_key: please_override
-    minio_secret_key: FovMoghpokDiUnecshydhoolRipht6daiwofryt
+    minio_root_user: please_override
+    minio_root_password: FovMoghpokDiUnecshydhoolRipht6daiwofryt
   hosts:
     - minio1.example.com
   roles:

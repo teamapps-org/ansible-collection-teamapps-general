@@ -14,8 +14,8 @@ minio_console_enable: false
 
 # to be replaced in host_vars
 # USE YOUR OWN, RANDOM SECRETS HERE!
-# minio_access_key: 'blafoo'
-# minio_secret_key: 'barfoo'
+# minio_root_user: 'blafoo'
+# minio_root_password: 'barfoo'
 # minio_console_pbkdf_passphrase: 'blafoo'
 # minio_console_pbkdf_salt: 'barfoo'
 
