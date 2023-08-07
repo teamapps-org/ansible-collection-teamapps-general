@@ -14,7 +14,7 @@ Node Exporter and Victoriametrics vmagent integration
 ~~~yaml
 ## node_exporter vars
 manage_node_exporter: '{{ ansible_virtualization_role in [ "host", "NA" ] }}' # only on physical servers
-node_exporter_version: 1.3.1 # or latest
+node_exporter_version: 1.6.0 # or latest
 node_exporter_web_listen_address: "127.0.0.9:9100"
 node_exporter_web_telemetry_path: "/metrics"
 
