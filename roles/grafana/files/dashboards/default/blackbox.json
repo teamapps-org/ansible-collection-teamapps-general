@@ -752,6 +752,7 @@
         "y": 9
       },
       "id": 4,
+      "maxDataPoints": 150,
       "options": {
         "legend": {
           "calcs": [
@@ -777,8 +778,8 @@
             "uid": "${ds}"
           },
           "editorMode": "code",
-          "expr": "sum(probe_http_duration_seconds{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}) by (instance)",
-          "hide": true,
+          "expr": "avg_over_time(\n    probe_duration_seconds{\n        job=~\"$job\", \n        group=~\"$group\", \n        environment=~\"$environment\", \n        instance=~\"$instance\"\n    }\n[$__rate_interval]) > 0",
+          "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
@@ -791,12 +792,25 @@
           },
           "editorMode": "code",
           "expr": "probe_duration_seconds{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
-          "hide": false,
+          "hide": true,
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ instance }}",
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(\n    sum(\n        probe_http_duration_seconds{\n            job=~\"$job\", \n            group=~\"$group\", \n            environment=~\"$environment\", \n            instance=~\"$instance\"\n        }\n    )\n[$__rate_interval]) > 0",
+          "hide": true,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{ instance }}",
+          "refId": "C"
         }
       ],
       "title": "Probe Duration",
@@ -1041,7 +1055,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
@@ -1209,6 +1223,6 @@
   "timezone": "",
   "title": "Blackbox Exporter (HTTP prober)",
   "uid": "NEzutrbMk",
-  "version": 15,
+  "version": 16,
   "weekStart": ""
 }
