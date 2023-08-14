@@ -81,9 +81,9 @@ services:
       - POSTGRESQL_DB=${POSTGRES_DB}
       - POSTGRESQL_USER=${POSTGRES_USER}
       - POSTGRESQL_PASS=${POSTGRES_PASS}
-      - VIRTUAL_HOST='{{ zammad_domain }}'
-      - LETSENCRYPT_HOST='{{ zammad_domain }}'
-      - LETSENCRYPT_EMAIL='{{ letsencrypt_email }}'
+      - VIRTUAL_HOST={{ zammad_domain }}
+      - LETSENCRYPT_HOST={{ zammad_domain }}
+      - LETSENCRYPT_EMAIL={{ letsencrypt_email }}
     networks:
       - default
       - webproxy

@@ -39,7 +39,7 @@
   with_items:
     - '{{ zammad_path }}/data/zammad-var'
     - '{{ zammad_path }}/data/zammad-storage'
-    - '{{ zammad_path }}/zammad-config-nginx'
+    - '{{ zammad_path }}/data/zammad-config-nginx'
 
 - name: redis-data directory
   file:
