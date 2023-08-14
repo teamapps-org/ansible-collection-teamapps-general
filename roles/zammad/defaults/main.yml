@@ -5,11 +5,11 @@ zammad_domain: 'zammad.{{ ansible_fqdn }}'
 zammad_letsencrypt_host: '{{ zammad_domain }}'
 
 # Version as on docker hub: https://hub.docker.com/r/zammad/zammad-docker-compose/tags
-zammad_version: latest # 5.2.3-38
-zammad_memcached_image: memcached:1.6.17-alpine
-zammad_elasticsearch_image: bitnami/elasticsearch:8.5.1
-zammad_postgres_image: postgres:15.1-alpine
-zammad_redis_image: redis:6.2.5-alpine
+zammad_version: latest # 6.0.0-95
+zammad_elasticsearch_version: 8.8.0
+zammad_memcache_version: 1.6.20-alpine
+zammad_redis_version: 7.0.5-alpine
+zammad_postgres_version: 15.3-alpine
 
 # to be replaced in host_vars
 zammad_postgres_user: zammad

@@ -217,3 +217,12 @@ docker stop postgres-restore
 # delete old postgres data
 rm ./data/postgresql-data-old -rf
 ~~~
+
+## Upgrade to Zammad 6
+
+~~~bash
+cd /container/zammad
+docker-compose down
+mv ./data/zammad-data/storage ./data/zammad-storage
+# apply ansible config with new version variables for version 6+
+~~~

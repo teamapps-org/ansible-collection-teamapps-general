@@ -4,7 +4,7 @@
 # configuration env vars:
 # https://docs.zammad.org/en/latest/install/docker-compose/environment.html
 
-version: '3'
+version: '3.8'
 
 services:
 
@@ -15,24 +15,25 @@ services:
       - zammad-postgresql
     entrypoint: /usr/local/bin/backup.sh
     environment:
-      - BACKUP_SLEEP=86400
+      - BACKUP_TIME=03:00
       - HOLD_DAYS={{ zammad_backup_hold_days }}
+      - POSTGRESQL_DB=${POSTGRES_DB}
       - POSTGRESQL_USER=${POSTGRES_USER}
       - POSTGRESQL_PASSWORD=${POSTGRES_PASS}
-    image: '{{ zammad_postgres_image }}'
-    restart: always
+      - TZ=Etc/UTC
+    image: postgres:${POSTGRES_VERSION}
+    restart: ${RESTART}
     volumes:
       - ./data/zammad-backup:/var/tmp/zammad
-      - ./data/zammad-data:/opt/zammad:ro
+      - ./data/zammad-var:/opt/zammad/var:ro
       - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
 
   zammad-elasticsearch:
-    image: '{{ zammad_elasticsearch_image }}'
-    restart: always
+    image: bitnami/elasticsearch:${ELASTICSEARCH_VERSION}
+    restart: ${RESTART}
     environment:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms{{ zammad_elasticsearch_memory }} -Xmx{{ zammad_elasticsearch_memory }}"
-    hostname: zammad-elasticsearch
     volumes:
       - ./data/elasticsearch-data:/bitnami/elasticsearch/data
 
@@ -42,19 +43,28 @@ services:
       - zammad-postgresql
     environment:
       - ELASTICSEARCH_REINDEX={{ zammad_elasticsearch_reindex | ternary('true', 'false') }}
-      - MEMCACHE_SERVERS=zammad-memcached:11211
+      - MEMCACHE_SERVERS=${MEMCACHE_SERVERS}
+      - REDIS_URL=${REDIS_URL}
+      - POSTGRESQL_HOST=${POSTGRES_HOST}
+      - POSTGRESQL_DB=${POSTGRES_DB}
       - POSTGRESQL_USER=${POSTGRES_USER}
       - POSTGRESQL_PASS=${POSTGRES_PASS}
-#      - REDIS_URL=redis://zammad-redis:6379
-    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
+    image: ${IMAGE_REPO}:${VERSION}
     restart: on-failure
+    user: 0:0
     volumes:
-      - ./data/zammad-data:/opt/zammad
+      - ./data/zammad-config-nginx:/etc/nginx/sites-enabled
+      - ./data/zammad-var:/opt/zammad/var
+      - ./data/zammad-storage:/opt/zammad/storage
 
   zammad-memcached:
-    command: memcached -m 256M
-    image: '{{ zammad_memcached_image }}'
-    restart: always
+    command: memcached -m 250M
+    image: memcached:${MEMCACHE_VERSION}
+    restart: ${RESTART}
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   zammad-nginx:
     command: ["zammad-nginx"]
@@ -62,24 +72,35 @@ services:
       - "8080"
     depends_on:
       - zammad-railsserver
-    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
+      - zammad-websocket
+    image: ${IMAGE_REPO}:${VERSION}
     environment:
-      VIRTUAL_HOST: '{{ zammad_domain }}'
-      LETSENCRYPT_HOST: '{{ zammad_domain }}'
-      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+      - MEMCACHE_SERVERS=${MEMCACHE_SERVERS}
+      - REDIS_URL=${REDIS_URL}
+      - POSTGRESQL_HOST=${POSTGRES_HOST}
+      - POSTGRESQL_DB=${POSTGRES_DB}
+      - POSTGRESQL_USER=${POSTGRES_USER}
+      - POSTGRESQL_PASS=${POSTGRES_PASS}
+      - VIRTUAL_HOST='{{ zammad_domain }}'
+      - LETSENCRYPT_HOST='{{ zammad_domain }}'
+      - LETSENCRYPT_EMAIL='{{ letsencrypt_email }}'
     networks:
       - default
       - webproxy
-    restart: always
+    restart: ${RESTART}
     volumes:
-      - ./data/zammad-data:/opt/zammad
+      - ./data/zammad-config-nginx:/etc/nginx/sites-enabled:rw
+      - ./data/zammad-var:/opt/zammad/var:ro
+      - ./data/zammad-storage:/opt/zammad/storage:ro
+    # entrypoint: ["bash", "-x", "/docker-entrypoint.sh"]
 
   zammad-postgresql:
     environment:
+      - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASS}
-    image: '{{ zammad_postgres_image }}'
-    restart: always
+    image: postgres:${POSTGRES_VERSION}
+    restart: ${RESTART}
     volumes:
       - ./data/postgresql-data:/var/lib/postgresql/data
 
@@ -88,53 +109,67 @@ services:
     depends_on:
       - zammad-memcached
       - zammad-postgresql
-      # - zammad-redis
-    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
-    restart: always
+      - zammad-redis
+    environment:
+      - MEMCACHE_SERVERS=${MEMCACHE_SERVERS}
+      - REDIS_URL=${REDIS_URL}
+      - POSTGRESQL_HOST=${POSTGRES_HOST}
+      - POSTGRESQL_DB=${POSTGRES_DB}
+      - POSTGRESQL_USER=${POSTGRES_USER}
+      - POSTGRESQL_PASS=${POSTGRES_PASS}
+    image: ${IMAGE_REPO}:${VERSION}
+    restart: ${RESTART}
     volumes:
-      - ./data/zammad-data:/opt/zammad
-{% if zammad_kb_html_custom %}
-      - type: bind
-        source: ./knowledge_base.html.erb
-        target: /opt/zammad/app/views/layouts/knowledge_base.html.erb
-        read_only: true
-      - type: bind
-        source: ./content_security_policy.rb
-        target: /opt/zammad/config/initializers/content_security_policy.rb
-        read_only: true
-{% endif %}
+      - ./data/zammad-var:/opt/zammad/var
+      - ./data/zammad-storage:/opt/zammad/storage
 
-  # zammad-redis:
-  #   image: '{{ zammad_redis_image }}'
-  #   restart: always
+  zammad-redis:
+    image: redis:${REDIS_VERSION}
+    restart: ${RESTART}
+    volumes:
+      - ./data/redis-data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
   zammad-scheduler:
     command: ["zammad-scheduler"]
     depends_on:
       - zammad-memcached
       - zammad-railsserver
-      # - zammad-redis
+      - zammad-redis
     environment:
-      - MEMCACHE_SERVERS=zammad-memcached:11211
-      # - REDIS_URL=redis://zammad-redis:6379
-    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
-    restart: always
+      - MEMCACHE_SERVERS=${MEMCACHE_SERVERS}
+      - REDIS_URL=${REDIS_URL}
+      - POSTGRESQL_HOST=${POSTGRES_HOST}
+      - POSTGRESQL_DB=${POSTGRES_DB}
+      - POSTGRESQL_USER=${POSTGRES_USER}
+      - POSTGRESQL_PASS=${POSTGRES_PASS}
+    image: ${IMAGE_REPO}:${VERSION}
+    restart: ${RESTART}
     volumes:
-      - ./data/zammad-data:/opt/zammad
+      - ./data/zammad-var:/opt/zammad/var
+      - ./data/zammad-storage:/opt/zammad/storage
 
   zammad-websocket:
     command: ["zammad-websocket"]
     depends_on:
       - zammad-memcached
       - zammad-railsserver
-      # - zammad-redis
+      - zammad-redis
     environment:
-      - MEMCACHE_SERVERS=zammad-memcached:11211
-      # - REDIS_URL=redis://zammad-redis:6379
-    image: zammad/zammad-docker-compose:zammad-{{ zammad_version }}
-    restart: always
+      - MEMCACHE_SERVERS=${MEMCACHE_SERVERS}
+      - REDIS_URL=${REDIS_URL}
+      - POSTGRESQL_HOST=${POSTGRES_HOST}
+      - POSTGRESQL_DB=${POSTGRES_DB}
+      - POSTGRESQL_USER=${POSTGRES_USER}
+      - POSTGRESQL_PASS=${POSTGRES_PASS}
+    image: ${IMAGE_REPO}:${VERSION}
+    restart: ${RESTART}
     volumes:
-      - ./data/zammad-data:/opt/zammad
+      - ./data/zammad-var:/opt/zammad/var
+      - ./data/zammad-storage:/opt/zammad/storage
 
 networks:
   default:

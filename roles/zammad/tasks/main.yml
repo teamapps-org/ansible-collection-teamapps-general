@@ -1,6 +1,15 @@
 ---
 # tasks file for zammad
 
+- name: verify zammad_version
+  tags:
+    - zammad
+  assert:
+    that:
+      - zammad_version != 'latest'
+      - zammad_version is version('6.0.0', '>=')
+    fail_msg: "zammad_version > 6.0.0 supported only, manual migration required"
+
 - name: zammad
   import_tasks: zammad.yml
   tags:

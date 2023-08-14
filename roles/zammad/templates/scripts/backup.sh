@@ -1,9 +1,8 @@
 #!/bin/bash
-# source: https://raw.githubusercontent.com/zammad/zammad-docker-compose/master/scripts/backup.sh
 
 set -e
 
-: "${ZAMMAD_DIR:=/opt/zammad}"
+: "${ZAMMAD_DIR:=/opt/zammad/var}"
 : "${BACKUP_DIR:=/var/tmp/zammad}"
 : "${ZAMMAD_RAILSSERVER_HOST:=zammad-railsserver}"
 : "${ZAMMAD_RAILSSERVER_PORT:=3000}"
@@ -12,7 +11,7 @@ set -e
 : "${POSTGRESQL_DB:=zammad_production}"
 
 function check_railsserver_available {
-  until (echo > /dev/tcp/${ZAMMAD_RAILSSERVER_HOST}/${ZAMMAD_RAILSSERVER_PORT}) &> /dev/null; do
+  until (echo > "/dev/tcp/$ZAMMAD_RAILSSERVER_HOST/$ZAMMAD_RAILSSERVER_PORT") &> /dev/null; do
     echo "waiting for railsserver to be ready..."
     sleep 60
   done
@@ -44,10 +43,15 @@ if [ "$1" = 'zammad-backup' ]; then
   check_railsserver_available
 
   while true; do
+    NOW_TIMESTAMP=$(date +%s)
+    TOMORROW_DATE=$(date -d@"$((NOW_TIMESTAMP + 24*60*60))" +%Y-%m-%d)
+
     zammad_backup
 
-    # wait until next backup
-    sleep "${BACKUP_SLEEP}"
+    NEXT_TIMESTAMP=$(date -d "$TOMORROW_DATE $BACKUP_TIME" +%s)
+    NOW_TIMESTAMP=$(date +%s)
+
+    sleep $((NEXT_TIMESTAMP - NOW_TIMESTAMP))
   done
 fi
 
