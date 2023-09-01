@@ -52,6 +52,7 @@
     syncoid_exclude: "{{ syncoid_job.exclude | default(syncoid_exclude_default) }}"
     syncoid_dumpsnaps: "{{ syncoid_job.dumpsnaps | default(syncoid_dumpsnaps_default) }}"
     syncoid_sync_snapshot: "{{ syncoid_job.sync_snapshot | default(True) }}"
+    syncoid_sendoptions: "{{ syncoid_job.sendoptions | default('Lc e w') }}"
   include_tasks:
     file: syncoid_job.yml
     apply:
