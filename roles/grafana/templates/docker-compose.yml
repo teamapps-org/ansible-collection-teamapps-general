@@ -76,6 +76,7 @@ services:
       GF_AUTH_GITLAB_TOKEN_URL: '{{ grafana_auth_gitlab_token_url }}'
       GF_AUTH_GITLAB_API_URL: '{{ grafana_auth_gitlab_api_url }}'
       # GF_AUTH_GITLAB_ALLOWED_GROUPS: 'example, foo/bar'
+      GF_AUTH_GITLAB_SKIP_ORG_ROLE_SYNC: 'true'
 
       # https://grafana.com/docs/grafana/latest/installation/docker/#install-official-and-community-grafana-plugins
       GF_INSTALL_PLUGINS: "{{ grafana_plugins | join(',') }}"
