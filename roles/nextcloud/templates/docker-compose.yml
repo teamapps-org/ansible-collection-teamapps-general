@@ -15,6 +15,8 @@ services:
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
       MYSQL_PASSWORD: '{{ nextcloud_mysql_password }}'
+      MARIADB_AUTO_UPGRADE: 'True'
+      MARIADB_DISABLE_UPGRADE_BACKUP: 'True'
 
   redis:
     image: redis

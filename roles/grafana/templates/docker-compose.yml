@@ -10,6 +10,8 @@ services:
       MYSQL_DATABASE: grafana
       MYSQL_USER: grafana
       MYSQL_PASSWORD: '{{ grafana_mysql_password }}'
+      MARIADB_AUTO_UPGRADE: 'True'
+      MARIADB_DISABLE_UPGRADE_BACKUP: 'True'
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb_monitor_enable=all --max-connections=1001
     volumes:
       - ./db-data:/var/lib/mysql

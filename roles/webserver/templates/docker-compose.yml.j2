@@ -84,6 +84,8 @@ services:
       MYSQL_DATABASE: '{{ webserver_mysql_database }}'
       MYSQL_USER: '{{ webserver_mysql_user }}'
       MYSQL_PASSWORD: '{{ webserver_mysql_password }}'
+      MARIADB_AUTO_UPGRADE: 'True'
+      MARIADB_DISABLE_UPGRADE_BACKUP: 'True'
     networks:
       - code-network
 
