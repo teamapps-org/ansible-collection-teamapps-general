@@ -11,6 +11,9 @@ webproxy_nginx_custom_options:
 # custom config for default location (included in every generated location)
 webproxy_default_location_custom:
 
+# custom config for default vhost (included in every generated server block)
+webproxy_default_vhost_custom:
+
 # pull docker images (docker-compose pull)
 webproxy_docker_pull: '{{ global_docker_pull | default(False) }}'
 
@@ -41,3 +44,10 @@ webproxy_nginx_tmpl_file: nginx.tmpl
 # list of additional external networks
 webproxy_additional_networks: []
 webproxy_ignore_missing_network: True
+
+# content of /.well-known/security.txt
+# See https://securitytxt.org/
+webproxy_security_txt:
+# webproxy_security_txt: |
+#   # Our security address
+#   Contact: mailto:security@example.com

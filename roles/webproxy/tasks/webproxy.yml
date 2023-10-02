@@ -86,15 +86,31 @@
     mode: '0640'
   notify: webproxy_generator_restart
 
-- name: default_location
+- name: Deploy vhost.d/default (config included in every server block)
   template:
-    src: default_location.j2
-    dest: '{{ webproxy_path }}/data/vhost.d/default_location'
+    src: default_vhost.j2
+    dest: '{{ webproxy_path }}/data/vhost.d/default'
     owner: root
     group: root
     mode: '0640'
   notify: webproxy_nginx_reload
-  when: webproxy_access_log_off or webproxy_default_location_custom
+
+- name: Deploy vhost.d/default (config included in every server block)
+  template:
+    src: default_vhost.j2
+    dest: '{{ webproxy_path }}/data/vhost.d/default'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: 'Copy security.txt if defined'
+  copy:
+    content: "{{ webproxy_security_txt }}\n"
+    dest: '{{ webproxy_path }}/data/html/security.txt'
+    owner: root
+    group: root
+    mode: '0644'
+  when: webproxy_security_txt
 
 - name: webproxy_docker-compose-up
   docker_compose:
