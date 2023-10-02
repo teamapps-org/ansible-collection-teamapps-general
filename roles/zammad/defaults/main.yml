@@ -1,6 +1,6 @@
 ---
 # defaults file for zammad
-zammad_path: 'container/zammad'
+zammad_path: '/container/zammad'
 zammad_domain: 'zammad.{{ ansible_fqdn }}'
 zammad_letsencrypt_host: '{{ zammad_domain }}'
 

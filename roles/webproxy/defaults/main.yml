@@ -1,7 +1,7 @@
 ---
 # defaults file for webproxy
 
-webproxy_path: 'container/webproxy'
+webproxy_path: '/container/webproxy'
 
 # set access_log off; in nginx
 webproxy_access_log_off: False

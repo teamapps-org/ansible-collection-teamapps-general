@@ -1,5 +1,5 @@
 ---
-matomo_path: 'container/matomo'
+matomo_path: '/container/matomo'
 matomo_domain: '{{ ansible_fqdn }}'
 matomo_mysql_database: matomo
 matomo_mysql_user: matomo

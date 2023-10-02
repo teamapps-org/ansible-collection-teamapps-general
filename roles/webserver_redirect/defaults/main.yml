@@ -1,5 +1,5 @@
 ---
-webserver_redirect_path: 'container/webserver_redirect'
+webserver_redirect_path: '/container/webserver_redirect'
 
 webserver_redirect_domain: 'redirect.{{ ansible_fqdn }}'
 webserver_redirect_addon_domains: []

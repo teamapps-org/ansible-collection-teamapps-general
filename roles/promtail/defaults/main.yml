@@ -1,7 +1,7 @@
 ---
 # defaults file for promtail deployment
 promtail_local_cache_dir: '{{ local_cache_dir | default("/tmp") }}'
-promtail_path: 'container/promtail'
+promtail_path: '/container/promtail'
 
 promtail_docker_pull: '{{ global_docker_pull | default(False) }}'
 promtail_loki_server: 'loki.{{ ansible_domain }}'

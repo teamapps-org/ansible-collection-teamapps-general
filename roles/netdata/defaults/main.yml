@@ -1,6 +1,6 @@
 ---
 # defaults file for netdata
-netdata_path: 'container/netdata'
+netdata_path: '/container/netdata'
 netdata_domain: 'netdata.{{ ansible_fqdn }}'
 netdata_htpasswd: ''
 

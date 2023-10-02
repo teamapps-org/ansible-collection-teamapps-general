@@ -12,7 +12,7 @@ victoriametrics_nginx_image: nginx:alpine
 victoriametrics_retention_period: 3
 victoriametrics_big_merge_concurrency: 0
 
-victoriametrics_path: 'container/victoriametrics'
+victoriametrics_path: '/container/victoriametrics'
 victoriametrics_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 # storage path for metrics data
