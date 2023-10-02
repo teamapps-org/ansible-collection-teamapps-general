@@ -95,27 +95,52 @@
     group: root
     mode: 0750
 
-- name: mysqldump wrapper
+- name: db dump wrapper
   copy:
     content: |
       #!/bin/bash
+      # usage: ./dbdump.sh [db-dumps/customdump.sql.gz]
       set -eux
+      set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
-      docker-compose exec -T db sh -c "mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" nextcloud  --default-character-set=utf8mb4 --skip-dump-date | \
-        sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' | \
-        gzip --rsyncable > /db-dumps/nextcloud.sql.gz"
-    dest: '{{ nextcloud_path }}/mysqldump.sh'
+      dump_file=${1:-db-dumps/nextcloud.sql.gz}
+      docker-compose exec -T db sh -c "exec mariadb-dump -u root -p\"\$MYSQL_ROOT_PASSWORD\" nextcloud --default-character-set=utf8mb4 --skip-dump-date | \
+        sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
+        gzip --rsyncable > ${dump_file}
+    dest: '{{ nextcloud_path }}/dbdump.sh'
     owner: root
     group: root
     mode: 0750
 
-
 - name: Nextcloud backup prebackup
   lineinfile:
     path: /usr/local/bin/prebackup.sh
-    line: '{{ nextcloud_path }}/mysqldump.sh'
+    line: '{{ nextcloud_path }}/dbdump.sh'
     regex: '^{{ nextcloud_path }}'
+
+- name: dbrestore wrapper
+  copy:
+    content: |
+      #!/bin/bash
+      # usage: ./dbrestore.sh [db-dumps/customdump.sql.gz]
+      set -eux
+      set -o pipefail
+      dir="$(dirname $(readlink -f $0))"
+      cd $dir
+      dump_file=${1:-db-dumps/nextcloud.sql.gz}
+      zcat ${dump_file} | \
+      docker-compose exec -T db sh -c 'exec mariadb -p"$MYSQL_ROOT_PASSWORD" nextcloud'
+    dest: '{{ nextcloud_path }}/dbrestore.sh'
+    owner: root
+    group: root
+    mode: 0750
+
+- name: delete old dump script
+  file:
+    path: '{{ nextcloud_path }}/mysqldump.sh'
+    state: absent
+
 
 - name: Flush handler before up
   meta: flush_handlers
@@ -126,10 +151,6 @@
     state: present
     build: '{{ nextcloud_docker_pull }}'
     pull: '{{ nextcloud_docker_pull }}'
-
-# todo:
-#  - mysql backup
-
 
 # ./occ config:system:set overwritehost --value="mydomain.com"
 # ./occ config:system:set overwriteprotocol --value="https"

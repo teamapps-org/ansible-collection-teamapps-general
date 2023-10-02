@@ -20,20 +20,20 @@
     group: '999'
     mode: '0755'
 
-- name: mysqldump wrapper ({{ webserver_domain }})
+- name: dbdump wrapper ({{ webserver_domain }})
   copy:
     content: |
       #!/bin/bash
-      # usage: ./mysqldump.sh [dbdumps/customdump.sql.gz]
+      # usage: ./dbdump.sh [dbdumps/customdump.sql.gz]
       set -eux
       set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       dump_file=${1:-dbdumps/{{ webserver_mysql_database }}.sql.gz}
-      docker-compose exec -T db sh -c "exec mysqldump -u root -p\"\$MYSQL_ROOT_PASSWORD\" {{ webserver_mysql_database }}  --default-character-set=utf8mb4 --skip-dump-date | \
+      docker-compose exec -T db sh -c "exec mariadb-dump -u root -p\"\$MYSQL_ROOT_PASSWORD\" {{ webserver_mysql_database }}  --default-character-set=utf8mb4 --skip-dump-date | \
         sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
         gzip --rsyncable > ${dump_file}
-    dest: '{{ webserver_path }}/mysqldump.sh'
+    dest: '{{ webserver_path }}/dbdump.sh'
     owner: root
     group: root
     mode: 0750
@@ -41,22 +41,30 @@
 - name: Mysql backup prebackup ({{ webserver_domain }})
   lineinfile:
     path: /usr/local/bin/prebackup.sh
-    line: '{{ webserver_path }}/mysqldump.sh'
+    line: '{{ webserver_path }}/dbdump.sh'
     regex: '^{{ webserver_path }}'
 
-- name: mysqlrestore wrapper ({{ webserver_domain }})
+- name: dbrestore wrapper ({{ webserver_domain }})
   copy:
     content: |
       #!/bin/bash
-      # usage: ./mysqlrestore.sh [dbdumps/customdump.sql.gz]
+      # usage: ./dbrestore.sh [dbdumps/customdump.sql.gz]
       set -eux
       set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       dump_file=${1:-dbdumps/{{ webserver_mysql_database }}.sql.gz}
       zcat ${dump_file} | \
-      docker-compose exec -T db sh -c 'exec mysql -p"$MYSQL_ROOT_PASSWORD" {{ webserver_mysql_database }}'
-    dest: '{{ webserver_path }}/mysqlrestore.sh'
+      docker-compose exec -T db sh -c 'exec mariadb -p"$MYSQL_ROOT_PASSWORD" {{ webserver_mysql_database }}'
+    dest: '{{ webserver_path }}/dbrestore.sh'
     owner: root
     group: root
     mode: 0750
+
+- name: delete old wrapper scripts
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - '{{ webserver_path }}/mysqldump.sh'
+    - '{{ webserver_path }}/mysqlrestore.sh'
