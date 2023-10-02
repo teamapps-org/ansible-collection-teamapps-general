@@ -23,7 +23,7 @@
 - name: configure basic auth htpasswd in webproxy
   copy:
     content: "{{ netdata_htpasswd }}\n"
-    dest: '{{ webproxy_path }}/data/htpasswd/{{ netdata_domain }}'
+    dest: '{{ netdata_webproxy_path }}/data/htpasswd/{{ netdata_domain }}'
     owner: root
     group: root
     mode: '0644'

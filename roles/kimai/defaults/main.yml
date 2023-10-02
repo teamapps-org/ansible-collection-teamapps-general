@@ -1,6 +1,5 @@
 ---
-container_path: /container
-kimai_path: '{{ container_path }}/kimai'
+kimai_path: 'container/kimai'
 kimai_domain: '{{ ansible_fqdn }}'
 
 kimai_version: '2.0.29' # https://www.kimai.org/documentation/installation.html

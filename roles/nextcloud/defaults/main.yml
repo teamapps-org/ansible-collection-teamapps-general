@@ -9,8 +9,7 @@ nextcloud_nginx_image: nginx
 nextcloud_notify_push_image: icewind1991/notify_push:latest
 nextcloud_mariadb_version: 10.8
 
-container_path: /container
-nextcloud_path: '{{ container_path }}/nextcloud'
+nextcloud_path: 'container/nextcloud'
 nextcloud_domain: 'nextcloud.{{ ansible_fqdn }}'
 
 nextcloud_php_memory_limit: 512M

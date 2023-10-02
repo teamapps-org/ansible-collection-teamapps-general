@@ -1,7 +1,6 @@
 ---
 # defaults file for netdata
-container_path: /container
-netdata_path: '{{ container_path }}/netdata'
+netdata_path: 'container/netdata'
 netdata_domain: 'netdata.{{ ansible_fqdn }}'
 netdata_htpasswd: ''
 
@@ -60,3 +59,5 @@ netdata_dbengine_disk_space_mb_tier1: 128 # 1 point every minute, 4 bytes per po
 netdata_dbengine_disk_space_mb_tier2: 64  # 1 point every hour, 4 bytes per point, ~ 0.64 MiB per 1000 metrics per WEEK.
 
 netdata_dbengine_page_cache_size_mb: 64
+
+netdata_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'

@@ -82,7 +82,7 @@
 - name: configure basic auth htpasswd in webproxy ({{ webserver_domain }})
   copy:
     content: "{{ webserver_basic_auth }}\n"
-    dest: '{{ webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
+    dest: '{{ webserver_webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
     owner: root
     group: root
     mode: '0644'
@@ -92,7 +92,7 @@
 
 - name: Remove basic auth ({{ webserver_domain }})
   file:
-    path: '{{ webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
+    path: '{{ webserver_webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
     state: absent
   when:
     - webserver_basic_auth == ''

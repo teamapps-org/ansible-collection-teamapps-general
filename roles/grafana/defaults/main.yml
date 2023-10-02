@@ -1,7 +1,6 @@
 ---
 # defaults file for grafana deployment
-container_path: /container
-grafana_path: '{{ container_path }}/grafana'
+grafana_path: 'container/grafana'
 grafana_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 grafana_domain: 'grafana.{{ ansible_fqdn }}'

@@ -1,7 +1,6 @@
 ---
 # defaults file for loki deployment
-container_path: /container
-loki_path: '{{ container_path }}/loki'
+loki_path: 'container/loki'
 
 # loki_domain: '{{ ansible_fqdn }}'
 loki_domain: "loki.{{ ansible_fqdn }}"

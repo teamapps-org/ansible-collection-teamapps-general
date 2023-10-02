@@ -1,6 +1,6 @@
 - name: elasticsearch basic auth
   copy:
-    dest: '{{ webproxy_path }}/data/htpasswd/{{ zammad_elasticsearch_domain }}'
+    dest: '{{ zammad_webproxy_path }}/data/htpasswd/{{ zammad_elasticsearch_domain }}'
     content: "{{ zammad_elasticsearch_htpasswd }}\n"
     owner: root
     group: root
@@ -11,7 +11,7 @@
 
 - name: elasticsearch webproxy security (limited)
   copy:
-    dest: '{{ webproxy_path }}/data/vhost.d/{{ zammad_elasticsearch_domain }}_location'
+    dest: '{{ zammad_webproxy_path }}/data/vhost.d/{{ zammad_elasticsearch_domain }}_location'
     content: |
       # only allow GET and POST Requests to elasticsearch
       limit_except GET POST {

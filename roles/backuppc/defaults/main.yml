@@ -1,8 +1,7 @@
 ---
 # defaults file for backuppc
-container_path: /container
-backuppc_path: '{{ container_path }}/backuppc'
-backuppc_datapath: '{{ container_path }}/backuppc/data'
+backuppc_path: 'container/backuppc'
+backuppc_datapath: 'container/backuppc/data'
 backuppc_domain: 'backup.{{ ansible_fqdn }}'
 backuppc_version: 4 # https://hub.docker.com/r/adferrand/backuppc/tags?page=1&ordering=last_updated
 backuppc_htpasswd:

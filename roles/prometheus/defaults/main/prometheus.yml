@@ -11,6 +11,8 @@ prometheus_global:
   scrape_timeout: 10s
   evaluation_interval: 30s # evaluate rules
 
+prometheus_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
+
 prometheus_config_dir: /container/prometheus
 prometheus_config_dir_container: /etc/prometheus
 prometheus_db_dir: /container/prometheus/data

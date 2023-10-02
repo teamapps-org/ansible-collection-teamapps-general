@@ -4,7 +4,7 @@ Configure [Victoriametrics](https://victoriametrics.com/), Open Source Prometheu
 
 This role installs victoriametrics using docker-compose. To be used with `teamapps.general.webproxy`
 
-Standalone  or together with `teamapps.general.victoria_vmagent`, this is a complete replacement for `teamapps.general.prometheus`
+Standalone  or together with `teamapps.general.vmagent`, this is a complete replacement for `teamapps.general.prometheus`
 
 This role uses an additional nginx proxy to manage access to different api endpoints (write/read/admin)
 

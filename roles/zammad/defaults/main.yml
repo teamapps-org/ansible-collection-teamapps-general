@@ -1,6 +1,6 @@
 ---
 # defaults file for zammad
-zammad_path: '{{ container_path }}/zammad'
+zammad_path: 'container/zammad'
 zammad_domain: 'zammad.{{ ansible_fqdn }}'
 zammad_letsencrypt_host: '{{ zammad_domain }}'
 
@@ -30,7 +30,8 @@ zammad_elasticsearch_reindex: True
 zammad_elasticsearch_expose: False
 # zammad_elasticsearch_htpasswd:
 zammad_elasticsearch_domain: 'es.{{ zammad_domain }}'
-webproxy_path: /container/webproxy
+
+zammad_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
 # Elasticsearch RAM allocation (Java Xms, Xmx). valid format: 512m, 2g
 # default: 40% of total memory

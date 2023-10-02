@@ -2,7 +2,7 @@
 
 Prometheus monitoring role.
 
-NOTE: You can replace prometheus with [victoriametrics](../victoriametrics/README.md) (and victoria_vmagent).
+NOTE: You can replace prometheus with [victoriametrics](../victoriametrics/README.md) (and vmagent).
 
 ## Usage Example
 

@@ -111,7 +111,7 @@ alertmanager_templates_custom: []
 alertmanager_templates: '{{ alertmanager_templates_default + alertmanager_templates_custom }}'
 
 # needed for auth config and whitelists
-webproxy_path: /container/webproxy
+alertmanager_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
 
 # Telegram bot

@@ -44,7 +44,7 @@ playbook:
   hosts:
     - production
   roles:
-    - role: teamapps.general.victoria_vmagent
+    - role: teamapps.general.vmagent
       tags:
         - metrics
         - vmagent

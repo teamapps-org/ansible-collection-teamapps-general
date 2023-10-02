@@ -30,7 +30,7 @@
 - name: create htpasswd file
   copy:
     content: '{{ dependabot_htpasswd }}'
-    dest: '{{ webproxy_path }}/data/htpasswd/{{ dependabot_domain }}'
+    dest: '{{ dependabot_webproxy_path }}/data/htpasswd/{{ dependabot_domain }}'
     owner: root
     group: root
     mode: 0644
@@ -38,7 +38,7 @@
 - name: allow whitelisted hosts
   template:
     src: 'dependabot_location.conf.j2'
-    dest: '{{ webproxy_path }}/data/vhost.d/{{ dependabot_domain }}_location'
+    dest: '{{ dependabot_webproxy_path }}/data/vhost.d/{{ dependabot_domain }}_location'
     owner: root
     group: root
     mode: 0644

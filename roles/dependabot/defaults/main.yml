@@ -4,7 +4,7 @@ dependabot_domain: 'dependabot.{{ ansible_fqdn }}'
 
 dependabot_path: /container/dependabot
 # needed for auth config and whitelists
-webproxy_path: /container/webproxy
+dependabot_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
 # htpasswd for dependabot api
 dependabot_htpasswd:

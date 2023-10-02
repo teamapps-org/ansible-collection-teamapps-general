@@ -1,6 +1,6 @@
 # VMagent
 
-Role to install and configure vmagent. Installs by using binare from Github releases.
+Role to install and configure Victoriametrics vmagent. Installs by using binary from Github releases.
 
 ## Usage Example
 
@@ -37,7 +37,7 @@ Role to install and configure vmagent. Installs by using binare from Github rele
                 host: '{{ ansible_hostname }}'
 
   roles:
-    - role: teamapps.general.victoria_vmagent
+    - role: teamapps.general.vmagent
       tags:
         - metrics
         - vmagent
@@ -51,4 +51,4 @@ See [defaults](defaults/main.yml)
 
 Apache 2.0
 
-Based on <https://github.com/VictoriaMetrics/ansible-playbooks/tree/master/roles/victoria_vmagent>
+Based on <https://github.com/VictoriaMetrics/ansible-playbooks/tree/master/roles/vmagent>

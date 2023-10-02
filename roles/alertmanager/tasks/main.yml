@@ -58,7 +58,7 @@
 - name: create htpasswd file
   copy:
     content: '{{ alertmanager_htpasswd }}'
-    dest: '{{ webproxy_path }}/data/htpasswd/{{ alertmanager_domain }}'
+    dest: '{{ alertmanager_webproxy_path }}/data/htpasswd/{{ alertmanager_domain }}'
     owner: root
     group: root
     mode: 0644
@@ -66,7 +66,7 @@
 - name: allow whitelisted hosts
   template:
     src: 'alertmanager_location.j2'
-    dest: '{{ webproxy_path }}/data/vhost.d/{{ alertmanager_domain }}_location'
+    dest: '{{ alertmanager_webproxy_path }}/data/vhost.d/{{ alertmanager_domain }}_location'
     owner: root
     group: root
     mode: 0644

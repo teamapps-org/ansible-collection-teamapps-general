@@ -1,8 +1,7 @@
 ---
 # defaults file for webproxy
 
-container_path: /container
-webproxy_path: '{{ container_path }}/webproxy'
+webproxy_path: 'container/webproxy'
 
 # set access_log off; in nginx
 webproxy_access_log_off: False
@@ -17,7 +16,7 @@ webproxy_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 webproxy_cookies_secure_only: False
 
-nginx_worker_connections: 8096
+webproxy_nginx_worker_connections: 8096
 
 ## Default server configuration
 # Domain of server to receive requests for unconfigured domains

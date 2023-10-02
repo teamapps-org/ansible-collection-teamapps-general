@@ -1,7 +1,7 @@
 ---
-webproxy_path: /container/webproxy
-container_path: /container
-webserver_path: '{{ container_path }}/webserver'
+webserver_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
+
+webserver_path: '/container/webserver'
 
 webserver_domain: '{{ ansible_fqdn }}'
 webserver_addon_domains: []
