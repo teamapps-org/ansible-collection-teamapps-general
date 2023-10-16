@@ -86,14 +86,15 @@
     mode: '0640'
   notify: webproxy_generator_restart
 
-- name: Deploy vhost.d/default (config included in every server block)
+- name: Deploy vhost.d/default_location (config included in every location block)
   template:
-    src: default_vhost.j2
-    dest: '{{ webproxy_path }}/data/vhost.d/default'
+    src: default_location.j2
+    dest: '{{ webproxy_path }}/data/vhost.d/default_location'
     owner: root
     group: root
     mode: '0640'
   notify: webproxy_nginx_reload
+  when: webproxy_access_log_off or webproxy_default_location_custom
 
 - name: Deploy vhost.d/default (config included in every server block)
   template:
