@@ -1,0 +1,37 @@
+#
+# Managed by Ansible
+#
+# rules using node_exporter metrics
+groups:
+  - name: systemd
+    rules:
+      - alert: SystemdServiceFailed
+        expr: 'node_systemd_unit_state{job="node_exporter", state="failed"} != 0'
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: 'Systemd service {{ $labels.name }} failed on host {{ $labels.host }}'
+          summary: 'Service {{ $labels.name }} failed on host {{ $labels.host }}'
+
+  - name: zfs
+    rules:
+      - alert: ZpoolNotOnline
+        expr: 'node_zfs_zpool_state{state!="online"} == 1'
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          description: 'zfs zpool {{ $labels.zpool }} on host {{ $labels.host }} is in state {{ $labels.state }}'
+          summary: 'zpool {{ $labels.host }}:{{ $labels.zpool }} is not online'
+
+  - name: time
+    rules:
+      - alert: time sync
+        expr: 'node_timex_sync_status != 1'
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          description: 'No time synchronization on node {{ $labels.host }} check ntp sync'
+          summary: 'timesync failure on {{ $labels.host }}'
