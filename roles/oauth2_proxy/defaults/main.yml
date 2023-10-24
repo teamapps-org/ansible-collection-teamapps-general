@@ -1,0 +1,45 @@
+# defaults for oauth2 proxy
+
+oauth2_proxy_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
+
+# additional config added to the bottom of oauth2-proxy.cfg
+oauth2_proxy_instance_additional_config: ''
+
+# list of instances (See README)
+oauth2_proxy_instances: []
+  # - domain: service.example.com
+  #   standalone: False
+  #   htpasswd: '' # Optional, allow local login with basic auth credentials
+  #   cookie_secret: RANDOM_STRING # generate!
+  #   cookie_domain: # optional
+  #   cookie_name: # optional
+  #   gitlab_url: https://git.example.com
+  #   client_id: APPLICATION_ID # from Gitlab Application Registration
+  #   client_secret: SECRET     # from Gitlab Application Registration
+  #   whitelist_domains: # redirect restriction
+  #     - '.example.com'
+  #   email_domains: # restrict to users with these email domains
+  #     - 'example.com'
+  #   gitlab_groups: # restrict service to members of these gitlab groups
+  #     - 'allowed_group'
+  #   # additional config added to the bottom of oauth2-proxy.cfg
+  #   additional_config: '' # optional, append to oauth2-proxy.cfg
+  #   custom_vhost: '' # Optional, append to vhost include
+  #   custom_vhost_location: '' # Optional, append to vhost_location include
+
+# list of webproxy configs only (See README)
+oauth2_proxy_webproxy_sso_configs: []
+  # - service_domain:
+  #   cookie_name:
+  #   oauth2_proxy_host:
+  #   custom_vhost: '' # Optional, append to vhost include
+  #   custom_vhost_location: '' # Optional, append to vhost_location include
+
+## If service is on the same host as oauth2_proxy
+  # - service_domain:
+  #   cookie_name:
+  #   oauth2_proxy_host: oauth-proxy.<<oauth2_proxy_instance.domain>>
+  #   internal_host: True # Connect to docker container on the same host.
+
+# pull docker images (docker-compose pull)
+oauth2_proxy_docker_pull: '{{ global_docker_pull | default(False) }}'

@@ -1,0 +1,66 @@
+- name: create oauth2-proxy instance directory - {{ oauth2_proxy_instance_domain }}
+  file:
+    path: '{{ oauth2_proxy_instance_directory }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: deploy docker-compose.yml - {{ oauth2_proxy_instance_domain }}
+  template:
+    src: docker-compose.yml.j2
+    dest: '{{ oauth2_proxy_instance_directory }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: 0644
+
+- name: deploy oauth2-proxy.cfg - {{ oauth2_proxy_instance_domain }}
+  template:
+    src: oauth2-proxy.cfg.j2
+    dest: '{{ oauth2_proxy_instance_directory }}/oauth2-proxy.cfg'
+    owner: 65532 # todo
+    group: root
+    mode: 0640
+  register: oauth2_proxy_instance_reg_config
+
+- name: deploy htpasswd file - {{ oauth2_proxy_instance_domain }}
+  template:
+    src: htpasswd.j2
+    dest: '{{ oauth2_proxy_instance_directory }}/htpasswd'
+    owner: 65532 # todo
+    group: root
+    mode: 0640
+
+- name: docker-compose-up - {{ oauth2_proxy_instance_domain }}
+  docker_compose:
+    project_src: '{{ oauth2_proxy_instance_directory }}'
+    state: present
+    pull: '{{ oauth2_proxy_docker_pull }}'
+    debug: True
+    remove_orphans: True
+  register: oauth2_proxy_compose_return
+
+- name: print compose actions - {{ oauth2_proxy_instance_domain }}
+  debug:
+    var: oauth2_proxy_compose_return.actions
+  changed_when: true
+  when: oauth2_proxy_compose_return.actions | count > 0
+
+# cannot be defined as handler, because it is used multiple times with different values
+- name: restart oauth2_proxy instance '{{ oauth2_proxy_instance_directory }}' # noqa no-handler
+  docker_compose:
+    project_src: '{{ oauth2_proxy_instance_directory }}'
+    services:
+      - 'oauth2-proxy'
+    state: present
+    restarted: yes
+  when:
+    - oauth2_proxy_instance_reg_config.changed
+
+## webproxy configuration
+- name: include webproxy config - {{ oauth2_proxy_instance_domain }}
+  include_tasks: webproxy_config.yml
+  when: oauth2_proxy_instance_webproxy_integration
+
+- name: Flush handlers after each instance - {{ oauth2_proxy_instance_domain }}
+  meta: flush_handlers

@@ -70,6 +70,7 @@
     owner: root
     group: root
     mode: 0644
+  when: alertmanager_manage_webproxy_location
   notify: alertmanager_regenerate_webproxy_config
 
 - name: alertmanager-check-config

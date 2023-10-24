@@ -88,3 +88,43 @@ Victoriametrics also provides Web User Interfaces. The following endpoints are e
 * VMUI <https://victoriametrics_domain/vmui>
 * vmalert <https://victoriametrics_domain/vmalert/>
 * vmagent <https://victoriametrics_domain/vmagent/>
+
+## OAuth2 login with oauth2_proxy
+
+Deploy oauth2_proxy for the victoriametrics_domain
+
+
+~~~yaml
+- name: Oauth2 Proxy for Victoriametrics
+  hosts:
+    - metrics-server.example.com
+  vars:
+    victoriametrics_oauth2_proxy_integration: True
+    # other victoriametrics_vars
+
+    oauth2_proxy_instances:
+      - domain: '{{ victoriametrics_domain }}'
+        htpasswd: '{{ victoriametrics_htpasswd_admin }}'
+        webproxy_integration: False # don't deploy location to webproxy, as authentication is done in separate authproxy nginx
+        cookie_secret:
+        gitlab_url: https://git.example.com
+        # Registerd in to operations group https://git.example.com/groups/operations/-/settings/applications
+        client_id:
+        client_secret:
+        whitelist_domains:
+          - '.example.com'
+        email_domains:
+          - 'example.com'
+        gitlab_groups:
+          - 'admin_group'
+  roles:
+    - role: teamapps.general.oauth2_proxy
+      tags:
+        - oauth2_proxy
+        - metrics
+        - victoriametrics
+    - role: teamapps.general.victoriametrics
+      tags:
+        - metrics
+        - victoriametrics
+~~~

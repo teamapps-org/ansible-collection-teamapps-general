@@ -1,0 +1,19 @@
+## deploy webproxy configuration for auth_request
+
+- name: configure webproxy vhost.d config - {{ oauth2_proxy_instance_domain }}
+  template:
+    src: 'webproxy_vhost.conf.j2'
+    dest: '{{ oauth2_proxy_webproxy_path }}/data/vhost.d/{{ oauth2_proxy_instance_domain }}'
+    owner: root
+    group: root
+    mode: 0644
+  notify: oauth2_proxy_regenerate_webproxy_config
+
+- name: configure webproxy vhost.d location config - {{ oauth2_proxy_instance_domain }}
+  template:
+    src: 'webproxy_vhost_location.conf.j2'
+    dest: '{{ oauth2_proxy_webproxy_path }}/data/vhost.d/{{ oauth2_proxy_instance_domain }}_location'
+    owner: root
+    group: root
+    mode: 0644
+  notify: oauth2_proxy_regenerate_webproxy_config

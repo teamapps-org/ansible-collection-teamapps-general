@@ -1,0 +1,3 @@
+## deployed by ansible role oauth2_proxy
+# caching configuration for validation responses
+proxy_cache_path /tmp/validatecache levels=1:2 keys_zone=oauth2_cache:10m max_size=128m inactive=30m use_temp_path=off;

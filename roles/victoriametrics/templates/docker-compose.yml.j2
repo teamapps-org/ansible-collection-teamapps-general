@@ -18,9 +18,15 @@ services:
         target: /etc/nginx/conf.d/htaccess
         read_only: true
       - type: bind
-        source: ./authproxy-basic-site.conf
+        source: ./authproxy-site.conf
         target: /etc/nginx/conf.d/default.conf
         read_only: true
+{% if victoriametrics_oauth2_proxy_integration %}
+      - type: bind
+        source: ./authproxy_vhost.d
+        target: /etc/nginx/vhost.d
+        read_only: true
+{% endif %}
     networks:
       vm_net:
       webproxy:
@@ -103,6 +109,7 @@ services:
       - '-http.pathPrefix=/vmagent'
       - '-promscrape.config=/etc/prometheus/prometheus.yml'
       - '-remoteWrite.url=http://victoriametrics:8428/api/v1/write'
+      - '--remoteWrite.tmpDataPath=/vmagentdata'
       # - '-remoteWrite.basicAuth.username='
       # - '-remoteWrite.basicAuth.password='
     networks:

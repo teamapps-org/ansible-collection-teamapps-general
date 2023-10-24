@@ -113,6 +113,8 @@ alertmanager_templates: '{{ alertmanager_templates_default + alertmanager_templa
 # needed for auth config and whitelists
 alertmanager_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
+# disable webproxy location deployment
+alertmanager_manage_webproxy_location: True
 
 # Telegram bot
 alertmanager_telegram_enabled: False
