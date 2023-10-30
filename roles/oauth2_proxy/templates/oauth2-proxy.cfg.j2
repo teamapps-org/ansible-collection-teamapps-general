@@ -1,0 +1,119 @@
+## OAuth2 Proxy Config File
+## https://github.com/oauth2-proxy/oauth2-proxy
+## Documentation: https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/
+
+## <addr>:<port> to listen on for HTTP/HTTPS clients
+# http_address = "127.0.0.1:4180"
+# https_address = ":443"
+http_address = "http://:4180"
+
+## Are we running behind a reverse proxy? Will not accept headers like X-Real-Ip unless this is set.
+reverse_proxy = true
+
+# set X-Auth-Request-User, X-Auth-Request-Groups, X-Auth-Request-Email and X-Auth-Request-Preferred-Username response headers
+set_xauthrequest = true
+
+# disable version info
+banner = "-"
+footer = "-"
+
+## Logging configuration
+{% raw %}
+#logging_filename = ""
+#logging_max_size = 100
+#logging_max_age = 7
+#logging_local_time = true
+#logging_compress = false
+#standard_logging = true
+#standard_logging_format = "[{{.Timestamp}}] [{{.File}}] {{.Message}}"
+#request_logging = true
+#request_logging_format = "{{.Client}} - {{.Username}} [{{.Timestamp}}] {{.Host}} {{.RequestMethod}} {{.Upstream}} {{.RequestURI}} {{.Protocol}} {{.UserAgent}} {{.StatusCode}} {{.ResponseSize}} {{.RequestDuration}}"
+#auth_logging = true
+#auth_logging_format = "{{.Client}} - {{.Username}} [{{.Timestamp}}] [{{.Status}}] {{.Message}}"
+{% endraw %}
+
+## Email Domains to allow authentication for (this authorizes any email on this domain)
+## for more granular authorization use `authenticated_emails_file`
+## To authorize any email addresses use "*"
+email_domains = [
+{% for domain in oauth2_proxy_instance_email_domains %}
+    "{{ domain }}",
+{% endfor %}
+]
+
+## Pass OAuth Access token to upstream via "X-Forwarded-Access-Token"
+# pass_access_token = false
+
+## Authenticated Email Addresses File (one email per line)
+# authenticated_emails_file = ""
+
+## Htpasswd File (optional)
+## Additionally authenticate against a htpasswd file. Entries must be created with "htpasswd -B" for bcrypt encryption
+## enabling exposes a username/login signin form
+{% if oauth2_proxy_instance_htpasswd != '' %}
+htpasswd_file = "/etc/oauth2-htpasswd"
+htpasswd_user_groups = [
+    "admin",
+]
+# set HTTP Basic Auth information in response
+# set_basic_auth = true
+{% endif %}
+
+## bypass authentication for requests that match the method & path. Format: method=path_regex OR path_regex alone for all methods
+# skip_auth_routes = [
+#   "GET=^/probe",
+#   "^/metrics"
+# ]
+
+## mark paths as API routes to get HTTP Status code 401 instead of redirect to login page
+# api_routes = [
+#   "^/api"
+# ]
+
+## Templates
+## optional directory with custom sign_in.html and error.html
+# custom_templates_dir = ""
+
+## Cookie Settings
+## Name     - the cookie name
+## Secret   - the seed string for secure cookies; should be 16, 24, or 32 bytes
+##            for use with an AES cipher when cookie_refresh or pass_access_token
+##            is set
+## Domain   - (optional) cookie domain to force cookies to (ie: .yourcompany.com)
+## Expire   - (duration) expire timeframe for cookie
+## Refresh  - (duration) refresh the cookie when duration has elapsed after cookie was initially set.
+##            Should be less than cookie_expire; set to 0 to disable.
+##            On refresh, OAuth token is re-validated.
+##            (ie: 1h means tokens are refreshed on request 1hr+ after it was set)
+## Secure   - secure cookies are only sent by the browser of a HTTPS connection (recommended)
+## HttpOnly - httponly cookies are not readable by javascript (recommended)
+cookie_name = "{{ oauth2_proxy_instance_cookie_name }}"
+cookie_secret = "{{ oauth2_proxy_instance_cookie_secret }}"
+cookie_domains = "{{ oauth2_proxy_instance_cookie_domain }}"
+cookie_expire = "168h"
+cookie_refresh = "3h"
+cookie_secure = true
+cookie_httponly = true
+
+provider = "gitlab"
+redirect_url = "https://{{ oauth2_proxy_instance_domain }}/oauth2/callback" # Should be the same as the redirect url for the application in gitlab
+client_id = "{{ oauth2_proxy_instance_client_id }}"
+client_secret = "{{ oauth2_proxy_instance_client_secret }}"
+
+oidc_issuer_url = "{{ oauth2_proxy_instance_gitlab_url }}"
+code_challenge_method = "S256"
+gitlab_groups= [
+{% for group in oauth2_proxy_instance_gitlab_groups %}
+    "{{ group }}",
+{% endfor %}
+]
+
+whitelist_domains = [
+{% for domain in oauth2_proxy_instance_whitelist_domains %}
+    "{{ domain }}",
+{% endfor %}
+]
+
+# metrics_address = ":4190"
+{{ oauth2_proxy_instance_additional_config }}
+# session_cookie_minimal = true

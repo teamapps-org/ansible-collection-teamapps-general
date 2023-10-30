@@ -1,12 +1,28 @@
 ---
-- name: Nginx Auth Gateway Configuration File
+- name: Nginx Auth Gateway basic auth Configuration File
   template:
     src: 'authproxy-basic-site.conf'
-    dest: '{{ victoriametrics_path }}/authproxy-basic-site.conf'
+    dest: '{{ victoriametrics_path }}/authproxy-site.conf'
     owner: root
     group: root
     mode: '0640'
   notify: victoriametrics-restart-gateway
+  when: not victoriametrics_oauth2_proxy_integration
+
+- name: Nginx Auth Gateway oauth2 Configuration File
+  template:
+    src: 'authproxy-oauth2-site.conf'
+    dest: '{{ victoriametrics_path }}/authproxy-site.conf'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: victoriametrics-restart-gateway
+  when: victoriametrics_oauth2_proxy_integration
+
+- name: Nginx Auth Gateway delete old file
+  file:
+    path: '{{ victoriametrics_path }}/authproxy-basic-site.conf'
+    state: absent
 
 - name: create htaccess directory
   file:
@@ -39,3 +55,38 @@
     owner: root
     group: root
     mode: '0644'
+
+## deploy configuration for auth_request to oauth2_proxy
+
+- name: create vhost.d directory for auth proxy
+  file:
+    path: "{{ victoriametrics_path }}/authproxy_vhost.d"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: victoriametrics_oauth2_proxy_integration
+
+- name: configure vhost.d config
+  vars:
+    victoriametrics_oauth2_proxy_instance_host: "{{ victoriametrics_oauth2_proxy_host }}"
+    victoriametrics_oauth2_proxy_instance_internal_host: "{{ victoriametrics_oauth2_proxy_internal_host }}"
+    victoriametrics_oauth2_proxy_instance_cookie_name: "{{ victoriametrics_oauth2_proxy_cookie_name | regex_replace('[^a-z0-9]', '_') }}"
+  template:
+    src: 'oauth2_vhost.conf.j2'
+    dest: '{{ victoriametrics_path }}/authproxy_vhost.d/oauth2_vhost.conf'
+    owner: root
+    group: root
+    mode: 0644
+  notify: victoriametrics-restart-gateway
+  when: victoriametrics_oauth2_proxy_integration
+
+- name: configure webproxy vhost.d location config
+  template:
+    src: 'oauth2_vhost_location.conf.j2'
+    dest: '{{ victoriametrics_path }}/authproxy_vhost.d/oauth2_vhost_location.conf'
+    owner: root
+    group: root
+    mode: 0644
+  notify: victoriametrics-restart-gateway
+  when: victoriametrics_oauth2_proxy_integration

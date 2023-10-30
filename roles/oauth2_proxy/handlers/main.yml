@@ -1,0 +1,12 @@
+# regenerates nginx conf from templates
+# this is not the same as just reloading the config
+- name: restart nginx config generator of webproxy
+  docker_compose:
+    project_src: '{{ oauth2_proxy_webproxy_path }}'
+    services:
+      - 'docker-gen'
+      - 'nginx'
+    state: present
+    restarted: yes
+  listen:
+    - oauth2_proxy_regenerate_webproxy_config

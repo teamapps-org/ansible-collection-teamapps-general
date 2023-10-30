@@ -1,0 +1,67 @@
+# tasks for oauth2 proxy
+
+- name: deploy oauth2 proxy_cache conf to webproxy
+  template:
+    src: 'webproxy_oauth2_proxy_cache.conf.j2'
+    dest: '{{ oauth2_proxy_webproxy_path }}/data/conf.d/oauth2_proxy_cache.conf'
+    owner: root
+    group: root
+    mode: 0644
+  notify: oauth2_proxy_regenerate_webproxy_config
+
+- name: manage oauth2_proxy instances
+  loop: '{{ oauth2_proxy_instances | default([]) }}'
+  loop_control:
+    loop_var: instance
+  vars:
+    oauth2_proxy_instance_domain: "{{ instance.domain }}"
+    oauth2_proxy_instance_standalone: "{{ instance.standalone | default(False) }}"
+    oauth2_proxy_instance_htpasswd: "{{ instance.htpasswd | default('') }}"
+    oauth2_proxy_instance_cookie_secret: "{{ instance.cookie_secret }}"
+    oauth2_proxy_instance_cookie_domain: "{{ instance.cookie_domain | default(oauth2_proxy_instance_domain) }}"
+    oauth2_proxy_instance_cookie_name: "{{ instance.cookie_name | default('_oauth2_' + oauth2_proxy_instance_domain) | regex_replace('[^a-z0-9]', '_') }}"
+    oauth2_proxy_instance_host: "{{ instance.host | default('oauth2-proxy.' + oauth2_proxy_instance_domain) }}"
+    oauth2_proxy_instance_directory: "{{ instance.directory | default('/container/oauth2_' + oauth2_proxy_instance_domain) }}"
+    oauth2_proxy_instance_gitlab_url: "{{ instance.gitlab_url }}"
+    oauth2_proxy_instance_client_id: "{{ instance.client_id }}"
+    oauth2_proxy_instance_client_secret: "{{ instance.client_secret }}"
+    oauth2_proxy_instance_whitelist_domains: "{{ instance.whitelist_domains | default([]) }}"
+    oauth2_proxy_instance_email_domains: "{{ instance.email_domains | default([]) }}"
+    oauth2_proxy_instance_gitlab_groups: "{{ instance.gitlab_groups | default([]) }}"
+    oauth2_proxy_instance_additional_config: "{{ instance.additional_config | default('') }}"
+    oauth2_proxy_instance_internal_host: True
+    oauth2_proxy_instance_webproxy_integration: "{{ instance.webproxy_integration | default(not oauth2_proxy_instance_standalone) }}"
+    # oauth2_proxy_webproxy_config_vhost_directory: "{{ instance.vhost_directory | default( oauth2_proxy_webproxy_path + '/data/vhost.d') }}"
+    oauth2_proxy_webproxy_config_custom_vhost: "{{ instance.custom_vhost | default('') }}"
+    oauth2_proxy_webproxy_config_custom_vhost_location: "{{ instance.custom_vhost_location | default('') }}"
+  include_tasks:
+    file: instance.yml
+    apply:
+      tags:
+        - oauth2_proxy
+        - oauth2_proxy_instance
+  tags:
+    - oauth2_proxy
+    - oauth2_proxy_instance
+
+- name: manage webproxy config for oauth2 proxy integration
+  loop: '{{ oauth2_proxy_webproxy_sso_configs | default([]) }}'
+  loop_control:
+    loop_var: instance
+  vars:
+    oauth2_proxy_instance_domain: "{{ instance.service_domain }}"
+    oauth2_proxy_instance_host: "{{ instance.oauth2_proxy_host }}"
+    oauth2_proxy_instance_internal_host: "{{ instance.internal_host | default(False) }}"
+    oauth2_proxy_instance_cookie_name: "{{ instance.cookie_name }}"
+    # oauth2_proxy_webproxy_config_vhost_directory: "{{ instance.vhost_directory | default( oauth2_proxy_webproxy_path + '/data/vhost.d') }}"
+    oauth2_proxy_webproxy_config_custom_vhost: "{{ instance.custom_vhost | default('') }}"
+    oauth2_proxy_webproxy_config_custom_vhost_location: "{{ instance.custom_vhost_location | default('') }}"
+  include_tasks:
+    file: webproxy_config.yml
+    apply:
+      tags:
+        - oauth2_proxy
+        - oauth2_proxy_webproxy_config
+  tags:
+    - oauth2_proxy
+    - oauth2_proxy_webproxy_config

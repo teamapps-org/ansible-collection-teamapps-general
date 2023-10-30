@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  oauth2-proxy:
+    restart: always
+    image: quay.io/oauth2-proxy/oauth2-proxy
+    container_name: '{{ oauth2_proxy_instance_host }}'
+    environment:
+      OAUTH2_PROXY_CONFIG: /etc/oauth2-proxy.cfg
+{% if oauth2_proxy_instance_standalone %}
+      VIRTUAL_HOST: {{ oauth2_proxy_instance_domain }}
+      LETSENCRYPT_HOST: {{ oauth2_proxy_instance_domain }}
+      VIRTUAL_PORT: 4180
+{% endif %}
+    command: --config=/etc/oauth2-proxy.cfg
+    volumes:
+      - type: bind
+        source: './oauth2-proxy.cfg'
+        target: /etc/oauth2-proxy.cfg
+        read_only: true
+      - type: bind
+        source: './htpasswd'
+        target: /etc/oauth2-htpasswd
+        read_only: true
+    networks:
+      webproxy:
+        aliases:
+          - '{{ oauth2_proxy_instance_host }}'
+
+networks:
+  webproxy:
+    external:
+      name: webproxy
