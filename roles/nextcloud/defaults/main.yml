@@ -4,10 +4,10 @@
 nextcloud_mysql_root_password:
 nextcloud_mysql_password:
 
-nextcloud_version: 26
+nextcloud_version: 27
 nextcloud_nginx_image: nginx
 nextcloud_notify_push_image: icewind1991/notify_push:latest
-nextcloud_mariadb_version: 10.8
+nextcloud_mariadb_version: 10.11
 
 nextcloud_path: '/container/nextcloud'
 nextcloud_domain: 'nextcloud.{{ ansible_fqdn }}'
