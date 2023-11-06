@@ -80,6 +80,17 @@
   when: netdata_cloud_stat.stat.isdir is defined and netdata_cloud_stat.stat.isdir
   notify: netdata_restart
 
+- name: disable/enable telemetry
+  file:
+    path: /etc/netdata/.opt-out-from-anonymous-statistics
+    state: "{{ netdata_disable_telemetry | ternary('touch', 'absent') }}"
+    access_time: preserve
+    modification_time: preserve
+    owner: root
+    group: root
+    mode: '0644'
+  notify: netdata_restart
+
 - name: alarm sending configuration
   template:
     src: health_alarm_notify.conf
