@@ -4,7 +4,10 @@ services:
   minio:
     image: minio/minio:{{ minio_version }}
     volumes:
-      - ./data:/data
+      - type: bind
+        source: '{{ minio_data_path }}'
+        target: /data
+        read_only: false
     expose:
       - 9000
     environment:

@@ -6,6 +6,8 @@ minio_domain: 'minio.{{ ansible_fqdn }}'
 minio_addon_domains: []
 minio_domains: '{{ [minio_domain] + minio_addon_domains }}'
 
+minio_data_path: './data'
+
 minio_console_domain: 'minio-console.{{ ansible_fqdn }}'
 minio_console_letsencrypt_host: '{{ minio_console_domain }}'
 

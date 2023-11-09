@@ -40,6 +40,7 @@
     mode: '0755'
   with_items:
     - '{{ minio_path }}'
+    - '{{ minio_path }}/data'
 
 - name: deploy config
   template:
