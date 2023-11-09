@@ -22,3 +22,4 @@ RUN set -ex && \
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY php-override.ini /usr/local/etc/php/conf.d/override.ini
+USER www-data

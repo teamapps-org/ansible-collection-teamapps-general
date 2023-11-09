@@ -41,6 +41,7 @@ services:
   php:
 {% if webserver_php_image != "" %}
     image: {{ webserver_php_image }}
+    user: "33" # www-data
 {% else %}
     build: ./php
 {% endif %}

@@ -8,3 +8,4 @@ RUN set -ex && \
         libmagickcore-6.q16-6-extra \
     && \
     rm -rf /var/lib/apt/lists/*
+USER www-data

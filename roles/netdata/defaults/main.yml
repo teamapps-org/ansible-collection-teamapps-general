@@ -28,8 +28,9 @@ netdata_alarm_send_custom: No
 netdata_alarm_email_default_recipient: root@localhost
 netdata_alarm_email_sender: "'Netdata on host {{ ansible_fqdn }}' <netdata@localhost>"
 
+# Slack (Legacy) Webhooks: https://api.slack.com/legacy/custom-integrations/messaging/webhooks
 netdata_alarm_slack_webhook_url: # https://hooks.slack.com/services/...
-netdata_alarm_slack_recipients: 'monitoring'
+netdata_alarm_slack_recipients: '#' # use channel configured on webhook.
 
 netdata_alarm_custom_recipient: "default"
 netdata_alarm_custom_api_key: ""
@@ -51,7 +52,7 @@ netdata_postgres_jobs: []
 ## Example:
 # netdata_postgres_jobs:
 #  - name: postgres_local
-#    dsn: 'postgres://postgres:password@127.0.0.1:5432/postgres'
+#    dsn: 'postgres://postgres:password@127.0.0.1:5432/postgres' # gitleaks:allow
 
 # ~82.4M / 1000 metrics for a full day of per second retention.
 # a server has 3000-6000 metrics.
