@@ -22,8 +22,8 @@ def pretty_print_json(obj):
 
 def get_nvme_list(device_path=""):
 
-    proc = subprocess.Popen("/usr/sbin/nvme list %s -o json" % device_path,
-                            shell=True,
+    proc = subprocess.Popen(["/usr/sbin/nvme", "list", device_path, "-o", "json"],
+                            shell=False,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             encoding='utf-8')
@@ -45,8 +45,8 @@ def get_nvme_list(device_path=""):
 
 
 def get_smart_log(device_path):
-    proc = subprocess.Popen("/usr/sbin/nvme smart-log %s -o json" % device_path,
-                            shell=True,
+    proc = subprocess.Popen(["/usr/sbin/nvme", "smart-log", device_path, "-o", "json"],
+                            shell=False,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             encoding='utf-8')
@@ -65,8 +65,8 @@ def get_smart_log(device_path):
 
 
 def get_ctrl_regs(device_path):
-    proc = subprocess.Popen("/usr/sbin/nvme show-regs %s -o json" % device_path,
-                            shell=True,
+    proc = subprocess.Popen(["/usr/sbin/nvme", "show-regs", device_path, "-o", "json"],
+                            shell=False,
                             stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             encoding='utf-8')
