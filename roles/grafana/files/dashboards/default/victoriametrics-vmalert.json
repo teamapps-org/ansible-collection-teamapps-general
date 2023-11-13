@@ -25,12 +25,24 @@
           "uid": "$ds"
         },
         "enable": true,
-        "expr": "sum(vm_app_version{job=~\"$job\"}) by(short_version) unless (sum(vm_app_version{job=~\"$job\"} offset 20m) by(short_version))",
+        "expr": "sum(vm_app_version{job=~\"$job\", instance=~\"$instance\"}) by(short_version) unless (sum(vm_app_version{job=~\"$job\", instance=~\"$instance\"} offset 20m) by(short_version))",
         "hide": true,
         "iconColor": "dark-blue",
         "name": "version",
         "textFormat": "{{short_version}}",
         "titleFormat": "Version change"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$ds"
+        },
+        "enable": true,
+        "expr": "sum(changes(vm_app_start_timestamp{job=~\"$job\", instance=~\"$instance\"})) by(job, instance)",
+        "hide": true,
+        "iconColor": "dark-yellow",
+        "name": "restarts",
+        "textFormat": "{{job}}:{{instance}} restarted"
       }
     ]
   },
@@ -39,6 +51,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 14950,
   "graphTooltip": 1,
+  "id": 68,
   "links": [
     {
       "asDropdown": false,
@@ -158,7 +171,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -218,7 +231,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -278,7 +291,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -342,7 +355,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -406,7 +419,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -504,7 +517,7 @@
         },
         "showHeader": true
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -533,6 +546,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -546,6 +560,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "stepAfter",
             "lineWidth": 1,
             "pointSize": 5,
@@ -664,6 +679,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -677,6 +693,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -767,6 +784,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -780,6 +798,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -870,6 +889,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -883,6 +903,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -971,6 +992,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -984,6 +1006,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1144,7 +1167,7 @@
           }
         ]
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -1210,6 +1233,228 @@
             "type": "prometheus",
             "uid": "$ds"
           },
+          "description": "The precentage of used RSS memory\n\nIf you think that usage is abnormal or unexpected, please file an issue and attach memory profile if possible.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 33
+          },
+          "id": 37,
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Profiling",
+              "url": "https://docs.victoriametrics.com/vmagent.html#profiling"
+            }
+          ],
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.2.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$ds"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max(\n    max_over_time(process_resident_memory_bytes{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])\n    /\n    vm_available_memory_bytes{job=~\"$job\", instance=~\"$instance\"}\n) by(job)",
+              "interval": "",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Memory usage % ($instance)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$ds"
+          },
+          "description": "Amount of used RSS memory\n\nIf you think that usage is abnormal or unexpected, please file an issue and attach memory profile if possible.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 33
+          },
+          "id": 57,
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Profiling",
+              "url": "https://docs.victoriametrics.com/vmagent.html#profiling"
+            }
+          ],
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true,
+              "sortBy": "Last *",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.2.6",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$ds"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max(\n    max_over_time(process_resident_memory_bytes{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])\n) by(job)",
+              "interval": "",
+              "legendFormat": "{{job}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Memory usage ($instance)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "$ds"
+          },
           "description": "Shows the CPU usage percentage per vmalert instance. \nIf you think that usage is abnormal or unexpected pls file an issue and attach CPU profile if possible.",
           "fieldConfig": {
             "defaults": {
@@ -1269,7 +1514,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 35
+            "y": 41
           },
           "id": 35,
           "links": [
@@ -1323,7 +1568,7 @@
             "type": "prometheus",
             "uid": "$ds"
           },
-          "description": "Amount of used memory\n\nResident memory shows share which can be freed by OS when needed.\n\nAnonymous shows share for memory allocated by the process itself. This share cannot be freed by the OS, so it must be taken into account by OOM killer.\n\nIf you think that usage is abnormal or unexpected, please file an issue and attach memory profile if possible.",
+          "description": "Shows the max number of CPU cores used  by a `job` and the corresponding limit.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1374,7 +1619,7 @@
                   }
                 ]
               },
-              "unit": "percentunit"
+              "unit": "short"
             },
             "overrides": []
           },
@@ -1382,9 +1627,9 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 35
+            "y": 41
           },
-          "id": 37,
+          "id": 56,
           "links": [
             {
               "targetBlank": true,
@@ -1407,7 +1652,7 @@
             },
             "tooltip": {
               "mode": "multi",
-              "sort": "none"
+              "sort": "desc"
             }
           },
           "pluginVersion": "9.2.6",
@@ -1419,14 +1664,32 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "max(\n    max_over_time(process_resident_memory_bytes{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])\n    /\n    vm_available_memory_bytes{job=~\"$job\", instance=~\"$instance\"}\n) by(job)",
+              "expr": "max(rate(process_cpu_seconds_total{job=~\"$job\", instance=~\"$instance\"}[$__rate_interval])) by(job)",
+              "format": "time_series",
               "interval": "",
-              "legendFormat": "__auto",
+              "intervalFactor": 1,
+              "legendFormat": "{{job}}",
               "range": true,
               "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "$ds"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "min(process_cpu_cores_available{job=~\"$job\", instance=~\"$instance\"}) by(job)",
+              "format": "time_series",
+              "hide": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "limit ({{job}})",
+              "range": true,
+              "refId": "B"
             }
           ],
-          "title": "Memory usage % ($instance)",
+          "title": "CPU usage ($instance)",
           "type": "timeseries"
         },
         {
@@ -1494,7 +1757,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 43
+            "y": 49
           },
           "id": 39,
           "links": [],
@@ -1599,7 +1862,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 43
+            "y": 49
           },
           "id": 41,
           "links": [],
@@ -1712,8 +1975,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1729,7 +1991,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 34
+            "y": 28
           },
           "id": 14,
           "options": {
@@ -1815,8 +2077,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1832,7 +2093,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 34
+            "y": 28
           },
           "id": 13,
           "options": {
@@ -1918,8 +2179,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1935,7 +2195,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 42
+            "y": 36
           },
           "id": 20,
           "options": {
@@ -2022,8 +2282,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2039,7 +2298,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 42
+            "y": 36
           },
           "id": 32,
           "options": {
@@ -2122,8 +2381,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2139,7 +2397,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 50
+            "y": 44
           },
           "id": 26,
           "options": {
@@ -2250,8 +2508,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2267,7 +2524,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 35
+            "y": 43
           },
           "id": 31,
           "options": {
@@ -2353,8 +2610,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2370,7 +2626,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 35
+            "y": 43
           },
           "id": 33,
           "options": {
@@ -2455,8 +2711,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2472,7 +2727,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 43
+            "y": 51
           },
           "id": 30,
           "options": {
@@ -2578,8 +2833,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2594,7 +2848,7 @@
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 36
+            "y": 9
           },
           "id": 52,
           "options": {
@@ -2671,8 +2925,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2687,7 +2940,7 @@
             "h": 8,
             "w": 12,
             "x": 12,
-            "y": 36
+            "y": 9
           },
           "id": 53,
           "options": {
@@ -2725,7 +2978,6 @@
   ],
   "refresh": "",
   "schemaVersion": 38,
-  "style": "dark",
   "tags": [
     "victoriametrics",
     "vmalert"
@@ -2832,7 +3084,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "5",
           "value": "5"
         },
@@ -2898,6 +3150,6 @@
   "timezone": "",
   "title": "VictoriaMetrics - vmalert",
   "uid": "LzldHAVnz",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }

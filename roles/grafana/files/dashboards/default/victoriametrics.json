@@ -50,6 +50,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 10229,
   "graphTooltip": 1,
+  "id": 69,
   "links": [
     {
       "icon": "doc",
@@ -127,7 +128,7 @@
         "content": "<div style=\"text-align: center;\">$version</div>",
         "mode": "markdown"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -156,8 +157,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -189,7 +189,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -225,8 +225,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -258,7 +257,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -295,8 +294,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -328,7 +326,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -365,8 +363,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -402,7 +399,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -437,8 +434,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "red",
-                "value": null
+                "color": "red"
               },
               {
                 "color": "green",
@@ -472,7 +468,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -507,8 +503,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -540,7 +535,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -576,8 +571,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -609,7 +603,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -646,8 +640,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -679,7 +672,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -716,8 +709,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           },
@@ -749,7 +741,7 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.2.0",
       "targets": [
         {
           "datasource": {
@@ -806,6 +798,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -819,6 +812,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -842,8 +836,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -911,6 +904,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -924,6 +918,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -947,8 +942,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1018,6 +1012,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1031,6 +1026,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1054,8 +1050,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1126,6 +1121,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1139,6 +1135,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1162,8 +1159,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1232,6 +1228,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1245,6 +1242,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1268,8 +1266,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1337,6 +1334,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1350,6 +1348,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1371,8 +1370,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4378,7 +4376,7 @@
                 "uid": "$ds"
               },
               "editorMode": "code",
-              "expr": "sum(vm_data_size_bytes{job=~\"$job\", instance=~\"$instance\"}) \n/ sum(vm_rows{job=~\"$job\", instance=~\"$instance\"})",
+              "expr": "sum(vm_data_size_bytes{job=~\"$job\", instance=~\"$instance\"}) \n/ sum(vm_rows{job=~\"$job\", instance=~\"$instance\", type!~\"indexdb.*\"})",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
@@ -5373,7 +5371,6 @@
   ],
   "refresh": "",
   "schemaVersion": 38,
-  "style": "dark",
   "tags": [
     "victoriametrics",
     "vmsingle"
@@ -5382,7 +5379,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
@@ -5400,7 +5397,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "victoriametrics",
           "value": "victoriametrics"
         },
@@ -5430,8 +5427,8 @@
       {
         "current": {
           "selected": false,
-          "text": "v1.91.3",
-          "value": "v1.91.3"
+          "text": "v1.93.7",
+          "value": "v1.93.7"
         },
         "datasource": {
           "type": "prometheus",
@@ -5527,6 +5524,6 @@
   "timezone": "",
   "title": "VictoriaMetrics",
   "uid": "wNf0q_kZk",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }

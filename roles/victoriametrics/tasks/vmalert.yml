@@ -9,16 +9,28 @@
     group: root
     mode: 0755
 
+# https://github.com/VictoriaMetrics/VictoriaMetrics/blob/master/deployment/docker/README.md#alerts
 - name: alerting rules file
   template:
-    src: "vmalert.rules.yml.j2"
-    dest: "{{ victoriametrics_path }}/rules/vmalert.rules.yml"
+    src: "rules/{{ item }}.j2"
+    dest: "{{ victoriametrics_path }}/rules/{{ item }}"
     owner: root
     group: root
     mode: 0640
+  with_items:
+    - alerts-health.yml
+    - alerts-vmagent.yml
+    - alerts-vmalert.yml
+    - alerts-vmsingle.yml
   notify:
     - vmalert reload
     - vmalert validate config
+
+- name: delete old rules
+  file:
+    path:
+    dest: "{{ victoriametrics_path }}/rules/vmalert.rules.yml"
+    state: absent
 
 - name: copy alerting rule files
   copy:
