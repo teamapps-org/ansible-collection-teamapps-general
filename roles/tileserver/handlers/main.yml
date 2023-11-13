@@ -5,8 +5,9 @@
     state: present
     restarted: True
 
-- name: tileserver clear nginx cache # noqa no-changed-when
+- name: tileserver clear nginx cache # noqa no-changed-when deprecated-command-syntax
   listen:
     - "tileserver restart"
-  command: 'rm {{ tileserver_path }}/nginx/cache/* -rf'
+  command:
+    cmd: 'rm {{ tileserver_path }}/nginx/cache/* -rf'
   when: tileserver_clear_cache | bool

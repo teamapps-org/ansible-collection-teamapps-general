@@ -80,7 +80,7 @@
   when: netdata_cloud_stat.stat.isdir is defined and netdata_cloud_stat.stat.isdir
   notify: netdata_restart
 
-- name: disable/enable telemetry
+- name: disable/enable telemetry  # noqa args
   file:
     path: /etc/netdata/.opt-out-from-anonymous-statistics
     state: "{{ netdata_disable_telemetry | ternary('touch', 'absent') }}"

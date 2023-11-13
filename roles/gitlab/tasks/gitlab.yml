@@ -48,7 +48,7 @@
     line: 'gitlab-backup create BACKUP=auto GZIP_RSYNCABLE=yes CRON=1 SKIP={{ gitlab_backup_skip }}'
     regex: '^gitlab'
 
-- name: cronjob for gitlab registry garbage collect
+- name: cronjob for gitlab registry garbage collect # noqa args
   cron:
     name: gitlab-registry-garbage-collect
     minute: "25"
