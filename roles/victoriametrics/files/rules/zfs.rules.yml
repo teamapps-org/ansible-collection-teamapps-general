@@ -14,3 +14,13 @@ groups:
         annotations:
           summary: "ZFS Pool: pool state not OK"
           description: "ZFS Pool '{{ $labels.family }}' on '{{ $labels.host }}' is in state '{{ $labels.dimension }}'"
+
+      - alert: ZFS Pool state not OK
+        expr: |
+          node_zfs_zpool_state{state!="online"} != 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "ZFS Pool: pool state not OK"
+          description: "ZFS Pool '{{ $labels.zpool }}' on '{{ $labels.host }}' is in state '{{ $labels.state }}'"

@@ -17,9 +17,29 @@ groups:
 
       - alert: MetricsRemoved
         expr: |
-          count by (host,instance,job,scraper_instance)({__name__!~'ALERTS|ALERTS_FOR_STATE',host!=''} offset 1h)
+          count by (host,instance,job,scraper_instance)({job!="netdata", __name__!~'ALERTS|ALERTS_FOR_STATE', host!=''} offset 1h)
           > 5 # small changes are normal
-          unless count({__name__!~'ALERTS|ALERTS_FOR_STATE',host!=''}) by (host,instance,job,scraper_instance)
+          unless count by (host,instance,job,scraper_instance)({job!="netdata", __name__!~'ALERTS|ALERTS_FOR_STATE', host!=''})
+        for: 10m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "Metrics removed?"
+          description: |-
+            there are {{ $value }} metrics with no update.
+            job: '{{ $labels.job }}'
+            host: '{{ $labels.host }}'
+            instance: '{{ $labels.instance }}'
+            scraper: '{{ $labels.scraper_instance }}'
+
+            Was a check or host or metrics removed? Count of metrics that were reported an hour ago, have no current value.
+
+      - alert: MetricsRemovedNetdata
+        expr: |
+          count by (host,instance,job,scraper_instance)({job="netdata", __name__!~'ALERTS|ALERTS_FOR_STATE', host!=''} offset 1h)
+          > 5 # small changes are normal
+          unless count by (host,instance,job,scraper_instance)({job="netdata", __name__!~'ALERTS|ALERTS_FOR_STATE', host!=''})
         for: 10m
         labels:
           team: ops

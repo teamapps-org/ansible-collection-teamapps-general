@@ -86,6 +86,18 @@ groups:
           summary: "Disk Full on {{ $labels.host }}"
           description: "{{ $labels.host }}:{{ $labels.family }} filesystem with usage above 90% for longer than 5 minutes "
 
+      - alert: MdRaidDiskFailed
+        expr: 'netdata_md_health_failed_disks_average > 0'
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Mdraid failed disk on {{ $labels.host }}"
+          description: "Mdraid failed disk on {{ $labels.host }} {{ $labels.dimension }} "
+
+
+  - name: filesystemPrediction
+    rules:
       - alert: DiskSpacePrediction36h
         expr: |
           predict_linear(
@@ -125,7 +137,7 @@ groups:
       - alert: DiskInodesPrediction72h
         expr: |
           predict_linear(
-            netdata_disk_inodes_inodes_average{dimension="avail", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*|/var/lib/lxd.*"}
+            netdata_disk_inodes_inodes_average{dimension="avail", filesystem!="zfs", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*|/var/lib/lxd.*"}
             [36h], 3600 * 72
             )
           < 20000
@@ -139,15 +151,6 @@ groups:
         annotations:
           summary: "72h Inodes prediction low {{ $labels.host }}"
           description: "Inodes is predicted to get below 20'000 on host {{ $labels.host }} for mountpoint {{ $labels.family }}, prediction based on the last 36h"
-
-      - alert: MdRaidDiskFailed
-        expr: 'netdata_md_health_failed_disks_average > 0'
-        for: 5m
-        labels:
-          severity: critical
-        annotations:
-          summary: "Mdraid failed disk on {{ $labels.host }}"
-          description: "Mdraid failed disk on {{ $labels.host }} {{ $labels.dimension }} "
 
   - name: ram
     rules:
