@@ -48,7 +48,7 @@
   tags:
     - matomo
 
-## if config file exists, the first-run setup does not work anymore. # TODO: How to preconfigure database for installer?
+## if config file exists, the first-run setup does not work anymore. How to preconfigure database for installer?
 # - name: copy initial config file
 #   copy:
 #     dest: '{{ matomo_path }}/code/matomo/config/config.ini.php'

@@ -18,7 +18,7 @@
   template:
     src: oauth2-proxy.cfg.j2
     dest: '{{ oauth2_proxy_instance_directory }}/oauth2-proxy.cfg'
-    owner: 65532 # todo
+    owner: 65532 # UID/GID 65532 is also known as nonroot user in distroless image
     group: root
     mode: 0640
   register: oauth2_proxy_instance_reg_config
@@ -27,7 +27,7 @@
   template:
     src: htpasswd.j2
     dest: '{{ oauth2_proxy_instance_directory }}/htpasswd'
-    owner: 65532 # todo
+    owner: 65532 # UID/GID 65532 is also known as nonroot user in distroless image
     group: root
     mode: 0640
 

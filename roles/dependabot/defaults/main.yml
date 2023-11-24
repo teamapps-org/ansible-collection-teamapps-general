@@ -27,7 +27,7 @@ dependabot_gitlab_auth_token: asdfasdfasdfasdfasdf # generate random passwor
 # generate rails secret_key_base using docker-compose exec worker bundle exec rake secret
 dependabot_secret_key_base: key
 
-dependabot_app_image: andrcuns/dependabot-gitlab:0.36.0 # TODO upgrade to 1.0+ (latest)
+dependabot_app_image: andrcuns/dependabot-gitlab:0.36.0
 dependabot_mongodb_image: bitnami/mongodb:6.0-debian-11
 dependabot_redis_image: bitnami/redis:7.0-debian-11
 

@@ -54,6 +54,11 @@ https://help.nextcloud.com/t/solved-progress-report-on-getting-the-new-hpb-worki
 # ./occ config:system:set trusted_proxies 2 --value=172.18.0.0/16
 ~~~
 
+## Improvements
+
+* php and server tuning values?: https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html#tune-php-fpm
+* external preview generation: https://docs.nextcloud.com/server/latest/admin_manual/installation/server_tuning.html#previews
+
 ## License
 
 Apache 2.0
