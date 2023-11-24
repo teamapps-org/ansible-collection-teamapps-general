@@ -142,7 +142,7 @@ def normalize_raw_data(smart_log_json, ctrl_json, nvme_info):
         if ctrl_json['csts'] & 1:
             normalized_data['controller_ready'] = 1
         else:
-            normalized_data['controller_ready'] = 1
+            normalized_data['controller_ready'] = 0
 
     # data_units written is Thousand 'SectorSize' byte blocks written.
     normalized_data['data_bytes_written'] = smart_log_json['data_units_written'] * 1000 * nvme_info.get("SectorSize", 512)
@@ -217,8 +217,8 @@ def print_prometheus_metrics(nvme_data):
                 print(metric_entry('nvme_%s'%normalized_metric,  labels, nvme_device['normalized_data'][normalized_metric]))
 
         for smart_metric in [
-            # "critical_warning",
-            # "temperature",
+            # "critical_warning", # composite value, added as normalized metrics
+            # "temperature", # added as normalized metric in celcius
             "avail_spare",  # percentage, starts at 100
             "spare_thresh", # percentage, usually 10
             "percent_used", # percentage of estimated endurance of the device, can exceed 100
@@ -234,8 +234,8 @@ def print_prometheus_metrics(nvme_data):
             "num_err_log_entries",
             "warning_temp_time", # Warning Composite Temperature Time, minutes
             "critical_comp_time", # Critical Composite Temperature Time, minutes
-            # "temperature_sensor_1",
-            # "temperature_sensor_2",
+            # "temperature_sensor_1", # added as normalized metric in celcius
+            # "temperature_sensor_2", # added as normalized metric in celcius
             "thm_temp1_trans_count",
             "thm_temp2_trans_count",
             "thm_temp1_total_time", # minutes
@@ -271,7 +271,6 @@ def parse_args():
 if __name__ == '__main__':
     try:
         args = parse_args()
-        # nvme_list_json = get_nvme_list("/dev/nmve0")
         nvme_list_json = get_nvme_list(args.device)
         if args.output == 'json':
             nvme_data = collect_nvme_data(nvme_list_json)
@@ -284,17 +283,3 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("\nInterrupted")
         exit(0)
-
-
-    # pretty_print_json(nvme_list_json)
-
-    # smart_log_json = get_smart_log("/dev/nmve0")
-    # print_smart_log(smart_log_json)
-    # pretty_print_json(smart_log_json)
-
-    # ctrl_regs_json = get_ctrl_regs("/dev/nmve0")
-    # pretty_print_json(ctrl_regs_json)
-
-    # nvme_data = collect_nvme_data(nvme_list_json)
-    # pretty_print_json(nvme_data)
-    # print_prometheus_metrics(nvme_data)
