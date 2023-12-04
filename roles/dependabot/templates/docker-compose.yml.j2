@@ -1,64 +1,143 @@
+# Definition for running deployed version of dependabot-gitlab using docker-compose
+# In case of using custom docker-compose.yml, it needs to be mounted inside 'worker' service
+#   with path exposed via 'SETTINGS__UPDATER_TEMPLATE_PATH' envronment variables
+
 version: "3.8"
 
+# Dependabot-gitlab base image
+x-base-image: &base_image "${BASE_IMAGE:-andrcuns/dependabot-gitlab:3.10.0-alpha.1}"
+
+# Option documentation
+# https://gitlab.com/dependabot-gitlab/dependabot/-/blob/master/doc/environment.md
 x-environment: &environment_variables
+  BASE_IMAGE: *base_image
+  # Ecosystem specific image pattern, where package_ecosystem is one of the supported ecosystems:
+  #  bundler
+  #  npm
+  #  gomod
+  #  pip
+  #  docker
+  #  composer
+  #  pub
+  #  cargo
+  #  nuget
+  #  maven
+  #  gradle
+  #  mix
+  #  terraform
+  #  elm
+  #  gitsubmodule
+  #
+  SETTINGS__UPDATER_IMAGE_PATTERN: "${UPDATER_IMAGE_PATTERN:-andrcuns/dependabot-gitlab-%<package_ecosystem>s:3.10.0-alpha.1}"
+  # Persistance
   REDIS_URL: redis://redis:6379
   MONGODB_URL: mongodb:27017
+  # Rails
   RAILS_ENV: production
-  SENTRY_DSN:
-  SETTINGS__LOG_LEVEL: "{{ dependabot_log_level }}"
-  SETTINGS__GITLAB_URL: "{{ dependabot_gitlab_url }}"
-  SETTINGS__GITHUB_ACCESS_TOKEN: "{{ dependabot_github_access_token }}"
-  SETTINGS__GITLAB_ACCESS_TOKEN: "{{ dependabot_gitlab_access_token }}"
-  SETTINGS__GITLAB_AUTH_TOKEN: "{{ dependabot_gitlab_auth_token }}"
-  SETTINGS__DEPENDABOT_URL: "https://{{ dependabot_domain }}"
-  SETTINGS__CREATE_PROJECT_HOOK: "true"
-  SECRET_KEY_BASE: "{{ dependabot_secret_key_base }}"
-x-volumes: &service_volumes
-  volumes:
-    - ./tmp:/home/dependabot/app/tmp
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#concurrency
+  RAILS_MAX_THREADS: # ${RAILS_MAX_THREADS:-}
+  RAILS_MIN_THREADS: # ${RAILS_MIN_THREADS:-}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#application
+  SECRET_KEY_BASE: ${SECRET_KEY_BASE:-key}
+  SETTINGS__LOG_COLOR: ${SETTINGS__LOG_COLOR:-false}
+  SETTINGS__LOG_LEVEL: ${SETTINGS__LOG_LEVEL:-info}
+  SETTINGS__DRY_RUN: ${SETTINGS__DRY_RUN:-false}
+  SETTINGS__COMMANDS_PREFIX: ${SETTINGS__COMMANDS_PREFIX:-}
+  SETTINGS__ANONYMOUS_ACCESS: ${SETTINGS__ANONYMOUS_ACCESS:-true}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#access
+  SETTINGS__GITLAB_ACCESS_TOKEN: ${SETTINGS__GITLAB_ACCESS_TOKEN:-}
+  SETTINGS__GITHUB_ACCESS_TOKEN: ${SETTINGS__GITHUB_ACCESS_TOKEN:-}
+  SETTINGS__GITLAB_URL: ${SETTINGS__GITLAB_URL:-}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#gitlab-api
+  SETTINGS__GITLAB_API_MAX_RETRY: ${SETTINGS__GITLAB_API_MAX_RETRY:-3}
+  SETTINGS__GITLAB_API_MAX_RETRY_INTERVAL: ${SETTINGS__GITLAB_API_MAX_RETRY_INTERVAL:-1}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#webhooks
+  SETTINGS__DEPENDABOT_URL: ${SETTINGS__DEPENDABOT_URL-}
+  SETTINGS__CREATE_PROJECT_HOOK: ${SETTINGS__CREATE_PROJECT_HOOK:-true}
+  SETTINGS__GITLAB_AUTH_TOKEN: ${SETTINGS__GITLAB_AUTH_TOKEN:-}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#configuration-file
+  SETTINGS__CONFIG_BASE_FILENAME: # ${SETTINGS__CONFIG_BASE_FILENAME:-}
+  SETTINGS__CONFIG_FILENAME: ${SETTINGS__CONFIG_FILENAME:-.gitlab/dependabot.yml}
+  SETTINGS__CONFIG_BRANCH: # ${SETTINGS__CONFIG_BRANCH:-}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#service
+  SETTINGS__DEPLOY_MODE: compose
+  SETTINGS__UPDATE_RETRY: ${SETTINGS__UPDATE_RETRY:-2}
+  SETTINGS__EXPIRE_RUN_DATA: ${SETTINGS__EXPIRE_RUN_DATA:-86400} # seconds, 1 month
+  SETTINGS__DELETE_UPDATER_CONTAINER: ${SETTINGS__DELETE_UPDATER_CONTAINER:-true}
+  SETTINGS__UPDATER_CONTAINER_STARTUP_TIMEOUT: ${SETTINGS__UPDATER_CONTAINER_STARTUP_TIMEOUT:-180}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#project-registration
+  SETTINGS__PROJECT_REGISTRATION: ${SETTINGS__PROJECT_REGISTRATION:-manual}
+  SETTINGS__PROJECT_REGISTRATION_CRON: ${SETTINGS__PROJECT_REGISTRATION_CRON:-0 5 * * *}
+  SETTINGS__PROJECT_REGISTRATION_ALLOW_PATTERN: # ${SETTINGS__PROJECT_REGISTRATION_ALLOW_PATTERN:-}
+  SETTINGS__PROJECT_REGISTRATION_IGNORE_PATTERN: # ${SETTINGS__PROJECT_REGISTRATION_IGNORE_PATTERN:-}
+  SETTINGS__PROJECT_REGISTRATION_RUN_ON_BOOT: # ${SETTINGS__PROJECT_REGISTRATION_RUN_ON_BOOT:-}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#metrics
+  SETTINGS__METRICS: ${SETTINGS__METRICS:-true}
+  # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#sentry
+  SENTRY_DSN: # ${SENTRY_DSN:-}
+  SETTINGS__SENTRY_TRACES_SAMPLE_RATE: #  ${SETTINGS__SENTRY_TRACES_SAMPLE_RATE:-0.0}
+  SETTINGS__SENTRY_IGNORED_ERRORS: #  ${SETTINGS__SENTRY_IGNORED_ERRORS:-}
+
+# Updater container definition, app dynamically loads this definition when scheduling dependency updater containers
+# If custom volumes or variables are required for dependency update process, it should be placed here.
+# Be aware that any volumes are in the context of the docker (dind) service, if you want to mount local directories,
+# they should be mounted in the dind service first. The local directory in the updater volume should then
+# reference the path inside the dind service.
+x-updater:
+  network_mode: "host"
+  environment:
+    <<: *environment_variables
 
 services:
   redis:
-    image: '{{ dependabot_redis_image }}'
-    restart: unless-stopped
-    # ports:
-    #   - 6379:6379
+    image: ${REDIS_IMAGE:-bitnami/redis:7.2-debian-11}
     volumes:
       - ./redis-data:/bitnami/redis/data
     environment:
-      ALLOW_EMPTY_PASSWORD: "yes"
+      ALLOW_EMPTY_PASSWORD: ${REDIS_ALLOW_EMPTY_PASSWORD:-yes}
+      REDIS_EXTRA_FLAGS: ${REDIS_EXTRA_FLAGS:-}
+
   mongodb:
-    image: '{{ dependabot_mongodb_image }}'
-    restart: unless-stopped
-    # ports:
-    #   - 27017:27017
+    image: ${MONGODB_IMAGE:-bitnami/mongodb:7.0-debian-11}
     volumes:
       - ./mongodb-data:/bitnami/mongodb
     environment:
-      ALLOW_EMPTY_PASSWORD: "yes"
+      ALLOW_EMPTY_PASSWORD: ${MONGODB_ALLOW_EMPTY_PASSWORD:-yes}
+      MONGODB_EXTRA_FLAGS: ${MONGODB_EXTRA_FLAGS:-}
+
+  docker:
+    image: ${DOCKER_DIND_IMAGE:-docker:24.0-dind}
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: "/certs"
+    volumes:
+      - docker-images:/var/lib/docker
+      - docker-certs-ca:/certs/ca
+      - docker-certs-client:/certs/client
 
   migration:
-    image: '{{ dependabot_app_image }}'
-    # restart: unless-stopped # migration container just runs once!
+    image: *base_image
     depends_on:
       - mongodb
-    <<: *service_volumes
+    volumes:
+      - tmp:/home/dependabot/app/tmp
     environment:
       <<: *environment_variables
     command: rails db:migrate
 
   web:
-    image: '{{ dependabot_app_image }}'
-    restart: unless-stopped
+    image: *base_image
     depends_on:
       - redis
       - migration
-    <<: *service_volumes
+    volumes:
+      - tmp:/home/dependabot/app/tmp
     environment:
       <<: *environment_variables
       RAILS_SERVE_STATIC_FILES: "true"
       LETSENCRYPT_HOST: '{{ dependabot_domain }}'
       VIRTUAL_HOST: '{{ dependabot_domain }}'
+      VIRTUAL_PORT: '3000'
     ports:
       - 127.0.0.1:3000:3000
     expose:
@@ -68,33 +147,61 @@ services:
       test: ["CMD", "curl", "-f", "localhost:3000/healthcheck"]
       interval: 10s
       timeout: 2s
-      retries: 10
-      start_period: 20s
+      retries: 18
+      start_period: 5s
     networks:
       - default
       - webproxy
 
   worker:
-    image: '{{ dependabot_app_image }}'
-    restart: unless-stopped
+    image: *base_image
     depends_on:
       - redis
       - migration
-    <<: *service_volumes
+    volumes:
+      - tmp:/home/dependabot/app/tmp
+      - docker-certs-client:/certs/client:ro
+      - ./.env:/home/dependabot/app/.env:ro
+      - ./docker-compose.yml:/home/dependabot/app/docker-compose.yml:ro
     environment:
       <<: *environment_variables
-{% for key,value in dependabot_custom_env_vars.items()|sort(attribute='0') %}
-      {{ key }}: "{{ value }}"
+      SETTINGS__UPDATER_TEMPLATE_PATH: /home/dependabot/app/docker-compose.yml
+    environment:
+      <<: *environment_variables
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: "/certs/client"
+      DOCKER_TLS_VERIFY: 1
+      SETTINGS__UPDATER_TEMPLATE_PATH: ${UPDATER_TEMPLATE_PATH:-docker-compose.yml}
+      SETTINGS__SIDEKIQ_ALIVE_KEY_TTL: ${SETTINGS__SIDEKIQ_ALIVE_KEY_TTL:-60}
+{% for var,value in dependabot_custom_env_vars | dictsort  %}
+      {{ var }}: {{ '${'+var+'}' }}
 {% endfor %}
-    # ports:
-    #   - 7433:7433
     command: sidekiq
     healthcheck:
       test: ["CMD", "curl", "-f", "localhost:7433/healthcheck"]
-      interval: 60s
+      interval: 10s
       timeout: 2s
-      retries: 10
-      start_period: 20s
+      retries: 18
+      start_period: 5s
+
+  background-tasks:
+    image: *base_image
+    depends_on:
+      - web
+      - worker
+    volumes:
+      - tmp:/home/dependabot/app/tmp
+    environment:
+      <<: *environment_variables
+    command: rails background_tasks:run_post_deploy_tasks
+
+volumes:
+  # redis-data:
+  # mongodb-data:
+  tmp:
+  docker-images:
+  docker-certs-ca:
+  docker-certs-client:
 
 networks:
   default:

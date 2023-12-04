@@ -62,6 +62,15 @@
     group: root
     mode: 0750
 
+- name: deploy .env
+  template:
+    src: 'env.j2'
+    dest: '{{ dependabot_path }}/.env'
+    owner: root
+    group: root
+    mode: '0644'
+  # no_log: true
+
 - name: deploy compose
   template:
     src: 'docker-compose.yml.j2'
