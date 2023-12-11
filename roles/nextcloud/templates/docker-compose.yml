@@ -48,6 +48,10 @@ services:
       # NEXTCLOUD_ADMIN_USER:  # doesn't work, configure manually with web setup
       # NEXTCLOUD_ADMIN_PASSWORD:
       # SMTP_HOST: 172.28.0.1 # configure email manually with mail account
+    healthcheck:
+      test: "mariadb-admin status -h localhost -p$$MYSQL_ROOT_PASSWORD"
+      timeout: 10s
+      retries: 5
     depends_on:
       - db
       - redis
