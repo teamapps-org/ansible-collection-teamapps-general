@@ -2,7 +2,7 @@
 kimai_path: '/container/kimai'
 kimai_domain: '{{ ansible_fqdn }}'
 
-kimai_version: '2.0.34' # https://www.kimai.org/documentation/installation.html
+kimai_version: '2.5.0' # https://www.kimai.org/documentation/installation.html
 kimai_php_version: '8.2'
 kimai_mariadb_version: '10.11'
 
