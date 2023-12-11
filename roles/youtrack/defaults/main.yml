@@ -3,4 +3,4 @@
 youtrack_path: '/container/youtrack'
 youtrack_domain: 'youtrack.{{ ansible_fqdn }}'
 
-youtrack_version: '2023.2.19243'
+youtrack_version: '2023.2.21228'
