@@ -91,6 +91,7 @@ x-updater:
 services:
   redis:
     image: ${REDIS_IMAGE:-bitnami/redis:7.2-debian-11}
+    restart: always
     volumes:
       - ./redis-data:/bitnami/redis/data
     environment:
@@ -99,6 +100,7 @@ services:
 
   mongodb:
     image: ${MONGODB_IMAGE:-bitnami/mongodb:7.0-debian-11}
+    restart: always
     volumes:
       - ./mongodb-data:/bitnami/mongodb
     environment:
@@ -107,6 +109,7 @@ services:
 
   docker:
     image: ${DOCKER_DIND_IMAGE:-docker:24.0-dind}
+    restart: always
     privileged: true
     environment:
       DOCKER_TLS_CERTDIR: "/certs"
@@ -117,6 +120,7 @@ services:
 
   migration:
     image: *base_image
+    restart: no
     depends_on:
       - mongodb
     volumes:
@@ -127,6 +131,7 @@ services:
 
   web:
     image: *base_image
+    restart: always
     depends_on:
       - redis
       - migration
@@ -155,6 +160,7 @@ services:
 
   worker:
     image: *base_image
+    restart: always
     depends_on:
       - redis
       - migration
@@ -186,6 +192,7 @@ services:
 
   background-tasks:
     image: *base_image
+    restart: always
     depends_on:
       - web
       - worker
