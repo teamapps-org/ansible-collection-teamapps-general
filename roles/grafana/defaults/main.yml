@@ -67,6 +67,6 @@ grafana_remove_dashboards:
 # non-root and automated build of grafana/grafana-image-renderer
 grafana_image_renderer_image: bitnami/grafana-image-renderer
 grafana_image_renderer_version: latest
-grafana_image_renderer_cpu_limit: 0.8
-grafana_image_renderer_mem_limit: 200M
+grafana_image_renderer_cpu_limit: 1.5
+grafana_image_renderer_mem_limit: 500M
 grafana_image_renderer_port: 127.0.0.8:18081 # port for metric scraping
