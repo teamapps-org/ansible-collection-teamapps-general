@@ -7,9 +7,9 @@
 - name: verify that the minio secrets are set
   assert:
     that:
-      - "{{ assert_var }} is defined"
-      - "{{ assert_var }} | length > 0"
-      - "{{ assert_var }} != None"
+      - "assert_var is defined"
+      - "assert_var | length > 0"
+      - "assert_var != None"
     fail_msg: "{{ assert_var }} needs to be set!"
   loop_control:
     loop_var: assert_var
@@ -21,9 +21,9 @@
   when: minio_console_enable
   assert:
     that:
-      - "{{ assert_var }} is defined"
-      - "{{ assert_var }} | length > 0"
-      - "{{ assert_var }} != None"
+      - "assert_var is defined"
+      - "assert_var | length > 0"
+      - "assert_var != None"
     fail_msg: "{{ assert_var }} needs to be set!"
   loop_control:
     loop_var: assert_var
