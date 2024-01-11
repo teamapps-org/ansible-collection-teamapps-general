@@ -25,7 +25,7 @@ Tip: You can specify the installation path for collections in your project in `a
 ~~~ini
 # ansible.cfg
 [defaults]
-collections_paths = collections
+collections_path = collections
 ~~~
 
 ## Usage
