@@ -42,7 +42,7 @@ x-environment: &environment_variables
   SETTINGS__LOG_COLOR: ${SETTINGS__LOG_COLOR:-false}
   SETTINGS__LOG_LEVEL: ${SETTINGS__LOG_LEVEL:-info}
   SETTINGS__DRY_RUN: ${SETTINGS__DRY_RUN:-false}
-  SETTINGS__COMMANDS_PREFIX: ${SETTINGS__COMMANDS_PREFIX:-}
+  SETTINGS__COMMANDS_PREFIX: ${SETTINGS__COMMANDS_PREFIX:-$dependabot}
   SETTINGS__ANONYMOUS_ACCESS: ${SETTINGS__ANONYMOUS_ACCESS:-true}
   # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#access
   SETTINGS__GITLAB_ACCESS_TOKEN: ${SETTINGS__GITLAB_ACCESS_TOKEN:-}
@@ -76,6 +76,7 @@ x-environment: &environment_variables
   # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#sentry
   SENTRY_DSN: # ${SENTRY_DSN:-}
   SETTINGS__SENTRY_TRACES_SAMPLE_RATE: #  ${SETTINGS__SENTRY_TRACES_SAMPLE_RATE:-0.0}
+  SETTINGS__SENTRY_PROFILES_SAMPLE_RATE:
   SETTINGS__SENTRY_IGNORED_ERRORS: #  ${SETTINGS__SENTRY_IGNORED_ERRORS:-}
 
 # Updater container definition, app dynamically loads this definition when scheduling dependency updater containers
@@ -120,7 +121,7 @@ services:
 
   migration:
     image: *base_image
-    restart: "no"
+    restart: on-failure
     depends_on:
       - mongodb
     volumes:
@@ -192,7 +193,7 @@ services:
 
   background-tasks:
     image: *base_image
-    restart: always
+    restart: on-failure
     depends_on:
       - web
       - worker

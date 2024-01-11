@@ -27,6 +27,9 @@ dependabot_gitlab_auth_token: asdfasdfasdfasdfasdf # generate random passwor
 # generate rails secret_key_base using docker-compose exec worker bundle exec rake secret
 dependabot_secret_key_base: key
 
+# you can set this to '@dependabot' if you created a dependabot user in gitlab as recommended in README.
+dependabot_commands_prefix: '$dependabot'
+
 dependabot_version: 3.10.0-alpha.1
 dependabot_mongodb_image: bitnami/mongodb:7.0-debian-11
 dependabot_redis_image: bitnami/redis:7.2-debian-11
