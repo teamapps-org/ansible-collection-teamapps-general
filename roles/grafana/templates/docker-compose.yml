@@ -130,5 +130,5 @@ services:
 networks:
   grafana:
   webproxy:
-    external:
-      name: webproxy
+    external: True
+    name: webproxy

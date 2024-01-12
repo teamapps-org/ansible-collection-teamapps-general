@@ -116,5 +116,5 @@ networks:
       config:
         - subnet: "172.16.238.0/24"
   webproxy:
-    external:
-      name: webproxy
+    external: True
+    name: webproxy

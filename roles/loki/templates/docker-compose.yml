@@ -47,5 +47,5 @@ services:
 networks:
   loki:
   webproxy:
-    external:
-      name: webproxy
+    external: True
+    name: webproxy
