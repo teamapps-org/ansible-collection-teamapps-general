@@ -11,6 +11,7 @@ victoriametrics_nginx_image: nginx:alpine
 # retention period (months) https://victoriametrics.github.io/#retention
 victoriametrics_retention_period: 3
 victoriametrics_big_merge_concurrency: 0
+victoriametrics_max_samples_per_query: 1000000000
 
 victoriametrics_path: '/container/victoriametrics'
 victoriametrics_docker_pull: '{{ global_docker_pull | default(False) }}'
