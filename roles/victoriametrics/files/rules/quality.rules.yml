@@ -17,9 +17,20 @@ groups:
 
       - alert: MetricsRemoved
         expr: |
-          count by (host,instance,job,scraper_instance)({job!="netdata", __name__!~'ALERTS|ALERTS_FOR_STATE', host!=''} offset 1h)
-          > 5 # small changes are normal
-          unless count by (host,instance,job,scraper_instance)({job!="netdata", __name__!~'ALERTS|ALERTS_FOR_STATE', host!=''})
+          (
+            count by(host,instance,job,scraper_instance)(
+              default_rollup(
+                {job!="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m] offset 1h
+              )
+            )
+            > 5 # small changes are normal
+          )
+          unless
+          count by(host,instance,job,scraper_instance)(
+            default_rollup(
+              {job!="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m]
+            )
+          )
         for: 10m
         labels:
           team: ops
@@ -37,9 +48,20 @@ groups:
 
       - alert: MetricsRemovedNetdata
         expr: |
-          count by (host,instance,job,scraper_instance)({job="netdata", __name__!~'ALERTS|ALERTS_FOR_STATE', host!=''} offset 1h)
-          > 5 # small changes are normal
-          unless count by (host,instance,job,scraper_instance)({job="netdata", __name__!~'ALERTS|ALERTS_FOR_STATE', host!=''})
+          (
+            count by(host,instance,job,scraper_instance)(
+              default_rollup(
+                {job="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m] offset 1h
+              )
+            )
+            > 5 # small changes are normal
+          )
+          unless
+          count by(host,instance,job,scraper_instance)(
+            default_rollup(
+              {job="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m]
+            )
+          )
         for: 10m
         labels:
           team: ops
