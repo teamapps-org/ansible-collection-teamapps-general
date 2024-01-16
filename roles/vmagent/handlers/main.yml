@@ -11,3 +11,8 @@
   service:
     name: vic-vmagent
     state: restarted
+
+- name: vmagent-reload
+  service:
+    name: vic-vmagent
+    state: reloaded

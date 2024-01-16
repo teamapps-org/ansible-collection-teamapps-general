@@ -62,7 +62,7 @@
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"
     validate: /usr/local/bin/vmagent-prod -dryRun -promscrape.config %s
-  notify: vmagent-restart
+  notify: vmagent-reload
 
 - name: always validate config
   command: /usr/local/bin/vmagent-prod -dryRun -promscrape.config "{{ vmagent_config_dir }}/config.yml"
