@@ -35,11 +35,11 @@
 
 - name: install gitlab.rb config file
   template:
-    src: gitlab.rb
+    src: gitlab.rb.j2
     dest: /etc/gitlab/gitlab.rb
     owner: root
     group: root
-    mode: 0600
+    mode: '0600'
   notify: gitlab-ctl reconfigure
 
 - name: Gitlab backup config
@@ -58,3 +58,21 @@
     job: '/usr/bin/gitlab-ctl registry-garbage-collect {{ gitlab_registry_garbage_collect_options }}'
     cron_file: registry_garbage_collect
     state: '{{ gitlab_registry_garbage_collect_state }}'
+
+- name: gitlab custom robots.txt directory
+  file:
+    path: /srv/gitlab-nginx
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: gitlab_custom_robots_txt
+
+- name: deploy custom robots.txt
+  template:
+    src: robots.txt.j2
+    dest: /srv/gitlab-nginx/robots.txt
+    owner: root
+    group: root
+    mode: '0644'
+  when: gitlab_custom_robots_txt

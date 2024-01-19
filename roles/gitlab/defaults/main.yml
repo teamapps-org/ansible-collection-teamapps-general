@@ -34,3 +34,6 @@ gitlab_registry_max_body_size: '512m'
 
 # custom config appended to gitlab.rb
 gitlab_custom_config: ''
+
+# If true: deploy robots.txt with Disallow: /
+gitlab_custom_robots_txt: False

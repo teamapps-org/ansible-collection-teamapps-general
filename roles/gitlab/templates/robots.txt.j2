@@ -1,0 +1,90 @@
+{#
+  Based on original file in: /opt/gitlab/embedded/service/gitlab-rails/public/robots.txt
+#}
+# See http://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+#
+# To ban all spiders from the entire site uncomment the next two lines:
+User-Agent: *
+Disallow: /
+
+# Add a 1 second delay between successive requests to the same server, limits resources used by crawler
+# Only some crawlers respect this setting, e.g. Googlebot does not
+# Crawl-delay: 1
+
+# Based on details in https://gitlab.com/gitlab-org/gitlab/blob/master/config/routes.rb,
+# https://gitlab.com/gitlab-org/gitlab/blob/master/spec/routing, and using application
+
+# Global routes
+User-Agent: *
+Disallow: /autocomplete/users
+Disallow: /autocomplete/projects
+Disallow: /search
+Disallow: /admin
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /users
+Disallow: /api/v*
+Disallow: /help
+Disallow: /s/
+Disallow: /-/profile
+Disallow: /-/ide/
+Disallow: /-/experiment
+# Restrict allowed routes to avoid very ugly search results
+Allow: /users/sign_in
+Allow: /users/sign_up
+Allow: /users/*/snippets
+
+# Generic resource routes like new, edit, raw
+# This will block routes like:
+# - /projects/new
+# - /gitlab-org/gitlab-foss/issues/123/-/edit
+User-Agent: *
+Disallow: /*/new
+Disallow: /*/edit
+Disallow: /*/raw
+Disallow: /*/realtime_changes
+
+# Group details
+User-Agent: *
+Disallow: /groups/*/analytics
+Disallow: /groups/*/contribution_analytics
+Disallow: /groups/*/group_members
+Disallow: /groups/*/-/saml/sso
+
+# Project details
+User-Agent: *
+Disallow: /*/*.git$
+Disallow: /*/archive/
+Disallow: /*/repository/archive*
+Disallow: /*/activity
+Disallow: /*/blame
+Disallow: /*/commits
+Disallow: /*/commit
+Disallow: /*/commit/*.patch
+Disallow: /*/commit/*.diff
+Disallow: /*/compare
+Disallow: /*/network
+Disallow: /*/graphs
+Disallow: /*/merge_requests/*.patch
+Disallow: /*/merge_requests/*.diff
+Disallow: /*/merge_requests/*/diffs
+Disallow: /*/deploy_keys
+Disallow: /*/hooks
+Disallow: /*/services
+Disallow: /*/protected_branches
+Disallow: /*/uploads/
+Disallow: /*/project_members
+Disallow: /*/settings
+Disallow: /*/-/import
+Disallow: /*/-/environments
+Disallow: /*/-/jobs
+Disallow: /*/-/requirements_management
+Disallow: /*/-/pipelines
+Disallow: /*/-/pipeline_schedules
+Disallow: /*/-/dependencies
+Disallow: /*/-/licenses
+Disallow: /*/-/metrics
+Disallow: /*/-/incidents
+Disallow: /*/-/value_stream_analytics
+Disallow: /*/-/analytics
+Disallow: /*/insights

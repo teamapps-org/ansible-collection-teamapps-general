@@ -61,6 +61,11 @@ nginx['client_max_body_size'] = "{{ gitlab_max_body_size }}"
 #nginx['ssl_certificate'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
 #nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
 
+{% if gitlab_custom_robots_txt %}
+# https://docs.gitlab.com/omnibus/settings/nginx.html#configure-robotstxt
+nginx['custom_gitlab_server_config'] = "\nlocation =/robots.txt { alias /srv/gitlab-nginx/robots.txt; }\n"
+{% endif %}
+
 ############
 # Registry #
 ############
