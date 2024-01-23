@@ -27,7 +27,16 @@
     mode: '0640'
 
 - name: promtail_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ promtail_path }}'
     state: present
-    pull: '{{ promtail_docker_pull }}'
+    pull: "{{ promtail_docker_pull | ternary('always', 'policy') }}"
+  register: promtail__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ promtail__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: promtail__register_compose.changed

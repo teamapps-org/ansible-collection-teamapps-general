@@ -90,9 +90,18 @@
     - key_no_rate_limit.conf
 
 - name: tileserver_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ tileserver_path }}'
     state: present
-    pull: '{{ tileserver_docker_pull }}'
+    pull: "{{ tileserver_docker_pull | ternary('always', 'policy') }}"
     remove_orphans: yes
   notify: tileserver clear nginx cache
+  register: tileserver__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ tileserver__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: tileserver__register_compose.changed

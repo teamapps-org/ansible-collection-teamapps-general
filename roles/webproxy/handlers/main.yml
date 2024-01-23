@@ -1,26 +1,19 @@
 ---
 # handlers file for webproxy
 
-- name: webproxy_docker-compose-up
-  docker_compose:
-    project_src: '{{ webproxy_path }}'
-    state: present
-
 - name: webproxy_nginx_reload # noqa no-changed-when
   command: 'docker-compose exec -T nginx nginx -s reload'
   args:
     chdir: '{{ webproxy_path }}'
 
 - name: webproxy_generator_restart
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ webproxy_path }}'
-    state: present
     services:
       - docker-gen
-    restarted: yes
+    state: restarted
 
 - name: webproxy_docker-compose-restart
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ webproxy_path }}'
-    state: present
-    restarted: yes
+    state: restarted

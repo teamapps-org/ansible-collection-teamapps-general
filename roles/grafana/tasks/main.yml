@@ -131,15 +131,7 @@
     mode: 0750
 
 - name: grafana_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ grafana_path }}'
     state: present
-    pull: '{{ grafana_docker_pull }}'
-
-- name: delete old wrapper scripts
-  file:
-    path: '{{ item }}'
-    state: absent
-  with_items:
-    - '{{ grafana_path }}/mysqldump.sh'
-    - '{{ grafana_path }}/mysqlrestore.sh'
+    pull: "{{ grafana_docker_pull | ternary('always', 'policy') }}"

@@ -146,11 +146,20 @@
   meta: flush_handlers
 
 - name: nextcloud docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ nextcloud_path }}'
     state: present
-    build: '{{ nextcloud_docker_pull }}'
-    pull: '{{ nextcloud_docker_pull }}'
+    build: "{{ nextcloud_docker_pull | ternary('always', 'policy') }}"
+    pull: "{{ nextcloud_docker_pull | ternary('always', 'policy') }}"
+  register: nextcloud__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ nextcloud__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: nextcloud__register_compose.changed
 
 # ./occ config:system:set overwritehost --value="mydomain.com"
 # ./occ config:system:set overwriteprotocol --value="https"

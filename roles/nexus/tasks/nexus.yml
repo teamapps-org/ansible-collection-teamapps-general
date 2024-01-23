@@ -25,7 +25,16 @@
     mode: '0644'
 
 - name: nexus_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ nexus_path }}'
     state: present
-    pull: '{{ nexus_docker_pull }}'
+    pull: "{{ nexus_docker_pull | ternary('always', 'policy') }}"
+  register: nexus__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ nexus__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: nexus__register_compose.changed

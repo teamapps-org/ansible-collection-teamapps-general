@@ -117,17 +117,19 @@
   when: zammad_kb_html_custom
 
 - name: zammad_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ zammad_path }}'
     state: present
-    pull: '{{ zammad_docker_pull }}'
+    pull: "{{ zammad_docker_pull | ternary('always', 'policy') }}"
     debug: True
     remove_orphans: True
-  register: zammad_compose_return
-  changed_when: zammad_compose_return.actions | count > 1 # workaround. zammad-init is always started and stops after init
+  register: zammad__register_compose
+  changed_when: zammad__register_compose.actions | count > 1 # workaround. zammad-init is always started and stops after init
 
-- name: print compose actions
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ zammad__register_compose.actions }}"
   debug:
-    var: zammad_compose_return.actions
-  changed_when: true
-  when: zammad_compose_return.actions | count > 1
+    var: actions
+  changed_when: True
+  when: zammad__register_compose.actions | count > 1

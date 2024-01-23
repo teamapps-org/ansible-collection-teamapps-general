@@ -1,6 +1,6 @@
 ---
 # handlers file for nexus
 - name: nexus_restart
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ nexus_path }}'
-    restarted: true
+    state: restarted

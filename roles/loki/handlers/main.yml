@@ -1,21 +1,18 @@
 # Loki handlers
 
 - name: loki-restart-loki
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ loki_path }}'
-    state: present
+    state: restarted
     services:
       - loki
-    restarted: yes
 
 - name: loki-restart-gateway
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ loki_path }}'
-    state: present
+    state: restarted
     services:
       - nginx-gateway
-    restarted: yes
-
 
 - name: loki-vmagent-restart
   become: true

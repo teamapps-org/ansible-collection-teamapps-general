@@ -32,30 +32,41 @@
     mode: 0640
 
 - name: docker-compose-up - {{ oauth2_proxy_instance_domain }}
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ oauth2_proxy_instance_directory }}'
     state: present
-    pull: '{{ oauth2_proxy_docker_pull }}'
+    pull: "{{ oauth2_proxy_docker_pull | ternary('always', 'policy') }}"
     debug: True
     remove_orphans: True
   register: oauth2_proxy_compose_return
 
-- name: print compose actions - {{ oauth2_proxy_instance_domain }}
+- name: print actions by compose - {{ oauth2_proxy_instance_domain }} # noqa no-handler
+  vars:
+    actions: "{{ oauth2_proxy_compose_return.actions }}"
   debug:
-    var: oauth2_proxy_compose_return.actions
-  changed_when: true
-  when: oauth2_proxy_compose_return.actions | count > 0
+    var: actions
+  changed_when: True
+  when: oauth2_proxy_compose_return.changed
 
 # cannot be defined as handler, because it is used multiple times with different values
 - name: restart oauth2_proxy instance '{{ oauth2_proxy_instance_directory }}' # noqa no-handler
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ oauth2_proxy_instance_directory }}'
     services:
       - 'oauth2-proxy'
-    state: present
-    restarted: yes
+    state: restarted
   when:
     - oauth2_proxy_instance_reg_config.changed
+  register: oauth2_proxy__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ oauth2_proxy__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: oauth2_proxy__register_compose.changed
+
 
 ## webproxy configuration
 - name: include webproxy config - {{ oauth2_proxy_instance_domain }}

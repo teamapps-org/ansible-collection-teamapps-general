@@ -3,20 +3,13 @@
 
 
 - name: nextcloud_docker-compose-build
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ nextcloud_path }}'
     state: present
-    build: yes
-    pull: yes
-  notify: nextcloud_docker-compose-up
-
-- name: nextcloud_docker-compose-up
-  docker_compose:
-    project_src: '{{ nextcloud_path }}'
-    state: present
+    build: always
+    pull: always
 
 - name: nextcloud_docker-compose-restart
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ nextcloud_path }}'
-    state: present
-    restarted: yes
+    state: restarted

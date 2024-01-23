@@ -18,7 +18,6 @@
     owner: root
     group: root
     mode: '0640'
-  notify: netdata_docker-compose-up
 
 - name: configure basic auth htpasswd in webproxy
   copy:
@@ -31,8 +30,17 @@
   notify: netdata_docker-compose-restart
 
 - name: netdata_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ netdata_path }}'
     state: present
-    pull: '{{ netdata_docker_pull }}'
+    pull: "{{ netdata_docker_pull | ternary('always', 'policy') }}"
     remove_orphans: true
+  register: netdata__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ netdata__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: netdata__register_compose.changed

@@ -36,10 +36,19 @@
     mode: '0640'
 
 - name: backuppc_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ backuppc_path }}'
     state: present
-    pull: '{{ backuppc_docker_pull }}'
+    pull: "{{ backuppc_docker_pull | ternary('always', 'policy') }}"
+  register: backuppc__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ backuppc__register_compose.actions }}"
+  debug:
+    var: actions
+  when: backuppc__register_compose.changed
+  changed_when: backuppc__register_compose.changed
 
 - name: copy file for basic auth
   copy:

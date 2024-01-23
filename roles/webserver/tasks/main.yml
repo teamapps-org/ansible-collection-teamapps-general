@@ -109,10 +109,27 @@
   when:
     - webserver_myadmin_enable
 
-- name: docker-compose-up ({{ webserver_domain }} in {{ webserver_path }})
-  docker_compose:
+# - name: docker-compose-up ({{ webserver_domain }} in {{ webserver_path }})
+#   docker_compose:
+#     project_src: '{{ webserver_path }}'
+#     state: present
+#     remove_orphans: yes
+#     pull: "{{ webserver_docker_pull }}"
+#     build: '{{ webserver_docker_pull }}'
+
+- name: docker compose up ({{ webserver_domain }} in {{ webserver_path }})
+  community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     state: present
     remove_orphans: yes
-    pull: '{{ webserver_docker_pull }}'
-    build: '{{ webserver_docker_pull }}'
+    pull: "{{ webserver_docker_pull | ternary('always', 'policy') }}"
+    build: "{{ webserver_docker_pull | ternary('always', 'policy') }}"
+  register: webserver__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ webserver__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: webserver__register_compose.changed

@@ -61,7 +61,16 @@
   changed_when: False
 
 - name: compose up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ prometheus_config_dir }}'
     state: present
+  register: prometheus__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ prometheus__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: prometheus__register_compose.changed
 ...

@@ -2,13 +2,13 @@
 # handlers file for backuppc
 
 - name: backuppc_restart
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ backuppc_path }}'
-    restarted: true
+    state: restarted
   register: backuppc_restart
 
 - name: backuppc reload config  # noqa no-changed-when
-  command: 'docker-compose exec -T backuppc pkill -SIGHUP -x BackupPC'
+  command: 'docker compose exec -T backuppc pkill -SIGHUP -x BackupPC'
   args:
     chdir: '{{ backuppc_path }}'
   when: not backuppc_restart.changed | default(true)

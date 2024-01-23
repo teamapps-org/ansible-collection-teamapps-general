@@ -81,11 +81,21 @@
     state: absent
 
 - name: loki_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ loki_path }}'
     state: present
     remove_orphans: True
-    pull: '{{ loki_docker_pull }}'
+    pull: "{{ loki_docker_pull | ternary('always', 'policy') }}"
+  register: loki__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ loki__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: loki__register_compose.changed
+
 
 - name: import monitoring integration
   when: loki_monitoring_integration

@@ -119,3 +119,5 @@ alertmanager_manage_webproxy_location: True
 # Telegram bot
 alertmanager_telegram_enabled: False
 alertmanager_telegram_token:
+
+alertmanager_docker_pull: '{{ global_docker_pull | default(False) }}' # False = policy, True = always

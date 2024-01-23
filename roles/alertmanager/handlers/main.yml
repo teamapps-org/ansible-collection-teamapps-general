@@ -17,14 +17,21 @@
 # regenerates nginx conf from templates
 # this is not the same as just reloading the config
 - name: restart nginx config generator of webproxy
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ alertmanager_webproxy_path }}'
     services:
       - 'docker-gen'
       - 'nginx'
-    state: present
-    restarted: yes
+    state: restarted
   listen:
     - alertmanager_regenerate_webproxy_config
+  register: alertmanager_h__register_compose
 
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ alertmanager_h__register_compose.actions }}"
+  debug:
+    var: actions
+  when: alertmanager_h__register_compose.changed
+  changed_when: alertmanager_h__register_compose.changed
 ...

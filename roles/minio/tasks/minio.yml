@@ -54,8 +54,17 @@
   notify: minio_restart
 
 - name: minio_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ minio_path }}'
     state: present
-    pull: '{{ minio_docker_pull }}'
+    pull: "{{ minio_docker_pull | ternary('always', 'policy') }}"
     remove_orphans: yes
+  register: minio__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ minio__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: minio__register_compose.changed

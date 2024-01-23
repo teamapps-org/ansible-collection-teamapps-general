@@ -1,10 +1,9 @@
 - name: victoriametrics-restart-gateway
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ victoriametrics_path }}'
-    state: present
     services:
       - authproxy
-    restarted: yes
+    state: restarted
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
 - name: vmalert validate config # noqa no-changed-when
@@ -24,12 +23,11 @@
     chdir: '{{ victoriametrics_path }}'
 
 - name: victoriametrics-vmagent-restart
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ victoriametrics_path }}'
-    state: present
     services:
       - vmagent
-    restarted: yes
+    state: restarted
 
 # use compose to send a SIGHUP to blacbox's process (PID=1)
 - name: blackbox reload # noqa no-changed-when

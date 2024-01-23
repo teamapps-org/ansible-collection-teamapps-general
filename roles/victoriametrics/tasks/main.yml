@@ -31,8 +31,17 @@
   import_tasks: authproxy.yml
 
 - name: victoriametrics_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ victoriametrics_path }}'
     state: present
     remove_orphans: yes
-    pull: '{{ victoriametrics_docker_pull }}'
+    pull: "{{ victoriametrics_docker_pull | ternary('always', 'policy') }}"
+  register: victoriametrics__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ victoriametrics__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: victoriametrics__register_compose.changed

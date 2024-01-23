@@ -9,7 +9,7 @@
     chdir: "{{ prometheus_config_dir }}" # to run docker-compose in the correct directory
 
 - name: prometheus restart
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ prometheus_config_dir }}'
     restarted: true
 

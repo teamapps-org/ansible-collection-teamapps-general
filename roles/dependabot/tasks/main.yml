@@ -80,17 +80,18 @@
     mode: '0644'
 
 - name: dependabot_docker-compose-up
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ dependabot_path }}'
     state: present
-    pull: '{{ dependabot_docker_pull }}'
-    debug: True
+    pull: "{{ dependabot_docker_pull | ternary('always', 'policy') }}"
     remove_orphans: True
   register: dependabot_compose_return
   changed_when: dependabot_compose_return.actions | count > 2 # workaround. the services migration and background-tasks are always started and stops after init
 
 - name: print compose actions
+  vars:
+    actions: "{{ dependabot_compose_return.actions }}"
   debug:
-    var: dependabot_compose_return.actions
+    var: actions
   changed_when: true
   when: dependabot_compose_return.actions | count > 2 # workaround. the services migration and background-tasks are always started and stops after init

@@ -1,32 +1,27 @@
 ---
 - name: webserver_restart
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
-    state: present
-    restarted: yes
+    state: restarted
 
 - name: webserver_restart_nginx
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     services:
       - web
-    state: present
-    restarted: yes
+    state: restarted
 
 - name: webserver_restart_php
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     services:
       - php
     build: True
-    state: present
-    restarted: yes
+    state: restarted
 
 - name: webserver_recreate_sftp
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     services:
       - sftp
-    state: present
-    recreate: always
-    restarted: yes
+    state: restarted

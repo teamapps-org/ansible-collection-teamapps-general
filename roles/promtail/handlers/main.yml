@@ -2,12 +2,11 @@
 # handlers file for promtail role
 
 - name: restart promtail docker compose
-  docker_compose:
+  community.docker.docker_compose_v2:
     project_src: '{{ promtail_path }}'
-    state: present
     services:
       - promtail
-    restarted: yes
+    state: restarted
   listen: restart promtail
   when: promtail_deploy_mode == 'docker'
 
