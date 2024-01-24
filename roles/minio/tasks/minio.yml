@@ -1,7 +1,7 @@
 - name: verify that the minio_domain is only one domain
   assert:
     that:
-      - "not {{ ',' in minio_domain }}"
+      - "not ',' in minio_domain"
     fail_msg: "minio_domain is only for main domain. use minio_addon_domains"
 
 - name: verify that the minio secrets are set
