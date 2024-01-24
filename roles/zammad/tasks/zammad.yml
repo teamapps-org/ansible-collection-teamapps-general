@@ -121,7 +121,6 @@
     project_src: '{{ zammad_path }}'
     state: present
     pull: "{{ zammad_docker_pull | ternary('always', 'policy') }}"
-    debug: True
     remove_orphans: True
   register: zammad__register_compose
   changed_when: zammad__register_compose.actions | count > 1 # workaround. zammad-init is always started and stops after init

@@ -36,7 +36,6 @@
     project_src: '{{ oauth2_proxy_instance_directory }}'
     state: present
     pull: "{{ oauth2_proxy_docker_pull | ternary('always', 'policy') }}"
-    debug: True
     remove_orphans: True
   register: oauth2_proxy_compose_return
 
