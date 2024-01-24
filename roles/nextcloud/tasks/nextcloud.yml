@@ -89,7 +89,7 @@
       set -eu
       dir="$(dirname $(readlink -f $0))"
       cd $dir
-      docker-compose exec --user www-data nextcloud php occ $@
+      docker compose exec --user www-data nextcloud php occ $@
     dest: '{{ nextcloud_path }}/occ'
     owner: root
     group: root
@@ -105,7 +105,7 @@
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       dump_file=${1:-db-dumps/nextcloud.sql.gz}
-      docker-compose exec -T db sh -c "exec mariadb-dump -u root -p\"\$MYSQL_ROOT_PASSWORD\" nextcloud --default-character-set=utf8mb4 --skip-dump-date | \
+      docker compose exec -T db sh -c "exec mariadb-dump -u root -p\"\$MYSQL_ROOT_PASSWORD\" nextcloud --default-character-set=utf8mb4 --skip-dump-date | \
         sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
         gzip --rsyncable > ${dump_file}
     dest: '{{ nextcloud_path }}/dbdump.sh'
@@ -130,7 +130,7 @@
       cd $dir
       dump_file=${1:-db-dumps/nextcloud.sql.gz}
       zcat ${dump_file} | \
-      docker-compose exec -T db sh -c 'exec mariadb -p"$MYSQL_ROOT_PASSWORD" nextcloud'
+      docker compose exec -T db sh -c 'exec mariadb -p"$MYSQL_ROOT_PASSWORD" nextcloud'
     dest: '{{ nextcloud_path }}/dbrestore.sh'
     owner: root
     group: root

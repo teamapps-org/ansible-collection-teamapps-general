@@ -13,7 +13,7 @@ webserver_nginx_image: nginxinc/nginx-unprivileged:stable-alpine
 webserver_nginx_template: site.conf
 webserver_client_max_body_size: 10M
 
-# pull docker images (docker-compose pull)
+# pull docker images (docker compose pull)
 webserver_docker_pull: '{{ global_docker_pull | default(False) }}' # False = policy, True = always
 
 webserver_php_enable: False

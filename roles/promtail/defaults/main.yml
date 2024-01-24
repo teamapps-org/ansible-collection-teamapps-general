@@ -57,7 +57,7 @@ promtail_scrape_configs: [{}]
 #           __path__: /var/log/gitlab/*/*.log
 
 # deploy mode (binary/docker)
-# docker: use docker-compose in /container/promtail
+# docker: use docker compose in /container/promtail
 # binary: download binary, install systemd service
 promtail_deploy_mode: binary
 

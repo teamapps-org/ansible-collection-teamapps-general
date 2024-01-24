@@ -6,7 +6,7 @@
     owner: prometheus
     group: prometheus
     mode: 0640
-    # validate: "docker-compose -f /container/prometheus/docker-compose.yml exec -T prometheus promtool check rules %s"
+    # validate: "docker compose -f /container/prometheus/docker-compose.yml exec -T prometheus promtool check rules %s"
   notify:
     - prometheus reload
     - validate config

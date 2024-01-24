@@ -39,7 +39,7 @@
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
 - name: vmagent validate config
-  command: 'docker-compose run --rm -T vmagent -dryRun -promscrape.config=/etc/prometheus/prometheus.yml -remoteWrite.url=http://victoriametrics:8428/api/v1/write'
+  command: 'docker compose run --rm -T vmagent -dryRun -promscrape.config=/etc/prometheus/prometheus.yml -remoteWrite.url=http://victoriametrics:8428/api/v1/write'
   args:
-    chdir: "{{ victoriametrics_path }}" # to run docker-compose in the correct directory
+    chdir: "{{ victoriametrics_path }}" # to run docker compose in the correct directory
   changed_when: False

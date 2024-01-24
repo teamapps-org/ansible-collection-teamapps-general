@@ -57,7 +57,7 @@ Set variable
 
 and run after every update:
 
-* `docker-compose exec zammad-railsserver rake zammad:searchindex:rebuild`
+* `docker compose exec zammad-railsserver rake zammad:searchindex:rebuild`
 
 ## Grafana Zammad Integration
 
@@ -169,17 +169,17 @@ cd /container/zammad
 . .env
 
 # stop services to prevent data change
-docker-compose stop zammad-scheduler zammad-nginx
+docker compose stop zammad-scheduler zammad-nginx
 
 # create new backup
-docker-compose restart zammad-backup
+docker compose restart zammad-backup
 
 # watch backup directory until new backups are completed
 # wait for _db.psql.gz to have the same size as older backups
 ls data/zammad-backup/ -lah
 
 # stop everything
-docker-compose stop
+docker compose stop
 
 # save old postgres-data
 mv ./data/postgresql-data ./data/postgresql-data-old
@@ -222,7 +222,7 @@ rm ./data/postgresql-data-old -rf
 
 ~~~bash
 cd /container/zammad
-docker-compose down
+docker compose down
 mv ./data/zammad-data/storage ./data/zammad-storage
 # apply ansible config with new version variables for version 6+
 ~~~

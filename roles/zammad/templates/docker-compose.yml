@@ -1,5 +1,5 @@
 ---
-## Zammad docker-compose file based on
+## Zammad docker compose file based on
 # https://raw.githubusercontent.com/zammad/zammad-docker-compose/master/docker-compose.yml
 # configuration env vars:
 # https://docs.zammad.org/en/latest/install/docker-compose/environment.html

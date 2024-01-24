@@ -89,7 +89,7 @@
       else
         tty="-T"
       fi
-      /usr/local/bin/docker-compose exec ${tty} -u www-data php matomo/console "$@"
+      docker compose exec ${tty} -u www-data php matomo/console "$@"
     dest: '{{ matomo_path }}/matomo-console.sh'
     owner: root
     group: root

@@ -30,7 +30,7 @@
       dir="$(dirname $(readlink -f $0))"
       cd $dir
       dump_file=${1:-dbdumps/{{ webserver_mysql_database }}.sql.gz}
-      docker-compose exec -T db sh -c "exec mariadb-dump -u root -p\"\$MYSQL_ROOT_PASSWORD\" {{ webserver_mysql_database }}  --default-character-set=utf8mb4 --skip-dump-date | \
+      docker compose exec -T db sh -c "exec mariadb-dump -u root -p\"\$MYSQL_ROOT_PASSWORD\" {{ webserver_mysql_database }}  --default-character-set=utf8mb4 --skip-dump-date | \
         sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
         gzip --rsyncable > ${dump_file}
     dest: '{{ webserver_path }}/dbdump.sh'
@@ -55,7 +55,7 @@
       cd $dir
       dump_file=${1:-dbdumps/{{ webserver_mysql_database }}.sql.gz}
       zcat ${dump_file} | \
-      docker-compose exec -T db sh -c 'exec mariadb -p"$MYSQL_ROOT_PASSWORD" {{ webserver_mysql_database }}'
+      docker compose exec -T db sh -c 'exec mariadb -p"$MYSQL_ROOT_PASSWORD" {{ webserver_mysql_database }}'
     dest: '{{ webserver_path }}/dbrestore.sh'
     owner: root
     group: root

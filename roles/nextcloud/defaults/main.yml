@@ -22,7 +22,7 @@ nextcloud_data_dir: './nextcloud-data'
 # worker processes for nginx and php
 nextcloud_worker_processes: auto
 
-# pull docker images (docker-compose pull)
+# pull docker images (docker compose pull)
 nextcloud_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 # Database Tuning

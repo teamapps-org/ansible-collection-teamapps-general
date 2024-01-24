@@ -24,7 +24,7 @@
     - webproxy_nginx_reload
     - webproxy_generator_restart
 
-- name: elasticsearch docker-compose override
+- name: elasticsearch docker compose override
   template:
     src: docker-compose.override.yml
     dest: '{{ zammad_path }}/docker-compose.override.yml'

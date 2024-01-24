@@ -28,7 +28,7 @@ Check [defaults/main.yml](defaults/main.yml) for the nessessary configuration va
 ## API Access from Command line
 
 ~~~bash
-docker-compose exec web bash
+docker compose exec web bash
 curl -s -H "X-Gitlab-Token: $SETTINGS__GITLAB_AUTH_TOKEN" localhost:3000/api/projects | python -m json.tool
 ~~~
 
@@ -74,11 +74,11 @@ updates:
 ~~~
 
 * add dependabot user to project as Maintainer (temporary for setup)
-* run `docker-compose exec worker bundle exec rake 'dependabot:validate[example/project]'`
-* run `docker-compose exec worker bundle exec rake 'dependabot:register[example/project]'`
+* run `docker compose exec worker bundle exec rake 'dependabot:validate[example/project]'`
+* run `docker compose exec worker bundle exec rake 'dependabot:register[example/project]'`
 * (Optional) change dependabot Role in Project to Developer
 
-manually trigger check: `docker-compose exec worker bundle exec rake 'dependabot:update[example/example-project,maven,/]'`
+manually trigger check: `docker compose exec worker bundle exec rake 'dependabot:update[example/example-project,maven,/]'`
 
 ## Web UI
 

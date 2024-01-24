@@ -41,5 +41,5 @@ oauth2_proxy_webproxy_sso_configs: []
   #   oauth2_proxy_host: oauth-proxy.<<oauth2_proxy_instance.domain>>
   #   internal_host: True # Connect to docker container on the same host.
 
-# pull docker images (docker-compose pull)
+# pull docker images (docker compose pull)
 oauth2_proxy_docker_pull: '{{ global_docker_pull | default(False) }}'

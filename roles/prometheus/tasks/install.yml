@@ -55,9 +55,9 @@
 
 # promtool check config actually validates config AND alerting rules
 - name: always validate config
-  command: docker-compose exec -T prometheus promtool check config {{ prometheus_config_dir_container }}/prometheus.yml
+  command: docker compose exec -T prometheus promtool check config {{ prometheus_config_dir_container }}/prometheus.yml
   args:
-    chdir: "{{ prometheus_config_dir }}" # to run docker-compose in the correct directory
+    chdir: "{{ prometheus_config_dir }}" # to run docker compose in the correct directory
   changed_when: False
 
 - name: compose up

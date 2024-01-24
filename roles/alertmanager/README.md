@@ -2,7 +2,7 @@
 
 Alertmanager is used by prometheus, victoriametrics and loki logserver as distributor for alerts.
 
-This role installs alertmanager using docker-compose. To be used together with `teamapps.general.webproxy`
+This role installs alertmanager using docker compose. To be used together with `teamapps.general.webproxy`
 
 ## Usage Example
 

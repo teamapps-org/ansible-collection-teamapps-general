@@ -9,7 +9,7 @@ netdata_streaming_destination:
 netdata_streaming_api_key:
 netdata_streaming_skip_certificate_verification: No
 
-# pull docker images (docker-compose pull)
+# pull docker images (docker compose pull)
 netdata_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 # Set to true for your hosts with docker and webproxy

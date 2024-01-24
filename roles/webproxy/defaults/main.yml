@@ -14,7 +14,7 @@ webproxy_default_location_custom:
 # custom config for default vhost (included in every generated server block)
 webproxy_default_vhost_custom:
 
-# pull docker images (docker-compose pull)
+# pull docker images (docker compose pull)
 webproxy_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 webproxy_cookies_secure_only: False

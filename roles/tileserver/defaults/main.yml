@@ -9,7 +9,7 @@ tileserver_data_path: '{{ tileserver_path }}/data'
 tileserver_styles_repository: https://github.com/teamapps-org/maplibre-gl-styles.git
 tileserver_config_template: config.json
 
-# pull docker images (docker-compose pull)
+# pull docker images (docker compose pull)
 tileserver_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 tileserver_nginx_cache_keys_zone_size: 50m # 8000 tile keys per 1m, in memory

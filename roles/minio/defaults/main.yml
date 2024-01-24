@@ -24,5 +24,5 @@ minio_console_enable: false
 minio_version: latest
 minio_console_version: latest
 
-# pull docker images (docker-compose pull)
+# pull docker images (docker compose pull)
 minio_docker_pull: '{{ global_docker_pull | default(False) }}'

@@ -32,7 +32,7 @@
     force: true # symphony.lock is changed by composer install
   notify: kimai_update
 
-- name: kimai docker-compose override
+- name: kimai docker compose override
   template:
     src: docker-compose.override.yml
     dest: '{{ kimai_path }}/docker-compose.override.yml'
@@ -86,7 +86,7 @@
       set -eux
       dir="$(dirname $(readlink -f $0))"
       cd $dir
-      docker-compose exec --user 33 php bin/console "$@"
+      docker compose exec --user 33 php bin/console "$@"
     dest: '{{ kimai_path }}/bin/console'
     owner: root
     group: root
@@ -99,7 +99,7 @@
       set -eux
       dir="$(dirname $(readlink -f $0))"
       cd $dir
-      docker-compose exec --user 33 php composer "$@"
+      docker compose exec --user 33 php composer "$@"
     dest: '{{ kimai_path }}/bin/composer'
     owner: root
     group: root
@@ -116,7 +116,7 @@
     - kimai
 
 - name: kimai composer install
-  command: 'docker-compose run --user 33 php /usr/local/bin/composer install --no-dev --optimize-autoloader'
+  command: 'docker compose run --user 33 php /usr/local/bin/composer install --no-dev --optimize-autoloader'
   args:
     chdir: '{{ kimai_path }}'
     creates: '{{ kimai_path }}/code/vendor/autoload.php'

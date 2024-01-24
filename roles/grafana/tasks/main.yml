@@ -99,7 +99,7 @@
       set -o pipefail
       dir="$(dirname $(readlink -f $0))"
       cd $dir
-      docker-compose exec -T grafanadb sh -c "exec mariadb-dump -u root -p\"\$MYSQL_ROOT_PASSWORD\" grafana  --default-character-set=utf8mb4 --skip-dump-date | \
+      docker compose exec -T grafanadb sh -c "exec mariadb-dump -u root -p\"\$MYSQL_ROOT_PASSWORD\" grafana  --default-character-set=utf8mb4 --skip-dump-date | \
         sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g' " | \
         gzip --rsyncable > db-dumps/grafana.sql.gz
     dest: '{{ grafana_path }}/dbdump.sh'
@@ -124,7 +124,7 @@
       cd $dir
       dump_file=${1:-db-dumps/grafana.sql.gz}
       zcat ${dump_file} | \
-      docker-compose exec -T db sh -c 'exec mariadb -p"$MYSQL_ROOT_PASSWORD" grafana'
+      docker compose exec -T db sh -c 'exec mariadb -p"$MYSQL_ROOT_PASSWORD" grafana'
     dest: '{{ grafana_path }}/dbrestore.sh'
     owner: root
     group: root

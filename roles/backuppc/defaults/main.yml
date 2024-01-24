@@ -10,7 +10,7 @@ backuppc_htpasswd:
 #   example:$2y$05$FKZudtjvFczlcV.6dtp8auCn.rrad9KWK0ffXXl6TiW5.tvF2cRg2
 backuppc_admin_users: ['backuppc']
 
-# pull docker images (docker-compose pull), used for updating
+# pull docker images (docker compose pull), used for updating
 backuppc_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 # backup policy

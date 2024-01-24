@@ -56,7 +56,7 @@
       else
         tty="-T"
       fi
-      /usr/local/bin/docker-compose exec ${tty} worker bundle exec rake "$@"
+      docker compose exec ${tty} worker bundle exec rake "$@"
     dest: '{{ dependabot_path }}/rake'
     owner: root
     group: root

@@ -41,9 +41,9 @@ Files to restore/migrate:
 Either install the old version first. or delete the database before restoring and then update the kimai database:
 
 ~~~bash
-docker-compose down
+docker compose down
 rm db/* -rf
-docker-compose up
+docker compose up
 ./mysqlrestore.sh
 bin/console kimai:update
 ~~~
