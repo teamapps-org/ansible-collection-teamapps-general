@@ -3,4 +3,4 @@
 - name: youtrack_restart
   community.docker.docker_compose_v2:
     project_src: '{{ youtrack_path }}'
-    restarted: true
+    state: restarted

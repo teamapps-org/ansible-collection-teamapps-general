@@ -11,7 +11,7 @@
 - name: prometheus restart
   community.docker.docker_compose_v2:
     project_src: '{{ prometheus_config_dir }}'
-    restarted: true
+    state: restarted
 
 # use compose to send a SIGHUP to prometheus' process (PID=1)
 - name: prometheus reload # noqa no-changed-when

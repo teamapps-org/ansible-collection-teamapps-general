@@ -2,8 +2,7 @@
   listen: "tileserver restart"
   community.docker.docker_compose_v2:
     project_src: '{{ tileserver_path }}'
-    state: present
-    restarted: True
+    state: restarted
 
 - name: tileserver clear nginx cache # noqa no-changed-when
   listen:

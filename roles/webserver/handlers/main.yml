@@ -16,7 +16,7 @@
     project_src: '{{ webserver_path }}'
     services:
       - php
-    build: True
+    build: 'always'
     state: restarted
 
 - name: webserver_recreate_sftp
