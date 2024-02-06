@@ -1,41 +1,36 @@
 ---
 # tasks file for vector
 
-## Repository
-- name: add repository gpgkey
+- name: remove old repository gpgkey
   apt_key:
     url: https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key
     id: 1E46C153E9EFA24018C36F753543DB2D0A2BC4B8 # for offline checkmode # gpg --list-keys --keyid-format=long --keyring /etc/apt/trusted.gpg
+    state: absent
 
-- name: remove nightly apt repo
+- name: remove old nightly apt repo
   apt_repository:
     repo: 'deb https://repositories.timber.io/public/vector-nightly/deb/ubuntu any-version main'
     state: absent
-  when: not vector_install_nightly
+
+- name: remove old apt repo
+  apt_repository:
+    repo: 'deb https://repositories.timber.io/public/vector/deb/ubuntu any-version main'
+    state: absent
+
+## Repository
+# https://vector.dev/highlights/2023-11-07-new-linux-repos/
+- name: add repository gpg keyring
+  copy:
+    src: datadog-archive-keyring.gpg
+    dest: /usr/share/keyrings/datadog-archive-keyring.gpg
+    owner: root
+    group: root
+    mode: '0644'
 
 - name: add apt repo
   apt_repository:
-    repo: 'deb https://repositories.timber.io/public/vector/deb/ubuntu any-version main'
+    repo: 'deb [signed-by=/usr/share/keyrings/datadog-archive-keyring.gpg] https://apt.vector.dev/ stable vector-0'
     update_cache: yes
-
-# nightly version
-# - name: remove stable apt repo
-#   apt_repository:
-#     repo: 'deb https://repositories.timber.io/public/vector/deb/ubuntu any-version main'
-#     state: absent
-#   when: vector_install_nightly
-
-- name: add repository gpgkey for nightly
-  apt_key:
-    url: https://repositories.timber.io/public/vector-nightly/gpg.9B1F615F1B121F50.key
-    id: 8978124D2A2C9B5158094D819B1F615F1B121F50 # for offline checkmode # gpg --list-keys --keyid-format=long --keyring /etc/apt/trusted.gpg
-  when: vector_install_nightly
-
-- name: configure apt repo for nightly
-  apt_repository:
-    repo: 'deb https://repositories.timber.io/public/vector-nightly/deb/ubuntu any-version main'
-    update_cache: yes
-  when: vector_install_nightly
 
 - name: apt pin vector version
   copy:
