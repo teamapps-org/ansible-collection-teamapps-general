@@ -1,0 +1,9 @@
+
+
+- job_name: 'zfs_exporter'
+  scrape_interval: 1m
+  static_configs:
+    - targets: ['127.0.0.1:9134']
+      labels:
+        instance: '{{ ansible_fqdn }}'
+        host: '{{ ansible_hostname }}'

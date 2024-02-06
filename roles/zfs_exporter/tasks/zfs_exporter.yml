@@ -1,0 +1,60 @@
+---
+
+- name: Check current zfs_exporter version.
+  command: "{{ zfs_exporter_bin_path }} --version"
+  failed_when: false
+  changed_when: false
+  register: zfs_exporter_version_check
+
+- name: Download and unarchive zfs_exporter into temporary location.
+  unarchive:
+    src: "{{ zfs_exporter_download_url }}"
+    dest: /tmp
+    remote_src: true
+    mode: 0755
+  when: >
+    zfs_exporter_version_check.stdout is not defined
+    or zfs_exporter_version not in zfs_exporter_version_check.stdout
+  register: zfs_exporter_download_check
+
+- name: Move zfs_exporter binary into place. # noqa no-handler
+  copy:
+    src: "/tmp/zfs_exporter-{{ zfs_exporter_version }}.linux-{{ zfs_exporter_arch }}/zfs_exporter"
+    dest: "{{ zfs_exporter_bin_path }}"
+    mode: 0755
+    remote_src: true
+  notify: restart zfs_exporter
+  when: zfs_exporter_download_check is changed
+
+- name: Create zfs_exporter user.
+  user:
+    name: zfs_exporter
+    shell: /sbin/nologin
+    state: present
+
+- name: Copy the zfs_exporter systemd unit file.
+  template:
+    src: zfs_exporter.service.j2
+    dest: /etc/systemd/system/zfs_exporter.service
+    mode: 0644
+  register: zfs_exporter_service
+
+- name: Reload systemd daemon if unit file is changed. # noqa no-handler
+  systemd:
+    daemon_reload: true
+  notify: restart zfs_exporter
+  when: zfs_exporter_service is changed
+
+- name: Ensure zfs_exporter is running and enabled at boot.
+  service:
+    name: zfs_exporter
+    state: "{{ zfs_exporter_state }}"
+    enabled: "{{ zfs_exporter_enabled }}"
+
+- name: Verify zfs_exporter is responding to requests.
+  uri:
+    # TODO: This is brittle - if a user sets a different port in the options, this will fail
+    url: http://localhost:9134/
+    return_content: true
+  register: metrics_output
+  failed_when: "'Metrics' not in metrics_output.content"

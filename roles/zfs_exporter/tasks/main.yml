@@ -1,0 +1,11 @@
+- name: ZFS Exporter Installation
+  import_tasks: zfs_exporter.yml
+  tags:
+    - zfs_exporter
+
+- name: configure metrics collection by vmagent
+  import_tasks: scrape_config.yml
+  when: zfs_exporter_scrape_config_deploy
+  tags:
+    - docker
+    - docker_vmagent

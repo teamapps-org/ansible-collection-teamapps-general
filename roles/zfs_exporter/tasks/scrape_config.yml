@@ -1,0 +1,13 @@
+- name: Create directory if necessary
+  command:
+    cmd: "mkdir -p {{ zfs_exporter_scrape_config_dir }}"
+    creates: "{{ zfs_exporter_scrape_config_dir }}"
+
+- name: Deploy Scrape Config File
+  template:
+    src: scrape-config-zfs_exporter.yml.j2
+    dest: '{{ zfs_exporter_scrape_config_dir }}/zfs_exporter.yml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: zfs_exporter_metrics_scraper_service_reload

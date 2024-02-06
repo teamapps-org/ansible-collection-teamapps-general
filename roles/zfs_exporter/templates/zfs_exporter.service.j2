@@ -1,0 +1,10 @@
+[Unit]
+Description=ZfsExporter
+
+[Service]
+TimeoutStartSec=0
+User=zfs_exporter
+ExecStart={{ zfs_exporter_bin_path }} {{ zfs_exporter_options }}
+
+[Install]
+WantedBy=multi-user.target
