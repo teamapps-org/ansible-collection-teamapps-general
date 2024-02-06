@@ -7,5 +7,4 @@
   import_tasks: scrape_config.yml
   when: zfs_exporter_scrape_config_deploy
   tags:
-    - docker
-    - docker_vmagent
+    - zfs_exporter
