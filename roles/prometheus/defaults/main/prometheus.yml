@@ -167,4 +167,5 @@ prometheus_alert_rules: []
   #     description: '{% raw %}{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 minutes.{% endraw %}'
   #     summary: '{% raw %}Instance {{ $labels.instance }} down{% endraw %}'
 
+prometheus_docker_pull: '{{ global_docker_pull | default(False) }}'
 ...

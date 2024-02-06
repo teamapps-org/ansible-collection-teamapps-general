@@ -64,6 +64,8 @@
   community.docker.docker_compose_v2:
     project_src: '{{ prometheus_config_dir }}'
     state: present
+    pull: "{{ prometheus_docker_pull | ternary('always', 'policy') }}"
+    remove_orphans: True
   register: prometheus__register_compose
 
 - name: print actions by compose # noqa no-handler
