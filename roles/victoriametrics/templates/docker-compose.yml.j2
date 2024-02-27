@@ -2,7 +2,6 @@
 version: '3.5'
 services:
 
-
   authproxy:
     image: '{{ victoriametrics_nginx_image }}'
     restart: always
@@ -42,7 +41,6 @@ services:
         hard: 65535
 
   victoriametrics:
-    container_name: victoriametrics
     image: victoriametrics/victoria-metrics:{{ victoriametrics_version }}
     # ports:
     #   - 8428:8428
@@ -79,9 +77,7 @@ services:
         soft: 65535
         hard: 65535
 
-
   vmagent:
-    container_name: vmagent
     image: victoriametrics/vmagent:{{ victoriametrics_vmagent_version }}
     depends_on:
       - "victoriametrics"
@@ -122,9 +118,7 @@ services:
         soft: 65535
         hard: 65535
 
-
   vmalert:
-    container_name: vmalert
     image: victoriametrics/vmalert:{{ victoriametrics_vmalert_version }}
     depends_on:
       - "victoriametrics"
@@ -159,7 +153,6 @@ services:
     restart: always
 
   blackbox:
-    container_name: blackbox
     user: 997:998
     image: {{ victoriametrics_blackbox_image }}:{{ victoriametrics_blackbox_version }}
     volumes:
@@ -169,6 +162,8 @@ services:
         read_only: true
     command:
       - '--config.file=/config/blackbox.yml'
+      - '--log.level={{ victoriametrics_blackbox_log_level }}'
+      - '--log.prober={{ victoriametrics_blackbox_prober_log_level }}'
     expose:
       - 9115
     ports:
@@ -181,7 +176,6 @@ services:
       nofile:
         soft: 65535
         hard: 65535
-
 
 networks:
   vm_net:

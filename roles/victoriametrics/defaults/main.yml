@@ -47,6 +47,9 @@ victoriametrics_vmalert_external_labels:
 victoriametrics_blackbox_image: prom/blackbox-exporter
 victoriametrics_blackbox_version: master # if unstable v0.18.0 can be used
 
+victoriametrics_blackbox_log_level: info # Only log messages with the given severity or above. One of: [debug, info, warn, error]
+victoriametrics_blackbox_prober_log_level: warn # Log level from probe requests. One of: [debug, info, warn, error, none]
+
 # define your targets, creates files in file_sd/<name>.<job>.yml
 victoriametrics_file_sd_config: []
   # - job: http_2xx
