@@ -1,5 +1,7 @@
 # defaults for tileserver
-tileserver_image: maptiler/tileserver-gl:latest
+
+tileserver_version: latest
+tileserver_image: 'maptiler/tileserver-gl:{{ tileserver_version }}'
 tileserver_domain: maps.{{ ansible_fqdn }}
 
 tileserver_nginx_image: nginx:alpine
