@@ -12,15 +12,39 @@
     state: present
     install_recommends: no
 
-- name: Add archive key
+- name: remove archive key from deprecated keystore
   apt_key:
     url: "https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey"
     id: F6403F6544A38863DAA0B6E03F01618A51312F3F
+    state: absent
+    keyring: /etc/apt/trusted.gpg
+
+- name: Deploy Gitlab GPG Key
+  # wget -O - https://packages.gitlab.com/gitlab/gitlab-ce/gpgkey | gpg --dearmor > roles/gitlab/files/gitlab_gitlab-ce-archive-keyring.gpg
+  copy:
+    src: gitlab_gitlab-ce-archive-keyring.gpg
+    dest: /usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg
+    owner: root
+    group: root
+    mode: '0644'
+    force: false
+
+- name: gitlab repository
+  apt_repository:
+    repo: deb [arch=amd64 signed-by=/usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg] https://packages.gitlab.com/gitlab/gitlab-ce/ubuntu/ {{ ansible_lsb.codename }} main
+    state: present
+    filename: 'gitlab_gitlab-ce'
+
+- name: gitlab runner repository deb-src
+  apt_repository:
+    repo: deb-src [signed-by=/usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg] https://packages.gitlab.com/gitlab/gitlab-ce/ubuntu/ {{ ansible_lsb.codename }} main
+    state: present
+    filename: 'gitlab_gitlab-ce'
 
 - name: Add sources list
   apt_repository:
     repo: deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_lsb.id | lower }}/ {{ ansible_lsb.codename }} main
-    state: present
+    state: absent
     filename: 'gitlab_gitlab-ce'
 
 - name: Install latest package version
