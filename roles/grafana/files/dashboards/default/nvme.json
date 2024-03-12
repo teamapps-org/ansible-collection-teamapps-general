@@ -84,7 +84,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unitScale": true
         },
         "overrides": [
           {
@@ -126,7 +127,7 @@
           }
         ]
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.3.3",
       "targets": [
         {
           "datasource": {
@@ -213,7 +214,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unitScale": true
         },
         "overrides": [
           {
@@ -399,8 +401,7 @@
             },
             "properties": [
               {
-                "id": "custom.width",
-                "value": null
+                "id": "custom.width"
               }
             ]
           },
@@ -748,7 +749,7 @@
               },
               {
                 "id": "custom.width",
-                "value": null
+                "value": 168
               }
             ]
           },
@@ -884,7 +885,7 @@
           }
         ]
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.3.3",
       "targets": [
         {
           "datasource": {
@@ -1323,7 +1324,8 @@
                 "value": 1
               }
             ]
-          }
+          },
+          "unitScale": true
         },
         "overrides": [
           {
@@ -1456,7 +1458,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.3.3",
       "targets": [
         {
           "datasource": {
@@ -1567,15 +1569,17 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${ds}"
       },
-      "description": "",
+      "description": "data units read",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1589,6 +1593,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1619,7 +1624,8 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "short",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -1647,19 +1653,22 @@
           "datasource": {
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(nvme_smart_data_units_read{host=~\"$host\",device=~\"$device\"} [10m])*1000",
+          "expr": "increase(nvme_smart_data_units_read{host=~\"$host\",device=~\"$device\"} [$__interval])*1000",
           "hide": false,
           "interval": "10m",
           "legendFormat": "{{ host }} {{ device }}",
+          "range": true,
           "refId": "B"
         }
       ],
-      "title": "Data units read",
+      "title": "Data units read [$__interval]",
       "type": "timeseries"
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${ds}"
       },
       "description": "",
@@ -1669,6 +1678,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1682,6 +1692,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1712,7 +1723,8 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "short",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -1740,29 +1752,33 @@
           "datasource": {
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(nvme_smart_data_units_written{host=~\"$host\",device=~\"$device\"} [10m])*1000",
+          "expr": "increase(nvme_smart_data_units_written{host=~\"$host\",device=~\"$device\"} [$__interval])*1000",
           "hide": false,
           "interval": "10m",
           "legendFormat": "{{ host }} {{ device }}",
           "queryType": "randomWalk",
+          "range": true,
           "refId": "A"
         }
       ],
-      "title": "Data units written",
+      "title": "Data units written [$__interval]",
       "type": "timeseries"
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${ds}"
       },
-      "description": "",
+      "description": "data bytes read",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1776,6 +1792,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1806,7 +1823,8 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "decbytes",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -1834,28 +1852,32 @@
           "datasource": {
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(nvme_data_bytes_read{host=~\"$host\",device=~\"$device\"} [10m])",
+          "expr": "increase(nvme_data_bytes_read{host=~\"$host\",device=~\"$device\"} [$__interval])",
           "hide": false,
           "interval": "10m",
           "legendFormat": "{{ host }} {{ device }}",
+          "range": true,
           "refId": "B"
         }
       ],
-      "title": "Data read",
+      "title": "Data read [$__interval]",
       "type": "timeseries"
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${ds}"
       },
-      "description": "data units written *1000+512bytes",
+      "description": "data bytes written",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1869,6 +1891,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1899,7 +1922,8 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "decbytes",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -1927,30 +1951,34 @@
           "datasource": {
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(nvme_data_bytes_written{host=~\"$host\",device=~\"$device\"} [10m])",
+          "expr": "increase(nvme_data_bytes_written{host=~\"$host\",device=~\"$device\"} [$__interval])",
           "hide": false,
           "interval": "10m",
           "intervalFactor": 1,
           "legendFormat": "{{ host }} {{ device }}",
           "queryType": "randomWalk",
+          "range": true,
           "refId": "A"
         }
       ],
-      "title": "Data written",
+      "title": "Data written [$__interval]",
       "type": "timeseries"
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${ds}"
       },
-      "description": "",
+      "description": "data bytes read",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -1964,6 +1992,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -1993,7 +2022,9 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "Bps",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -2002,6 +2033,206 @@
         "w": 12,
         "x": 0,
         "y": 46
+      },
+      "id": 26,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "rate(nvme_data_bytes_read{host=~\"$host\",device=~\"$device\"} [$__interval])",
+          "hide": false,
+          "interval": "10m",
+          "legendFormat": "{{ host }} {{ device }}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Data read rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds}"
+      },
+      "description": "data bytes written",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "Bps",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 46
+      },
+      "id": 25,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "rate(nvme_data_bytes_written{host=~\"$host\",device=~\"$device\"} [$__interval])",
+          "hide": false,
+          "interval": "10m",
+          "intervalFactor": 1,
+          "legendFormat": "{{ host }} {{ device }}",
+          "queryType": "randomWalk",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Data write rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${ds}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "iops",
+          "unitScale": true
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 54
       },
       "id": 19,
       "options": {
@@ -2021,19 +2252,22 @@
           "datasource": {
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(nvme_smart_host_read_commands{host=~\"$host\",device=~\"$device\"} [10m])",
+          "expr": "rate(nvme_smart_host_read_commands{host=~\"$host\",device=~\"$device\"} [$__interval])",
           "hide": false,
           "interval": "10m",
           "legendFormat": "{{ host }} {{ device }}",
+          "range": true,
           "refId": "B"
         }
       ],
-      "title": "Read Commands",
+      "title": "Read Commands Rate",
       "type": "timeseries"
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${ds}"
       },
       "description": "",
@@ -2043,6 +2277,7 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
@@ -2056,6 +2291,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -2085,7 +2321,9 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "iops",
+          "unitScale": true
         },
         "overrides": []
       },
@@ -2093,7 +2331,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 46
+        "y": 54
       },
       "id": 22,
       "options": {
@@ -2113,15 +2351,17 @@
           "datasource": {
             "uid": "${ds}"
           },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "increase(nvme_smart_host_write_commands{host=~\"$host\",device=~\"$device\"} [10m])",
+          "expr": "rate(nvme_smart_host_write_commands{host=~\"$host\",device=~\"$device\"} [$__interval])",
           "hide": false,
           "interval": "10m",
           "legendFormat": "{{ host }} {{ device }}",
+          "range": true,
           "refId": "A"
         }
       ],
-      "title": "Write Commands",
+      "title": "Write Commands rate",
       "type": "timeseries"
     },
     {
@@ -2148,15 +2388,16 @@
               }
             ]
           },
-          "unit": "decbytes"
+          "unit": "decbytes",
+          "unitScale": true
         },
         "overrides": []
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 24,
         "x": 0,
-        "y": 54
+        "y": 62
       },
       "id": 21,
       "options": {
@@ -2171,10 +2412,12 @@
           "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {},
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "10.3.3",
       "targets": [
         {
           "datasource": {
@@ -2194,8 +2437,7 @@
   ],
   "refresh": "",
   "revision": 1,
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 39,
   "tags": [
     "nvme",
     "smart",
@@ -2205,7 +2447,7 @@
     "list": [
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "default",
           "value": "default"
         },
@@ -2293,6 +2535,6 @@
   "timezone": "",
   "title": "NVMe Dashboard",
   "uid": "7ES1GVmnk",
-  "version": 22,
+  "version": 23,
   "weekStart": ""
 }
