@@ -11,6 +11,20 @@
     - '{{ loki_path }}'
     - '{{ loki_path }}/htaccess'
 
+- name: assert variables set for auth request
+  when: loki_auth == 'request'
+  assert:
+    that:
+      - "assert_var is defined"
+      - "assert_var | length > 0"
+      - "assert_var != None"
+    fail_msg: "{{ assert_var }} needs to be set!"
+  loop_control:
+    loop_var: assert_var
+  with_items:
+    - loki_auth_request_domain
+    - loki_auth_request_location
+
 - name: Nginx Gateway Configuration File
   template:
     src: '{{ loki_nginx_gateway_conf_template }}'

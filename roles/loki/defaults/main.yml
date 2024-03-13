@@ -25,7 +25,8 @@ loki_push_access_log: False
 loki_auth: basic # basic/request
 
 # for loki_auth: request
-loki_auth_request_uri: # https://validator.example.com/api/logserveraccess
+loki_auth_request_domain: # validator.example.com (domainwithout https://, it will use HTTPS)
+loki_auth_request_location: # /api/logserveraccess
 loki_auth_request_cache_time: 15m
 loki_auth_request_cache_time_403: 30s
 
