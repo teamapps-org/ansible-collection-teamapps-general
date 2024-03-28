@@ -155,7 +155,7 @@
   register: hetzner_robot_reg__zfsbulk_log_file
   when:
     - hetzner_robot_zfsbulk
-    - hetzner_robot_hetzner_robot_reg__zfsbulk_log_file
+    - hetzner_robot_zfsbulk_log_file
 
 - name: add zfs write intent log # noqa no-changed-when no-handler
   command: zpool add zfsbulk log {{ hetzner_robot_zfsbulk_log_device }}
