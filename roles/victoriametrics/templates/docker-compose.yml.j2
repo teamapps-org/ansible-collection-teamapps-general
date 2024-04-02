@@ -1,7 +1,6 @@
 # based on https://github.com/VictoriaMetrics/VictoriaMetrics/tree/master/deployment/docker
-version: '3.5'
-services:
 
+services:
   authproxy:
     image: '{{ victoriametrics_nginx_image }}'
     restart: always

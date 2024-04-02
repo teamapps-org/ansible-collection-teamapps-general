@@ -1,5 +1,5 @@
 ---
-version: '3'
+
 services:
   minio:
     image: minio/minio:{{ minio_version }}

@@ -1,3 +1,4 @@
+---
 # Netdata is installed and started on host to have a complete view of the system.
 # this docker-compose.yml file is used to forward http traffic from webproxy to netdata on the host.
 #
@@ -5,7 +6,6 @@
 # 172.28.0.1 is the gateway in the webproxy network which is used to access services on the host.
 # netdata is configured to only allow connections from private networks.
 
-version: '3.7'
 services:
   socat:
     image: alpine/socat:latest

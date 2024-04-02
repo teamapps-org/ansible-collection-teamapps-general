@@ -1,8 +1,7 @@
+---
 # Definition for running deployed version of dependabot-gitlab using docker-compose
 # In case of using custom docker-compose.yml, it needs to be mounted inside 'worker' service
 #   with path exposed via 'SETTINGS__UPDATER_TEMPLATE_PATH' environment variables
-
-version: "3.8"
 
 # Dependabot-gitlab base image
 x-base-image: &base_image "${BASE_IMAGE:-andrcuns/dependabot-gitlab:3.10.0-alpha.1}"
