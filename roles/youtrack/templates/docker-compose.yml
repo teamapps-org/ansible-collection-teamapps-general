@@ -1,7 +1,6 @@
 ---
 # {{ ansible_managed }}
 
-version: '3'
 services:
   youtrack:
     image: jetbrains/youtrack:{{ youtrack_version }}
