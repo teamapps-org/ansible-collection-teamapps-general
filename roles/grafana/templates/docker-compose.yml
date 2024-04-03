@@ -26,8 +26,7 @@ services:
 
   grafana:
     user: "472"
-    # image: grafana/grafana:master
-    image: grafana/grafana:{{ grafana_version }}
+    image: grafana/grafana-oss:{{ grafana_version }}
     restart: always
     environment:
       VIRTUAL_HOST: '{{ grafana_domain }}'
@@ -97,6 +96,7 @@ services:
       - ./provisioning/:/etc/grafana/provisioning/
       - ./log:/var/log/grafana
       - ./dashboards:/etc/grafana/dashboards
+      - ./grafana.ini:/etc/grafana/grafana.ini
     networks:
       - grafana
       - webproxy

@@ -70,3 +70,16 @@ grafana_image_renderer_version: latest
 grafana_image_renderer_cpu_limit: 1.5
 grafana_image_renderer_mem_limit: 500M
 grafana_image_renderer_port: 127.0.0.8:18081 # port for metric scraping
+
+# configure grafana with ini file
+# allows to source another template file
+# by default, it renders the grafana_config_ini variable
+grafana_config_template: grafana.ini.j2
+
+# grafana.ini content
+grafana_config_ini: |
+  # full default sample.ini config file at
+  # https://github.com/grafana/grafana/blob/main/conf/sample.ini
+
+  [security]
+  allow_embedding = false

@@ -45,6 +45,15 @@
     group: root
     mode: '0640'
 
+- name: deploy grafana.ini
+  template:
+    src: '{{ grafana_config_template }}'
+    dest: '{{ grafana_path }}/grafana.ini'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: grafana_restart
+
 - name: configure datasource provisioning
   template:
     src: provisioning/datasources/default.yml.j2
