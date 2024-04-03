@@ -34,7 +34,6 @@
     owner: root
     group: root
     mode: 0640
-  notify: nextcloud_docker-compose-up
 
 - name: Nextcloud Dockerfile
   template:
