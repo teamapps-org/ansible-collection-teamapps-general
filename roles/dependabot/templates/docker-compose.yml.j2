@@ -4,7 +4,7 @@
 #   with path exposed via 'SETTINGS__UPDATER_TEMPLATE_PATH' environment variables
 
 # Dependabot-gitlab base image
-x-base-image: &base_image "${BASE_IMAGE:-andrcuns/dependabot-gitlab:3.14.6-alpha.1}"
+x-base-image: &base_image "${BASE_IMAGE:-andrcuns/dependabot-gitlab:latest}"
 
 # Option documentation
 # https://gitlab.com/dependabot-gitlab/dependabot/-/blob/master/doc/environment.md
@@ -27,7 +27,7 @@ x-environment: &environment_variables
   #  elm
   #  gitsubmodule
   #
-  SETTINGS__UPDATER_IMAGE_PATTERN: "${UPDATER_IMAGE_PATTERN:-andrcuns/dependabot-gitlab-%<package_ecosystem>s:3.14.6-alpha.1}"
+  SETTINGS__UPDATER_IMAGE_PATTERN: "${UPDATER_IMAGE_PATTERN:-andrcuns/dependabot-gitlab-%<package_ecosystem>s:latest}"
   # Persistance
   REDIS_URL: redis://redis:6379
   MONGODB_URL: mongodb:27017
