@@ -4,7 +4,7 @@
 #   with path exposed via 'SETTINGS__UPDATER_TEMPLATE_PATH' environment variables
 
 # Dependabot-gitlab base image
-x-base-image: &base_image "${BASE_IMAGE:-andrcuns/dependabot-gitlab:3.10.0-alpha.1}"
+x-base-image: &base_image "${BASE_IMAGE:-andrcuns/dependabot-gitlab:3.14.6-alpha.1}"
 
 # Option documentation
 # https://gitlab.com/dependabot-gitlab/dependabot/-/blob/master/doc/environment.md
@@ -27,7 +27,7 @@ x-environment: &environment_variables
   #  elm
   #  gitsubmodule
   #
-  SETTINGS__UPDATER_IMAGE_PATTERN: "${UPDATER_IMAGE_PATTERN:-andrcuns/dependabot-gitlab-%<package_ecosystem>s:3.10.0-alpha.1}"
+  SETTINGS__UPDATER_IMAGE_PATTERN: "${UPDATER_IMAGE_PATTERN:-andrcuns/dependabot-gitlab-%<package_ecosystem>s:3.14.6-alpha.1}"
   # Persistance
   REDIS_URL: redis://redis:6379
   MONGODB_URL: mongodb:27017
@@ -41,7 +41,7 @@ x-environment: &environment_variables
   SETTINGS__LOG_COLOR: ${SETTINGS__LOG_COLOR:-false}
   SETTINGS__LOG_LEVEL: ${SETTINGS__LOG_LEVEL:-info}
   SETTINGS__DRY_RUN: ${SETTINGS__DRY_RUN:-false}
-  SETTINGS__COMMANDS_PREFIX: ${SETTINGS__COMMANDS_PREFIX:-$dependabot}
+  SETTINGS__COMMANDS_PREFIX: ${SETTINGS__COMMANDS_PREFIX:-$$dependabot}
   SETTINGS__ANONYMOUS_ACCESS: ${SETTINGS__ANONYMOUS_ACCESS:-true}
   # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#access
   SETTINGS__GITLAB_ACCESS_TOKEN: ${SETTINGS__GITLAB_ACCESS_TOKEN:-}
@@ -90,7 +90,7 @@ x-updater:
 
 services:
   redis:
-    image: ${REDIS_IMAGE:-bitnami/redis:7.2-debian-11}
+    image: ${REDIS_IMAGE:-bitnami/redis:7.2.4-debian-11-r19}
     restart: always
     volumes:
       - ./redis-data:/bitnami/redis/data
@@ -99,7 +99,7 @@ services:
       REDIS_EXTRA_FLAGS: ${REDIS_EXTRA_FLAGS:-}
 
   mongodb:
-    image: ${MONGODB_IMAGE:-bitnami/mongodb:7.0-debian-11}
+    image: ${MONGODB_IMAGE:-bitnami/mongodb:7.0.5-debian-11-r4}
     restart: always
     volumes:
       - ./mongodb-data:/bitnami/mongodb
@@ -108,7 +108,7 @@ services:
       MONGODB_EXTRA_FLAGS: ${MONGODB_EXTRA_FLAGS:-}
 
   docker:
-    image: ${DOCKER_DIND_IMAGE:-docker:24.0-dind}
+    image: ${DOCKER_DIND_IMAGE:-docker:26.0-dind}
     restart: always
     privileged: true
     environment:
@@ -124,7 +124,7 @@ services:
     depends_on:
       - mongodb
     volumes:
-      - tmp:/home/dependabot/app/tmp
+      - cache:/home/dependabot/app/tmp/cache
     environment:
       <<: *environment_variables
     command: rails db:migrate
@@ -136,7 +136,7 @@ services:
       - redis
       - migration
     volumes:
-      - tmp:/home/dependabot/app/tmp
+      - cache:/home/dependabot/app/tmp/cache
     environment:
       <<: *environment_variables
       RAILS_SERVE_STATIC_FILES: "true"
@@ -165,7 +165,7 @@ services:
       - redis
       - migration
     volumes:
-      - tmp:/home/dependabot/app/tmp
+      - cache:/home/dependabot/app/tmp/cache
       - docker-certs-client:/certs/client:ro
       - ./.env:/home/dependabot/app/.env:ro
       - ./docker-compose.yml:/home/dependabot/app/docker-compose.yml:ro
@@ -194,7 +194,7 @@ services:
       - web
       - worker
     volumes:
-      - tmp:/home/dependabot/app/tmp
+      - cache:/home/dependabot/app/tmp/cache
     environment:
       <<: *environment_variables
     command: rails background_tasks:run_post_deploy_tasks
@@ -202,7 +202,7 @@ services:
 volumes:
   # redis-data:
   # mongodb-data:
-  tmp:
+  cache:
   docker-images:
   docker-certs-ca:
   docker-certs-client:
