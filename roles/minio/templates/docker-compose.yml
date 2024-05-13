@@ -13,28 +13,35 @@ services:
     environment:
       MINIO_ROOT_USER: '{{ minio_root_user }}'
       MINIO_ROOT_PASSWORD: '{{ minio_root_password }}'
-      MINIO_BROWSER: 'off'
-      VIRTUAL_HOST: '{{ minio_domains | join(",") }}'
-      LETSENCRYPT_HOST: '{{ minio_domains | join(",") }}'
-      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
-    command: server /data
-    restart: always
-    networks:
-      - webproxy
 {% if minio_console_enable %}
-  console:
-    image: minio/console:{{ minio_console_version }}
-    expose:
-      - 9090
-    environment:
       CONSOLE_PBKDF_PASSPHRASE: '{{ minio_console_pbkdf_passphrase }}'
       CONSOLE_PBKDF_SALT: '{{ minio_console_pbkdf_salt }}'
       CONSOLE_MINIO_SERVER: 'https://{{ minio_domain }}'
       MINIO_BROWSER_REDIRECT_URL: 'https://{{ minio_console_domain }}'
+{% else %}
+      MINIO_BROWSER: 'off'
+{% endif %}
+      VIRTUAL_HOST: '{{ minio_domains | join(",") }}'
+      LETSENCRYPT_HOST: '{{ minio_domains | join(",") }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    command: server /data{% if minio_console_enable %} --console-address ":9001"{% endif %}
+
+    restart: always
+    networks:
+      - webproxy
+
+{% if minio_console_enable %}
+  console:
+    image: alpine/socat:latest
+    command:
+      - tcp-listen:9090,fork,reuseaddr
+      - tcp-connect:minio:9001
+    expose:
+      - 9090
+    environment:
       VIRTUAL_HOST: '{{ minio_console_domain }}'
       LETSENCRYPT_HOST: '{{ minio_console_letsencrypt_host }}'
       LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
-    command: server
     restart: always
     networks:
       - webproxy

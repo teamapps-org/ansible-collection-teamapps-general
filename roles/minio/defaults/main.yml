@@ -12,7 +12,7 @@ minio_console_domain: 'minio-console.{{ ansible_fqdn }}'
 minio_console_letsencrypt_host: '{{ minio_console_domain }}'
 
 # enable the console container for minio
-minio_console_enable: false
+minio_console_enable: False
 
 # to be replaced in host_vars
 # USE YOUR OWN, RANDOM SECRETS HERE!
