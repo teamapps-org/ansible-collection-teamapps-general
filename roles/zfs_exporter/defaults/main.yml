@@ -1,6 +1,6 @@
 ---
 # See available releases: https://github.com/pdf/zfs_exporter/releases/
-zfs_exporter_version: '2.3.2'
+zfs_exporter_version: '2.3.4'
 zfs_exporter_arch: 'amd64'
 zfs_exporter_download_url: https://github.com/pdf/zfs_exporter/releases/download/v{{ zfs_exporter_version }}/zfs_exporter-{{ zfs_exporter_version }}.linux-{{ zfs_exporter_arch }}.tar.gz
 
