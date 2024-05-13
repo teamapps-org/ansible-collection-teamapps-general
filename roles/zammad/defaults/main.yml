@@ -40,3 +40,6 @@ zammad_elasticsearch_memory: '{{ (ansible_memtotal_mb * 0.4) | round | int }}m'
 # customize knowledge base html template.
 zammad_kb_html_custom: False
 # zammad_kb_html:
+
+zammad_env_custom: |
+  # Custom .env variables

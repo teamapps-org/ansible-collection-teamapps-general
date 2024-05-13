@@ -2,13 +2,18 @@
 
 set -e
 
-: "${ZAMMAD_DIR:=/opt/zammad/var}"
+: "${ZAMMAD_DIR:=/opt/zammad/storage}"
 : "${BACKUP_DIR:=/var/tmp/zammad}"
+: "${BACKUP_TIME:=03:00}"
+: "${HOLD_DAYS:=10}"
 : "${ZAMMAD_RAILSSERVER_HOST:=zammad-railsserver}"
 : "${ZAMMAD_RAILSSERVER_PORT:=3000}"
+: "${POSTGRESQL_DB:=zammad_production}"
 : "${POSTGRESQL_HOST:=zammad-postgresql}"
 : "${POSTGRESQL_PORT:=5432}"
-: "${POSTGRESQL_DB:=zammad_production}"
+: "${POSTGRESQL_USER:=zammad}"
+: "${POSTGRESQL_PASS:=zammad}"
+
 
 function check_railsserver_available {
   until (echo > "/dev/tcp/$ZAMMAD_RAILSSERVER_HOST/$ZAMMAD_RAILSSERVER_PORT") &> /dev/null; do
@@ -20,7 +25,7 @@ function check_railsserver_available {
 function zammad_backup {
   TIMESTAMP="$(date +'%Y%m%d%H%M%S')"
 
-  echo "${TIMESTAMP} - backuping zammad..."
+  echo "${TIMESTAMP} - backing up zammad..."
 
   # delete old backups
   if [ -d "${BACKUP_DIR}" ] && [ -n "$(ls "${BACKUP_DIR}")" ]; then
@@ -33,7 +38,7 @@ function zammad_backup {
   fi
 
   #db backup
-  pg_dump --dbname=postgresql://"${POSTGRESQL_USER}:${POSTGRESQL_PASSWORD}@${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DB}" | gzip > "${BACKUP_DIR}"/"${TIMESTAMP}"_zammad_db.psql.gz
+  pg_dump --dbname=postgresql://"${POSTGRESQL_USER}:${POSTGRESQL_PASS}@${POSTGRESQL_HOST}:${POSTGRESQL_PORT}/${POSTGRESQL_DB}" | gzip > "${BACKUP_DIR}"/"${TIMESTAMP}"_zammad_db.psql.gz
 
   echo "backup finished :)"
 }
@@ -53,16 +58,17 @@ if [ "$1" = 'zammad-backup' ]; then
 
     sleep $((NEXT_TIMESTAMP - NOW_TIMESTAMP))
   done
-fi
 
-if [ "$1" = 'zammad-backup-once' ]; then
+elif [ "$1" = 'zammad-backup-once' ]; then
   check_railsserver_available
 
   zammad_backup
-fi
 
-if [ "$1" = 'zammad-backup-db' ]; then
+elif [ "$1" = 'zammad-backup-db' ]; then
   NO_FILE_BACKUP="yes"
 
   zammad_backup
+
+else
+  exec "$@"
 fi
