@@ -114,6 +114,15 @@
     mode: '0644'
   notify: netdata_restart
 
+- name: configure docker metrics collection
+  template:
+    src: go.d/docker.conf
+    dest: /etc/netdata/go.d/docker.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: netdata_restart
+
 - name: alarm sending configuration
   template:
     src: health_alarm_notify.conf
