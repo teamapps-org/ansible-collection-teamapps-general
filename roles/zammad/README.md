@@ -12,14 +12,15 @@ Community Edition. Deployment based on [zammad-docker-compose](https://github.co
 Backups are created by a separate container, that packs the files and the database in an archive in .`/data/zammad-backup`. Other directories can be excluded from the backup.
 
 * Documentation of Backup for traditional installation: <https://docs.zammad.org/en/latest/appendix/backup-and-restore.html>
-* Backup Script source: <https://github.com/zammad/zammad-docker-compose/blob/master/containers/zammad-postgresql/backup.sh>
+* Backup Script source: <https://github.com/zammad/zammad-docker-compose/blob/master/scripts/backup.sh>
 
 ~~~yaml
 zammad_backup_hold_days: 2
+# set to yes, to skip archiving file storage (./data/zammad-storage)
+zammad_backup_no_file_backup: yes
 backuppcclient_files_exclude_extra:
   - /container/zammad/data/elasticsearch-data
   - /container/zammad/data/postgresql-data
-  - /container/zammad/data/zammad-data
 ~~~
 
 ## Role Variables

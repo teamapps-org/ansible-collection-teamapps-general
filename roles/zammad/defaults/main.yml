@@ -15,7 +15,12 @@ zammad_postgres_version: 15.3-alpine
 zammad_postgres_user: zammad
 # zammad_postgres_pass:
 
+zammad_backup_time: "03:00"
+zammad_backup_timezone: "Etc/UTC"
 zammad_backup_hold_days: 10
+
+# set to yes, to skip archiving file storage (./data/zammad-storage)
+zammad_backup_no_file_backup: no
 
 # pull docker images (docker compose pull)
 zammad_docker_pull: '{{ global_docker_pull | default(False) }}'
