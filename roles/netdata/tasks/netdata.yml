@@ -73,6 +73,20 @@
     - stream.conf
   notify: netdata_restart
 
+- name: ensure /etc/netdata/go.d exists
+  file:
+    path: "/etc/netdata/go.d"
+    state: directory
+
+- name: configure docker metrics collection
+  template:
+    src: go.d/docker.conf
+    dest: /etc/netdata/go.d/docker.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: netdata_restart
+
 - name: deploy postgres monitoring configuration
   template:
     src: postgres.conf.j2
@@ -109,15 +123,6 @@
     state: "{{ netdata_disable_telemetry | ternary('touch', 'absent') }}"
     access_time: preserve
     modification_time: preserve
-    owner: root
-    group: root
-    mode: '0644'
-  notify: netdata_restart
-
-- name: configure docker metrics collection
-  template:
-    src: go.d/docker.conf
-    dest: /etc/netdata/go.d/docker.conf
     owner: root
     group: root
     mode: '0644'
