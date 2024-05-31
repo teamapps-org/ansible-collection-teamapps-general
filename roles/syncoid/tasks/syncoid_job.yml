@@ -35,6 +35,7 @@
       {{ ['--exclude='] | product(syncoid_exclude) | map('join') | list | join(' ') }}
       --sendoptions="{{ syncoid_sendoptions }}"
       {% if syncoid_recvoptions != '' %}--recvoptions="{{ syncoid_recvoptions }}"{% endif %}
+      {% if not syncoid_rollback %}--no-rollback{% endif %}
       --sshkey=/root/.ssh/syncoid_id_ed25519
       --sshoption StrictHostKeyChecking=accept-new
       {{ syncoid_source_host_ssh_user }}@{{ syncoid_source_host_ssh }}:{{ syncoid_source_dataset }}

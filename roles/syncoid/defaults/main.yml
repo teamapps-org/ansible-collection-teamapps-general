@@ -19,4 +19,6 @@ syncoid_jobs: []
 #     cron_hour: '*'
 #     dest_root_dataset: zfsbulk/hotspare
 #     # dest_dataset: 'zfsbulk/hotspare/{{ source_host }}/{{ source_dataset }}' # these variables are not available here!
-#     # sync_snapshot: False # disable creation of a sync snapshot and only sync existing snapshots
+#     sync_snapshot: False # disable creation of a sync snapshot and only sync existing snapshots
+#     rollback: No
+#     recvoptions: -x encryption

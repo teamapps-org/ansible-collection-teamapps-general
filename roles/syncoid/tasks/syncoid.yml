@@ -54,6 +54,7 @@
     syncoid_sync_snapshot: "{{ syncoid_job.sync_snapshot | default(True) }}"
     syncoid_sendoptions: "{{ syncoid_job.sendoptions | default('Lc e w') }}"
     syncoid_recvoptions: "{{ syncoid_job.recvoptions | default('') }}"
+    syncoid_rollback: "{{ syncoid_job.rollback | default(True) }}"
   include_tasks:
     file: syncoid_job.yml
     apply:
