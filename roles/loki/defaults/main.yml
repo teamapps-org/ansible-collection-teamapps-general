@@ -46,6 +46,7 @@ loki_limits_per_stream_rate_limit_burst: 15MB # unit required
 loki_limits_max_query_length: 730h # 30d
 loki_limits_retention_period: 91d # needs to be bigger than look back period
 
+loki_max_message_size: 33554432
 loki_log_level: info # Supported values [debug, info, warn, error]
 
 # deploy scrape config file for scraping loki metrics with vmagent on host

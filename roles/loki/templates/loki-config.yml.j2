@@ -18,8 +18,8 @@ server:
   http_listen_port: 3100
   http_server_read_timeout: 60s # allow longer time span queries
   http_server_write_timeout: 60s # allow longer time span queries
-  grpc_server_max_recv_msg_size: 67108864 # 32MiB (int bytes), default 4MB
-  grpc_server_max_send_msg_size: 67108864 # 32MiB (int bytes), default 4MB
+  grpc_server_max_recv_msg_size: {{ loki_max_message_size }} # 32MiB (int bytes), default 4MB
+  grpc_server_max_send_msg_size: {{ loki_max_message_size }} # 32MiB (int bytes), default 4MB
 
   # Log only messages with the given severity or above. Supported values [debug,
   # info, warn, error]
@@ -159,15 +159,15 @@ frontend_worker:
   grpc_client_config:
     # The maximum size in bytes the client can send.
     # CLI flag: -<prefix>.grpc-max-send-msg-size
-    max_send_msg_size: 33554432 # 32MiB, default = 16777216]
-    max_recv_msg_size: 33554432
+    max_send_msg_size: {{ loki_max_message_size }} # 64mb, default = 16777216]
+    max_recv_msg_size: {{ loki_max_message_size }}
 
 ingester_client:
   grpc_client_config:
     # The maximum size in bytes the client can send.
     # CLI flag: -<prefix>.grpc-max-send-msg-size
-    max_send_msg_size: 67108864 # 64mb, default = 16777216]
-    max_recv_msg_size: 67108864
+    max_send_msg_size: {{ loki_max_message_size }} # 64mb, default = 16777216]
+    max_recv_msg_size: {{ loki_max_message_size }}
 
 query_scheduler:
   # the TSDB index dispatches many more, but each individually smaller, requests.
@@ -176,8 +176,8 @@ query_scheduler:
   grpc_client_config:
     # The maximum size in bytes the client can send.
     # CLI flag: -<prefix>.grpc-max-send-msg-size
-    max_send_msg_size: 33554432 # 32mb, default = 16777216]
-    max_recv_msg_size: 33554432
+    max_send_msg_size: {{ loki_max_message_size }} # 64mb, default = 16777216]
+    max_recv_msg_size: {{ loki_max_message_size }}
 
 query_range:
   parallelise_shardable_queries: False
