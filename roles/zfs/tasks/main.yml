@@ -104,3 +104,33 @@
     - zfs_reg__zpool_stat.stat.exists
   tags:
     - zfs
+
+- name: Deploy zfs dataset property metrics script
+  copy:
+    src: zfs_dataset_property_metrics.sh
+    dest: /usr/local/bin/zfs_dataset_property_metrics.sh
+    owner: root
+    group: root
+    mode: '0750'
+  when:
+    - zfs_reg__zpool_stat.stat.exists
+    - zfs_dataset_property_metrics
+  tags:
+    - zfs
+
+- name: Cronjob for zfs dataset property metrics
+  vars:
+    zfs__include_args: "{{ zfs_dataset_property_metrics_include_datasets | map('regex_escape') | map('regex_replace', '^', '--include-datasets ') | join(' ') }}"
+    zfs__exclude_args: "{{ zfs_dataset_property_metrics_exclude_datasets | map('regex_escape') | map('regex_replace', '^', '--exclude-datasets ') | join(' ') }}"
+  cron:
+    name: zfs_dataset_property_metrics
+    minute: "*/5"
+    hour: "*"
+    user: root
+    job: '/usr/local/bin/zfs_dataset_property_metrics.sh {{ zfs__include_args }} {{ zfs__exclude_args }} > {{ zfs_metrics_textfile_dir }}/zfs_dataset_property_metrics.prom.new && mv {{ zfs_metrics_textfile_dir }}/zfs_dataset_property_metrics.prom.new {{ zfs_metrics_textfile_dir }}/zfs_dataset_property_metrics.prom'
+    cron_file: zfs_dataset_property_metrics
+  when:
+    - zfs_reg__zpool_stat.stat.exists
+    - zfs_dataset_property_metrics
+  tags:
+    - zfs

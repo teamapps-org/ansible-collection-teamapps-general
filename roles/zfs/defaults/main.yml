@@ -35,3 +35,17 @@ zfs_extra_zfs_properties_default:
 #       - officebackup
 
 zfs_metrics_textfile_dir: '{{ node_exporter_textfile_dir | default("/var/lib/node_exporter") }}'
+
+zfs_dataset_property_metrics: False
+zfs_dataset_property_metrics_include_datasets: []
+zfs_dataset_property_metrics_exclude_datasets: []
+
+# # Example with multiple includes and exclude:
+# zfs_dataset_property_metrics: True
+# zfs_dataset_property_metrics_include_datasets:
+#   - zfsdata
+#   - zfsdata/sync
+#   - zfsdata/sync/backup3.*
+#   - zfsdata/sync/backup4
+# zfs_dataset_property_metrics_exclude_datasets: # []
+#   - .*/archive
