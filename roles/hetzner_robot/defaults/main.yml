@@ -13,7 +13,7 @@ hetzner_robot_force_gpt: True
 # Mdraid stop and remove is configured below
 hetzner_robot_installimage_partitions: 'swap:swap:{{ hetzner_robot_swap_size }},/:ext4:{{ hetzner_robot_root_size }},none:none:all' # ,/srv:ext4:200G
 
-hetzner_robot_image: /root/.oldroot/nfs/images/Ubuntu-2204-jammy-amd64-base.tar.gz
+hetzner_robot_image: /root/.oldroot/nfs/images/Ubuntu-2404-noble-amd64-base.tar.gz
 
 hetzner_robot_installimage_command: |
   /root/install/installimage -a \
