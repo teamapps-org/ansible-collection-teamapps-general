@@ -1,0 +1,38 @@
+---
+- name: create configuration directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - "{{ victorialogs_path }}"
+    - "{{ victorialogs_storage_path }}"
+
+- name: deploy docker-compose.yml
+  template:
+    src: 'docker-compose.yml.j2'
+    dest: '{{ victorialogs_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: include authproxy config
+  import_tasks: authproxy.yml
+
+- name: victorialogs_docker-compose-up
+  community.docker.docker_compose_v2:
+    project_src: '{{ victorialogs_path }}'
+    state: present
+    remove_orphans: yes
+    pull: "{{ victorialogs_docker_pull | ternary('always', 'policy') }}"
+  register: victorialogs__register_compose
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ victorialogs__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: True
+  when: victorialogs__register_compose.changed

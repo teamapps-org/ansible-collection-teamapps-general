@@ -1,0 +1,92 @@
+---
+- name: Nginx Auth Gateway basic auth Configuration File
+  template:
+    src: 'authproxy-basic-site.conf'
+    dest: '{{ victorialogs_path }}/authproxy-site.conf'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: victoriametrics-restart-gateway
+  when: not victorialogs_oauth2_proxy_integration
+
+- name: Nginx Auth Gateway oauth2 Configuration File
+  template:
+    src: 'authproxy-oauth2-site.conf'
+    dest: '{{ victorialogs_path }}/authproxy-site.conf'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: victoriametrics-restart-gateway
+  when: victorialogs_oauth2_proxy_integration
+
+- name: Nginx Auth Gateway delete old file
+  file:
+    path: '{{ victorialogs_path }}/authproxy-basic-site.conf'
+    state: absent
+
+- name: create htaccess directory
+  file:
+    path: "{{ victorialogs_path }}/htaccess"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: deploy htpasswd read file
+  copy:
+    content: '{{ victorialogs_htpasswd_read }}'
+    dest: '{{ victorialogs_path }}/htaccess/htpasswd_read'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: deploy write htpasswd file
+  copy:
+    content: '{{ victorialogs_htpasswd_write }}'
+    dest: '{{ victorialogs_path }}/htaccess/htpasswd_write'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: deploy admin htpasswd file
+  copy:
+    content: '{{ victorialogs_htpasswd_admin }}'
+    dest: '{{ victorialogs_path }}/htaccess/htpasswd_admin'
+    owner: root
+    group: root
+    mode: '0644'
+
+## deploy configuration for auth_request to oauth2_proxy
+
+- name: create vhost.d directory for auth proxy
+  file:
+    path: "{{ victorialogs_path }}/authproxy_vhost.d"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: victorialogs_oauth2_proxy_integration
+
+- name: configure vhost.d config
+  vars:
+    victorialogs_oauth2_proxy_instance_host: "{{ victorialogs_oauth2_proxy_host }}"
+    victorialogs_oauth2_proxy_instance_internal_host: "{{ victorialogs_oauth2_proxy_internal_host }}"
+    victorialogs_oauth2_proxy_instance_cookie_name: "{{ victorialogs_oauth2_proxy_cookie_name | regex_replace('[^a-z0-9]', '_') }}"
+  template:
+    src: 'oauth2_vhost.conf.j2'
+    dest: '{{ victorialogs_path }}/authproxy_vhost.d/oauth2_vhost.conf'
+    owner: root
+    group: root
+    mode: 0644
+  notify: victoriametrics-restart-gateway
+  when: victorialogs_oauth2_proxy_integration
+
+- name: configure webproxy vhost.d location config
+  template:
+    src: 'oauth2_vhost_location.conf.j2'
+    dest: '{{ victorialogs_path }}/authproxy_vhost.d/oauth2_vhost_location.conf'
+    owner: root
+    group: root
+    mode: 0644
+  notify: victoriametrics-restart-gateway
+  when: victorialogs_oauth2_proxy_integration

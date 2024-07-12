@@ -1,0 +1,24 @@
+---
+# https://hub.docker.com/r/victoriametrics/victoria-logs/tags?page=1&ordering=last_updated
+victorialogs_version: latest
+victorialogs_domain: 'victorialogs.{{ ansible_fqdn }}'
+
+victorialogs_nginx_image: nginx:alpine
+
+# retention period (months) https://victoriametrics.github.io/#retention
+victorialogs_retention_period: 1y
+
+victorialogs_path: '/container/victorialogs'
+victorialogs_docker_pull: '{{ global_docker_pull | default(False) }}'
+
+# storage path for metrics data
+victorialogs_storage_path: '{{ victorialogs_path }}/vlogs-storage'
+
+victorialogs_htpasswd_read:
+victorialogs_htpasswd_write:
+victorialogs_htpasswd_admin:
+
+victorialogs_oauth2_proxy_integration: False
+victorialogs_oauth2_proxy_host: oauth2-proxy.{{ victorialogs_domain }}
+victorialogs_oauth2_proxy_internal_host: True
+victorialogs_oauth2_proxy_cookie_name: "_oauth2_{{ victorialogs_domain }}"
