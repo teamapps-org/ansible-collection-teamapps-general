@@ -44,6 +44,8 @@ services:
       DEFAULT_HOST: "{{ webproxy_default_host }}"
       ENABLE_IPV6: "true"
       RESOLVERS: "127.0.0.11"
+      # log format with escaped $$
+      LOG_FORMAT: 't="$$time_iso8601" h=$$host u=$$remote_user client=$$remote_addr client_ip=$$http_x_forwarded_for  status=$$status  request="$$request"  req_time=$$request_time  ua="$$http_user_agent"  method=$$request_method  req_length=$$request_length  bytes_sent=$$bytes_sent  body_bytes_sent=$$body_bytes_sent  referer="$$http_referer"  us_addr=$$upstream_addr  us_status=$$upstream_status  us_connect_time=$$upstream_connect_time  us_header_time=$$upstream_header_time  us_response_time=$$upstream_response_time'
     volumes:
       - ./data/conf.d:/etc/nginx/conf.d
       - ./data/vhost.d:/etc/nginx/vhost.d
