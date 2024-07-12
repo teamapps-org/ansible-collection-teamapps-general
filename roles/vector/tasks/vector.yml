@@ -1,0 +1,165 @@
+---
+# tasks file for vector
+
+- name: remove old repository gpgkey
+  apt_key:
+    url: https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key
+    id: 1E46C153E9EFA24018C36F753543DB2D0A2BC4B8 # for offline checkmode # gpg --list-keys --keyid-format=long --keyring /etc/apt/trusted.gpg
+    state: absent
+
+- name: remove old nightly apt repo
+  apt_repository:
+    repo: 'deb https://repositories.timber.io/public/vector-nightly/deb/ubuntu any-version main'
+    state: absent
+
+- name: remove old apt repo
+  apt_repository:
+    repo: 'deb https://repositories.timber.io/public/vector/deb/ubuntu any-version main'
+    state: absent
+
+## Repository
+# https://vector.dev/highlights/2023-11-07-new-linux-repos/
+- name: add repository gpg keyring
+  copy:
+    src: datadog-archive-keyring.gpg
+    dest: /usr/share/keyrings/datadog-archive-keyring.gpg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: add apt repo
+  apt_repository:
+    repo: 'deb [signed-by=/usr/share/keyrings/datadog-archive-keyring.gpg] https://apt.vector.dev/ stable vector-0'
+    update_cache: yes
+
+- name: apt pin vector version
+  copy:
+    dest: /etc/apt/preferences.d/vector
+    owner: root
+    group: root
+    mode: 0640
+    content: |
+      Package: *
+      Pin: origin cloudsmith/timber/vector-nightly
+      Pin-Priority: 300
+
+      Package: vector
+      Pin: version {{ vector_pin_version }}
+      Pin-Priority: 1000
+
+- name: install specific vector version
+  apt:
+    name: 'vector={{ vector_pin_version }}'
+    state: present
+    force: '{{ vector_apt_force }}'
+  when: vector_version != ''
+
+- name: install vector
+  apt:
+    name: 'vector'
+    state: present
+  when: vector_version == ''
+
+- name: Copy env file
+  template:
+    src: vector.env.j2
+    dest: /etc/default/vector
+    owner: root
+    group: root
+    mode: 0600
+  notify: restart vector
+
+- name: Ensure vector service is enabled on boot
+  systemd:
+    name: vector
+    enabled: true
+
+- name: Copy config
+  template:
+    src: vector.toml.j2
+    dest: /etc/vector/vector.toml
+    mode: 0644
+  notify: reload vector
+
+- name: Add vector user to docker group
+  user:
+    name: vector
+    groups: [docker]
+    append: yes
+  when: vector_add_docker_group | default(False)
+  notify: restart vector
+
+- name: Copy docker-to-loki config
+  template:
+    src: 'docker-to-loki.toml.j2'
+    dest: '/etc/vector/docker-to-loki.toml'
+    mode: 0644
+    validate: '/usr/bin/vector validate --config-toml /etc/vector/vector.toml --config-toml %s'
+  notify: reload vector
+  when: vector_docker_to_loki | default(False)
+
+- name: Remove docker-to-loki config
+  file:
+    path: '/etc/vector/docker-to-loki.toml'
+    state: absent
+  notify: reload vector
+  when: not vector_docker_to_loki | default(False)
+
+- name: Copy metrics-to-prom config
+  template:
+    src: 'metrics-to-prom.toml.j2'
+    dest: '/etc/vector/metrics-to-prom.toml'
+    mode: 0644
+    validate: '/usr/bin/vector validate --config-toml /etc/vector/vector.toml --config-toml %s'
+  notify: reload vector
+  when: vector_metrics_enabled | default(False)
+
+- name: Remove metrics-to-prom config
+  file:
+    path: '/etc/vector/metrics-to-prom.toml'
+    state: absent
+  notify: reload vector
+  when: not vector_metrics_enabled | default(False)
+
+- name: systemd override directory
+  file:
+    path: /etc/systemd/system/vector.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+
+# Workaround for vector issue when started befor docker
+- name: systemd override
+  template:
+    src: systemd.override.conf
+    dest: /etc/systemd/system/vector.service.d/override.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: vector_daemon_reload_systemd
+  when: vector_systemd_override
+
+- name: remove systemd override
+  file:
+    path: /etc/systemd/system/vector.service.d/override.conf
+    state: absent
+  notify: vector_daemon_reload_systemd
+  when: not vector_systemd_override
+
+- name: reload systemd now
+  meta: flush_handlers
+
+- name: Add vector user to systemd-journal group
+  user:
+    name: vector
+    groups: [systemd-journal]
+    append: yes
+  when: vector_add_journal_group | default(False)
+  notify: restart vector
+
+- name: Start Vector
+  service:
+    state: started
+    enabled: yes
+    name: vector
