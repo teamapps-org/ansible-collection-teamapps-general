@@ -56,6 +56,73 @@ promtail_scrape_configs: [{}]
 #           job: varlogs
 #           __path__: /var/log/gitlab/*/*.log
 
+
+# scrape logs from docker containers
+promtail_scrape_docker_enabled: False
+promtail_scrape_config_docker:
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        # filters:
+        #   - name: name
+        #     values: [test-container]
+    relabel_configs:
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_container_number']
+        target_label: 'compose_container_number'
+        action: 'replace'
+        replacement: '${1}'
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+        target_label: 'compose_project'
+        action: 'replace'
+        replacement: '${1}'
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_project_working_dir']
+        target_label: 'compose_project_working_dir'
+        action: 'replace'
+        replacement: '${1}'
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_oneoff']
+        target_label: 'compose_oneoff'
+        action: 'replace'
+        replacement: '${1}'
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: 'compose_service'
+        action: 'replace'
+        replacement: '${1}'
+      - source_labels: ['__meta_docker_container_id']
+        target_label: 'container_id'
+        action: 'replace'
+      - source_labels: ['__meta_docker_container_name']
+        target_label: 'container_name'
+        regex: '/(.*)'
+        action: 'replace'
+
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'stream'
+        action: 'replace'
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'source'
+        action: 'replace'
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: 'source_type'
+        action: 'replace'
+
+      - target_label: 'category'
+        replacement: 'dockerlogs'
+      - target_label: 'job'
+        replacement: 'docker'
+      ## Map all labels
+      # - action: labelmap
+      #   regex: '__meta_docker_container_label_(.+)'
+      #   replacement: 'container_labels_${1}'
+    pipeline_stages:
+      - multiline:
+          firstline: '^\x{200B}'
+          max_wait_time: 1s
+      - drop:
+          older_than: 48h
+          drop_counter_reason: "line_too_old"
+
+
 # deploy mode (binary/docker)
 # docker: use docker compose in /container/promtail
 # binary: download binary, install systemd service
@@ -64,10 +131,10 @@ promtail_deploy_mode: binary
 promtail_config_dir: "{{ '/container/promtail' if promtail_deploy_mode == 'docker' else '/etc/promtail' }}"
 promtail_positions_path: "{{ '/data/promtail' if promtail_deploy_mode == 'docker' else '/var/log/promtail' }}"
 
-promtail_version: 2.9.2 # also update checkum
+promtail_version: 3.0.0 # also update checkum
 # checksum of promtail-linux-amd64.zip from https://github.com/grafana/loki/releases
-# wget -q -O - https://github.com/grafana/loki/releases/download/v2.9.2/SHA256SUMS | grep promtail-linux-amd64.zip
-promtail_checksum: f2d4f59e4dee505eee9c2c28e2eebb89442e7b544144aff2b7d03a57cafbaf58
+# wget -q -O - https://github.com/grafana/loki/releases/download/v3.0.0/SHA256SUMS | grep promtail-linux-amd64.zip
+promtail_checksum: 3a5120422a2a8aa26659a188d63f1425707ed42a1af274acc0a7797d851acf48
 
 promtail_server_disable: True
 promtail_server_http_listen_address: 0.0.0.0

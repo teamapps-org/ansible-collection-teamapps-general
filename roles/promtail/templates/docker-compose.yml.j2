@@ -1,0 +1,42 @@
+---
+
+services:
+
+  promtail:
+    image: grafana/promtail:{{ promtail_version }}
+    restart: always
+    volumes:
+      - type: bind
+        source: /var/log
+        target: /var/log
+        read_only: true
+      - type: bind
+        source: ./data/promtail
+        target: /data/promtail
+        read_only: false
+      - type: bind
+        source: ./promtail-config.yml
+        target: /etc/promtail/config.yml
+        read_only: true
+{% if promtail_scrape_docker_enabled %}
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+{% endif %}
+    command: -config.file=/etc/promtail/config.yml -log-config-reverse-order -log.level info
+    expose:
+      - 9080
+    networks:
+      - loki
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+
+networks:
+  loki:
+  webproxy:
+    external: True
+    name: webproxy

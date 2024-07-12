@@ -7,6 +7,8 @@
     mode: '0755'
   with_items:
     - '{{ promtail_path }}'
+    - '{{ promtail_path }}/data'
+    - '{{ promtail_path }}/data/promtail'
 
 - name: Promtail Configuration File
   template:
@@ -17,10 +19,9 @@
     mode: '0640'
   notify: restart promtail
 
-
 - name: deploy docker-compose.yml
   template:
-    src: docker-compose.yml
+    src: docker-compose.yml.j2
     dest: '{{ promtail_path }}/docker-compose.yml'
     owner: root
     group: root

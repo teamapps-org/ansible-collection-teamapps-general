@@ -6,7 +6,7 @@ server:
 
   # HTTP server listen host
   # [http_listen_address: <string>]
-  http_listen_address: {{ promtail_server_http_listen_address | default('0.0.0.0') }}
+  http_listen_address: {{ promtail_server_http_listen_address }}
 
   # HTTP server listen port (0 means random port)
   http_listen_port: 9080
@@ -58,10 +58,14 @@ clients:
     external_labels:
       instance: {{ ansible_fqdn }}
       host: {{ ansible_hostname }}
+      forwarder: promtail
 
 scrape_configs:
   {{ promtail_scrape_configs_default | to_nice_yaml(indent=2) | indent(2,False) }}
 
 {% if promtail_scrape_configs != [{}] %}
   {{ promtail_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+{% endif %}
+{% if promtail_scrape_docker_enabled %}
+  {{ promtail_scrape_config_docker | to_nice_yaml(indent=2) | indent(2,False) }}
 {% endif %}
