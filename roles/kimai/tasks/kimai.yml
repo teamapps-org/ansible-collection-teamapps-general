@@ -116,7 +116,7 @@
     - kimai
 
 - name: kimai composer install
-  command: 'docker compose run --user 33 php /usr/local/bin/composer install --no-dev --optimize-autoloader'
+  command: 'docker compose run --rm --user 33 php /usr/local/bin/composer install --no-dev --optimize-autoloader'
   args:
     chdir: '{{ kimai_path }}'
     creates: '{{ kimai_path }}/code/vendor/autoload.php'

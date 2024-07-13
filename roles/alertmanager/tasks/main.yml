@@ -75,7 +75,7 @@
 
 - name: alertmanager-check-config
   # start new alertmanager container, entrypoint amtool
-  command: 'docker compose run -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
+  command: 'docker compose run --rm -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
   args:
     chdir: '{{ alertmanager_path }}'
   changed_when: False
