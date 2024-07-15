@@ -28,3 +28,24 @@ Read Logs and send them to a loki server.
       tags:
         - promtail
 ~~~
+
+## Example 2: Promtail in docker to collect docker logs and send to VictoriaLogs
+
+Separate Promtail instance deployed with docker compose, collecting system and docker container logs and sending them to [VictoriamLogs](https://docs.victoriametrics.com/victorialogs/)
+
+~~~yaml
+- name: Promtail VictoriaLogs Play
+  hosts:
+    - dockerhosts
+  roles:
+    - role: teamapps.general.promtail
+      vars:
+        promtail_path: '/container/promtail-victorialogs'
+        promtail_loki_url: https://victorialogs.example.com/insert/loki/api/v1/push?_stream_fields=instance,job,host,category,service,container_name,compose_project,compose_service,systemd_unit,filename
+        promtail_loki_username: promtail-to-victorialogs
+        promtail_loki_password: '{{ promtail_victorialogs_password }}'
+        promtail_deploy_mode: docker
+        promtail_scrape_docker_enabled: True
+      tags:
+        - promtail
+~~~
