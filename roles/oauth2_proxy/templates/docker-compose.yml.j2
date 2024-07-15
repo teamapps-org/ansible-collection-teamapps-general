@@ -22,6 +22,10 @@ services:
         source: './htpasswd'
         target: /etc/oauth2-htpasswd
         read_only: true
+      - type: bind
+        source: './authenticated_emails_file'
+        target: /etc/oauth2-authenticated_emails_file
+        read_only: true
     networks:
       webproxy:
         aliases:

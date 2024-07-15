@@ -38,6 +38,9 @@ Every oauth2_proxy instance should have its own Application Registration in GitL
           - '.example.com'
         email_domains: # restrict to users with these email domains
           - 'example.com'
+        authenticated_emails: # additional allowed emails (Gitlab user Email must match email domain OR authenticated email)
+          - foo@gmail.com
+          - external@hotmail.com
         gitlab_groups: # restrict service to members of these gitlab groups
           - 'allowed_group'
         # additional config added to the bottom of oauth2-proxy.cfg

@@ -20,6 +20,8 @@ oauth2_proxy_instances: []
   #     - '.example.com'
   #   email_domains: # restrict to users with these email domains
   #     - 'example.com'
+  #   authenticated_emails: # additional allowed email addresses
+  #     - foo@gmail.com
   #   gitlab_groups: # restrict service to members of these gitlab groups
   #     - 'allowed_group'
   #   # additional config added to the bottom of oauth2-proxy.cfg

@@ -46,6 +46,8 @@ email_domains = [
 
 ## Authenticated Email Addresses File (one email per line)
 # authenticated_emails_file = ""
+# it is an OR operation between email_domains and authenticated_emails_file
+authenticated_emails_file = "/etc/oauth2-authenticated_emails_file"
 
 ## Htpasswd File (optional)
 ## Additionally authenticate against a htpasswd file. Entries must be created with "htpasswd -B" for bcrypt encryption

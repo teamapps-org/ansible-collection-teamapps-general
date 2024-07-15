@@ -27,6 +27,7 @@
     oauth2_proxy_instance_client_secret: "{{ instance.client_secret }}"
     oauth2_proxy_instance_whitelist_domains: "{{ instance.whitelist_domains | default([]) }}"
     oauth2_proxy_instance_email_domains: "{{ instance.email_domains | default([]) }}"
+    oauth2_proxy_instance_authenticated_emails: "{{ instance.authenticated_emails | default([]) }}"
     oauth2_proxy_instance_gitlab_groups: "{{ instance.gitlab_groups | default([]) }}"
     oauth2_proxy_instance_additional_config: "{{ instance.additional_config | default('') }}"
     oauth2_proxy_instance_internal_host: True

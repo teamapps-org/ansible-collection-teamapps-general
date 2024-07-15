@@ -31,6 +31,15 @@
     group: root
     mode: 0640
 
+
+- name: deploy authenticated_emails_file - {{ oauth2_proxy_instance_domain }}
+  template:
+    src: authenticated_emails_file.j2
+    dest: '{{ oauth2_proxy_instance_directory }}/authenticated_emails_file'
+    owner: 65532 # UID/GID 65532 is also known as nonroot user in distroless image
+    group: root
+    mode: 0640
+
 - name: docker-compose-up - {{ oauth2_proxy_instance_domain }}
   community.docker.docker_compose_v2:
     project_src: '{{ oauth2_proxy_instance_directory }}'
