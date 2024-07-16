@@ -33,6 +33,10 @@ def is_tty():
     """Check if the output is a TTY."""
     return sys.stdout.isatty()
 
+# Function to colorize output
+def colorize(text, color_code):
+    return f"\033[{color_code}m{text}\033[0m"
+
 def query_victorialogs(server, params, auth):
     """Send a query to VictoriaLogs."""
     url = f"https://{server}/select/logsql/query"
@@ -70,7 +74,7 @@ def process_response(response, pretty):
             if pretty:
                 jq_process.stdin.write(json.dumps(log_json) + "\n")
             else:
-                print_log_entry(log_json, last_stream)
+                last_stream = print_log_entry(log_json, last_stream)
 
             sys.stdout.flush()  # Ensure output is flushed immediately
 
@@ -95,15 +99,20 @@ def print_log_entry(log_json, last_stream):
 
     if args.text:
         if stream != last_stream:
-            print(f"_stream: {stream}")
+            print(colorize(f"_stream: {stream}", "32"))
             last_stream = stream
 
         if args.timestamps:
-            print(f"[{timestamp}] {msg}")
+            # Ensure consistent padding
+            timestamp_length = 30  # Adjust this value based on the expected length of the timestamp
+            padded_timestamp = colorize(timestamp.ljust(timestamp_length), '33')
+            print(f"[{padded_timestamp}] {msg}")
         else:
             print(msg)
     else:
         print(json.dumps(log_json))
+
+    return last_stream
 
 def get_config_value(arg_value, env_var, prompt):
     """Retrieve configuration value with fallback from cmdline to env."""
@@ -117,20 +126,20 @@ def get_config_value(arg_value, env_var, prompt):
 
 def get_config(args):
     """Retrieve VictoriaLogs configuration."""
-    server = get_config_value(args.server, "VICTORIALOGS_SERVER", "Enter VictoraLogs server")
-    username = get_config_value(None, "VICTORIALOGS_USER", "Enter VictoraLogs username")
-    password = get_config_value(None, "VICTORIALOGS_PASSWORD", "Enter VictoraLogs password")
+    server = get_config_value(args.server, "VICTORIALOGS_SERVER", "Enter VictoriaLogs server")
+    username = get_config_value(None, "VICTORIALOGS_USER", "Enter VictoriaLogs username")
+    password = get_config_value(None, "VICTORIALOGS_PASSWORD", "Enter VictoriaLogs password")
     return username, password, server
 
 # Argument parser setup
 parser = argparse.ArgumentParser(
-    description="Query VictoraLogs and format the output.",
+    description="Query VictoriaLogs and format the output.",
     formatter_class=argparse.RawTextHelpFormatter,
     epilog="""
 You can also set the following environment variables:
   VICTORIALOGS_SERVER    - The server to query
-  VICTORIALOGS_USER      - Your VictoraLogs username
-  VICTORIALOGS_PASSWORD  - Your VictoraLogs password
+  VICTORIALOGS_USER      - Your VictoriaLogs username
+  VICTORIALOGS_PASSWORD  - Your VictoriaLogs password
 """
 )
 parser.add_argument("--server", help="The server to query")
