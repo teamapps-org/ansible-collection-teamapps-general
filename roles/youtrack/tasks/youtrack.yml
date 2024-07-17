@@ -29,6 +29,15 @@
     group: root
     mode: '0644'
 
+- name: deploy youtrack.jvmoptions
+  template:
+    src: 'youtrack.jvmoptions.j2'
+    dest: '{{ youtrack_path }}/conf/youtrack.jvmoptions'
+    owner: '13001' # youtrack inside container
+    group: '13001' # youtrack inside container
+    mode: '0644'
+  notify: youtrack_restart
+
 - name: youtrack_docker-compose-up
   community.docker.docker_compose_v2:
     project_src: '{{ youtrack_path }}'
