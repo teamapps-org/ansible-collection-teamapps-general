@@ -29,7 +29,7 @@
 
 - name: docker-compose.yml
   template:
-    src: docker-compose.yml
+    src: docker-compose.yml.j2
     dest: '{{ nextcloud_path }}/docker-compose.yml'
     owner: root
     group: root

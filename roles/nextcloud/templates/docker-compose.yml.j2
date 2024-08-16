@@ -6,9 +6,16 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     volumes:
-      - ./db-data:/var/lib/mysql
-      - ./db-dumps:/db-dumps
-      - ./mysql.conf:/etc/mysql/conf.d/override.cnf:ro
+      - type: bind
+        source: ./db-data
+        target: /var/lib/mysql
+      - type: bind
+        source: ./db-dumps
+        target: /db-dumps
+      - type: bind
+        source: ./mysql.conf
+        target: /etc/mysql/conf.d/override.cnf
+        read_only: true
     environment:
       TZ: Europe/Berlin
       MYSQL_ROOT_PASSWORD: '{{ nextcloud_mysql_root_password }}'
@@ -34,12 +41,32 @@ services:
     # image: nextcloud-custom:{{ nextcloud_version }}-fpm
     restart: always
     volumes:
-      - ./nextcloud:/var/www/html
-      - ./nextcloud-apps:/var/www/html/custom_apps
-      - ./nextcloud-config:/var/www/html/config
-      - ./php.conf:/usr/local/etc/php-fpm.d/zz-custom.conf:ro
-      - ./php.ini:/usr/local/etc/php/conf.d/zz-custom.ini:ro
-      - '{{ nextcloud_data_dir }}:/var/www/html/data'
+      - type: bind
+        source: ./nextcloud
+        target: /var/www/html
+      - type: bind
+        source: ./nextcloud-apps
+        target: /var/www/html/custom_apps
+      - type: bind
+        source: ./nextcloud-config
+        target: /var/www/html/config
+      - type: bind
+        source: ./php.conf
+        target: /usr/local/etc/php-fpm.d/zz-custom.conf
+        read_only: true
+      - type: bind
+        source: ./php.ini
+        target: /usr/local/etc/php/conf.d/zz-custom.ini
+        read_only: true
+      - type: bind
+        source: '{{ nextcloud_data_dir }}'
+        target: '/var/www/html/data'
+{% for item in nextcloud_custom_mounts %}
+      - type: bind
+        source: "{{ item.source }}"
+        target: "{{ item.target }}"
+        read_only: "{{ item.read_only | default(false) }}"
+{% endfor %}
       # - ./theme:/var/www/html/themes/<YOUR_CUSTOM_THEME>
     environment:
       TZ: Europe/Berlin
@@ -60,11 +87,28 @@ services:
     image: '{{ nextcloud_nginx_image }}'
     restart: always
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nextcloud:/var/www/html
-      - ./nextcloud-apps:/var/www/html/custom_apps
-      - ./nextcloud-config:/var/www/html/config
-      - '{{ nextcloud_data_dir }}:/var/www/html/data'
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+      - type: bind
+        source: ./nextcloud
+        target: /var/www/html
+      - type: bind
+        source: ./nextcloud-apps
+        target: /var/www/html/custom_apps
+      - type: bind
+        source: ./nextcloud-config
+        target: /var/www/html/config
+      - type: bind
+        source: '{{ nextcloud_data_dir }}'
+        target: /var/www/html/data
+{% for item in nextcloud_custom_mounts %}
+      - type: bind
+        source: "{{ item.source }}"
+        target: "{{ item.target }}"
+        read_only: "{{ item.read_only | default(false) }}"
+{% endfor %}
     environment:
       TZ: Europe/Berlin
       VIRTUAL_HOST: '{{ nextcloud_domain }}'
@@ -80,10 +124,24 @@ services:
     image: nextcloud:{{ nextcloud_version }}-fpm
     restart: always
     volumes:
-      - ./nextcloud:/var/www/html
-      - ./nextcloud-apps:/var/www/html/custom_apps
-      - ./nextcloud-config:/var/www/html/config
-      - '{{ nextcloud_data_dir }}:/var/www/html/data'
+      - type: bind
+        source: ./nextcloud
+        target: /var/www/html
+      - type: bind
+        source: ./nextcloud-apps
+        target: /var/www/html/custom_apps
+      - type: bind
+        source: ./nextcloud-config
+        target: /var/www/html/config
+      - type: bind
+        source: '{{ nextcloud_data_dir }}'
+        target: /var/www/html/data'
+{% for item in nextcloud_custom_mounts %}
+      - type: bind
+        source: "{{ item.source }}"
+        target: "{{ item.target }}"
+        read_only: "{{ item.read_only | default(false) }}"
+{% endfor %}
     entrypoint: /cron.sh
     environment:
       TZ: Europe/Berlin
@@ -98,7 +156,10 @@ services:
       NEXTCLOUD_URL: http://nginx/
       # LOG: debug
     volumes:
-      - ./nextcloud-config/config.php:/config/config.php:ro
+      - type: bind
+        source: ./nextcloud-config/config.php
+        target: /config/config.php
+        read_only: true
     entrypoint:
       - /notify_push
       - /config/config.php
