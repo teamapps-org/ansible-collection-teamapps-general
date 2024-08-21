@@ -38,6 +38,16 @@
     mode: '0644'
   notify: youtrack_restart
 
+- name: proxy config tuning
+  template:
+    src: nginx-proxy-config.conf
+    dest: '{{ youtrack_webproxy_path }}/data/vhost.d/{{ youtrack_domain }}'
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - youtrack_webproxy_nginx_restart
+
 - name: youtrack_docker-compose-up
   community.docker.docker_compose_v2:
     project_src: '{{ youtrack_path }}'
