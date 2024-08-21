@@ -135,7 +135,7 @@ services:
         target: /var/www/html/config
       - type: bind
         source: '{{ nextcloud_data_dir }}'
-        target: /var/www/html/data'
+        target: /var/www/html/data
 {% for item in nextcloud_custom_mounts %}
       - type: bind
         source: "{{ item.source }}"
