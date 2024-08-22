@@ -4,13 +4,15 @@
 nextcloud_mysql_root_password:
 nextcloud_mysql_password:
 
-nextcloud_version: 27
+nextcloud_version: 29
 nextcloud_nginx_image: nginx
 nextcloud_notify_push_image: icewind1991/notify_push:latest
-nextcloud_mariadb_version: 10.11
+nextcloud_mariadb_version: 11.4
 
 nextcloud_path: '/container/nextcloud'
 nextcloud_domain: 'nextcloud.{{ ansible_fqdn }}'
+
+nextcloud_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
 nextcloud_php_memory_limit: 512M
 

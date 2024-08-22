@@ -13,3 +13,10 @@
   community.docker.docker_compose_v2:
     project_src: '{{ nextcloud_path }}'
     state: restarted
+
+- name: nextcloud_webproxy_nginx_restart
+  community.docker.docker_compose_v2:
+    project_src: '{{ nextcloud_webproxy_path }}'
+    services:
+      - nginx
+    state: restarted

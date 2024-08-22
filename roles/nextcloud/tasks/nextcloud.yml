@@ -54,6 +54,16 @@
     mode: 0640
   notify: nextcloud_docker-compose-restart
 
+- name: proxy config tuning
+  template:
+    src: nginx-proxy-config.conf
+    dest: '{{ nextcloud_webproxy_path }}/data/vhost.d/{{ nextcloud_domain }}'
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - nextcloud_webproxy_nginx_restart
+
 - name: php.conf
   template:
     src: templates/php.conf
