@@ -42,7 +42,8 @@
         dest: '{{ vmagent_local_download_dir }}'
         remote_src: yes
       delegate_to: localhost
-      become: no
+      become: false
+      run_once: true
       when:
         - not ansible_check_mode
         - not vmagent_reg__vmagent_is_installed.stat.exists or
