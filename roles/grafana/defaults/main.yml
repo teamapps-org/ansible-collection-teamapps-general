@@ -65,8 +65,11 @@ grafana_remove_dashboards:
 
 # use bitnami build: https://hub.docker.com/r/bitnami/grafana-image-renderer
 # non-root and automated build of grafana/grafana-image-renderer
+# Settings: https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/
 grafana_image_renderer_image: bitnami/grafana-image-renderer
 grafana_image_renderer_version: latest
+grafana_image_renderer_clustering_mode: browser
+grafana_image_renderer_max_concurrency: 3
 grafana_image_renderer_cpu_limit: 1.5
 grafana_image_renderer_mem_limit: 500M
 grafana_image_renderer_port: 127.0.0.8:18081 # port for metric scraping

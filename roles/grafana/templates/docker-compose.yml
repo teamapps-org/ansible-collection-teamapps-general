@@ -101,7 +101,7 @@ services:
       - grafana
       - webproxy
 
-  # https://github.com/grafana/grafana-image-renderer/blob/master/docs/remote_rendering_using_docker.md
+  # https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/
   grafana-image-renderer:
     image: '{{ grafana_image_renderer_image }}:{{ grafana_image_renderer_version }}'
     restart: unless-stopped
@@ -111,8 +111,8 @@ services:
       RENDERING_VERBOSE_LOGGING: 'false'
       LOG_LEVEL: 'warning'
       RENDERING_MODE: 'clustered'
-      RENDERING_CLUSTERING_MODE: 'context'
-      RENDERING_CLUSTERING_MAX_CONCURRENCY: '3'
+      RENDERING_CLUSTERING_MODE: '{{ grafana_image_renderer_clustering_mode }}'
+      RENDERING_CLUSTERING_MAX_CONCURRENCY: '{{ grafana_image_renderer_max_concurrency }}'
     expose:
       - 8081
     ports:
