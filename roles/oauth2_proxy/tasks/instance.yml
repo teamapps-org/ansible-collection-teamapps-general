@@ -31,7 +31,6 @@
     group: root
     mode: 0640
 
-
 - name: deploy authenticated_emails_file - {{ oauth2_proxy_instance_domain }}
   template:
     src: authenticated_emails_file.j2
@@ -39,6 +38,7 @@
     owner: 65532 # UID/GID 65532 is also known as nonroot user in distroless image
     group: root
     mode: 0640
+    register: oauth2_proxy_instance_authenticated_emails_file
 
 - name: docker-compose-up - {{ oauth2_proxy_instance_domain }}
   community.docker.docker_compose_v2:
@@ -65,6 +65,7 @@
     state: restarted
   when:
     - oauth2_proxy_instance_reg_config.changed
+    - oauth2_proxy_instance_authenticated_emails_file.changed
   register: oauth2_proxy__register_compose
 
 - name: print actions by compose # noqa no-handler
