@@ -47,6 +47,7 @@
     pull: "{{ oauth2_proxy_docker_pull | ternary('always', 'policy') }}"
     remove_orphans: true
   register: oauth2_proxy_compose_return
+  tags: compose_up
 
 - name: print actions by compose - {{ oauth2_proxy_instance_domain }} # noqa no-handler
   vars:
@@ -67,6 +68,7 @@
     - oauth2_proxy_instance_reg_config.changed
     - oauth2_proxy_instance_authenticated_emails_file.changed
   register: oauth2_proxy__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:

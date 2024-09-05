@@ -4,6 +4,7 @@
     services:
       - authproxy
     state: restarted
+  tags: compose_up
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
 - name: vmalert validate config # noqa no-changed-when
@@ -28,6 +29,7 @@
     services:
       - vmagent
     state: restarted
+  tags: compose_up
 
 # use compose to send a SIGHUP to blacbox's process (PID=1)
 - name: blackbox reload # noqa no-changed-when

@@ -17,5 +17,6 @@
     state: restarted
   listen:
     - dependabot_regenerate_webproxy_config
+  tags: compose_up
 
 ...

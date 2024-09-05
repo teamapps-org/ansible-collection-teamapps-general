@@ -6,6 +6,7 @@
     state: restarted
     services:
       - loki
+  tags: compose_up
 
 - name: loki-restart-gateway
   community.docker.docker_compose_v2:
@@ -13,9 +14,11 @@
     state: restarted
     services:
       - nginx-gateway
+  tags: compose_up
 
-- name: loki-vmagent-restart
+- name: loki-vmagent-restart # noqa ignore-errors
   become: true
   service:
     name: vic-vmagent
     state: restarted
+  ignore_errors: true # ignore error if vmagent is not yet set up

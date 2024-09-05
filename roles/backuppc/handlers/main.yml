@@ -6,9 +6,11 @@
     project_src: '{{ backuppc_path }}'
     state: restarted
   register: backuppc_restart
+  tags: compose_up
 
 - name: backuppc reload config  # noqa no-changed-when
   command: 'docker compose exec -T backuppc pkill -SIGHUP -x BackupPC'
   args:
     chdir: '{{ backuppc_path }}'
   when: not backuppc_restart.changed | default(true)
+  tags: compose_up

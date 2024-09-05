@@ -101,6 +101,7 @@
     remove_orphans: true
     pull: "{{ loki_docker_pull | ternary('always', 'policy') }}"
   register: loki__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -108,7 +109,7 @@
   debug:
     var: actions
   changed_when: true
-  when: loki__register_compose.changed
+  when: loki__register_compose is defined and loki__register_compose.changed
 
 
 - name: import monitoring integration

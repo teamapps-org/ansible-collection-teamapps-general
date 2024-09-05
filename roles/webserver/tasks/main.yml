@@ -125,6 +125,7 @@
     pull: "{{ webserver_docker_pull | ternary('always', 'policy') }}"
     build: "{{ webserver_docker_pull | ternary('always', 'policy') }}"
   register: webserver__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -132,4 +133,4 @@
   debug:
     var: actions
   changed_when: true
-  when: webserver__register_compose.changed
+  when: webserver__register_compose is defined and webserver__register_compose.changed

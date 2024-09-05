@@ -26,12 +26,13 @@
   listen:
     - alertmanager_regenerate_webproxy_config
   register: alertmanager_h__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
     actions: "{{ alertmanager_h__register_compose.actions }}"
   debug:
     var: actions
-  when: alertmanager_h__register_compose.changed
-  changed_when: alertmanager_h__register_compose.changed
+  when: alertmanager_h__register_compose is defined and alertmanager_h__register_compose.changed
+  changed_when: alertmanager_h__register_compose is defined and alertmanager_h__register_compose.changed
 ...

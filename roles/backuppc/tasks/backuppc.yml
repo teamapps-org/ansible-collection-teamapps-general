@@ -41,14 +41,15 @@
     state: present
     pull: "{{ backuppc_docker_pull | ternary('always', 'policy') }}"
   register: backuppc__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
     actions: "{{ backuppc__register_compose.actions }}"
   debug:
     var: actions
-  when: backuppc__register_compose.changed
-  changed_when: backuppc__register_compose.changed
+  when: backuppc__register_compose is defined and backuppc__register_compose.changed
+  changed_when: backuppc__register_compose is defined and backuppc__register_compose.changed
 
 - name: copy file for basic auth
   copy:

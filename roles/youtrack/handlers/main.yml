@@ -4,6 +4,7 @@
   community.docker.docker_compose_v2:
     project_src: '{{ youtrack_path }}'
     state: restarted
+  tags: compose_up
 
 - name: youtrack_webproxy_nginx_restart
   community.docker.docker_compose_v2:
@@ -11,3 +12,4 @@
     services:
       - nginx
     state: restarted
+  tags: compose_up

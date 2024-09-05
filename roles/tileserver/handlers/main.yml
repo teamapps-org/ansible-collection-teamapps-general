@@ -3,6 +3,7 @@
   community.docker.docker_compose_v2:
     project_src: '{{ tileserver_path }}'
     state: restarted
+  tags: compose_up
 
 - name: tileserver clear nginx cache # noqa no-changed-when
   listen:

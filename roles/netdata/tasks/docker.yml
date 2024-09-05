@@ -36,6 +36,7 @@
     pull: "{{ netdata_docker_pull | ternary('always', 'policy') }}"
     remove_orphans: true
   register: netdata__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -43,4 +44,4 @@
   debug:
     var: actions
   changed_when: true
-  when: netdata__register_compose.changed
+  when: netdata__register_compose is defined and netdata__register_compose.changed

@@ -4,3 +4,4 @@
     state: restarted
     services:
       - grafana
+  tags: compose_up

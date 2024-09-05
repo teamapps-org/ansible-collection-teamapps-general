@@ -120,6 +120,7 @@
     remove_orphans: true
   register: zammad__register_compose
   changed_when: zammad__register_compose.actions | count > 1 # workaround. zammad-init is always started and stops after init
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:

@@ -60,6 +60,7 @@
     pull: "{{ minio_docker_pull | ternary('always', 'policy') }}"
     remove_orphans: true
   register: minio__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -67,4 +68,4 @@
   debug:
     var: actions
   changed_when: true
-  when: minio__register_compose.changed
+  when: minio__register_compose is defined and minio__register_compose.changed

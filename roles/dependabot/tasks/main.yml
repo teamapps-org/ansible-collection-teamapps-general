@@ -87,6 +87,7 @@
     remove_orphans: true
   register: dependabot_compose_return
   changed_when: dependabot_compose_return.actions | count > 2 # workaround. the services migration and background-tasks are always started and stops after init
+  tags: compose_up
 
 - name: print compose actions
   vars:

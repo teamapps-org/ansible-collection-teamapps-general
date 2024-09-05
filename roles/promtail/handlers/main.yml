@@ -9,6 +9,7 @@
     state: restarted
   listen: restart promtail
   when: promtail_deploy_mode == 'docker'
+  tags: compose_up
 
 - name: restart promtail service
   service:

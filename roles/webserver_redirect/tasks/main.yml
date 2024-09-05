@@ -38,6 +38,7 @@
     remove_orphans: true
     pull: "{{ webserver_redirect_docker_pull | ternary('always', 'policy') }}"
   register: webserver_redirect__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -45,4 +46,4 @@
   debug:
     var: actions
   changed_when: true
-  when: webserver_redirect__register_compose.changed
+  when: webserver_redirect__register_compose is defined and webserver_redirect__register_compose.changed

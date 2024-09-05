@@ -53,6 +53,7 @@
     project_src: '{{ youtrack_path }}'
     state: present
   register: youtrack__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -60,4 +61,4 @@
   debug:
     var: actions
   changed_when: true
-  when: youtrack__register_compose.changed
+  when: youtrack__register_compose is defined and youtrack__register_compose.changed

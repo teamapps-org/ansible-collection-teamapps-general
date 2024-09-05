@@ -33,6 +33,7 @@
     state: present
     pull: "{{ promtail_docker_pull | ternary('always', 'policy') }}"
   register: promtail__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -40,4 +41,4 @@
   debug:
     var: actions
   changed_when: true
-  when: promtail__register_compose.changed
+  when: promtail__register_compose is defined and promtail__register_compose.changed

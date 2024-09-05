@@ -67,6 +67,7 @@
     pull: "{{ prometheus_docker_pull | ternary('always', 'policy') }}"
     remove_orphans: true
   register: prometheus__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -74,5 +75,5 @@
   debug:
     var: actions
   changed_when: true
-  when: prometheus__register_compose.changed
+  when: prometheus__register_compose is defined and prometheus__register_compose.changed
 ...

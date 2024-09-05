@@ -161,6 +161,7 @@
     build: "{{ nextcloud_docker_pull | ternary('always', 'policy') }}"
     pull: "{{ nextcloud_docker_pull | ternary('always', 'policy') }}"
   register: nextcloud__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -168,7 +169,7 @@
   debug:
     var: actions
   changed_when: true
-  when: nextcloud__register_compose.changed
+  when: nextcloud__register_compose is defined and nextcloud__register_compose.changed
 
 # ./occ config:system:set overwritehost --value="mydomain.com"
 # ./occ config:system:set overwriteprotocol --value="https"

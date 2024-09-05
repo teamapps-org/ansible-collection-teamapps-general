@@ -9,3 +9,4 @@
     state: restarted
   listen:
     - oauth2_proxy_regenerate_webproxy_config
+  tags: compose_up

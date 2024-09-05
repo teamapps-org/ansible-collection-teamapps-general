@@ -30,6 +30,7 @@
     state: present
     pull: "{{ nexus_docker_pull | ternary('always', 'policy') }}"
   register: nexus__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
@@ -37,4 +38,4 @@
   debug:
     var: actions
   changed_when: true
-  when: nexus__register_compose.changed
+  when: nexus__register_compose is defined and nexus__register_compose.changed

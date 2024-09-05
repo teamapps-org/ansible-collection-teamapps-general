@@ -8,11 +8,13 @@
     state: present
     build: always
     pull: always
+  tags: compose_up
 
 - name: nextcloud_docker-compose-restart
   community.docker.docker_compose_v2:
     project_src: '{{ nextcloud_path }}'
     state: restarted
+  tags: compose_up
 
 - name: nextcloud_webproxy_nginx_restart
   community.docker.docker_compose_v2:
@@ -20,3 +22,4 @@
     services:
       - nginx
     state: restarted
+  tags: compose_up

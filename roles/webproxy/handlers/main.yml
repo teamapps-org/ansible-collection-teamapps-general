@@ -5,6 +5,7 @@
   command: 'docker compose exec -T nginx nginx -s reload'
   args:
     chdir: '{{ webproxy_path }}'
+  tags: compose_up
 
 - name: webproxy_generator_restart
   community.docker.docker_compose_v2:
@@ -12,8 +13,10 @@
     services:
       - docker-gen
     state: restarted
+  tags: compose_up
 
 - name: webproxy_docker-compose-restart
   community.docker.docker_compose_v2:
     project_src: '{{ webproxy_path }}'
     state: restarted
+  tags: compose_up

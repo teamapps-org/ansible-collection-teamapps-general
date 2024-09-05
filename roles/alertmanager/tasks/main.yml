@@ -90,12 +90,13 @@
     state: present
     pull: "{{ alertmanager_docker_pull | ternary('always', 'policy') }}"
   register: alertmanager__register_compose
+  tags: compose_up
 
 - name: print actions by compose # noqa no-handler
   vars:
     actions: "{{ alertmanager__register_compose.actions }}"
   debug:
     var: actions
-  when: alertmanager__register_compose.changed
-  changed_when: alertmanager__register_compose.changed
+  when: alertmanager__register_compose is defined and alertmanager__register_compose.changed
+  changed_when: alertmanager__register_compose is defined and alertmanager__register_compose.changed
 ...

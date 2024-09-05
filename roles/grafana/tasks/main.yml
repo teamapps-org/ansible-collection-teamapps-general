@@ -144,3 +144,4 @@
     project_src: '{{ grafana_path }}'
     state: present
     pull: "{{ grafana_docker_pull | ternary('always', 'policy') }}"
+  tags: compose_up
