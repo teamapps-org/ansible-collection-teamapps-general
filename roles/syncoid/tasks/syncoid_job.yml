@@ -56,3 +56,11 @@
     job: >
       /usr/local/sbin/syncoid-{{ syncoid_job_id }}
       >> /var/log/syncoid/cron-{{ syncoid_job_id }}.log 2>&1
+
+- name: "remove cronjob for syncoid-{{ syncoid_job_id }}"
+  cron:
+    cron_file: syncoid_{{ syncoid_source_host }}
+    name: syncoid pull {{ syncoid_source_dataset }} from {{ syncoid_source_host }}
+    state: absent
+  when:
+    - not syncoid_cronjob
