@@ -38,7 +38,7 @@
     owner: 65532 # UID/GID 65532 is also known as nonroot user in distroless image
     group: root
     mode: '0640'
-    register: oauth2_proxy_instance_authenticated_emails_file
+  register: oauth2_proxy_instance_authenticated_emails_file
 
 - name: docker-compose-up - {{ oauth2_proxy_instance_domain }}
   community.docker.docker_compose_v2:
