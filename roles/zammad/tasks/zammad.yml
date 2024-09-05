@@ -128,4 +128,7 @@
   debug:
     var: actions
   changed_when: true
-  when: zammad__register_compose.actions | count > 1
+  when:
+    - zammad__register_compose is defined
+    - zammad__register_compose.actions | count > 1
+  tags: compose_up

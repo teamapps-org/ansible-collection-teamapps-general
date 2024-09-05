@@ -55,7 +55,10 @@
   debug:
     var: actions
   changed_when: true
-  when: oauth2_proxy_compose_return.changed
+  when:
+    - oauth2_proxy_compose_return is defined
+    - oauth2_proxy_compose_return.changed
+  tags: compose_up
 
 # cannot be defined as handler, because it is used multiple times with different values
 - name: restart oauth2_proxy instance '{{ oauth2_proxy_instance_directory }}' # noqa no-handler
@@ -76,7 +79,10 @@
   debug:
     var: actions
   changed_when: true
-  when: oauth2_proxy__register_compose.changed
+  when:
+    - oauth2_proxy__register_compose is defined
+    - oauth2_proxy__register_compose.changed
+  tags: compose_up
 
 
 ## webproxy configuration
