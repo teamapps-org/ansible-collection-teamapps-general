@@ -33,12 +33,12 @@
     comment: syncoid@{{ ansible_fqdn }}
   register: syncoid_reg__id_ed25519
 
-
 - name: manage syncoid jobs # noqa no-role-prefix
   loop: '{{ syncoid_jobs | default([]) }}'
   loop_control:
     loop_var: syncoid_job
   vars:
+    syncoid_cronjob: "{{ syncoid_job.cronjob | default(True) }}"
     syncoid_source_dataset: "{{ syncoid_job.source_dataset }}"
     syncoid_source_host: "{{ syncoid_job.source_host }}"
     syncoid_source_host_ssh: "{{ syncoid_job.source_host_ssh }}"

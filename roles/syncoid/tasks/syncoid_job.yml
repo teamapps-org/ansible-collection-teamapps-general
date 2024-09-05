@@ -16,7 +16,35 @@
   when:
     - not ansible_check_mode or not syncoid_reg__id_ed25519.changed # on
 
-- name: "create cronjob for syncoid pull {{ syncoid_job_id }}" # noqa:no-role-prefix
+- name: 'create syncoid job script syncoid-{{ syncoid_job_id }}'
+  vars:
+    syncoid_job_id: "{{ syncoid_source_host }}-{{ syncoid_source_dataset | replace('/', '_') }}"
+    syncoid_job__excludes: "{{ ['--exclude='] | product(syncoid_exclude) | map('join') | list | join(\" \\\n  \") }}"
+  copy:
+    dest: /usr/local/sbin/syncoid-{{ syncoid_job_id }}
+    owner: root
+    group: root
+    mode: '0750'
+    content: |
+      #!/bin/sh
+      {{ syncoid_command }} \
+        --source-bwlimit={{ syncoid_source_bwlimit }} \
+        --recursive \
+        {% if syncoid_dumpsnaps %}--dumpsnaps {% endif %} \
+        {% if not syncoid_sync_snapshot %}--no-sync-snap {% endif %} \
+        {% if not syncoid_source_privilege_elevation %}--no-privilege-elevation {% endif %} \
+        {{ syncoid_job__excludes }} \
+        --sendoptions="{{ syncoid_sendoptions }} " \
+        {% if syncoid_recvoptions != '' %}--recvoptions="{{ syncoid_recvoptions }}"{% endif %} \
+        {% if not syncoid_rollback %}--no-rollback {% endif %} \
+        --sshkey=/root/.ssh/syncoid_id_ed25519 \
+        --sshoption StrictHostKeyChecking=accept-new \
+        {{ syncoid_source_host_ssh_user }}@{{ syncoid_source_host_ssh }}:{{ syncoid_source_dataset }} \
+        {{ syncoid_dest_dataset }}
+
+- name: "create cronjob for syncoid-{{ syncoid_job_id }}"
+  when:
+    - syncoid_cronjob
   vars:
     syncoid_job_id: "{{ syncoid_source_host }}-{{ syncoid_source_dataset | replace('/', '_') }}"
   cron:
@@ -26,18 +54,5 @@
     hour: "{{ syncoid_cron_hour }}"
     user: root
     job: >
-      {{ syncoid_command }}
-      --source-bwlimit={{ syncoid_source_bwlimit }}
-      --recursive
-      {% if syncoid_dumpsnaps %}--dumpsnaps{% endif %}
-      {% if not syncoid_sync_snapshot %}--no-sync-snap{% endif %}
-      {% if not syncoid_source_privilege_elevation %}--no-privilege-elevation{% endif %}
-      {{ ['--exclude='] | product(syncoid_exclude) | map('join') | list | join(' ') }}
-      --sendoptions="{{ syncoid_sendoptions }}"
-      {% if syncoid_recvoptions != '' %}--recvoptions="{{ syncoid_recvoptions }}"{% endif %}
-      {% if not syncoid_rollback %}--no-rollback{% endif %}
-      --sshkey=/root/.ssh/syncoid_id_ed25519
-      --sshoption StrictHostKeyChecking=accept-new
-      {{ syncoid_source_host_ssh_user }}@{{ syncoid_source_host_ssh }}:{{ syncoid_source_dataset }}
-      {{ syncoid_dest_dataset }}
+      /usr/local/sbin/syncoid-{{ syncoid_job_id }}
       >> /var/log/syncoid/cron-{{ syncoid_job_id }}.log 2>&1
