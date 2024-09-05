@@ -14,3 +14,4 @@ skip_list:
   - name[template]
   - fqcn-builtins
   - fqcn[action]
+  - galaxy

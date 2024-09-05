@@ -54,7 +54,7 @@ alternative: reindex manually.
 
 Set variable
 
-* `zammad_elasticsearch_reindex: False`
+* `zammad_elasticsearch_reindex: false`
 
 and run after every update:
 

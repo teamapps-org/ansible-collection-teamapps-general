@@ -81,13 +81,13 @@ oauth2_proxy_webproxy_sso_configs:
     cookie_name: _oauth2_netdata_sso # fixed cookie_name
 ~~~
 
-For the shared, standalone oauth2_proxy instance, set `standalone: True` to directly configure the service, so that the domain is exposed by the webproxy.
+For the shared, standalone oauth2_proxy instance, set `standalone: true` to directly configure the service, so that the domain is exposed by the webproxy.
 
 ~~~yaml
 oauth2_proxy_instances:
   # configure a shared instance (exposed through webproxy)
   - domain: netdata-sso.example.com
-    standalone: True
+    standalone: true
     htpasswd: '{{ admin_htpasswd | default("") }}'
     cookie_secret: 9R4DqdKnGjoi_u29EC8sEDA_uP-Luux7KdxVOxFPF14=
     cookie_name: _oauth2_netdata_sso # fixed cookie_name

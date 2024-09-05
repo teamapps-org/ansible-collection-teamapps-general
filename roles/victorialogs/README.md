@@ -16,13 +16,13 @@ Deploy oauth2_proxy for the victorialogs_domain
   hosts:
     - victorialogs-server.example.com
   vars:
-    victorialogs_oauth2_proxy_integration: True
+    victorialogs_oauth2_proxy_integration: true
     # other victorialogs_vars
 
     oauth2_proxy_instances:
       - domain: '{{ victorialogs_domain }}'
         htpasswd: '{{ victorialogs_htpasswd_admin }}'
-        webproxy_integration: False # don't deploy location to webproxy, as authentication is done in separate authproxy nginx
+        webproxy_integration: false # don't deploy location to webproxy, as authentication is done in separate authproxy nginx
         cookie_secret:
         gitlab_url: https://git.example.com
         # Registerd in to operations group https://git.example.com/groups/operations/-/settings/applications

@@ -45,7 +45,7 @@ Separate Promtail instance deployed with docker compose, collecting system and d
         promtail_loki_username: promtail-to-victorialogs
         promtail_loki_password: '{{ promtail_victorialogs_password }}'
         promtail_deploy_mode: docker
-        promtail_scrape_docker_enabled: True
+        promtail_scrape_docker_enabled: true
       tags:
         - promtail
 ~~~

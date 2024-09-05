@@ -62,7 +62,7 @@
 #       dbname = "matomo"
 #       tables_prefix = "matomo_"
 #       charset = "utf8mb4"
-#     force: No
+#     force: false
 #     owner: www-data
 #     group: www-data
 #     mode: '0640'
@@ -73,7 +73,7 @@
 #     section: database
 #     option: '{{ item.key }}'
 #     value: '{{ item.value }}'
-#     create: No
+#     create: false
 #   with_dict:
 #     host: db
 

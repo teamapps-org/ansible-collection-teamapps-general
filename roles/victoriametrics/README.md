@@ -99,13 +99,13 @@ Deploy oauth2_proxy for the victoriametrics_domain
   hosts:
     - metrics-server.example.com
   vars:
-    victoriametrics_oauth2_proxy_integration: True
+    victoriametrics_oauth2_proxy_integration: true
     # other victoriametrics_vars
 
     oauth2_proxy_instances:
       - domain: '{{ victoriametrics_domain }}'
         htpasswd: '{{ victoriametrics_htpasswd_admin }}'
-        webproxy_integration: False # don't deploy location to webproxy, as authentication is done in separate authproxy nginx
+        webproxy_integration: false # don't deploy location to webproxy, as authentication is done in separate authproxy nginx
         cookie_secret:
         gitlab_url: https://git.example.com
         # Registerd in to operations group https://git.example.com/groups/operations/-/settings/applications

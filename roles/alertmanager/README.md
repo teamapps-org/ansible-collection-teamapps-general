@@ -53,7 +53,7 @@ alertmanager_receivers:
   - name: telegram-alert
     webhook_configs:
       - url: http://telegram-bot:9087/alert/-123456789
-        send_resolved: True
+        send_resolved: true
         max_alerts: 10
 
 alertmanager_route:
@@ -62,12 +62,12 @@ alertmanager_route:
     - receiver: telegram-alert
       matchers:
         - label="critical"
-      continue: True
+      continue: true
     - receiver: slack-operations-alerts
       matchers:
         - team=~"ops|operations"
 
-alertmanager_telegram_enabled: True
+alertmanager_telegram_enabled: true
 alertmanager_telegram_token: 1234567890:AABCCDEs123_bXYZ123xYZ
 
 ~~~

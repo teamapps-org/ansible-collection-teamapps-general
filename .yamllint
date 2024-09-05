@@ -28,7 +28,7 @@ rules:
 
   indentation:
     spaces: 2
-    indent-sequences: True
+    indent-sequences: true
 
 ignore:
   - /roles_galaxy

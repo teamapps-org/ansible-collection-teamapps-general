@@ -20,7 +20,7 @@ The docker-compose.yml file is used to forward requests from the docker network 
 `group_vars/dockerhosts.yml`
 
 ~~~yaml
-netdata_docker_integration: True
+netdata_docker_integration: true
 ~~~
 
 ## Netdata Resource usage

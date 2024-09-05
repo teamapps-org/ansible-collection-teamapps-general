@@ -13,8 +13,8 @@ There are more variables that allow any configuration. You can also deploy confi
   hosts:
     - dockerhosts
   vars:
-    vector_add_docker_group: Yes
-    vector_docker_to_loki: Yes
+    vector_add_docker_group: true
+    vector_docker_to_loki: true
     vector_loki_endpoint: https://loki.example.com:443
     vector_loki_username: loki-push-user
     vector_loki_password: password

@@ -93,10 +93,10 @@ services:
 
 networks:
   webproxy:
-    external: True
+    external: true
     name: webproxy
 {% for network in webproxy_additional_networks %}
   {{ network }}:
-    external: True
+    external: true
     name: {{ network }}
 {% endfor %}

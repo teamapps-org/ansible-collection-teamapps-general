@@ -89,14 +89,14 @@ hetzner_robot_zfsbulk_extend_groups:
   - - "{{ ansible_device_links.ids['sdi'][0] }}"
     - "{{ ansible_device_links.ids['sdj'][0] }}"
 
-hetzner_robot_zfsbulk_log_file: False
+hetzner_robot_zfsbulk_log_file: false
 hetzner_robot_zfsbulk_log_partitions_by_id:
   - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part3"
   - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part3"
 
 hetzner_robot_zfsbulk_log_device: "mirror {{ hetzner_robot_zfsbulk_log_partitions_by_id | join(' ') }}"
 
-hetzner_robot_zfsbulk_cache: True
+hetzner_robot_zfsbulk_cache: true
 hetzner_robot_zfsbulk_cache_partitions_by_id:
   - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part4"
   - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part4"
@@ -106,7 +106,7 @@ hetzner_robot_zfsbulk_cache_partitions_by_id:
 ### RAIDZ3 setup with 10 disks (SX133)
 
 ~~~yaml
-hetzner_robot_zfsbulk: True
+hetzner_robot_zfsbulk: true
 hetzner_robot_zfsbulk_pool_type: raidz3
 hetzner_robot_zfsbulk_partitions_by_id:
   - "{{ ansible_device_links.ids['sda'][0] }}"

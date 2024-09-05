@@ -1,4 +1,4 @@
-#jinja2:lstrip_blocks: True
+#jinja2:lstrip_blocks: true
 {{ ansible_managed | comment }}
 
 {% for host in groups[prometheus_netdata_host_group] | sort %}
