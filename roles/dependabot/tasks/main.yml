@@ -95,4 +95,6 @@
   debug:
     var: actions
   changed_when: true
-  when: dependabot_compose_return.actions | count > 2 # workaround. the services migration and background-tasks are always started and stops after init
+  when:
+    - dependabot_compose_return is defined
+    - dependabot_compose_return.actions | count > 2 # workaround. the services migration and background-tasks are always started and stops after init
