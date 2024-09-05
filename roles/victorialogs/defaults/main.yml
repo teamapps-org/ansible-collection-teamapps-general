@@ -18,7 +18,7 @@ victorialogs_htpasswd_read:
 victorialogs_htpasswd_write:
 victorialogs_htpasswd_admin:
 
-victorialogs_oauth2_proxy_integration: False
+victorialogs_oauth2_proxy_integration: false
 victorialogs_oauth2_proxy_host: oauth2-proxy.{{ victorialogs_domain }}
-victorialogs_oauth2_proxy_internal_host: True
+victorialogs_oauth2_proxy_internal_host: true
 victorialogs_oauth2_proxy_cookie_name: "_oauth2_{{ victorialogs_domain }}"

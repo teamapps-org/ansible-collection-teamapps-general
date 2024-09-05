@@ -34,7 +34,7 @@
     dest: "{{ prometheus_config_dir }}/file_sd/ansible.{{ prometheus_netdata_host_group }}.netdata.yml"
     owner: root
     group: prometheus
-    mode: 0640
+    mode: '0640'
   when: "groups[prometheus_netdata_host_group] is defined"
   loop: '{{ prometheus_netdata_host_groups }}'
   loop_control:
@@ -50,7 +50,7 @@
     dest: "{{ prometheus_config_dir }}/file_sd/{{ item.name | default('custom') }}.{{ item.job }}.yml"
     owner: root
     group: prometheus
-    mode: 0640
+    mode: '0640'
   loop: '{{ prometheus_custom_file_sd_config }}'
 
 # promtool check config actually validates config AND alerting rules
@@ -58,14 +58,14 @@
   command: docker compose exec -T prometheus promtool check config {{ prometheus_config_dir_container }}/prometheus.yml
   args:
     chdir: "{{ prometheus_config_dir }}" # to run docker compose in the correct directory
-  changed_when: False
+  changed_when: false
 
 - name: compose up
   community.docker.docker_compose_v2:
     project_src: '{{ prometheus_config_dir }}'
     state: present
     pull: "{{ prometheus_docker_pull | ternary('always', 'policy') }}"
-    remove_orphans: True
+    remove_orphans: true
   register: prometheus__register_compose
 
 - name: print actions by compose # noqa no-handler
@@ -73,6 +73,6 @@
     actions: "{{ prometheus__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: prometheus__register_compose.changed
 ...

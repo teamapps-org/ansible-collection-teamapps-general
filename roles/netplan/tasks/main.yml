@@ -15,6 +15,6 @@
 - name: Netplan validate config
   command: netplan generate --mapping '{{ netplan_interface }}'
   when: netplan_manage_adresses
-  changed_when: False
+  changed_when: false
   tags:
     - netplan

@@ -6,14 +6,14 @@
     state: directory
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: Configure syncoid Logs to be Rotated
   copy:
     dest: /etc/logrotate.d/syncoid
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
     content: |
       /var/log/syncoid/*.log {
         rotate 14
@@ -29,7 +29,7 @@
     path: "/root/.ssh/syncoid_id_ed25519"
     type: ed25519
     state: present
-    force: no
+    force: false
     comment: syncoid@{{ ansible_fqdn }}
   register: syncoid_reg__id_ed25519
 

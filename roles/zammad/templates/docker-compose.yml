@@ -146,5 +146,5 @@ networks:
   default:
     driver: bridge
   webproxy:
-    external: True
+    external: true
     name: webproxy

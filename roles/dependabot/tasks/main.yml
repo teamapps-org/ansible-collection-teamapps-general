@@ -6,7 +6,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0770
+    mode: '0770'
 
 - name: create mongodb and redis data directory
   file:
@@ -14,7 +14,7 @@
     state: directory
     owner: '1001'
     group: root
-    mode: 0770
+    mode: '0770'
   with_items:
     - "{{ dependabot_path }}/mongodb-data"
     - "{{ dependabot_path }}/redis-data"
@@ -25,7 +25,7 @@
     state: directory
     owner: '1000'
     group: '1000'
-    mode: 0770
+    mode: '0770'
 
 - name: create htpasswd file
   copy:
@@ -33,7 +33,7 @@
     dest: '{{ dependabot_webproxy_path }}/data/htpasswd/{{ dependabot_domain }}'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
 - name: allow whitelisted hosts
   template:
@@ -41,7 +41,7 @@
     dest: '{{ dependabot_webproxy_path }}/data/vhost.d/{{ dependabot_domain }}_location'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify: dependabot_regenerate_webproxy_config
 
 - name: dependabot rake command wrapper
@@ -60,7 +60,7 @@
     dest: '{{ dependabot_path }}/rake'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: deploy .env
   template:
@@ -84,7 +84,7 @@
     project_src: '{{ dependabot_path }}'
     state: present
     pull: "{{ dependabot_docker_pull | ternary('always', 'policy') }}"
-    remove_orphans: True
+    remove_orphans: true
   register: dependabot_compose_return
   changed_when: dependabot_compose_return.actions | count > 2 # workaround. the services migration and background-tasks are always started and stops after init
 

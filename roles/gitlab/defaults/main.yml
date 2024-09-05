@@ -36,4 +36,4 @@ gitlab_registry_max_body_size: '512m'
 gitlab_custom_config: ''
 
 # If true: deploy robots.txt with Disallow: /
-gitlab_custom_robots_txt: False
+gitlab_custom_robots_txt: false

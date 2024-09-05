@@ -19,8 +19,8 @@ zammad_backup_time: "03:00"
 zammad_backup_timezone: "Etc/UTC"
 zammad_backup_hold_days: 10
 
-# set to yes, to skip archiving file storage (./data/zammad-storage)
-zammad_backup_no_file_backup: no
+# set to true, to skip archiving file storage (./data/zammad-storage)
+zammad_backup_no_file_backup: false
 
 # pull docker images (docker compose pull)
 zammad_docker_pull: '{{ global_docker_pull | default(False) }}'
@@ -29,10 +29,10 @@ zammad_docker_pull: '{{ global_docker_pull | default(False) }}'
 # for big installations it can take more than 1h (27'000 Tickets)
 # alternative: reindex manually:
 # docker compose exec zammad-railsserver rake zammad:searchindex:rebuild
-zammad_elasticsearch_reindex: True
+zammad_elasticsearch_reindex: true
 
 # expose elasticsearch readonly through webproxy (for Grafana integration)
-zammad_elasticsearch_expose: False
+zammad_elasticsearch_expose: false
 # zammad_elasticsearch_htpasswd:
 zammad_elasticsearch_domain: 'es.{{ zammad_domain }}'
 
@@ -43,7 +43,7 @@ zammad_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 zammad_elasticsearch_memory: '{{ (ansible_memtotal_mb * 0.4) | round | int }}m'
 
 # customize knowledge base html template.
-zammad_kb_html_custom: False
+zammad_kb_html_custom: false
 # zammad_kb_html:
 
 zammad_env_custom: |

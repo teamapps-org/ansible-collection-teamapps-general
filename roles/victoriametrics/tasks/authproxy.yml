@@ -30,7 +30,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
 
 - name: deploy htpasswd read file
   copy:
@@ -64,7 +64,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
   when: victoriametrics_oauth2_proxy_integration
 
 - name: configure vhost.d config
@@ -77,7 +77,7 @@
     dest: '{{ victoriametrics_path }}/authproxy_vhost.d/oauth2_vhost.conf'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify: victoriametrics-restart-gateway
   when: victoriametrics_oauth2_proxy_integration
 
@@ -87,6 +87,6 @@
     dest: '{{ victoriametrics_path }}/authproxy_vhost.d/oauth2_vhost_location.conf'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify: victoriametrics-restart-gateway
   when: victoriametrics_oauth2_proxy_integration

@@ -16,9 +16,9 @@ tileserver_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 tileserver_nginx_cache_keys_zone_size: 50m # 8000 tile keys per 1m, in memory
 tileserver_nginx_cache_max_size: 20g # File storage
-tileserver_nginx_disable_cache: False
+tileserver_nginx_disable_cache: false
 # clear cache on config change (after restarts)
-tileserver_clear_cache: True
+tileserver_clear_cache: true
 
 # list of keys and referers that are not rate limited
 tileserver_allowed_keys: []

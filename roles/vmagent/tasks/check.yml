@@ -6,4 +6,4 @@
   service:
     name: vic-vmagent
     state: started
-    enabled: yes
+    enabled: true

@@ -8,4 +8,4 @@
   service:
     name: '{{ zfs_exporter_metrics_scraper_service }}'
     state: reloaded
-  ignore_errors: True # ignore error if vmagent is not yet set up
+  ignore_errors: true # ignore error if vmagent is not yet set up

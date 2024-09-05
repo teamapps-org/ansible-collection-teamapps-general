@@ -94,7 +94,7 @@
     project_src: '{{ tileserver_path }}'
     state: present
     pull: "{{ tileserver_docker_pull | ternary('always', 'policy') }}"
-    remove_orphans: yes
+    remove_orphans: true
   notify: tileserver clear nginx cache
   register: tileserver__register_compose
 
@@ -103,5 +103,5 @@
     actions: "{{ tileserver__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: tileserver__register_compose.changed

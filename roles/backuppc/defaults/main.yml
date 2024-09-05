@@ -64,7 +64,7 @@ backuppc_files_exclude: '{{ (backuppc_files_exclude_default + backuppc_files_exc
 backuppc_rsync_args_extra:
   - '--xattrs'
 
-backuppc_mail_enable: True
+backuppc_mail_enable: true
 backuppc_mail_host: '{{ base_mail_host }}'
 backuppc_mail_port: '{{ base_mail_port }}'
 backuppc_mail_from: backuppc+{{ inventory_hostname_short }}@{{ ansible_domain }}

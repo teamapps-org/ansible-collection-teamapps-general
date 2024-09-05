@@ -3,7 +3,7 @@
 - name: create user
   ansible.builtin.user:
     name: '{{ syncoid_source_host_ssh_user }}'
-    password_lock: True
+    password_lock: true
   delegate_to: '{{ syncoid_source_host_ssh }}'
   when: syncoid_source_host_ssh_user != "root"
 

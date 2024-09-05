@@ -40,4 +40,4 @@ nextcloud_custom_mounts: []
 # nextcloud_custom_mounts:
 #   - source: /zfsbulk/custom-data
 #     target: /custom-data
-#     read_only: True
+#     read_only: true

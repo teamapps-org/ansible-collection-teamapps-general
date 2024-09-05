@@ -3,7 +3,7 @@
 - name: remove ssh hostkey (before connecting to rescue system) # noqa no-changed-when
   delegate_to: localhost
   command: ssh-keygen -R '{{ item }}'
-  check_mode: no
+  check_mode: false
   with_items:
     - '{{ ansible_host }}'
     - '{{ inventory_hostname }}'
@@ -96,13 +96,13 @@
   file:
     path: /var/lib/apt/lists/
     state: directory
-    mode: 0755
+    mode: '0755'
 
 # Sometimes apt tasks fail because apt is locked by an autoupdate or by a race condition on a thread.
 # To check for a lock file before executing, and keep trying until the lock file is released:
 - name: update apt list
   apt:
-    update_cache: yes
+    update_cache: true
   register: hetzner_robot_reg__apt_update_cache
   retries: 10
   delay: 5
@@ -177,8 +177,8 @@
     name: zfsdata
     state: present
     extra_zfs_properties:
-      atime: on
-      relatime: on
+      atime: 'on'
+      relatime: 'on'
       # snapdir: visible
       xattr: sa
       acltype: posix
@@ -188,8 +188,8 @@
     name: zfsbulk
     state: present
     extra_zfs_properties:
-      atime: on
-      relatime: on
+      atime: 'on'
+      relatime: 'on'
       # snapdir: visible
       xattr: sa
       acltype: posix
@@ -216,7 +216,7 @@
 #     state: present
 #     extra_zfs_properties:
 #       mountpoint: /data
-#       relatime: on
+#       relatime: 'on'
 
 # - name: create zfs volume test
 #   zfs:
@@ -224,7 +224,7 @@
 #     state: present
 #     extra_zfs_properties:
 #       mountpoint: /container/test
-#       relatime: on
+#       relatime: 'on'
 #   tags: zfstest
 
 # - name: set zfs dataset properties for zfsdata
@@ -232,5 +232,5 @@
 #     name: zfsdata
 #     state: present
 #     extra_zfs_properties:
-#       relatime: on
+#       relatime: 'on'
 #   tags: zfstest

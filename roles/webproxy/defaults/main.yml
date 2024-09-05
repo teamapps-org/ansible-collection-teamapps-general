@@ -4,7 +4,7 @@
 webproxy_path: '/container/webproxy'
 
 # set access_log off; in nginx
-webproxy_access_log_off: False
+webproxy_access_log_off: false
 
 # custom nginx config (http section) added to custom_options.conf in conf.d/
 webproxy_nginx_custom_options:
@@ -17,7 +17,7 @@ webproxy_default_vhost_custom:
 # pull docker images (docker compose pull)
 webproxy_docker_pull: '{{ global_docker_pull | default(False) }}'
 
-webproxy_cookies_secure_only: False
+webproxy_cookies_secure_only: false
 
 webproxy_nginx_worker_connections: 8096
 
@@ -43,7 +43,7 @@ webproxy_nginx_tmpl_file: nginx.tmpl
 
 # list of additional external networks
 webproxy_additional_networks: []
-webproxy_ignore_missing_network: True
+webproxy_ignore_missing_network: true
 
 # content of /.well-known/security.txt
 # See https://securitytxt.org/

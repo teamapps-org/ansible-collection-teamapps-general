@@ -5,7 +5,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
 
 - name: create scrape_configs directory
   file:
@@ -13,7 +13,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: create file discovery configuration
   copy:
@@ -25,7 +25,7 @@
     dest: "{{ victoriametrics_path }}/file_sd/{{ item.name | default('custom') }}.{{ item.job }}.yml"
     owner: root
     group: root
-    mode: 0640
+    mode: '0640'
   loop: '{{ victoriametrics_file_sd_config }}'
 
 - name: deploy vmagent config file prometheus.yml
@@ -34,7 +34,7 @@
     dest: '{{ victoriametrics_path }}/prometheus.yml'
     owner: root
     group: root
-    mode: 0640
+    mode: '0640'
   notify: victoriametrics-vmagent-restart
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
@@ -42,4 +42,4 @@
   command: 'docker compose run --rm -T vmagent -dryRun -promscrape.config=/etc/prometheus/prometheus.yml -remoteWrite.url=http://victoriametrics:8428/api/v1/write'
   args:
     chdir: "{{ victoriametrics_path }}" # to run docker compose in the correct directory
-  changed_when: False
+  changed_when: false

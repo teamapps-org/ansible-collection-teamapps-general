@@ -1,10 +1,10 @@
 ---
 
 # Add vector to group 'docker'
-vector_add_docker_group: False
+vector_add_docker_group: false
 
 # enable sending docker logs to loki server
-vector_docker_to_loki: False
+vector_docker_to_loki: false
 
 # Loki Server Configuration
 vector_loki_endpoint: https://loki.example.com:443
@@ -12,7 +12,7 @@ vector_loki_username: '{{ loki_username }}'
 vector_loki_password: '{{ loki_password }}'
 
 # Add vector to group 'systemd-journal'
-vector_add_journal_group: True
+vector_add_journal_group: true
 
 # Generic Configuration options for soruces, transforms and sinks
 vector_sources: {}
@@ -37,7 +37,7 @@ vector_sinks: {}
   #   encoding.codec: "json"
 
 # vector GraphQL API https://vector.dev/docs/reference/api/
-vector_enable_api: False
+vector_enable_api: false
 vector_api_address: 127.0.0.1:8686
 vector_loki_batch_max_bytes: 1024000 # 1mb. vector default 102400 (0.1mb)
 vector_loki_buffer_max_events: 5000 # default: 500
@@ -46,7 +46,7 @@ vector_loki_batch_timeout_secs: 5  # default 1
 vector_loki_request_retry_max_duration_secs: 300 # default 3600, 1h
 
 # enable sending metrics to prometheus/victoriametrics
-vector_metrics_enabled: False
+vector_metrics_enabled: false
 vector_metrics_endpoint: https://localhost:8087/
 vector_metrics_username:
 vector_metrics_password:
@@ -54,15 +54,15 @@ vector_metrics_password:
 vector_prometheus_exporter_address: 127.0.0.9:9598
 
 # enable debug log and backtraces
-vector_debug_mode: False
+vector_debug_mode: false
 
 # apt pin, lock version
 vector_version: '' # ''=install/keep current, latest=upgrade, 0.18.0
-vector_apt_force: False # Set temporarily to True for downgrades
+vector_apt_force: false # Set temporarily to True for downgrades
 
 vector_pin_version: '{{ "*" if vector_version == "latest" else vector_version | string + "*" }}'
 
-vector_systemd_override: True
+vector_systemd_override: true
 
 # Set to false to completely stop an disable the vector service
-vector_service_enabled: True
+vector_service_enabled: true

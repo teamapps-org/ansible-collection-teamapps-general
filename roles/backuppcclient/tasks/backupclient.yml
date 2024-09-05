@@ -19,7 +19,7 @@
 
 - name: Create hosts file entry on backuppc server # noqa no-tabs
   delegate_to: '{{ backuppcclient_server }}'
-  delegate_facts: True
+  delegate_facts: true
   lineinfile:
     path: '{{ backuppcclient_server_hostsfile }}'
     regexp: '^{{ backuppcclient_clientname }}\s.*'
@@ -28,7 +28,7 @@
 
 - name: backup config on backuppc server
   delegate_to: '{{ backuppcclient_server }}'
-  delegate_facts: True
+  delegate_facts: true
   template:
     src: backuppc_hostconfig.pl.j2
     dest: '{{ backuppcclient_server_confdir }}/pc/{{ backuppcclient_clientname }}.pl'
@@ -39,7 +39,7 @@
 
 - name: known_hosts entry for backuppc
   delegate_to: '{{ backuppcclient_server }}'
-  delegate_facts: True
+  delegate_facts: true
   lineinfile:
     dest: '{{ backuppcclient_server_known_hosts }}'
     regexp: '^{{ backuppcclient_clientname }},.*'
@@ -52,7 +52,7 @@
 
 - name: known_hosts entry for backuppc with nonstandard port
   delegate_to: '{{ backuppcclient_server }}'
-  delegate_facts: True
+  delegate_facts: true
   lineinfile:
     dest: '{{ backuppcclient_server_known_hosts }}'
     regexp: '^\[{{ backuppcclient_clientname }}\]:{{ backuppcclient_ssh_port }},.*'

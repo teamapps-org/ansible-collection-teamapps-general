@@ -45,5 +45,5 @@ networks:
   tileserver:
     driver: bridge
   webproxy:
-    external: True
+    external: true
     name: webproxy

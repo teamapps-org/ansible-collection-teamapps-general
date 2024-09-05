@@ -37,8 +37,8 @@
   # workaround Go Template Syntax in jinja: --format "{{.Name}}"
   command: /usr/bin/docker network ls --no-trunc --format {{ "{{.Name}}" }}
   register: webproxy_register_docker_networks
-  check_mode: False
-  changed_when: False
+  check_mode: false
+  changed_when: false
 
 - name: Warning if network does not exist # noqa ignore-errors
   fail:
@@ -116,7 +116,7 @@
   community.docker.docker_compose_v2:
     project_src: '{{ webproxy_path }}'
     state: present
-    remove_orphans: True
+    remove_orphans: true
     pull: "{{ webproxy_docker_pull | ternary('always', 'policy') }}"
   register: webproxy__register_compose
 
@@ -125,5 +125,5 @@
     actions: "{{ webproxy__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: webproxy__register_compose.changed

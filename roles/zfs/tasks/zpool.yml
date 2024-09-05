@@ -4,7 +4,7 @@
 - name: print zpool facts for {{ zpool }}
   debug:
     var: zfs_zpool__zpool_facts
-  # changed_when: True
+  # changed_when: true
 
 - name: set zfs dataset properties for {{ zpool }}
   zfs:

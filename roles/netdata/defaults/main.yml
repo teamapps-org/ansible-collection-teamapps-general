@@ -4,26 +4,26 @@ netdata_path: '/container/netdata'
 netdata_domain: 'netdata.{{ ansible_fqdn }}'
 netdata_htpasswd: ''
 
-netdata_streaming_enabled: No
+netdata_streaming_enabled: false
 netdata_streaming_destination:
 netdata_streaming_api_key:
-netdata_streaming_skip_certificate_verification: No
+netdata_streaming_skip_certificate_verification: false
 
 # pull docker images (docker compose pull)
 netdata_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 # Set to true for your hosts with docker and webproxy
-netdata_docker_integration: False
+netdata_docker_integration: false
 
 # when not using docker_integration
 netdata_bind_to: '127.0.0.1:19999'
 
 # Set to false if you don't want to install/manage netdata on a host/group
-netdata_manage_netdata: True
+netdata_manage_netdata: true
 
-netdata_alarm_send_email: No
-netdata_alarm_send_slack: No
-netdata_alarm_send_custom: No
+netdata_alarm_send_email: false
+netdata_alarm_send_slack: false
+netdata_alarm_send_custom: false
 
 netdata_alarm_email_default_recipient: root@localhost
 netdata_alarm_email_sender: "'Netdata on host {{ ansible_fqdn }}' <netdata@localhost>"
@@ -36,15 +36,15 @@ netdata_alarm_custom_recipient: "default"
 netdata_alarm_custom_api_key: ""
 netdata_alarm_custom_webhook: ""
 
-netdata_cloud_enabled: No
+netdata_cloud_enabled: false
 netdata_cloud_base_url: https://app.netdata.cloud
 
 # Disable all telemetry, including posthog in the frontend.
-netdata_disable_telemetry: False
+netdata_disable_telemetry: false
 
 netdata_smartd_enabled: '{{ ansible_virtualization_role in ["host", "NA"] }}'
 
-netdata_postgres_enabled: False
+netdata_postgres_enabled: false
 netdata_postgres_update_every: 1
 netdata_postgres_autodetection_retry: 0
 netdata_postgres_jobs: []

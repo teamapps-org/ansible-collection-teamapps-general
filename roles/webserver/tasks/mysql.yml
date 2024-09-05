@@ -36,7 +36,7 @@
     dest: '{{ webserver_path }}/dbdump.sh'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: Mysql backup prebackup ({{ webserver_domain }})
   lineinfile:
@@ -59,7 +59,7 @@
     dest: '{{ webserver_path }}/dbrestore.sh'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: delete old wrapper scripts
   file:

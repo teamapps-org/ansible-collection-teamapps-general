@@ -98,7 +98,7 @@
   community.docker.docker_compose_v2:
     project_src: '{{ loki_path }}'
     state: present
-    remove_orphans: True
+    remove_orphans: true
     pull: "{{ loki_docker_pull | ternary('always', 'policy') }}"
   register: loki__register_compose
 
@@ -107,7 +107,7 @@
     actions: "{{ loki__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: loki__register_compose.changed
 
 

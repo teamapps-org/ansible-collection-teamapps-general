@@ -5,43 +5,43 @@ zfs_managed_pools:
   - zfsbulk
 
 zfs_zpool_properties:
-  atime: on
-  relatime: on
+  atime: 'on'
+  relatime: 'on'
   xattr: sa
   acltype: posix
   # snapdir: visible
 
-zfs_zpool_autotrim: on
+zfs_zpool_autotrim: true
 
 zfs_datasets: []
 
 zfs_extra_zfs_properties_default:
-  relatime: on
+  relatime: 'on'
 
 # ZFS Permission delegation
 # zfs_delegate:
 #   'zfsdata/container/backuppc/data':
-#     descendents: no
-#     everyone: no
-#     local: no
+#     descendents: false
+#     everyone: false
+#     local: false
 #     permissions:
 #       - send
 #       - hold
 #       - snapshot
 #       - destroy
-#     recursive: no
+#     recursive: false
 #     state: present
 #     users:
 #       - officebackup
 
 zfs_metrics_textfile_dir: '{{ node_exporter_textfile_dir | default("/var/lib/node_exporter") }}'
 
-zfs_dataset_property_metrics: False
+zfs_dataset_property_metrics: false
 zfs_dataset_property_metrics_include_datasets: []
 zfs_dataset_property_metrics_exclude_datasets: []
 
 # # Example with multiple includes and exclude:
-# zfs_dataset_property_metrics: True
+# zfs_dataset_property_metrics: true
 # zfs_dataset_property_metrics_include_datasets:
 #   - zfsdata
 #   - zfsdata/sync

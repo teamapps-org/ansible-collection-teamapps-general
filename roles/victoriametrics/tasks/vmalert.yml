@@ -7,7 +7,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
 
 # https://github.com/VictoriaMetrics/VictoriaMetrics/blob/master/deployment/docker/README.md#alerts
 - name: alerting rules file
@@ -16,7 +16,7 @@
     dest: "{{ victoriametrics_path }}/rules/{{ item }}"
     owner: root
     group: root
-    mode: 0640
+    mode: '0640'
   with_items:
     - alerts-health.yml
     - alerts-vmagent.yml
@@ -38,7 +38,7 @@
     dest: "{{ victoriametrics_path }}/rules/"
     owner: root
     group: root
-    mode: 0640
+    mode: '0640'
   with_fileglob:
     - "rules/*.rules.yml"
   notify:
@@ -50,5 +50,5 @@
   command: docker compose run --rm -T vmalert -dryRun -rule=/etc/alerts/*.yml
   args:
     chdir: "{{ victoriametrics_path }}" # to run docker compose in the correct directory
-  changed_when: False
+  changed_when: false
 ...

@@ -7,7 +7,7 @@ hetzner_robot_raid_disks:
   - /dev/nvme1n1
 
 # always use gpt partion table
-hetzner_robot_force_gpt: True
+hetzner_robot_force_gpt: true
 
 # add partition for zfsdata. Will be created as mdraid by installer.
 # Mdraid stop and remove is configured below
@@ -48,7 +48,7 @@ hetzner_robot_zfsdata_extend_groups: []
 
 ## zfsbulk configuration
 
-hetzner_robot_zfsbulk: False
+hetzner_robot_zfsbulk: false
 hetzner_robot_zfsbulk_pool_type: mirror
 hetzner_robot_zfsbulk_log_file: true
 hetzner_robot_zfsbulk_log_device: /zfs_log_file
@@ -67,7 +67,7 @@ hetzner_robot_zfsbulk_extend_groups: []
   #   - "{{ ansible_device_links.ids['sdd'][0] }}"
 
 # create partitions on the nvme disks and configure those as l2arc cache for zfsbulk
-hetzner_robot_zfsbulk_cache: False
+hetzner_robot_zfsbulk_cache: false
 # to create partitions, add them to hetzner_robot_installimage_partitions
 hetzner_robot_zfsbulk_cache_partitions_by_id:
   - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part4"

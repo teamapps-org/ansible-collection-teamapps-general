@@ -16,7 +16,7 @@ webserver_client_max_body_size: 10M
 # pull docker images (docker compose pull)
 webserver_docker_pull: '{{ global_docker_pull | default(False) }}' # False = policy, True = always
 
-webserver_php_enable: False
+webserver_php_enable: false
 # custom php override config
 webserver_php_override_custom: ''
 webserver_php_image: '' # if set, use image from registry, else build image
@@ -36,11 +36,11 @@ webserver_php_extensions:
   # - xdebug
   # - soap
   - apcu
-webserver_sftp_enable: False
+webserver_sftp_enable: false
 webserver_sftp_port: 2222
 webserver_sftp_authorized_keys: ''
 
-webserver_mysql_enable: False
+webserver_mysql_enable: false
 webserver_mariadb_version: latest
 # webserver_mysql_root_password:
 # webserver_mysql_database:
@@ -50,7 +50,7 @@ webserver_mariadb_version: latest
 webserver_basic_auth: ''
 
 # PhpMyAdmin interface on /.myadmin
-webserver_myadmin_enable: False
+webserver_myadmin_enable: false
 # htpasswd file content (if webserver_basic_auth is used, it should also contain the myadmin_htpasswd credentials)
 webserver_myadmin_htpasswd: ''
 webserver_myadmin_absolute_uri: https://{{ webserver_domain }}/.myadmin/
@@ -58,7 +58,7 @@ webserver_myadmin_image: phpmyadmin:latest
 webserver_myadmin_max_upload_size: 200M
 
 # manage robots.txt
-webserver_manage_robots_txt: False
+webserver_manage_robots_txt: false
 # robots.txt is deleted when set to emtpty string ""
 webserver_robots_txt: |
   User-agent: *

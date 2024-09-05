@@ -8,7 +8,7 @@ oauth2_proxy_instance_additional_config: ''
 # list of instances (See README)
 oauth2_proxy_instances: []
   # - domain: service.example.com
-  #   standalone: False
+  #   standalone: false
   #   htpasswd: '' # Optional, allow local login with basic auth credentials
   #   cookie_secret: RANDOM_STRING # generate!
   #   cookie_domain: # optional
@@ -41,7 +41,7 @@ oauth2_proxy_webproxy_sso_configs: []
   # - service_domain:
   #   cookie_name:
   #   oauth2_proxy_host: oauth-proxy.<<oauth2_proxy_instance.domain>>
-  #   internal_host: True # Connect to docker container on the same host.
+  #   internal_host: true # Connect to docker container on the same host.
 
 # pull docker images (docker compose pull)
 oauth2_proxy_docker_pull: '{{ global_docker_pull | default(False) }}'

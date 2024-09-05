@@ -17,7 +17,7 @@
     mode: '0640'
 
 - name: deploy .env
-  no_log: True
+  no_log: true
   template:
     src: default.env.j2
     dest: '{{ loki_canary_path }}/.env'
@@ -29,7 +29,7 @@
   community.docker.docker_compose_v2:
     project_src: '{{ loki_canary_path }}'
     state: present
-    remove_orphans: True
+    remove_orphans: true
     pull: "{{ loki_canary_docker_pull | ternary('always', 'policy') }}"
   register: loki_canary__register_compose
 
@@ -38,7 +38,7 @@
     actions: "{{ loki_canary__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: loki_canary__register_compose.changed
 
 - name: import monitoring integration

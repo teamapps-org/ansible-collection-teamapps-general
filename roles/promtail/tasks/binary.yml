@@ -20,7 +20,7 @@
     state: directory
     owner: promtail
     group: promtail
-    mode: 0750
+    mode: '0750'
   with_items:
     - "{{ promtail_config_dir }}"
     - /var/log/promtail/
@@ -39,7 +39,7 @@
   file:
     path: "{{ promtail_local_cache_dir }}/promtail-{{ promtail_version }}"
     state: directory
-    mode: 0755
+    mode: '0755'
   check_mode: false
 
 - name: download promtail version {{ promtail_version }} # noqa risky-file-permissions
@@ -74,7 +74,7 @@
     remote_src: false
     src: "{{ promtail_local_cache_dir }}/promtail-{{ promtail_version }}/promtail-linux-amd64"
     dest: "/usr/local/bin/promtail"
-    mode: 0755
+    mode: '0755'
     owner: root
     group: root
   notify:
@@ -86,7 +86,7 @@
     dest: /etc/systemd/system/promtail.service
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify:
     - promtail_daemon_reload_systemd
     - restart promtail
@@ -94,4 +94,4 @@
 - name: Enable service promtail
   service:
     name: promtail
-    enabled: yes
+    enabled: true

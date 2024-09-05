@@ -65,7 +65,7 @@ victoriametrics_blackbox_modules: {}
 
 victoriametrics_scrape_configs: []
 
-victoriametrics_oauth2_proxy_integration: False
+victoriametrics_oauth2_proxy_integration: false
 victoriametrics_oauth2_proxy_host: oauth2-proxy.{{ victoriametrics_domain }}
-victoriametrics_oauth2_proxy_internal_host: True
+victoriametrics_oauth2_proxy_internal_host: true
 victoriametrics_oauth2_proxy_cookie_name: "_oauth2_{{ victoriametrics_domain }}"

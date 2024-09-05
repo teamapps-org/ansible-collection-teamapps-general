@@ -58,7 +58,7 @@
     project_src: '{{ minio_path }}'
     state: present
     pull: "{{ minio_docker_pull | ternary('always', 'policy') }}"
-    remove_orphans: yes
+    remove_orphans: true
   register: minio__register_compose
 
 - name: print actions by compose # noqa no-handler
@@ -66,5 +66,5 @@
     actions: "{{ minio__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: minio__register_compose.changed

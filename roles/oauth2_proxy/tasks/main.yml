@@ -6,7 +6,7 @@
     dest: '{{ oauth2_proxy_webproxy_path }}/data/conf.d/oauth2_proxy_cache.conf'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify: oauth2_proxy_regenerate_webproxy_config
 
 - name: manage oauth2_proxy instances
@@ -30,7 +30,7 @@
     oauth2_proxy_instance_authenticated_emails: "{{ instance.authenticated_emails | default([]) }}"
     oauth2_proxy_instance_gitlab_groups: "{{ instance.gitlab_groups | default([]) }}"
     oauth2_proxy_instance_additional_config: "{{ instance.additional_config | default('') }}"
-    oauth2_proxy_instance_internal_host: True
+    oauth2_proxy_instance_internal_host: true
     oauth2_proxy_instance_webproxy_integration: "{{ instance.webproxy_integration | default(not oauth2_proxy_instance_standalone) }}"
     # oauth2_proxy_webproxy_config_vhost_directory: "{{ instance.vhost_directory | default( oauth2_proxy_webproxy_path + '/data/vhost.d') }}"
     oauth2_proxy_webproxy_config_custom_vhost: "{{ instance.custom_vhost | default('') }}"

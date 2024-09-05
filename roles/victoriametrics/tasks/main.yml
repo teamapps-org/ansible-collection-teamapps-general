@@ -5,7 +5,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
   with_items:
     - "{{ victoriametrics_path }}"
     - "{{ victoriametrics_storage_path }}"
@@ -34,7 +34,7 @@
   community.docker.docker_compose_v2:
     project_src: '{{ victoriametrics_path }}'
     state: present
-    remove_orphans: yes
+    remove_orphans: true
     pull: "{{ victoriametrics_docker_pull | ternary('always', 'policy') }}"
   register: victoriametrics__register_compose
 
@@ -43,5 +43,5 @@
     actions: "{{ victoriametrics__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: victoriametrics__register_compose.changed

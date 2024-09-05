@@ -4,5 +4,5 @@
     dest: '{{ loki_canary_vmagent_scrape_config_dir }}/loki_canary.yml'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify: loki-canary-vmagent-reload

@@ -2,18 +2,35 @@
 # Config file for yamllint
 # https://yamllint.readthedocs.io/en/stable/configuration.html
 
-extends: relaxed
+extends: default
 
 rules:
   comments:
+    # https://github.com/prettier/prettier/issues/6780
     min-spaces-from-content: 1
+  # https://github.com/adrienverge/yamllint/issues/384
+  comments-indentation: false
+  document-start: disable
+  line-length: disable
+  # We are adding an extra space inside braces as that's how prettier does it
+  # and we are trying not to fight other linters.
+  braces:
+    min-spaces-inside: 0 # yamllint defaults to 0
+    max-spaces-inside: 1 # yamllint defaults to 0
+  key-duplicates:
+    forbid-duplicated-merge-keys: true # not enabled by default
+  octal-values:
+    forbid-implicit-octal: true # yamllint defaults to false
+    forbid-explicit-octal: true # yamllint defaults to false
+  # quoted-strings:
+  #   quote-type: double
+  #   required: only-when-needed
+
   indentation:
     spaces: 2
-    indent-sequences: true
-  line-length: disable
-  #  max: 120
+    indent-sequences: True
 
-ignore: |
-  /roles_galaxy
-  /collections
-  /.cache
+ignore:
+  - /roles_galaxy
+  - /collections
+  - /.cache

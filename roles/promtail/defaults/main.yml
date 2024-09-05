@@ -58,7 +58,7 @@ promtail_scrape_configs: [{}]
 
 
 # scrape logs from docker containers
-promtail_scrape_docker_enabled: False
+promtail_scrape_docker_enabled: false
 promtail_scrape_config_docker:
   - job_name: docker
     docker_sd_configs:
@@ -136,7 +136,7 @@ promtail_version: 3.0.0 # also update checkum
 # wget -q -O - https://github.com/grafana/loki/releases/download/v3.0.0/SHA256SUMS | grep promtail-linux-amd64.zip
 promtail_checksum: 3a5120422a2a8aa26659a188d63f1425707ed42a1af274acc0a7797d851acf48
 
-promtail_server_disable: True
+promtail_server_disable: true
 promtail_server_http_listen_address: 0.0.0.0
 
 # additional groups for user promtail to read files

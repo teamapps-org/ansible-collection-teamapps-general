@@ -38,7 +38,7 @@
     dest: '{{ kimai_path }}/docker-compose.override.yml'
     owner: 'root'
     group: 'root'
-    mode: 0750
+    mode: '0750'
 
 - name: import webserver role with vars for kimai
   import_role:
@@ -46,8 +46,8 @@
   vars:
     webserver_path: '{{ kimai_path }}'
     webserver_domain: '{{ kimai_domain }}'
-    webserver_php_enable: True
-    webserver_mysql_enable: True
+    webserver_php_enable: true
+    webserver_mysql_enable: true
     webserver_php_version: '{{ kimai_php_version }}'
     webserver_php_extensions: '{{ kimai_php_extensions }}'
     webserver_mariadb_version: '{{ kimai_mariadb_version }}'
@@ -90,7 +90,7 @@
     dest: '{{ kimai_path }}/bin/console'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: kimai composer wrapper
   copy:
@@ -103,7 +103,7 @@
     dest: '{{ kimai_path }}/bin/composer'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: kimai .env
   template:
@@ -111,7 +111,7 @@
     dest: '{{ kimai_path }}/code/.env'
     owner: '33' # www-data
     group: '33'
-    mode: 0750
+    mode: '0750'
   tags:
     - kimai
 

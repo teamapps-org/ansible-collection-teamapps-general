@@ -12,7 +12,7 @@
     dest: '{{ oauth2_proxy_instance_directory }}/docker-compose.yml'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
 - name: deploy oauth2-proxy.cfg - {{ oauth2_proxy_instance_domain }}
   template:
@@ -20,7 +20,7 @@
     dest: '{{ oauth2_proxy_instance_directory }}/oauth2-proxy.cfg'
     owner: 65532 # UID/GID 65532 is also known as nonroot user in distroless image
     group: root
-    mode: 0640
+    mode: '0640'
   register: oauth2_proxy_instance_reg_config
 
 - name: deploy htpasswd file - {{ oauth2_proxy_instance_domain }}
@@ -29,7 +29,7 @@
     dest: '{{ oauth2_proxy_instance_directory }}/htpasswd'
     owner: 65532 # UID/GID 65532 is also known as nonroot user in distroless image
     group: root
-    mode: 0640
+    mode: '0640'
 
 - name: deploy authenticated_emails_file - {{ oauth2_proxy_instance_domain }}
   template:
@@ -37,7 +37,7 @@
     dest: '{{ oauth2_proxy_instance_directory }}/authenticated_emails_file'
     owner: 65532 # UID/GID 65532 is also known as nonroot user in distroless image
     group: root
-    mode: 0640
+    mode: '0640'
     register: oauth2_proxy_instance_authenticated_emails_file
 
 - name: docker-compose-up - {{ oauth2_proxy_instance_domain }}
@@ -45,7 +45,7 @@
     project_src: '{{ oauth2_proxy_instance_directory }}'
     state: present
     pull: "{{ oauth2_proxy_docker_pull | ternary('always', 'policy') }}"
-    remove_orphans: True
+    remove_orphans: true
   register: oauth2_proxy_compose_return
 
 - name: print actions by compose - {{ oauth2_proxy_instance_domain }} # noqa no-handler
@@ -53,7 +53,7 @@
     actions: "{{ oauth2_proxy_compose_return.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: oauth2_proxy_compose_return.changed
 
 # cannot be defined as handler, because it is used multiple times with different values
@@ -73,7 +73,7 @@
     actions: "{{ oauth2_proxy__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: oauth2_proxy__register_compose.changed
 
 

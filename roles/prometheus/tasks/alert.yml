@@ -5,7 +5,7 @@
     dest: "{{ prometheus_config_dir }}/rules/ansible_managed.rules"
     owner: prometheus
     group: prometheus
-    mode: 0640
+    mode: '0640'
     # validate: "docker compose -f /container/prometheus/docker-compose.yml exec -T prometheus promtool check rules %s"
   notify:
     - prometheus reload
@@ -17,7 +17,7 @@
     dest: "{{ prometheus_config_dir }}/rules/"
     owner: root
     group: prometheus
-    mode: 0640
+    mode: '0640'
     # validate: "/usr/local/bin/promtool check rules %s"
   with_fileglob:
     - "rules/*.rules.yml"

@@ -22,7 +22,7 @@
     state: directory
     owner: alertmanager
     group: alertmanager
-    mode: 0770
+    mode: '0770'
   with_items:
     - "{{ alertmanager_path }}"
     - "{{ alertmanager_path }}/templates"
@@ -61,7 +61,7 @@
     dest: '{{ alertmanager_webproxy_path }}/data/htpasswd/{{ alertmanager_domain }}'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
 
 - name: allow whitelisted hosts
   template:
@@ -69,7 +69,7 @@
     dest: '{{ alertmanager_webproxy_path }}/data/vhost.d/{{ alertmanager_domain }}_location'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   when: alertmanager_manage_webproxy_location
   notify: alertmanager_regenerate_webproxy_config
 
@@ -78,7 +78,7 @@
   command: 'docker compose run --rm -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
   args:
     chdir: '{{ alertmanager_path }}'
-  changed_when: False
+  changed_when: false
 
 - name: include telegrambot tasks
   import_tasks: telegrambot.yml

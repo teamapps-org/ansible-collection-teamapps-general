@@ -113,7 +113,7 @@
 #   docker_compose:
 #     project_src: '{{ webserver_path }}'
 #     state: present
-#     remove_orphans: yes
+#     remove_orphans: true
 #     pull: "{{ webserver_docker_pull }}"
 #     build: '{{ webserver_docker_pull }}'
 
@@ -121,7 +121,7 @@
   community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     state: present
-    remove_orphans: yes
+    remove_orphans: true
     pull: "{{ webserver_docker_pull | ternary('always', 'policy') }}"
     build: "{{ webserver_docker_pull | ternary('always', 'policy') }}"
   register: webserver__register_compose
@@ -131,5 +131,5 @@
     actions: "{{ webserver__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: webserver__register_compose.changed

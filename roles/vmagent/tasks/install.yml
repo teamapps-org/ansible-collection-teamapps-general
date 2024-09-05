@@ -20,7 +20,7 @@
   file:
     path: /usr/local/bin
     state: directory
-    mode: 0755
+    mode: '0755'
 
 - name: Delete existing VMagent version if it's different.
   file:
@@ -40,7 +40,7 @@
       unarchive:
         src: "{{ vmagent_download_url }}"
         dest: '{{ vmagent_local_download_dir }}'
-        remote_src: yes
+        remote_src: true
       delegate_to: localhost
       become: false
       run_once: true
@@ -54,7 +54,7 @@
       copy:
         src: '{{ vmagent_local_download_dir }}/vmagent-prod'
         dest: /usr/local/bin/vmagent-prod
-        mode: 0751
+        mode: '0751'
         owner: "{{ vmagent_system_user }}"
         group: "{{ vmagent_system_group }}"
       when:
@@ -72,7 +72,7 @@
       unarchive:
         src: "{{ vmagent_download_url }}"
         dest: /tmp
-        remote_src: yes
+        remote_src: true
       when:
         - not ansible_check_mode
         - not vmagent_reg__vmagent_is_installed.stat.exists or

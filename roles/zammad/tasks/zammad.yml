@@ -15,9 +15,9 @@
   sysctl:
     name: vm.max_map_count
     value: '262144'
-    sysctl_set: yes
+    sysctl_set: true
     state: present
-    reload: yes
+    reload: true
 
 - name: zammad elastic search data directory
   file:
@@ -117,7 +117,7 @@
     project_src: '{{ zammad_path }}'
     state: present
     pull: "{{ zammad_docker_pull | ternary('always', 'policy') }}"
-    remove_orphans: True
+    remove_orphans: true
   register: zammad__register_compose
   changed_when: zammad__register_compose.actions | count > 1 # workaround. zammad-init is always started and stops after init
 
@@ -126,5 +126,5 @@
     actions: "{{ zammad__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: zammad__register_compose.actions | count > 1

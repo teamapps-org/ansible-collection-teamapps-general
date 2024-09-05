@@ -10,7 +10,7 @@
       - apt-transport-https
       - debian-archive-keyring
     state: present
-    install_recommends: no
+    install_recommends: false
 
 - name: remove archive key from deprecated keystore
   apt_key:

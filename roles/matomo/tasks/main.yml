@@ -6,7 +6,7 @@
   vars:
     webserver_path: '{{ matomo_path }}'
     webserver_domain: '{{ matomo_domain }}'
-    webserver_php_enable: True
+    webserver_php_enable: true
     webserver_php_version: '{{ matomo_php_version }}'
     # additional packages for cli archiving
     # https://matomo.org/faq/troubleshooting/how-to-make-the-diagnostic-managing-processes-via-cli-to-display-ok/
@@ -25,7 +25,7 @@
       # - xdebug
       - soap
       - apcu
-    webserver_mysql_enable: True
+    webserver_mysql_enable: true
     webserver_mariadb_version: '{{ matomo_mariadb_version }}'
     webserver_mysql_root_password: '{{ matomo_mysql_root_password }}'
     webserver_mysql_database: '{{ matomo_mysql_database }}'
@@ -38,10 +38,10 @@
 
 - name: matomo first install
   unarchive:
-    remote_src: yes
+    remote_src: true
     src: https://builds.matomo.org/matomo.zip
     dest: '{{ matomo_path }}/code/'
-    # mode: 0640
+    # mode: '0640'
     owner: www-data
     group: www-data
     creates: '{{ matomo_path }}/code/matomo/index.php'
@@ -65,7 +65,7 @@
 #     force: No
 #     owner: www-data
 #     group: www-data
-#     mode: 0640
+#     mode: '0640'
 
 # - name: config
 #   ini_file:
@@ -93,7 +93,7 @@
     dest: '{{ matomo_path }}/matomo-console.sh'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
   tags:
     - matomo
 

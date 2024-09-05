@@ -36,5 +36,5 @@
     actions: "{{ nexus__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: nexus__register_compose.changed

@@ -11,7 +11,7 @@
     src: "{{ zfs_exporter_download_url }}"
     dest: /tmp
     remote_src: true
-    mode: 0755
+    mode: '0755'
   when: >
     zfs_exporter_version_check.stdout is not defined
     or zfs_exporter_version not in zfs_exporter_version_check.stdout
@@ -21,7 +21,7 @@
   copy:
     src: "/tmp/zfs_exporter-{{ zfs_exporter_version }}.linux-{{ zfs_exporter_arch }}/zfs_exporter"
     dest: "{{ zfs_exporter_bin_path }}"
-    mode: 0755
+    mode: '0755'
     remote_src: true
   notify: restart zfs_exporter
   when: zfs_exporter_download_check is changed
@@ -36,7 +36,7 @@
   template:
     src: zfs_exporter.service.j2
     dest: /etc/systemd/system/zfs_exporter.service
-    mode: 0644
+    mode: '0644'
   register: zfs_exporter_service
 
 - name: Reload systemd daemon if unit file is changed. # noqa no-handler

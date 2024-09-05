@@ -13,7 +13,7 @@
 - name: restart promtail service
   service:
     name: promtail
-    enabled: yes
+    enabled: true
     state: restarted
   listen: restart promtail
   when: promtail_deploy_mode == 'binary'

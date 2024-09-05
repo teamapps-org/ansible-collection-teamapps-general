@@ -21,7 +21,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
   with_items:
     - '{{ container_path }}'
     - '{{ nextcloud_path }}'
@@ -33,7 +33,7 @@
     dest: '{{ nextcloud_path }}/docker-compose.yml'
     owner: root
     group: root
-    mode: 0640
+    mode: '0640'
 
 - name: Nextcloud Dockerfile
   template:
@@ -41,7 +41,7 @@
     dest: '{{ nextcloud_path }}/docker-build/Dockerfile'
     owner: root
     group: root
-    mode: 0640
+    mode: '0640'
   notify: nextcloud_docker-compose-build
 
   # originally from https://github.com/nextcloud/docker/blob/master/.examples/docker-compose/with-nginx-proxy/mariadb-cron-redis/fpm/web/nginx.conf
@@ -51,7 +51,7 @@
     dest: '{{ nextcloud_path }}/nginx.conf'
     owner: root
     group: root
-    mode: 0640
+    mode: '0640'
   notify: nextcloud_docker-compose-restart
 
 - name: proxy config tuning
@@ -70,7 +70,7 @@
     dest: '{{ nextcloud_path }}/php.conf'
     owner: root
     group: www-data
-    mode: 0640
+    mode: '0640'
   notify: nextcloud_docker-compose-restart
 
 - name: php.ini
@@ -79,7 +79,7 @@
     dest: '{{ nextcloud_path }}/php.ini'
     owner: root
     group: www-data
-    mode: 0640
+    mode: '0640'
   notify: nextcloud_docker-compose-restart
 
 - name: Nextcloud DB Tuning mysql.conf
@@ -88,7 +88,7 @@
     dest: '{{ nextcloud_path }}/mysql.conf'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify: nextcloud_docker-compose-restart
 
 - name: occ wrapper
@@ -102,7 +102,7 @@
     dest: '{{ nextcloud_path }}/occ'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: db dump wrapper
   copy:
@@ -120,7 +120,7 @@
     dest: '{{ nextcloud_path }}/dbdump.sh'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: Nextcloud backup prebackup
   lineinfile:
@@ -143,7 +143,7 @@
     dest: '{{ nextcloud_path }}/dbrestore.sh'
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: delete old dump script
   file:
@@ -167,7 +167,7 @@
     actions: "{{ nextcloud__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: nextcloud__register_compose.changed
 
 # ./occ config:system:set overwritehost --value="mydomain.com"

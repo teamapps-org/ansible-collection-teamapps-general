@@ -18,7 +18,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0750
+    mode: '0750'
 
 - name: deploy sanoid.conf
   copy:
@@ -26,4 +26,4 @@
     dest: /etc/sanoid/sanoid.conf
     owner: root
     group: root
-    mode: 0640
+    mode: '0640'

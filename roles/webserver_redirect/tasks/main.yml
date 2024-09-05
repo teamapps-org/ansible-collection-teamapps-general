@@ -35,7 +35,7 @@
   community.docker.docker_compose_v2:
     project_src: '{{ webserver_redirect_path }}'
     state: present
-    remove_orphans: yes
+    remove_orphans: true
     pull: "{{ webserver_redirect_docker_pull | ternary('always', 'policy') }}"
   register: webserver_redirect__register_compose
 
@@ -44,5 +44,5 @@
     actions: "{{ webserver_redirect__register_compose.actions }}"
   debug:
     var: actions
-  changed_when: True
+  changed_when: true
   when: webserver_redirect__register_compose.changed

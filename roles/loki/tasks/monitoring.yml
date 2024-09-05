@@ -4,5 +4,5 @@
     dest: '{{ loki_vmagent_scrape_config_dir }}/loki.yml'
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   notify: loki-vmagent-restart

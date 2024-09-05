@@ -4,7 +4,7 @@ syncoid_exclude_default:
   - /docker/
 
 # log all found snapshots on source and target
-syncoid_dumpsnaps_default: False
+syncoid_dumpsnaps_default: false
 syncoid_command: /usr/sbin/syncoid
 
 syncoid_jobs: []
@@ -13,12 +13,12 @@ syncoid_jobs: []
 #     source_host: test1
 #     source_host_ssh: 'test1.example.com'
 #     # source_host_ssh_user: 'backup' # optional username to use if not root
-#     # source_privilege_elevation: False # optionally don't try to elevate permissions using sudo if non-root
+#     # source_privilege_elevation: false # optionally don't try to elevate permissions using sudo if non-root
 #     source_bwlimit: 60m
 #     cron_minute: 35
 #     cron_hour: '*'
 #     dest_root_dataset: zfsbulk/hotspare
 #     # dest_dataset: 'zfsbulk/hotspare/{{ source_host }}/{{ source_dataset }}' # these variables are not available here!
-#     sync_snapshot: False # disable creation of a sync snapshot and only sync existing snapshots
+#     sync_snapshot: false # disable creation of a sync snapshot and only sync existing snapshots
 #     rollback: No
 #     recvoptions: -x encryption
