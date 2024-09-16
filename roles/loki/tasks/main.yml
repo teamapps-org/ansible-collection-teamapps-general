@@ -15,9 +15,9 @@
   when: loki_auth == 'request'
   assert:
     that:
-      - "assert_var is defined"
-      - "assert_var | length > 0"
-      - "assert_var != None"
+      - vars[assert_var] is defined
+      - vars[assert_var] | length > 0
+      - vars[assert_var] != None
     fail_msg: "{{ assert_var }} needs to be set!"
   loop_control:
     loop_var: assert_var
