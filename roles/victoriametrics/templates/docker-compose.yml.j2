@@ -66,6 +66,7 @@ services:
       - '-retentionPeriod={{ victoriametrics_retention_period }}'
       - '-bigMergeConcurrency={{ victoriametrics_big_merge_concurrency }}'
       - '-search.maxSamplesPerQuery={{ victoriametrics_max_samples_per_query }}'
+      - '-search.maxUniqueTimeseries={{ victoriametrics_max_unique_timeseries }}'
     networks:
       - vm_net
       - webproxy
