@@ -182,11 +182,12 @@ def print_prometheus_metrics(nvme_data):
         ]
 
         info_labels = labels.copy()
-        for info_key in ['ProductName','ModelNumber', 'SerialNumber', 'Firmware']:
-            info_value_quoted=json.dumps(nvme_device['info'][info_key])
-            info_labels += [
-                '%s=%s'%(info_key, info_value_quoted)
-            ]
+        for info_key in ['ProductName', 'ModelNumber', 'SerialNumber', 'Firmware']:
+            if info_key in nvme_device['info']:
+                info_value_quoted=json.dumps(nvme_device['info'][info_key])
+                info_labels += [
+                    '%s=%s'%(info_key, info_value_quoted)
+                ]
         print(metric_entry('nvme_info',  info_labels, 1))
 
         print(metric_entry('nvme_sector_size',  labels, nvme_device['info']['SectorSize']))
