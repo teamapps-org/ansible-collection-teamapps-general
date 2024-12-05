@@ -87,6 +87,9 @@ x-updater:
   network_mode: "host"
   environment:
     <<: *environment_variables
+{% for var,value in dependabot_custom_env_vars | dictsort  %}
+    {{ var }}: {{ '${'+var+'}' }}
+{% endfor %}
 
 services:
   redis:
