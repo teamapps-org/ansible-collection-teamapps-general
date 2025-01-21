@@ -2,8 +2,14 @@ apiVersion: 1
 
 # list of datasources that should be deleted from the database
 deleteDatasources:
-  {{ grafana_datasources_delete | to_nice_yaml(indent=2, width=10000) | indent(2, False) }}
+{% for ds in grafana_datasources_delete %}
+  - name: "{{ ds.name }}"
+    orgId: {{ ds.orgId }}
+{% endfor %}
 
+# Mark provisioned data sources for deletion if they are no longer in a provisioning file.
+# It takes no effect if data sources are already listed in the deleteDatasources section.
+prune: {{ grafana_datasources_prune | bool | ternary('true', 'false') }}
 
 datasources:
   {{ grafana_datasources | to_nice_yaml(indent=2, width=10000) | indent(2, False) }}

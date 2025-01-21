@@ -35,10 +35,18 @@ grafana_auth_gitlab_api_url: 'https://gitlab.com/api/v4'
 grafana_plugins: []
   # - camptocamp-prometheus-alertmanager-datasource
 
-# Provisioned datasources can (only) be deleted with this list
-grafana_datasources_delete:
-  - name: prometheus.example.com
-    orgId: 1
+# Provisioned datasources can be deleted with this list
+grafana_datasources_delete: []
+# grafana_datasources_delete:
+#   - name: prometheus.example.com
+#     orgId: 1
+
+# Mark provisioned data sources for deletion if they are no longer in a provisioning file.
+# It takes no effect if data sources are already listed in the deleteDatasources section.
+grafana_datasources_prune: true
+
+# Alternative way to delete datasources: set editable: true for the provisioned datasources,
+# then they can also be deleted through the WebUI, after they are removed from the list.
 
 # Provision Datasources
 # https://grafana.com/docs/grafana/latest/administration/provisioning/#data-sources
