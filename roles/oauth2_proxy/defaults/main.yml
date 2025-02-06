@@ -2,6 +2,10 @@
 
 oauth2_proxy_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
+# https://github.com/oauth2-proxy/oauth2-proxy/releases
+# https://quay.io/repository/oauth2-proxy/oauth2-proxy?tab=tags&tag=latest
+oauth2_proxy_version: latest
+
 # additional config added to the bottom of oauth2-proxy.cfg
 oauth2_proxy_instance_additional_config: ''
 
