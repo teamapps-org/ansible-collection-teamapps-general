@@ -79,10 +79,13 @@
   import_tasks: sftp.yml
   when: webserver_sftp_enable
 
-- name: configure basic auth htpasswd in webproxy ({{ webserver_domain }})
+- name: configure basic auth htpasswd in webproxy
+  loop: "{{ webserver_addon_domains + [webserver_domain] }}" # basic auth needs to be deployed for all domains separately
+  loop_control:
+    loop_var: item_domain
   copy:
     content: "{{ webserver_basic_auth }}\n"
-    dest: '{{ webserver_webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
+    dest: '{{ webserver_webproxy_path }}/data/htpasswd/{{ item_domain }}'
     owner: root
     group: root
     mode: '0644'
@@ -90,14 +93,16 @@
     - webserver_basic_auth != ''
   notify: webserver_restart_nginx
 
-- name: Remove basic auth ({{ webserver_domain }})
+- name: Remove basic auth
+  loop: "{{ webserver_addon_domains + [webserver_domain] }}" # basic auth needs to be deployed for all domains separately
+  loop_control:
+    loop_var: item_domain
   file:
-    path: '{{ webserver_webproxy_path }}/data/htpasswd/{{ webserver_domain }}'
+    path: '{{ webserver_webproxy_path }}/data/htpasswd/{{ item_domain }}'
     state: absent
   when:
     - webserver_basic_auth == ''
   notify: webserver_restart_nginx
-
 
 - name: configure basic auth for myadmin if configured ({{ webserver_domain }})
   copy:
