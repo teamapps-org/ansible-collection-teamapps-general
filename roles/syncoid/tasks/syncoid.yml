@@ -64,3 +64,4 @@
   tags:
     - syncoid
     - syncoid_job
+    - ssh_authorized_keys

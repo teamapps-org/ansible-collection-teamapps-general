@@ -15,6 +15,8 @@
   delegate_to: '{{ syncoid_source_host_ssh }}'
   when:
     - not ansible_check_mode or not syncoid_reg__id_ed25519.changed # on
+  tags:
+    - ssh_authorized_keys
 
 - name: 'create syncoid job script syncoid-{{ syncoid_job_id }}'
   vars:

@@ -8,6 +8,7 @@
     comment: 'backuppc_{{ backuppcclient_server }} {{ base_authorized_keys_marker }}'
   tags:
     - backuppcclient_local
+    - ssh_authorized_keys
 
 - name: save original ssh_host as backuppcclient_ansible_ssh_host_orig
   set_fact:
