@@ -32,6 +32,9 @@
     force: false
     comment: syncoid@{{ ansible_fqdn }}
   register: syncoid_reg__id_ed25519
+  tags:
+    - ssh_authorized_keys
+
 
 - name: manage syncoid jobs # noqa no-role-prefix
   loop: '{{ syncoid_jobs | default([]) }}'
