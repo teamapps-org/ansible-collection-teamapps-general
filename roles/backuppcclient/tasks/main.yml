@@ -19,3 +19,16 @@
   tags:
     - backuppcclient
     - backuppcclient_local
+
+# create postbackupscript always
+- name: create postbackup.sh script
+  copy:
+    content: "#!/bin/bash\nset -exu"
+    dest: /usr/local/bin/postbackup.sh
+    force: false
+    owner: root
+    group: root
+    mode: '0750'
+  tags:
+    - backuppcclient
+    - backuppcclient_local
