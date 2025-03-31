@@ -78,7 +78,7 @@
     path: "/etc/netdata/go.d"
     state: directory
     owner: root
-    group: root
+    group: netdata
     mode: '0755'
 
 - name: configure docker metrics collection
@@ -86,7 +86,7 @@
     src: go.d/docker.conf
     dest: /etc/netdata/go.d/docker.conf
     owner: root
-    group: root
+    group: netdata
     mode: '0644'
   notify: netdata_restart
 
@@ -127,7 +127,7 @@
     access_time: preserve
     modification_time: preserve
     owner: root
-    group: root
+    group: netdata
     mode: '0644'
   notify: netdata_restart
 
@@ -136,7 +136,7 @@
     src: health_alarm_notify.conf
     dest: /etc/netdata/health_alarm_notify.conf
     owner: root
-    group: root
+    group: netdata
     mode: '0640'
   notify: netdata_restart
 
