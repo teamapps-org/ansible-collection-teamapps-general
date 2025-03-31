@@ -77,7 +77,7 @@
     name: gitlab-registry-garbage-collect
     minute: "25"
     hour: "04"
-    day: "1" # monthly
+    day: "{{ gitlab_registry_garbage_collect_cron_day }}"
     user: root
     job: '/usr/bin/gitlab-ctl registry-garbage-collect {{ gitlab_registry_garbage_collect_options }}'
     cron_file: registry_garbage_collect
