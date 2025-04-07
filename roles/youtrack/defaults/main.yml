@@ -6,5 +6,8 @@ youtrack_domain: 'youtrack.{{ ansible_fqdn }}'
 youtrack_version: '2023.2.21228'
 youtrack_jvm_max_memory: 1024m
 youtrack_jvm_max_metaspace: 500m
+youtrack_container_memory_limit: 7000M
+youtrack_container_memory_reservation: 2048M
+youtrack_jvm_options_custom: ''
 
 youtrack_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'

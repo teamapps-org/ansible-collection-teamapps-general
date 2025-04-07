@@ -18,6 +18,12 @@ services:
       - 8080
     networks:
       - webproxy
+    deploy:
+      resources:
+        limits:
+          memory: {{ youtrack_container_memory_limit }}
+        reservations:
+          memory: {{ youtrack_container_memory_reservation }}
 
 networks:
   webproxy:
