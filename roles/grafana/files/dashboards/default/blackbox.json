@@ -24,10 +24,9 @@
   "description": "Blackbox exporter HTTP prober dashboard",
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "gnetId": 13659,
   "graphTooltip": 0,
+  "id": 25,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "datasource": {
@@ -54,8 +53,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -77,8 +75,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "rgba(0, 0, 0, 0)",
-                      "value": null
+                      "color": "rgba(0, 0, 0, 0)"
                     },
                     {
                       "color": "red",
@@ -148,8 +145,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "red",
-                      "value": null
+                      "color": "red"
                     },
                     {
                       "color": "green",
@@ -183,8 +179,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "rgba(0, 0, 0, 0)",
-                      "value": null
+                      "color": "rgba(0, 0, 0, 0)"
                     },
                     {
                       "color": "green",
@@ -255,8 +250,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "rgba(3, 3, 3, 0)",
-                      "value": null
+                      "color": "rgba(3, 3, 3, 0)"
                     },
                     {
                       "color": "red",
@@ -294,8 +288,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "green",
-                      "value": null
+                      "color": "green"
                     },
                     {
                       "color": "yellow",
@@ -341,8 +334,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "green",
-                      "value": null
+                      "color": "green"
                     },
                     {
                       "color": "yellow",
@@ -480,8 +472,7 @@
         "showHeader": true,
         "sortBy": []
       },
-      "pluginVersion": "10.0.1",
-      "repeatDirection": "h",
+      "pluginVersion": "11.6.0",
       "targets": [
         {
           "datasource": {
@@ -698,11 +689,13 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 0,
             "gradientMode": "none",
@@ -711,6 +704,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 1,
             "pointSize": 5,
@@ -732,8 +726,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -767,11 +760,12 @@
           "sortDesc": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
-      "pluginVersion": "9.0.2",
+      "pluginVersion": "11.6.0",
       "targets": [
         {
           "datasource": {
@@ -828,49 +822,82 @@
             "mode": "thresholds"
           },
           "custom": {
+            "axisPlacement": "auto",
             "fillOpacity": 70,
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
             "lineWidth": 0,
             "spanNulls": false
           },
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "color": "#5a040e",
+                  "index": 0
+                },
+                "1": {
+                  "color": "dark-green",
+                  "index": 1
+                },
+                "200": {
+                  "color": "green",
+                  "index": 2
+                },
+                "401": {
+                  "color": "#eab839",
+                  "index": 4
+                },
+                "403": {
+                  "color": "light-yellow",
+                  "index": 5
+                }
+              },
+              "type": "value"
+            },
+            {
+              "options": {
+                "from": 300,
+                "result": {
+                  "color": "blue",
+                  "index": 3
+                },
+                "to": 399
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 400,
+                "result": {
+                  "color": "red",
+                  "index": 6
+                },
+                "to": 499
+              },
+              "type": "range"
+            },
+            {
+              "options": {
+                "from": 500,
+                "result": {
+                  "color": "dark-red",
+                  "index": 7
+                },
+                "to": 600
+              },
+              "type": "range"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "transparent",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "green",
-                "value": 1
-              },
-              {
-                "color": "green",
-                "value": 200
-              },
-              {
-                "color": "blue",
-                "value": 300
-              },
-              {
-                "color": "red",
-                "value": 400
-              },
-              {
-                "color": "#EAB839",
-                "value": 401
-              },
-              {
-                "color": "red",
-                "value": 404
-              },
-              {
-                "color": "dark-red",
-                "value": 500
+                "color": "transparent"
               }
             ]
           },
@@ -885,6 +912,7 @@
         "y": 20
       },
       "id": 153,
+      "maxDataPoints": 400,
       "options": {
         "alignValue": "left",
         "legend": {
@@ -896,34 +924,57 @@
         "rowHeight": 0.9,
         "showValue": "never",
         "tooltip": {
+          "hideZeros": false,
           "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "9.0.2",
+      "pluginVersion": "11.6.0",
       "targets": [
         {
           "datasource": {
             "uid": "${ds}"
           },
           "editorMode": "code",
-          "expr": "probe_http_status_code {job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"} \nor \nprobe_success {job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}",
+          "expr": "# show highest http code > 200\nmax_over_time(\n    probe_http_status_code{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"} \n) > 200\n# fallback to min (0=error or else 200 OK)\ndefault\nmin_over_time(\n    probe_http_status_code{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"} \n)\ndefault\n# default show probe_sucess value\nmin_over_time(\n    probe_success{job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}\n) ",
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{ instance }}",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
+          "expr": "min_over_time(\n    probe_success {job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"}\n)",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "{{ instance }}",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
+          "expr": "max_over_time(\n    probe_http_status_code {job=~\"$job\", group=~\"$group\", environment=~\"$environment\", instance=~\"$instance\"} \n) != 200",
+          "hide": true,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{ instance }}",
+          "refId": "C"
         }
       ],
-      "title": "HTTP Status",
-      "transformations": [],
+      "title": "HTTP Status [$__interval]",
       "type": "state-timeline"
     },
     {
       "collapsed": false,
-      "datasource": {
-        "uid": "${ds}"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -933,14 +984,6 @@
       "id": 8,
       "panels": [],
       "repeat": "instance",
-      "targets": [
-        {
-          "datasource": {
-            "uid": "${ds}"
-          },
-          "refId": "A"
-        }
-      ],
       "title": "$instance",
       "type": "row"
     },
@@ -956,11 +999,13 @@
             "mode": "palette-classic"
           },
           "custom": {
+            "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
+            "barWidthFactor": 0.6,
             "drawStyle": "line",
             "fillOpacity": 100,
             "gradientMode": "none",
@@ -969,6 +1014,7 @@
               "tooltip": false,
               "viz": false
             },
+            "insertNulls": false,
             "lineInterpolation": "linear",
             "lineWidth": 0,
             "pointSize": 5,
@@ -991,8 +1037,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1019,11 +1064,12 @@
           "showLegend": true
         },
         "tooltip": {
+          "hideZeros": false,
           "mode": "multi",
           "sort": "desc"
         }
       },
-      "pluginVersion": "9.0.2",
+      "pluginVersion": "11.6.0",
       "targets": [
         {
           "datasource": {
@@ -1040,13 +1086,12 @@
         }
       ],
       "title": "HTTP Probe Phases Duration",
-      "transformations": [],
       "type": "timeseries"
     }
   ],
+  "preload": false,
   "refresh": "1m",
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 41,
   "tags": [
     "blackbox",
     "prometheus"
@@ -1055,27 +1100,21 @@
     "list": [
       {
         "current": {
-          "selected": false,
           "text": "default",
           "value": "default"
         },
-        "hide": 0,
         "includeAll": false,
         "label": "Datasource",
-        "multi": false,
         "name": "ds",
         "options": [],
         "query": "prometheus",
-        "queryValue": "",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
         "allValue": ".+",
         "current": {
-          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -1083,10 +1122,8 @@
           "uid": "${ds}"
         },
         "definition": "label_values(probe_success, job)",
-        "hide": 0,
         "includeAll": true,
         "label": "Job",
-        "multi": false,
         "name": "job",
         "options": [],
         "query": {
@@ -1095,17 +1132,12 @@
         },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 2,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "allValue": ".*",
         "current": {
-          "selected": true,
           "text": [
             "All"
           ],
@@ -1119,7 +1151,6 @@
         },
         "definition": "label_values(probe_success{job=~\"$job\"}, group)",
         "description": "filter instances by group",
-        "hide": 0,
         "includeAll": true,
         "multi": true,
         "name": "group",
@@ -1130,14 +1161,12 @@
         },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
         "type": "query"
       },
       {
         "allValue": ".+",
         "current": {
-          "selected": true,
           "text": [
             "All"
           ],
@@ -1149,7 +1178,6 @@
           "uid": "${ds}"
         },
         "definition": "label_values(probe_success{job=~\"$job\",group=~\"$group\"}, environment)",
-        "hide": 0,
         "includeAll": true,
         "label": "Environment",
         "multi": true,
@@ -1161,17 +1189,12 @@
         },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 2,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "allValue": ".+",
         "current": {
-          "selected": true,
           "text": [
             "All"
           ],
@@ -1183,7 +1206,6 @@
           "uid": "${ds}"
         },
         "definition": "label_values(probe_success{job=~\"$job\",group=~\"$group\",environment=~\"$environment\"}, instance)",
-        "hide": 0,
         "includeAll": true,
         "label": "Instance",
         "multi": true,
@@ -1195,22 +1217,17 @@
         },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 2,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
+        "baseFilters": [],
         "datasource": {
           "type": "prometheus",
           "uid": "${ds}"
         },
         "filters": [],
-        "hide": 0,
         "name": "Filters",
-        "skipUrlSync": false,
         "type": "adhoc"
       }
     ]
@@ -1223,6 +1240,5 @@
   "timezone": "",
   "title": "Blackbox Exporter (HTTP prober)",
   "uid": "NEzutrbMk",
-  "version": 16,
-  "weekStart": ""
+  "version": 17
 }
