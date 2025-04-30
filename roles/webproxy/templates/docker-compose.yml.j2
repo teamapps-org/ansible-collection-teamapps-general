@@ -27,6 +27,12 @@ services:
       - ./data/nginx.conf:/etc/nginx/nginx.conf
     sysctls:
       net.core.somaxconn: 65536
+    healthcheck:
+      # check config and process. there is no static url we could probe
+      test: ["CMD-SHELL", "nginx -t && pgrep nginx"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     logging: *logging
     networks:
       - webproxy
@@ -54,6 +60,12 @@ services:
       - ./data/htpasswd:/etc/nginx/htpasswd:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./nginx.tmpl:/etc/docker-gen/templates/nginx.tmpl:ro
+    healthcheck:
+      # render template
+      test: ["CMD-SHELL", "docker-gen /etc/docker-gen/templates/nginx.tmpl >/dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     logging: *logging
     labels:
       com.github.nginx-proxy.docker-gen: 'true'
@@ -77,6 +89,12 @@ services:
       - ./data/certs:/etc/nginx/certs:rw
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./data/acme.sh:/etc/acme.sh:rw
+    healthcheck:
+      # render template
+      test: ["CMD-SHELL", "docker-gen /app/letsencrypt_service_data.tmpl >/dev/null && /app/cert_status"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     environment:
       NGINX_DOCKER_GEN_CONTAINER: webproxy_docker-gen
       NGINX_PROXY_CONTAINER: webproxy_nginx
