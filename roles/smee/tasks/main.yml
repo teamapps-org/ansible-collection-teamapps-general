@@ -1,0 +1,29 @@
+---
+- name: Create gosmee directory
+  ansible.builtin.file:
+    path: "{{ smee_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ smee_path }}/docker-compose.yml"
+    mode: '0644'
+
+- name: Start Gosmee service
+  community.docker.docker_compose_v2:
+    project_src: "{{ smee_path }}"
+    state: present
+    remove_orphans: true
+    pull: "{{ smee_docker_pull | ternary('always', 'policy') }}"
+  register: smee__register_compose
+  tags: compose_up
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ smee__register_compose.actions }}"
+  debug:
+    var: actions
+  changed_when: true
+  when: smee__register_compose is defined and smee__register_compose.changed

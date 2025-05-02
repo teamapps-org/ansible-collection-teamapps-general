@@ -1,0 +1,48 @@
+---
+services:
+  # Gosmee server for forwarding webhooks with enhanced security features
+  smee-proxy:
+    image: '{{ smee_image }}:{{ smee_gosmee_version }}'
+    restart: unless-stopped
+    command:
+      - server
+      - --address
+      - 0.0.0.0
+      - --port
+      - '3333'
+      - --public-url
+      - https://{{ smee_domain }}
+      - --trust-proxy
+{% if smee_allowed_ips | length > 0 %}
+{% for ip in smee_allowed_ips %}
+      - --allowed-ips
+      - {{ ip }}
+{% endfor %}
+{% endif %}
+{% if smee_webhook_signatures | length > 0 %}
+{% for signature in smee_webhook_signatures %}
+      - --webhook-signature
+      - {{ signature }}
+{% endfor %}
+{% endif %}
+    environment:
+      VIRTUAL_HOST: '{{ smee_domain }}'
+      LETSENCRYPT_HOST: '{{ smee_domain }}'
+      VIRTUAL_PORT: '3333'
+{% if smee_allowed_ips | length > 0 %}
+      GOSMEE_ALLOWED_IPS: '{{ smee_allowed_ips | join(",") }}'
+{% endif %}
+      GOSMEE_TRUST_PROXY: 'true'
+    networks:
+      webproxy:
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent --output /dev/null http://localhost:3333/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+networks:
+  webproxy:
+    external: true
+    name: webproxy
