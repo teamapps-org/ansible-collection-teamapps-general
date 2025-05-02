@@ -18,13 +18,24 @@ services:
         source: ./promtail-config.yml
         target: /etc/promtail/config.yml
         read_only: true
+      - type: bind
+        source: ./healthcheck.sh
+        target: /usr/local/bin/healthcheck.sh
+        read_only: true
 {% if promtail_scrape_docker_enabled %}
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
         read_only: true
 {% endif %}
-    command: -config.file=/etc/promtail/config.yml -log-config-reverse-order -log.level info
+    command: -config.file=/etc/promtail/config.yml -log-config-reverse-order -log.level info -server.disable=false -server.http-listen-address=0.0.0.0
+    healthcheck:
+      # check localhost:9080/ready with available tools
+      test: /usr/local/bin/healthcheck.sh
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
     expose:
       - 9080
     networks:

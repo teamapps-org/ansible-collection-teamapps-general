@@ -19,6 +19,15 @@
     mode: '0640'
   notify: restart promtail
 
+- name: healthcheck script
+  template:
+    src: healthcheck.sh
+    dest: '{{ promtail_path }}/healthcheck.sh'
+    owner: root
+    group: root
+    mode: '0750'
+  notify: restart promtail
+
 - name: deploy docker-compose.yml
   template:
     src: docker-compose.yml.j2
