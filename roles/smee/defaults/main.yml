@@ -13,23 +13,7 @@ smee_image: 'ghcr.io/chmouel/gosmee'
 
 # Security settings
 smee_webhook_signatures: []  # List of secrets for webhook signature validation
-smee_allowed_ips: []        # List of allowed IPs/CIDR ranges for webhook POST requests
+smee_allowed_ips: []         # List of allowed IPs/CIDR ranges for webhook POST requests, check README.md for Examples.
 
 # Docker configuration
 smee_docker_pull: '{{ global_docker_pull | default(False) }}'
-
-# Example allowed IPs for common services (commented out by default)
-# GitHub webhook ranges
-# smee_allowed_ips:
-#   - 192.30.252.0/22
-#   - 185.199.108.0/22
-#   - 140.82.112.0/20
-# GitLab.com webhook ranges
-#   - 35.231.145.151
-#   - 34.74.90.64
-#   - 34.74.226.93
-# Bitbucket Cloud webhook ranges
-#   - 34.199.54.113
-#   - 34.232.119.183
-#   - 34.236.25.177
-#   - 35.171.175.212

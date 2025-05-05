@@ -2,7 +2,7 @@
 
 This role sets up a Gosmee server using Docker Compose. Gosmee is a webhook forwarder/relayer and replayer that allows you to receive webhooks on your local machine or forward them to internal services that are not publicly accessible.
 
-Project Website: <https://github.com/chmouel/gosmee>
+* [Gosmee Project Website on GitHub]<https://github.com/chmouel/gosmee>
 
 ## Features
 
@@ -35,7 +35,11 @@ smee_allowed_ips: []        # List of allowed IPs/CIDR ranges
 
 ### IP Restriction Examples
 
-You can restrict webhook POST requests to specific IP ranges. Here are some common examples:
+You can restrict webhook POST requests to specific IP ranges. If configured, only these sources can send POST requests that will be forwarded to the clients.
+
+Check documentation for [Webhook IP Restrictions]<https://github.com/chmouel/gosmee?tab=readme-ov-file#webhook-ip-restrictions>
+
+Here are some common examples:
 
 ```yaml
 # GitHub webhook ranges
@@ -65,6 +69,7 @@ None.
 ## Example Playbook
 
 Basic usage:
+
 ```yaml
 - name: Gosmee Server Play
   hosts: servers
@@ -75,6 +80,7 @@ Basic usage:
 ```
 
 Advanced usage with security features:
+
 ```yaml
 - name: Gosmee Server Play
   hosts: servers
@@ -100,11 +106,7 @@ After deployment:
 
 ### Channel URLs
 
-Channel URLs follow the format:
-```
-https://your-domain/RANDOM_ID
-```
-where RANDOM_ID is a 12-character string containing a-zA-Z0-9_-
+Channel URLs follow the format: `https://your-domain/RANDOM_ID`, where RANDOM_ID is a 12-character string containing a-zA-Z0-9_-
 
 ### Security Notes
 

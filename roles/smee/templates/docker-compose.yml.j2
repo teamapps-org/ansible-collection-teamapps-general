@@ -36,7 +36,7 @@ services:
     networks:
       webproxy:
     healthcheck:
-      test: ["CMD-SHELL", "curl --fail --silent --output /dev/null http://localhost:3333/ || exit 1"]
+      test: ["CMD-SHELL", "curl --fail --silent --output /dev/null http://localhost:3333/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
