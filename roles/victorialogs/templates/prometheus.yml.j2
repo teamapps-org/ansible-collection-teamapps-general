@@ -1,0 +1,36 @@
+global:
+  scrape_interval: {{ victorialogs_scrape_interval }}
+  scrape_timeout: {{ victorialogs_scrape_timeout }}
+  external_labels:
+    scraper_instance: {{ victorialogs_metrics_instance_label }}
+
+scrape_config_files:
+  - /etc/prometheus/scrape_configs/*.yml
+
+scrape_configs:
+  - job_name: 'vmagent'
+    metrics_path: /vmagent/metrics
+    static_configs:
+      - targets: ['vmagent:8429']
+        labels:
+          instance: {{ victorialogs_metrics_instance_label }}
+          host: '{{ ansible_hostname }}'
+
+  - job_name: 'victorialogs'
+    static_configs:
+      - targets: ['victorialogs:9428']
+        labels:
+          instance: {{ victorialogs_metrics_instance_label }}
+          host: '{{ ansible_hostname }}'
+
+  - job_name: 'vmalert'
+    metrics_path: /vmalert/metrics
+    static_configs:
+      - targets: ['vmalert:8880']
+        labels:
+          instance: {{ victorialogs_metrics_instance_label }}
+          host: '{{ ansible_hostname }}'
+
+{% if victorialogs_scrape_configs != [] %}
+  {{ victorialogs_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+{% endif %}

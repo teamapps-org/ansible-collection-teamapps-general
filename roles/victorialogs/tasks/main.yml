@@ -21,6 +21,27 @@
 - name: include authproxy config
   import_tasks: authproxy.yml
 
+- name: include vmalert config
+  import_tasks: vmalert.yml
+
+# vmagent
+- name: deploy vmagent config file prometheus.yml
+  template:
+    src: 'prometheus.yml.j2'
+    dest: '{{ victorialogs_path }}/prometheus.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: victorialogs-vmagent-restart
+
+# validation in the template won't work because %s expansion won't be reachable from within the container
+- name: vmagent validate config
+  command: 'docker compose run --rm -T vmagent -dryRun -promscrape.config=/etc/prometheus/prometheus.yml -remoteWrite.url=http://INVALID:8428/api/v1/write'
+  args:
+    chdir: "{{ victorialogs_path }}" # to run docker compose in the correct directory
+  changed_when: false
+
+
 - name: victorialogs_docker-compose-up
   community.docker.docker_compose_v2:
     project_src: '{{ victorialogs_path }}'

@@ -1,4 +1,4 @@
-- name: victoriametrics-restart-gateway
+- name: victorialogs-restart-gateway
   community.docker.docker_compose_v2:
     project_src: '{{ victorialogs_path }}'
     services:
@@ -18,12 +18,12 @@
   args:
     chdir: '{{ victorialogs_path }}'
 
-- name: victoriametrics-vmagent-reload # noqa no-changed-when
+- name: victorialogs-vmagent-reload # noqa no-changed-when
   command: 'docker compose exec -T vmagent kill -HUP 1'
   args:
     chdir: '{{ victorialogs_path }}'
 
-- name: victoriametrics-vmagent-restart
+- name: victorialogs-vmagent-restart
   community.docker.docker_compose_v2:
     project_src: '{{ victorialogs_path }}'
     services:

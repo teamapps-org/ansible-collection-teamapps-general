@@ -6,7 +6,7 @@
     owner: root
     group: root
     mode: '0640'
-  notify: victoriametrics-restart-gateway
+  notify: victorialogs-restart-gateway
   when: not victorialogs_oauth2_proxy_integration
 
 - name: Nginx Auth Gateway oauth2 Configuration File
@@ -16,7 +16,7 @@
     owner: root
     group: root
     mode: '0640'
-  notify: victoriametrics-restart-gateway
+  notify: victorialogs-restart-gateway
   when: victorialogs_oauth2_proxy_integration
 
 - name: Nginx Auth Gateway delete old file
@@ -78,7 +78,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify: victoriametrics-restart-gateway
+  notify: victorialogs-restart-gateway
   when: victorialogs_oauth2_proxy_integration
 
 - name: configure webproxy vhost.d location config
@@ -88,5 +88,5 @@
     owner: root
     group: root
     mode: '0644'
-  notify: victoriametrics-restart-gateway
+  notify: victorialogs-restart-gateway
   when: victorialogs_oauth2_proxy_integration

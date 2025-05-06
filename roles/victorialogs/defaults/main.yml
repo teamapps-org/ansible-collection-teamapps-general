@@ -21,4 +21,50 @@ victorialogs_htpasswd_admin:
 victorialogs_oauth2_proxy_integration: false
 victorialogs_oauth2_proxy_host: oauth2-proxy.{{ victorialogs_domain }}
 victorialogs_oauth2_proxy_internal_host: true
-victorialogs_oauth2_proxy_cookie_name: "_oauth2_{{ victorialogs_domain }}"
+victorialogs_oauth2_proxy_cookie_name: '_oauth2_{{ victorialogs_domain }}'
+
+victorialogs_vmagent_version: '{{ victoriametrics_version | default("latest") }}'
+victorialogs_vmalert_version: '{{ victoriametrics_version | default("latest") }}'
+victorialogs_metrics_instance_label: '{{ victorialogs_domain }}'
+victorialogs_victoriametrics_remotewrite_url:
+victorialogs_victoriametrics_remotewrite_username:
+victorialogs_victoriametrics_remotewrite_password:
+victorialogs_victoriametrics_remoteread_url: '{{ victorialogs_victoriametrics_remotewrite_url }}'
+victorialogs_victoriametrics_remoteread_username: '{{ victorialogs_victoriametrics_remotewrite_username }}'
+victorialogs_victoriametrics_remoteread_password: '{{ victorialogs_victoriametrics_remotewrite_password }}'
+
+victorialogs_vmalert_evaluation_interval: 1m
+victorialogs_alertmanager_url: https://ALERTMANAGER_DOMAIN:443/
+victorialogs_alertmanager_user: ''
+victorialogs_alertmanager_password: ''
+victorialogs_vmalert_external_url: 'https://{{ victorialogs_domain }}'
+victorialogs_vmalert_external_source: '{% raw %}select/vmui/#/?g0.expr={{.Expr|queryEscape}}{% endraw %}'
+victorialogs_vmalert_external_labels:
+  - 'alertsource={{ victorialogs_domain }}'
+  - 'alerttype=vlogs'
+
+# vlogs alert rule groups https://docs.victoriametrics.com/victorialogs/vmalert/#groups
+# ensure to escape strings with {{ and }} using {% raw %}{% endraw %}
+victorialogs_vmalert_rule_groups:
+  - name: TestAlert
+    type: vlogs
+    interval: 1m
+    rules:
+      - alert: TestAlert
+        # trigger with: curl https://victorialogs_domain/TEST-ALERT
+        expr: |
+          compose_project: "victorialogs" compose_service: "authproxy" "GET /TEST-ALERT"
+          | stats count(*) as requests
+          | filter requests:>0 # ensure there's a filter condition for alerts!
+        labels:
+          team: ops
+          severity: info
+        annotations:
+          summary: VictoriaLogs TEST-ALERT
+          description: '`TEST-ALERT` triggered'
+          dashboard: 'https://{{ victorialogs_domain }}{% raw %}/select/vmui/?#/?query=compose_project%3A+%22victorialogs%22+and+compose_service%3A+%22authproxy%22+and+%22GET+%2FTEST-ALERT%22&g0.relative_time=last_1_hour{% endraw %}'
+
+victorialogs_scrape_interval: 10s
+victorialogs_scrape_timeout: 10s
+# custom scrape configs for VictoriaLogs vmagent
+victorialogs_scrape_configs: []

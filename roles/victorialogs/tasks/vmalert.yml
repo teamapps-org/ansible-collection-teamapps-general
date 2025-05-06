@@ -1,0 +1,45 @@
+---
+
+
+- name: create rules directory
+  file:
+    path: "{{ victorialogs_path }}/rules"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# https://github.com/victorialogs/victorialogs/blob/master/deployment/docker/README.md#alerts
+- name: alerting rules file
+  template:
+    src: "rules/{{ item }}.j2"
+    dest: "{{ victorialogs_path }}/rules/{{ item }}"
+    owner: root
+    group: root
+    mode: '0640'
+  with_items:
+    - vlog-alert.rules.yml
+  notify:
+    - vmalert reload
+    - vmalert validate config
+
+- name: copy alerting rule files
+  copy:
+    src: "{{ item }}"
+    dest: "{{ victorialogs_path }}/rules/"
+    owner: root
+    group: root
+    mode: '0640'
+  with_fileglob:
+    - "rules/*.rules.yml"
+  notify:
+    - vmalert reload
+    - vmalert validate config
+
+# validation in the template won't work because %s expansion won't be reachable from within the container
+- name: vmalert validate config
+  command: docker compose run --rm -T vmalert -dryRun -rule=/etc/alerts/*.yml
+  args:
+    chdir: "{{ victorialogs_path }}" # to run docker compose in the correct directory
+  changed_when: false
+...

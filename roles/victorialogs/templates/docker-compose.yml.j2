@@ -38,20 +38,19 @@ services:
       nofile:
         soft: 65535
         hard: 65535
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --head --silent --output /dev/null http://localhost:80/proxystatus || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
   victorialogs:
     image: victoriametrics/victoria-logs:{{ victorialogs_version }}
-    # ports:
-    #   - 8428:8428
-    #   - 8089:8089
-    #   - 8089:8089/udp
-    #   - 2003:2003
-    #   - 2003:2003/udp
-    #   - 4242:4242
     ports:
-      - 127.0.0.3:8428:8428
+      - 127.0.0.4:9428:9428
     expose:
-      - 8428
+      - 9428
     volumes:
       - type: bind
         source: '{{ victorialogs_storage_path }}'
@@ -64,6 +63,11 @@ services:
       - '-retention.maxDiskSpaceUsageBytes=10TiB'
       # - '-logNewStreams'
       # - '-loggerLevel INFO' # Minimum level of errors to log. Possible values: INFO, WARN, ERROR, FATAL, PANIC (default "INFO")
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:9428/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     networks:
       - vm_net
       - webproxy
@@ -73,6 +77,88 @@ services:
       nofile:
         soft: 65535
         hard: 65535
+
+  # vmalert for victorialogs monitoring: https://docs.victoriametrics.com/victorialogs/#monitoring
+  vmagent:
+    image: "victoriametrics/vmagent:{{ victorialogs_vmagent_version }}"
+    depends_on:
+      - "victorialogs"
+    ports:
+      - 127.0.0.4:8429:8429
+    volumes:
+      - type: bind
+        source: './vmagentdata'
+        target: /vmagentdata
+        read_only: false
+      - type: bind
+        source: ./prometheus.yml
+        target: /etc/prometheus/prometheus.yml
+        read_only: true
+    command:
+      - '-http.pathPrefix=/vmagent'
+      - '-promscrape.config=/etc/prometheus/prometheus.yml'
+      - '-remoteWrite.url={{ victorialogs_victoriametrics_remotewrite_url }}'
+      - '-remoteWrite.basicAuth.username={{ victorialogs_victoriametrics_remotewrite_username }}'
+      - '-remoteWrite.basicAuth.password={{ victorialogs_victoriametrics_remotewrite_password }}'
+      - '-remoteWrite.tmpDataPath=/vmagentdata'
+    networks:
+      - vm_net
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:8429/vmagent/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+
+  # vmalert for victorialogs: https://docs.victoriametrics.com/victorialogs/vmalert
+  vmalert:
+    image: victoriametrics/vmalert:{{ victorialogs_vmalert_version }}
+    depends_on:
+      - "victorialogs"
+      # - "alertmanager"
+    expose:
+      - 8880
+    ports:
+      - 127.0.0.4:8880:8880
+    volumes:
+      - type: bind
+        source: ./rules
+        target: /etc/alerts
+        read_only: true
+    command:
+      - '-http.pathPrefix=/vmalert'
+      - '-datasource.url=http://victorialogs:9428/'
+
+      - '-remoteWrite.url={{ victorialogs_victoriametrics_remotewrite_url }}'
+      - '-remoteWrite.basicAuth.username={{ victorialogs_victoriametrics_remotewrite_username }}'
+      - '-remoteWrite.basicAuth.password={{ victorialogs_victoriametrics_remotewrite_password }}'
+      - '-remoteRead.url={{ victorialogs_victoriametrics_remoteread_url }}'
+      - '-remoteRead.basicAuth.username={{ victorialogs_victoriametrics_remoteread_username }}'
+      - '-remoteRead.basicAuth.password={{ victorialogs_victoriametrics_remoteread_password }}'
+
+      - '-rule.defaultRuleType=vlogs'
+      - '-evaluationInterval={{ victorialogs_vmalert_evaluation_interval }}'
+
+      - '-notifier.url={{ victorialogs_alertmanager_url }}'
+      - '-notifier.basicAuth.username={{ victorialogs_alertmanager_user }}'
+      - '-notifier.basicAuth.password={{ victorialogs_alertmanager_password }}'
+
+      - '-rule=/etc/alerts/*.yml'
+      # display source of alerts in grafana
+      - '-external.url={{ victorialogs_vmalert_external_url }}'
+      - '-external.alert.source={{ victorialogs_vmalert_external_source }}'
+{% for label in victorialogs_vmalert_external_labels %}
+      - '-external.label={{ label }}'
+{% endfor %}
+    networks:
+      - vm_net
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:8880/vmalert/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
 
 networks:
   vm_net:
