@@ -15,64 +15,65 @@ groups:
             there are {{ $value }} metrics with no 'host' label.
             job: '{{ $labels.job }}' scraper: '{{ $labels.scraper_instance }}'
 
-      - alert: MetricsRemoved
-        expr: |
-          (
-            count by(host,instance,job,scraper_instance)(
-              default_rollup(
-                {job!="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m] offset 1h
-              )
-            )
-            > 5 # small changes are normal
-          )
-          unless
-          count by(host,instance,job,scraper_instance)(
-            default_rollup(
-              {job!="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m]
-            )
-          )
-        for: 10m
-        labels:
-          team: ops
-          severity: warning
-        annotations:
-          summary: "Metrics removed?"
-          description: |-
-            there are {{ $value }} metrics with no update.
-            job: '{{ $labels.job }}'
-            host: '{{ $labels.host }}'
-            instance: '{{ $labels.instance }}'
-            scraper: '{{ $labels.scraper_instance }}'
+## disabled because they hit limits. query is too extensive, these checks involve too many timeseries for a single query.
+#       - alert: MetricsRemoved
+#         expr: |
+#           (
+#             count by(host,instance,job,scraper_instance)(
+#               default_rollup(
+#                 {job!="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m] offset 1h
+#               )
+#             )
+#             > 5 # small changes are normal
+#           )
+#           unless
+#           count by(host,instance,job,scraper_instance)(
+#             default_rollup(
+#               {job!="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m]
+#             )
+#           )
+#         for: 10m
+#         labels:
+#           team: ops
+#           severity: warning
+#         annotations:
+#           summary: "Metrics removed?"
+#           description: |-
+#             there are {{ $value }} metrics with no update.
+#             job: '{{ $labels.job }}'
+#             host: '{{ $labels.host }}'
+#             instance: '{{ $labels.instance }}'
+#             scraper: '{{ $labels.scraper_instance }}'
 
-            Was a check or host or metrics removed? Count of metrics that were reported an hour ago, have no current value.
+#             Was a check or host or metrics removed? Count of metrics that were reported an hour ago, have no current value.
 
-      - alert: MetricsRemovedNetdata
-        expr: |
-          (
-            count by(host,instance,job,scraper_instance)(
-              default_rollup(
-                {job="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m] offset 1h
-              )
-            )
-            > 5 # small changes are normal
-          )
-          unless
-          count by(host,instance,job,scraper_instance)(
-            default_rollup(
-              {job="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m]
-            )
-          )
-        for: 10m
-        labels:
-          team: ops
-          severity: warning
-        annotations:
-          summary: "Metrics removed?"
-          description: |-
-            there are {{ $value }} metrics with no update.
-            job: '{{ $labels.job }}'
-            host: '{{ $labels.host }}'
-            instance: '{{ $labels.instance }}'
-            scraper: '{{ $labels.scraper_instance }}'
+#       - alert: MetricsRemovedNetdata
+#         expr: |
+#           (
+#             count by(host,instance,job,scraper_instance)(
+#               default_rollup(
+#                 {job="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m] offset 1h
+#               )
+#             )
+#             > 5 # small changes are normal
+#           )
+#           unless
+#           count by(host,instance,job,scraper_instance)(
+#             default_rollup(
+#               {job="netdata",__name__!~"ALERTS|ALERTS_FOR_STATE",host!=""}[5m]
+#             )
+#           )
+#         for: 10m
+#         labels:
+#           team: ops
+#           severity: warning
+#         annotations:
+#           summary: "Metrics removed?"
+#           description: |-
+#             there are {{ $value }} metrics with no update.
+#             job: '{{ $labels.job }}'
+#             host: '{{ $labels.host }}'
+#             instance: '{{ $labels.instance }}'
+#             scraper: '{{ $labels.scraper_instance }}'
 
-            Was a check or host or metrics removed? Count of metrics that were reported an hour ago, have no current value.
+#             Was a check or host or metrics removed? Count of metrics that were reported an hour ago, have no current value.

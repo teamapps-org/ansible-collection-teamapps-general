@@ -38,6 +38,12 @@ services:
       nofile:
         soft: 65535
         hard: 65535
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --head --silent --output /dev/null http://localhost:80/proxystatus || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
 
   victoriametrics:
     image: victoriametrics/victoria-metrics:{{ victoriametrics_version }}
@@ -76,6 +82,11 @@ services:
       nofile:
         soft: 65535
         hard: 65535
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:8428/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   vmagent:
     image: victoriametrics/vmagent:{{ victoriametrics_vmagent_version }}
@@ -117,6 +128,11 @@ services:
       nofile:
         soft: 65535
         hard: 65535
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:8429/vmagent/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   vmalert:
     image: victoriametrics/vmalert:{{ victoriametrics_vmalert_version }}
@@ -151,6 +167,11 @@ services:
     networks:
       - vm_net
     restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:8880/vmalert/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   blackbox:
     user: 997:998
@@ -176,6 +197,11 @@ services:
       nofile:
         soft: 65535
         hard: 65535
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:9115/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 networks:
   vm_net:
