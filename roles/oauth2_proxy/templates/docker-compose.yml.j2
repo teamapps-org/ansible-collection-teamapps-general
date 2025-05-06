@@ -3,8 +3,11 @@
 services:
   oauth2-proxy:
     restart: always
-    image: quay.io/oauth2-proxy/oauth2-proxy:{{ oauth2_proxy_version }}
+    image: quay.io/oauth2-proxy/oauth2-proxy:{{ oauth2_proxy_version }}-alpine # use alpine for healthcheck
+    # distroless healthcheck ticket: https://github.com/oauth2-proxy/oauth2-proxy/issues/2555
     container_name: '{{ oauth2_proxy_instance_host }}'
+    expose:
+      - "4180"
     environment:
       OAUTH2_PROXY_CONFIG: /etc/oauth2-proxy.cfg
 {% if oauth2_proxy_instance_standalone %}
@@ -30,6 +33,12 @@ services:
       webproxy:
         aliases:
           - '{{ oauth2_proxy_instance_host }}'
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:4180/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
 
 networks:
   webproxy:
