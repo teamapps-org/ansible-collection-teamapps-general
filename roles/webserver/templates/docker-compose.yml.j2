@@ -36,6 +36,13 @@ services:
       options:
         max-size: '10m'
         max-file: '10'
+{% if webserver_healthcheck_command != "" %}
+    healthcheck:
+      test: ["CMD-SHELL", "{{ webserver_healthcheck_command }}|| exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+{% endif %}
 
 {% if webserver_php_enable %}
   php:
@@ -67,6 +74,11 @@ services:
       options:
         max-size: '10m'
         max-file: '10'
+    healthcheck:
+      test: ["CMD-SHELL", "{{ webserver_php_healthcheck_command }}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 {% endif %}
 {% if webserver_mysql_enable %}
@@ -119,6 +131,10 @@ services:
     command: uploader::33
     ports:
       - '{{ webserver_sftp_port }}:22'
+    healthcheck:
+      test: ["CMD-SHELL", "ssh-keyscan -T1 127.0.0.1 || exit 1"]
+      timeout: 10s
+      retries: 5
 {% endif %}
 
 
@@ -138,6 +154,11 @@ services:
       - code-network
     depends_on:
       - db
+    healthcheck:
+      test: ["CMD-SHELL", "curl --head --fail 127.0.0.1:80/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 {% endif %}
 
 networks:

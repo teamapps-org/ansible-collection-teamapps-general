@@ -33,6 +33,7 @@
     webserver_mysql_password: '{{ matomo_mysql_password }}'
     webserver_document_root: matomo
     webserver_nginx_template: matomo-nginx.conf
+    webserver_healthcheck_command: curl -s --fail --head 127.0.0.1:8080/
   tags:
     - matomo
 

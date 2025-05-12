@@ -63,3 +63,13 @@ webserver_manage_robots_txt: false
 webserver_robots_txt: |
   User-agent: *
   Disallow: /
+
+# Docker Container Healthcheck Command on web container (nginx)
+# healthcheck disabled if empty
+# webserver_healthcheck_command: ""
+# to enable application specific health check on nginx container:
+# webserver_healthcheck_command: curl -s --fail --head 127.0.0.1:8080/
+webserver_healthcheck_command: "nginx -t && pgrep nginx || exit 1"
+
+# Healthcheck command for the php container
+webserver_php_healthcheck_command: "(php-fpm --test && php-fpm -m && php-fpm -i && php-fpm -i)>/dev/null || exit 1"
