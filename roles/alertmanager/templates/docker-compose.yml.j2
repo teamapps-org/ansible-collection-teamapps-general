@@ -20,6 +20,11 @@ services:
     restart: always
     networks:
       - webproxy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -O- 127.0.0.1:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 {% if alertmanager_telegram_enabled %}
   # telegram bot
