@@ -91,6 +91,11 @@ services:
       GF_UNIFIED_ALERTING_ENABLED: 'true'
     expose:
       - 3000
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "127.0.0.1:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     volumes:
       - ./data:/var/lib/grafana
       - ./provisioning/:/etc/grafana/provisioning/
@@ -124,6 +129,10 @@ services:
         limits:
           cpus: '{{ grafana_image_renderer_cpu_limit }}'
           memory: '{{ grafana_image_renderer_mem_limit }}'
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - 127.0.0.1:8081/metrics | grep -q 'up 1'"]
+      timeout: 10s
+      retries: 10
 
 
 networks:
