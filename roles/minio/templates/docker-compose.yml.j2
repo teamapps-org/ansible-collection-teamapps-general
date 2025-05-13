@@ -29,6 +29,11 @@ services:
     restart: always
     networks:
       - webproxy
+    healthcheck:
+      test: ["CMD-SHELL", "curl --head --fail http://127.0.0.1:9000/minio/health/live || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 {% if minio_console_enable %}
   console:
@@ -45,6 +50,11 @@ services:
     restart: always
     networks:
       - webproxy
+    healthcheck:
+      test: ["CMD", "wget", "-O-", "http://127.0.0.1:9090"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 {% endif %}
 
 networks:

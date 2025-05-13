@@ -100,6 +100,11 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: ${REDIS_ALLOW_EMPTY_PASSWORD:-yes}
       REDIS_EXTRA_FLAGS: ${REDIS_EXTRA_FLAGS:-}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   mongodb:
     image: ${MONGODB_IMAGE:-bitnami/mongodb:7.0.5-debian-11-r4}
@@ -109,6 +114,11 @@ services:
     environment:
       ALLOW_EMPTY_PASSWORD: ${MONGODB_ALLOW_EMPTY_PASSWORD:-yes}
       MONGODB_EXTRA_FLAGS: ${MONGODB_EXTRA_FLAGS:-}
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh 127.0.0.1:27017 --quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   docker:
     image: ${DOCKER_DIND_IMAGE:-docker:26.0-dind}
@@ -120,6 +130,11 @@ services:
       - docker-images:/var/lib/docker
       - docker-certs-ca:/certs/ca
       - docker-certs-client:/certs/client
+    healthcheck:
+      test: ["CMD-SHELL", "docker info || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   migration:
     image: *base_image

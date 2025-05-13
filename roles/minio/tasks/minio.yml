@@ -42,15 +42,13 @@
     - '{{ minio_path }}'
     - '{{ minio_path }}/data'
 
-- name: deploy config
+- name: deploy compose file
   template:
-    src: '{{ item }}'
-    dest: '{{ minio_path }}/{{ item }}'
+    src: 'docker-compose.yml.j2'
+    dest: '{{ minio_path }}/docker-compose.yml'
     owner: root
     group: root
     mode: '0640'
-  with_items:
-    - docker-compose.yml
   notify: minio_restart
 
 - name: minio_docker-compose-up

@@ -47,6 +47,11 @@ services:
         source: '{{ backuppc_datapath }}/home/mailaliases'
         target: /etc/mailaliases
         read_only: false
+    healthcheck:
+      test: ["CMD-SHELL", "wget -O- 127.0.0.1:8080/BackupPC >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
 networks:
   default:
