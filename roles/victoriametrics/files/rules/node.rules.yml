@@ -6,7 +6,7 @@ groups:
   - name: systemd
     rules:
       - alert: SystemdServiceFailed
-        expr: 'node_systemd_unit_state{job="node_exporter", state="failed"} != 0'
+        expr: 'node_systemd_units{job="node", state="failed"} != 0'
         for: 5m
         labels:
           severity: warning
