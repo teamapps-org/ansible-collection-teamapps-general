@@ -1,0 +1,6 @@
+
+# path where scraping config file is located for local vmagent to collect metrics from 'angie' service
+node_exporter_scrape_config_dir: "{{ vmagent_scrape_config_dir | default('/opt/vic-vmagent/scrape_configs') }}"
+
+# name of local vmagent service (need to be reloaded on adding / modifying scrape config file)
+node_exporter_metrics_scraper_service: vic-vmagent

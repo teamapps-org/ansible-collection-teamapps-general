@@ -28,10 +28,6 @@ vmagent_scrape_configs_default:
         labels:
           instance: '{{ ansible_fqdn }}'
           host: '{{ ansible_hostname }}'
-  - job_name: node
-    file_sd_configs:
-      - files:
-          - "{{ vmagent_sd_config_dir }}/*.node.yml"
 
 # can be used to override/extend on host/group
 vmagent_scrape_configs_custom: []

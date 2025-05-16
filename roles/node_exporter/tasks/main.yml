@@ -8,30 +8,28 @@
       tags:
         - node_exporter
         - node
-  when: manage_node_exporter | default(False)
   tags:
     - node_exporter
     - node
 
-# use file_sd to only add target when configured
-- name: node_exporter-vmagent integration. create file_sd target for local node exporter.
-  copy:
-    dest: /opt/vic-vmagent/file_sd_configs/local.node.yml
-    content: |
-      #
-      # Managed by ansible
-      #
-      - labels:
-          instance: '{{ ansible_fqdn }}'
-          host: '{{ ansible_hostname }}'
-        targets:
-          - 127.0.0.9:9100
-    owner: vic_vm_agent
-    group: vic_vm_agent
-    mode: '0640'
+- name: Deploy Scrape Config File
+  template:
+    src: node_exporter_scrape_config.yml.j2
+    dest: '{{ node_exporter_scrape_config_dir }}/node_exporter.yml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: node_exporter_metrics_scraper_service_reload
   when:
-    - manage_node_exporter | default(False)
     - node_exporter_vmagent_integration | default(True)
+  tags:
+    - node_exporter
+    - node
+
+- name: Remove old vmagent integration file_sd_config
+  file:
+    path: /opt/vic-vmagent/file_sd_configs/local.node.yml
+    state: absent
   tags:
     - node_exporter
     - node

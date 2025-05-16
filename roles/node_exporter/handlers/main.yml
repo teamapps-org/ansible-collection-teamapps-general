@@ -1,0 +1,5 @@
+- name: node_exporter_metrics_scraper_service_reload # noqa ignore-errors
+  service:
+    name: '{{ node_exporter_metrics_scraper_service }}'
+    state: reloaded
+  ignore_errors: true # ignore error if vmagent is not yet set up
