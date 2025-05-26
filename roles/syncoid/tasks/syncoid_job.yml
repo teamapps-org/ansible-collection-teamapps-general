@@ -21,7 +21,26 @@
 - name: 'create syncoid job script syncoid-{{ syncoid_job_id }}'
   vars:
     syncoid_job_id: "{{ syncoid_source_host }}-{{ syncoid_source_dataset | replace('/', '_') }}"
-    syncoid_job__excludes: "{{ ['--exclude='] | product(syncoid_exclude) | map('join') | list | join(\" \\\n  \") }}"
+    syncoid_job__exclude_datasets: |-
+      {% if syncoid_exclude_datasets %}
+      {% for item in syncoid_exclude_datasets %}
+      --exclude-datasets='{{ item }}' \
+      {% endfor %}
+      {% endif %}
+
+    syncoid_job__exclude_snaps: |-
+      {% if syncoid_exclude_snaps %}
+      {%- for item in syncoid_exclude_snaps %}
+      --exclude-snaps='{{ item }}' \
+      {% endfor %}
+      {% endif %}
+
+    syncoid_job__include_snaps: |-
+      {% if syncoid_include_snaps %}
+      {% for item in syncoid_include_snaps %}
+      --include-snaps='{{ item }}' \
+      {% endfor %}
+      {% endif %}
   copy:
     dest: /usr/local/sbin/syncoid-{{ syncoid_job_id }}
     owner: root
@@ -31,16 +50,21 @@
       #!/bin/sh
       {{ syncoid_command }} \
         --source-bwlimit={{ syncoid_source_bwlimit }} \
-        --recursive \
-        {% if syncoid_dumpsnaps %}--dumpsnaps {% endif %} \
-        {% if not syncoid_sync_snapshot %}--no-sync-snap {% endif %} \
-        {% if not syncoid_source_privilege_elevation %}--no-privilege-elevation {% endif %} \
-        {{ syncoid_job__excludes }} \
-        --sendoptions="{{ syncoid_sendoptions }} " \
+        {% if syncoid_recursive %}--recursive{% endif %} \
+        {% if syncoid_skip_parent %}--skip-parent{% endif %} \
+        {% if syncoid_dumpsnaps %}--dumpsnaps{% endif %} \
+        {% if not syncoid_sync_snapshot %}--no-sync-snap{% endif %} \
+        {% if not syncoid_source_privilege_elevation %}--no-privilege-elevation{% endif %} \
+        {{ syncoid_job__exclude_datasets | indent(2) }} \
+        {{ syncoid_job__exclude_snaps | indent(2) }} \
+        {{ syncoid_job__include_snaps | indent(2) }} \
+        {% if syncoid_use_hold %}--use-hold{% endif %} \
+        --sendoptions="{{ syncoid_sendoptions }}" \
         {% if syncoid_recvoptions != '' %}--recvoptions="{{ syncoid_recvoptions }}"{% endif %} \
-        {% if not syncoid_rollback %}--no-rollback {% endif %} \
+        {% if not syncoid_rollback %}--no-rollback{% endif %} \
         --sshkey=/root/.ssh/syncoid_id_ed25519 \
         --sshoption StrictHostKeyChecking=accept-new \
+        {% if syncoid_custom_options != '' %}{{ syncoid_custom_options }}{% endif %} \
         {{ syncoid_source_host_ssh_user }}@{{ syncoid_source_host_ssh }}:{{ syncoid_source_dataset }} \
         {{ syncoid_dest_dataset }}
 

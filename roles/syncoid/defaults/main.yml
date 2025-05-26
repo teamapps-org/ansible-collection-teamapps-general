@@ -1,11 +1,21 @@
+
+# deploy syncoid with ansible. overwrites installed version
+syncoid_deploy_patched_script: true
+
 # Exclude specific datasets which match the given regular expression.
-syncoid_exclude_default:
+syncoid_exclude_datasets_default:
   - /hotspare/
   - /docker/
+
+syncoid_exclude_snaps_default: []
+syncoid_include_snaps_default: []
 
 # log all found snapshots on source and target
 syncoid_dumpsnaps_default: false
 syncoid_command: /usr/sbin/syncoid
+
+# syncoid_sendoptions_default: 'Lc e w V' # -V for process title progress information (ubuntu 24.04+)
+syncoid_sendoptions_default: 'Lc e w'
 
 syncoid_jobs: []
 # syncoid_jobs:

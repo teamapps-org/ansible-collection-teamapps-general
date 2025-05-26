@@ -1,5 +1,14 @@
 # Syncoid cronjobs
 
+- name: deploy syncoid script (patch)
+  copy:
+    src: syncoid.pl # copied from https://github.com/jimsalterjrs/sanoid/blob/master/syncoid
+    dest: /usr/sbin/syncoid
+    owner: root
+    group: root
+    mode: '0755'
+  when: syncoid_deploy_patched_script
+
 - name: create syncoid log dir
   file:
     path: /var/log/syncoid/
@@ -41,23 +50,29 @@
   loop_control:
     loop_var: syncoid_job
   vars:
-    syncoid_cronjob: "{{ syncoid_job.cronjob | default(True) }}"
+    syncoid_cronjob: "{{ syncoid_job.cronjob | default(true) }}"
+    syncoid_cron_minute: "{{ syncoid_job.cron_minute | default(35) }}"
+    syncoid_cron_hour: "{{ syncoid_job.cron_hour | default('*') }}"
     syncoid_source_dataset: "{{ syncoid_job.source_dataset }}"
     syncoid_source_host: "{{ syncoid_job.source_host }}"
     syncoid_source_host_ssh: "{{ syncoid_job.source_host_ssh }}"
     syncoid_source_host_ssh_user: "{{ syncoid_job.source_host_ssh_user | default('root') }}"
-    syncoid_source_privilege_elevation: "{{ syncoid_job.source_privilege_elevation | default(True) }}"
+    syncoid_source_privilege_elevation: "{{ syncoid_job.source_privilege_elevation | default(true) }}"
     syncoid_source_bwlimit: "{{ syncoid_job.source_bwlimit | default('60m') }}"
-    syncoid_cron_minute: "{{ syncoid_job.cron_minute | default(35) }}"
-    syncoid_cron_hour: "{{ syncoid_job.cron_hour | default('*') }}"
+    syncoid_recursive: "{{ syncoid_job.recursive | default(true) }}"
+    syncoid_skip_parent: "{{ syncoid_job.skip_parent | default(false) }}"
     syncoid_dest_root_dataset: "{{ syncoid_job.dest_root_dataset | default('zfsbulk/hotspare') }}"
     syncoid_dest_dataset: "{{ syncoid_job.dest_dataset | default(syncoid_dest_root_dataset + '/' + syncoid_source_host + '/' + syncoid_source_dataset) }}"
-    syncoid_exclude: "{{ syncoid_job.exclude | default(syncoid_exclude_default) }}"
+    syncoid_exclude_datasets: "{{ syncoid_job.exclude_datasets | default(syncoid_job.exclude) | default(syncoid_exclude_datasets_default) | default(syncoid_exclude_default) }}"
+    syncoid_exclude_snaps: "{{ syncoid_job.exclude_snaps | default(syncoid_exclude_snaps_default) }}"
+    syncoid_include_snaps: "{{ syncoid_job.include_snaps | default(syncoid_include_snaps_default) }}"
+    syncoid_use_hold: "{{ syncoid_job.use_hold | default(false) }}"
     syncoid_dumpsnaps: "{{ syncoid_job.dumpsnaps | default(syncoid_dumpsnaps_default) }}"
-    syncoid_sync_snapshot: "{{ syncoid_job.sync_snapshot | default(True) }}"
-    syncoid_sendoptions: "{{ syncoid_job.sendoptions | default('Lc e w') }}"
+    syncoid_sync_snapshot: "{{ syncoid_job.sync_snapshot | default(true) }}"
+    syncoid_sendoptions: "{{ syncoid_job.sendoptions | default(syncoid_sendoptions_default) }}"
     syncoid_recvoptions: "{{ syncoid_job.recvoptions | default('') }}"
-    syncoid_rollback: "{{ syncoid_job.rollback | default(True) }}"
+    syncoid_rollback: "{{ syncoid_job.rollback | default(true) }}"
+    syncoid_custom_options: "{{ syncoid_job.custom_options | default('') }}"
   include_tasks:
     file: syncoid_job.yml
     apply:

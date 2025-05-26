@@ -62,9 +62,7 @@ sanoid_conf_datasets: |
 # requires zfs role to be applied before syncoid
 zfs_datasets:
   - name: zfsbulk/hotspare
-  - name: zfsbulk/hotspare/test1
   - name: zfsdata/hotspare
-  - name: zfsdata/hotspare/test1
 
 # destination root dataset needs to be existing. see above.
 syncoid_jobs:
@@ -81,9 +79,15 @@ syncoid_jobs:
   - source_host: test1
     source_host_ssh: 'test1.example.com'
     source_dataset: zfsdata
-    exclude: # defaults:
+    exclude: # deprecated, defaults:
       - /docker/
       - /hotspare/
+    exclude_datasets: # overrides exclude:
+      - /docker/
+      - /hotspare/
+    exclude_snaps:
+      - '_frequently$'
+    use_hold: true
     source_bwlimit: 60m
     cron_minute: 12
     cron_hour: '*'
