@@ -25,7 +25,7 @@ services:
         max-size: '10m'
         max-file: '10'
     healthcheck:
-      test: ["CMD-SHELL", "nginx -t && pgrep nginx && wget -O- 127.0.0.1:8080/|| exit 1"]
+      test: ["CMD-SHELL", "nginx -t && pgrep nginx && wget -O- 127.0.0.1:8080/DRTXfn5674GVQ8GoJUkG.status  || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
