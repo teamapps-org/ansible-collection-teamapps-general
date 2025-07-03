@@ -23,10 +23,9 @@ groups:
           summary: "Host down: {{ $labels.host }}"
           description: "{{ $labels.host }} of job {{ $labels.job }} has been down for more than 5 minutes."
 
-      # critical for job netdata if not reported up for 2 min.
-      - alert: HostLastUpdate
+      # critical for job netdata if not reported up
+      - alert: NetdataHostLastUpdate
         expr: time()-tlast_over_time(up{job="netdata"}[7d]) > 60*2
-        # for: 5m
         labels:
           severity: critical
         annotations:
@@ -35,18 +34,23 @@ groups:
 
       # generic, warning only if no update for 5 min
       - alert: HostLastUpdate
-        expr: time()-tlast_over_time(up{job!="netdata"}[7d]) > 60*5
-        # for: 5m
+        expr: |
+          time() - tlast_over_time(
+            # summarize without instance and other labels that could change by service discovery & service scaling
+            count by (job, host, scraper_instance, environment, application) (
+              up{job!="netdata"}
+            )[7d]
+          ) > 60*5
         labels:
           severity: warning
         annotations:
           summary: "Target not reported up for job {{ $labels.job }}"
-          description: The job {{ $labels.job }} host {{ $labels.host }}, instance {{ $labels.instance }} last reported 'up' {{ $value | humanizeDuration }} ago
+          description: The job {{ $labels.job }} host {{ $labels.host }} last reported 'up' {{ $value | humanizeDuration }} ago
 
       - alert: HostNotUp
         expr: |
-          count(up{host!=""} offset 60m) by (host,instance,job,scraper_instance)
-          unless count(up{host!=""}) by (host,instance,job,scraper_instance)
+          count(up{host!=""} offset 60m) by (job, host, scraper_instance, environment, application)
+          unless count(up{host!=""}) by (job, host, scraper_instance, environment, application)
         for: 5m
         labels:
           severity: warning
@@ -54,7 +58,7 @@ groups:
           summary: "Host Down? up metric missing"
           description: |-
             Host shut down or target removed? Missing updates for metric 'up' of host '{{ $labels.host }}', job: '{{ $labels.job }}'
-            instance: '{{ $labels.instance }}', scraper: '{{ $labels.scraper_instance }}'
+            scraper: '{{ $labels.scraper_instance }}'
             The up metric has no current value but was available an hour ago.
 
   - name: cpu
