@@ -34,6 +34,7 @@ victoriametrics_alertmanager_password: ''
 victoriametrics_scrape_interval: 10s
 victoriametrics_scrape_timeout: 10s
 victoriametrics_http_scrape_interval: 1m
+victoriametrics_log_new_series: false # -logNewSeries,  Whether to log new series. This option is for debug purposes only. It can lead to performance issues when big number of new series are ingested into VictoriaMetrics
 
 # Alertmanager source can link to graph in grafana.
 victoriametrics_grafana_datasource_name: VictoriaMetrics
