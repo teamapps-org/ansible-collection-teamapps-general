@@ -56,5 +56,5 @@
     # TODO: This is brittle - if a user sets a different port in the options, this will fail
     url: http://localhost:9134/
     return_content: true
-  register: metrics_output
-  failed_when: "'Metrics' not in metrics_output.content"
+  register: zfs_exporter__register_metrics_output
+  failed_when: "'Metrics' not in zfs_exporter__register_metrics_output.content"

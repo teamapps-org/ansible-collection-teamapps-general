@@ -1,4 +1,3 @@
-
 # deploy syncoid with ansible. overwrites installed version
 syncoid_deploy_patched_script: true
 
