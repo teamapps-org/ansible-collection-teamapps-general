@@ -1,5 +1,5 @@
 # deploy syncoid with ansible. overwrites installed version
-syncoid_deploy_patched_script: true
+syncoid_deploy_patched_script: false
 
 # Exclude specific datasets which match the given regular expression.
 syncoid_exclude_datasets_default:

@@ -40,7 +40,6 @@ sanoid_conf: |
   {{ sanoid_conf_templates }}
   {{ sanoid_conf_templates_custom }}
 
-sanoid_install_from_deb_source: false
-# For ubuntu 22.04 and earlier, install newer version directly as deb package
-# sanoid_install_from_deb_source: "{{ ansible_distribution == 'Ubuntu' and ansible_distribution_version is version('22.04', '<=') }}"
-sanoid_deb_source: https://ftp.debian.org/debian/pool/main/s/sanoid/sanoid_2.2.0-2_all.deb
+sanoid_install_from_deb_source: true
+
+sanoid_deb_source: https://ftp.debian.org/debian/pool/main/s/sanoid/sanoid_2.3.0-1_all.deb
