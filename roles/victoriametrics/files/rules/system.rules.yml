@@ -141,7 +141,7 @@ groups:
       - alert: DiskInodesPrediction72h
         expr: |
           predict_linear(
-            netdata_disk_inodes_inodes_average{dimension="avail", filesystem!="zfs", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*|/var/lib/lxd.*"}
+            netdata_disk_inodes_inodes_average{dimension="avail", filesystem!="zfs", family!~"/boot/efi|/dev/shm|/run|/dev|/run/.*|/var/lib/lxd.*", filesystem!="btrfs"}
             [36h], 3600 * 72
             )
           < 20000
