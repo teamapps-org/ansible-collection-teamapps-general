@@ -31,8 +31,8 @@ dependabot_secret_key_base: key
 dependabot_commands_prefix: '$dependabot'
 
 dependabot_version: 3.10.0-alpha.1
-dependabot_mongodb_image: bitnami/mongodb:7.0-debian-11
-dependabot_redis_image: bitnami/redis:7.2-debian-11
+dependabot_mongodb_image: bitnamilegacy/mongodb:7.0-debian-11
+dependabot_redis_image: bitnamilegacy/redis:7.2-debian-11
 dependabot_docker_image: docker:24.0-dind
 
 # pull docker images (docker compose pull)

@@ -61,7 +61,7 @@ services:
       - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
 
   zammad-elasticsearch:
-    image: bitnami/elasticsearch:${ELASTICSEARCH_VERSION}
+    image: bitnamilegacy/elasticsearch:${ELASTICSEARCH_VERSION}
     restart: ${RESTART}
     volumes:
       - elasticsearch-data:/bitnami/elasticsearch/data

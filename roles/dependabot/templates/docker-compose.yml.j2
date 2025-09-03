@@ -93,7 +93,7 @@ x-updater:
 
 services:
   redis:
-    image: ${REDIS_IMAGE:-bitnami/redis:7.2.4-debian-11-r19}
+    image: ${REDIS_IMAGE:-bitnamilegacy/redis:7.2.4-debian-11-r19}
     restart: always
     volumes:
       - ./redis-data:/bitnami/redis/data
@@ -107,7 +107,7 @@ services:
       retries: 3
 
   mongodb:
-    image: ${MONGODB_IMAGE:-bitnami/mongodb:7.0.5-debian-11-r4}
+    image: ${MONGODB_IMAGE:-bitnamilegacy/mongodb:7.0.5-debian-11-r4}
     restart: always
     volumes:
       - ./mongodb-data:/bitnami/mongodb
