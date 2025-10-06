@@ -1,0 +1,34 @@
+---
+# mailsender - User Account Management Tasks
+
+- name: Initialize user list with hashes
+  set_fact:
+    mailsender_users_with_hashes: []
+
+- name: Process each user individually
+  include_tasks: process_single_user.yml
+  loop: "{{ mailsender_users }}"
+  loop_control:
+    loop_var: mailsender_current_user
+
+- name: Create Dovecot users file
+  template:
+    src: dovecot/users.j2
+    dest: /etc/dovecot/users
+    owner: root
+    group: dovecot
+    mode: '0640'
+  notify:
+    - reload dovecot
+
+- name: Ensure dovecot group exists and has proper permissions
+  group:
+    name: dovecot
+    state: present
+
+- name: Set proper permissions on dovecot users file
+  file:
+    path: /etc/dovecot/users
+    owner: root
+    group: dovecot
+    mode: '0640'

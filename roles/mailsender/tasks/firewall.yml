@@ -1,0 +1,73 @@
+---
+# mailsender - Firewall Configuration Tasks
+
+- name: Enable ufw
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+  notify: reload ufw
+
+- name: Allow SSH (default port 22)
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+    comment: 'SSH access'
+  notify: reload ufw
+
+- name: Allow inbound SMTP submission on port 587
+  ufw:
+    rule: allow
+    port: '{{ mailsender_submission_port }}'
+    proto: tcp
+    comment: 'SMTP submission with STARTTLS'
+  notify: reload ufw
+
+- name: Allow inbound HTTP for certbot (port 80)
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+    comment: "HTTP for Lets Encrypt certificate validation"
+  notify: reload ufw
+
+- name: Deny inbound SMTP on port 25 (not acting as MX)
+  ufw:
+    rule: deny
+    port: '25'
+    proto: tcp
+    direction: in
+    comment: 'Block inbound SMTP - not acting as MX server'
+  when: mailsender_disable_inbound_smtp25 | bool
+  notify: reload ufw
+
+- name: Allow outbound SMTP on port 25 (for relaying)
+  ufw:
+    rule: allow
+    port: '25'
+    proto: tcp
+    direction: out
+    comment: 'Outbound SMTP for direct MX delivery'
+  notify: reload ufw
+
+- name: Allow outbound HTTP/HTTPS for certbot and updates
+  ufw:
+    rule: allow
+    port: '{{ item }}'
+    proto: tcp
+    direction: out
+    comment: 'Outbound web access'
+  loop:
+    - '80'
+    - '443'
+  notify: reload ufw
+
+- name: Allow extra admin IPs if specified
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+    comment: 'Admin access from {{ item }}'
+  loop: "{{ mailsender_extra_allowed_admin_ips }}"
+  when: mailsender_extra_allowed_admin_ips | length > 0
+  notify: reload ufw

@@ -1,0 +1,46 @@
+---
+# mailsender - Postfix Configuration Tasks
+
+- name: Configure Postfix main.cf
+  template:
+    src: postfix/main.cf.j2
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart postfix
+
+- name: Configure Postfix master.cf
+  template:
+    src: postfix/master.cf.j2
+    dest: /etc/postfix/master.cf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart postfix
+
+- name: Create sender login map (if users have allow_senders defined)
+  template:
+    src: postfix/sender_login.j2
+    dest: /etc/postfix/sender_login
+    owner: root
+    group: root
+    mode: '0644'
+  when: mailsender_users | selectattr('allow_senders','defined') | list | length > 0
+  notify:
+    - postmap sender login
+    - restart postfix
+
+- name: Remove sender login map if not needed
+  file:
+    path: /etc/postfix/sender_login
+    state: absent
+  when: mailsender_users | selectattr('allow_senders','defined') | list | length == 0
+
+- name: Enable and start Postfix service
+  systemd:
+    name: postfix
+    enabled: true
+    state: started

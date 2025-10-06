@@ -1,0 +1,63 @@
+---
+# mailsender - Dovecot Configuration Tasks (AUTH only)
+
+- name: Configure Dovecot 10-auth.conf
+  template:
+    src: dovecot/10-auth.conf.j2
+    dest: /etc/dovecot/conf.d/10-auth.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart dovecot
+
+- name: Configure Dovecot 10-master.conf (auth socket for postfix)
+  template:
+    src: dovecot/10-master.conf.j2
+    dest: /etc/dovecot/conf.d/10-master.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart dovecot
+
+- name: Create auth-passwdfile.conf.ext for passwd-file driver
+  copy:
+    content: |
+      passdb {
+        driver = passwd-file
+        args = scheme=SHA512-CRYPT /etc/dovecot/users
+      }
+      userdb {
+        driver = static
+        args = uid=nobody gid=nogroup home=/nonexistent
+      }
+    dest: /etc/dovecot/conf.d/auth-passwdfile.conf.ext
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart dovecot
+
+- name: Disable Dovecot protocols we don't need (IMAP/POP)
+  lineinfile:
+    path: /etc/dovecot/dovecot.conf
+    regexp: '^protocols\s*='
+    line: 'protocols = '
+  notify:
+    - restart dovecot
+
+- name: Enable and start Dovecot service
+  systemd:
+    name: dovecot
+    enabled: true
+    state: started
+    # daemon_reload: true
+
+- name: Ensure postfix can access dovecot auth socket directory
+  file:
+    path: /var/spool/postfix/private
+    state: directory
+    owner: postfix
+    group: postfix
+    mode: '0755'

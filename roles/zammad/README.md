@@ -17,7 +17,7 @@ Backups are created by a separate container, that packs the files and the databa
 ~~~yaml
 zammad_backup_hold_days: 2
 # set to yes, to skip archiving file storage (./data/zammad-storage)
-zammad_backup_no_file_backup: yes
+zammad_backup_no_file_backup: true
 backuppcclient_files_exclude_extra:
   - /container/zammad/data/elasticsearch-data
   - /container/zammad/data/postgresql-data

@@ -1,0 +1,55 @@
+---
+# mailsender - Let's Encrypt Certificate Tasks
+
+- name: Check if certificate already exists
+  stat:
+    path: "/etc/letsencrypt/live/{{ mailsender_hostname }}/fullchain.pem"
+  register: mailsender_cert_exists
+
+- name: Obtain Let's Encrypt certificate
+  command: >
+    certbot certonly
+    --standalone
+    --non-interactive
+    --agree-tos
+    --email {{ mailsender_certbot_email }}
+    --domains {{ mailsender_certbot_dns_names | join(',') }}
+  when: not mailsender_cert_exists.stat.exists
+  register: mailsender_certbot_result
+  changed_when: true
+  notify:
+    - restart postfix
+
+- name: Create certbot deploy hook for postfix reload
+  template:
+    src: certbot-deploy-hook.sh.j2
+    dest: /etc/letsencrypt/renewal-hooks/deploy/postfix-reload.sh
+    mode: '0755'
+  when: mailsender_certbot_deploy_hook_postfix_reload | bool
+
+- name: Setup certbot renewal cron job
+  cron:
+    name: "Renew Let's Encrypt certificates"
+    minute: "0"
+    hour: "2"
+    day: "*"
+    month: "*"
+    weekday: "*"
+    user: root
+    job: "certbot renew --quiet"
+    cron_file: letsencrypt-renewal
+
+- name: Ensure ssl-cert group exists and postfix user is member
+  user:
+    name: postfix
+    groups: ssl-cert
+    append: true
+
+- name: Verify certificate permissions for postfix
+  file:
+    path: "/etc/letsencrypt/live/{{ mailsender_hostname }}"
+    owner: root
+    group: ssl-cert
+    mode: '0750'
+    recurse: false
+  when: mailsender_cert_exists.stat.exists or mailsender_certbot_result is changed

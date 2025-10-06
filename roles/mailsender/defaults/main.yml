@@ -1,0 +1,46 @@
+---
+# mailsender Ansible Role - Default Variables
+# Configure a secure SMTP submission service using Postfix + Dovecot + Let's Encrypt
+
+# Identity
+mailsender_hostname: "relay.sender.domain.tld"
+mailsender_domain: "sender.domain.tld"
+mailsender_contact_email: "admin@sender.domain.tld"
+
+# Network and services
+mailsender_enable_ipv6: false
+mailsender_submission_port: 587
+mailsender_disable_inbound_smtp25: true
+
+# TLS / certbot
+mailsender_certbot_email: "{{ mailsender_contact_email }}"
+mailsender_certbot_dns_names:
+  - "{{ mailsender_hostname }}"
+mailsender_certbot_deploy_hook_postfix_reload: true
+
+# Postfix behavior
+mailsender_message_size_limit: 26214400  # ~25 MB; adjust to scanner PDF size needs
+
+# SMTP AUTH via Dovecot
+mailsender_auth_backend: "dovecot"  # fixed by this role
+mailsender_users: []  # list of users; see example below
+
+# Example:
+# mailsender_users:
+#   - username: "scanner@sender.domain.tld"
+#     password: "super-secret"     # plaintext; will be hashed on target
+#     # OR provide a dovecot-style pre-hash and omit password:
+#     # password_hash: "{SHA512-CRYPT}$6$rounds=5000$..."
+#     allow_senders:
+#       - "scanner@sender.domain.tld"  # enforced with sender_login maps
+#   - username: "alerts@sender.domain.tld"
+#     password: "another-secret"
+#     allow_senders:
+#       - "alerts@sender.domain.tld"
+
+# Firewall (ufw)
+mailsender_use_ufw: true
+mailsender_extra_allowed_admin_ips: []  # e.g., for SSH or testing tools
+
+# Package management
+mailsender_install_testing_tools: true  # Install swaks for testing

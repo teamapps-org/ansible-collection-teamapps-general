@@ -1,0 +1,50 @@
+---
+# Process single user - called from users.yml
+
+- name: Check if user has predefined password_hash
+  set_fact:
+    mailsender_user_final_hash: "{{ mailsender_current_user.password_hash }}"
+  when: mailsender_current_user.password_hash is defined
+
+- name: Generate password hash for user without password_hash
+  command: doveadm pw -s SHA512-CRYPT -p '{{ mailsender_current_user.password }}'
+  register: mailsender_new_hash_result
+  no_log: true  # Don't log passwords
+  changed_when: true  # Always show as changed to encourage adding password_hash
+  when:
+    - mailsender_current_user.password is defined
+    - mailsender_current_user.password_hash is not defined
+
+- name: Set generated hash for user
+  set_fact:
+    mailsender_user_final_hash: "{{ mailsender_new_hash_result.stdout }}"
+  when:
+    - mailsender_current_user.password is defined
+    - mailsender_current_user.password_hash is not defined
+    - mailsender_new_hash_result.stdout is defined
+
+- name: Display warning for user without password_hash (for idempotency)
+  changed_when: true
+  debug:
+    msg: |
+      WARNING: User '{{ mailsender_current_user.username }}' is using plaintext password.
+      For idempotency, add this to your configuration:
+
+      mailsender_users:
+        - username: "{{ mailsender_current_user.username }}"
+          password_hash: "{{ mailsender_user_final_hash }}"
+          # Remove the 'password' field after adding password_hash
+  when:
+    - mailsender_current_user.password is defined
+    - mailsender_current_user.password_hash is not defined
+    - mailsender_user_final_hash is defined
+
+- name: Add user with hash to final list
+  set_fact:
+    mailsender_users_with_hashes: >-
+      {{
+        mailsender_users_with_hashes + [
+          mailsender_current_user | combine({'password_hash': mailsender_user_final_hash})
+        ]
+      }}
+  when: mailsender_user_final_hash is defined

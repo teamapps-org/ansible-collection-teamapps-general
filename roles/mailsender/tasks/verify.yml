@@ -1,0 +1,69 @@
+---
+# mailsender - Configuration Verification Tasks
+
+- name: Check Postfix configuration syntax
+  command: postfix check
+  register: mailsender__register_postfix_check
+  changed_when: false
+  failed_when: mailsender__register_postfix_check.rc != 0
+
+- name: Display Postfix configuration
+  command: postconf -n
+  register: mailsender__register_postfix_config
+  changed_when: false
+
+- name: Check Dovecot configuration syntax
+  command: doveconf -n
+  register: mailsender__register_dovecot_config
+  changed_when: false
+
+- name: Verify Postfix service is active
+  systemd:
+    name: postfix
+  register: mailsender__register_postfix_status
+
+- name: Verify Dovecot service is active
+  systemd:
+    name: dovecot
+  register: mailsender__register_dovecot_status
+
+- name: Check that Postfix is listening on submission port
+  wait_for:
+    port: "{{ mailsender_submission_port }}"
+    host: "127.0.0.1"  # Check locally first
+    timeout: 10
+  register: mailsender__register_submission_port_check
+
+- name: Verify certificate files exist and are readable
+  stat:
+    path: "{{ item }}"
+  register: mailsender__register_cert_files
+  loop:
+    - "/etc/letsencrypt/live/{{ mailsender_hostname }}/fullchain.pem"
+    - "/etc/letsencrypt/live/{{ mailsender_hostname }}/privkey.pem"
+
+- name: Check dovecot auth socket exists
+  stat:
+    path: /var/spool/postfix/private/auth
+  register: mailsender__register_dovecot_auth_socket
+
+- name: Display verification results
+  debug:
+    msg:
+      - "Postfix configuration: OK"
+      - "Dovecot configuration: OK"
+      - "Postfix service: {{ mailsender__register_postfix_status.status.ActiveState }}"
+      - "Dovecot service: {{ mailsender__register_dovecot_status.status.ActiveState }}"
+      - "Submission port {{ mailsender_submission_port }}: {{ 'OK' if mailsender__register_submission_port_check is succeeded else 'FAILED' }}"
+      - "TLS certificates: {{ 'OK' if mailsender__register_cert_files.results | map(attribute='stat.exists') | list | unique == [true] else 'MISSING' }}"
+      - "Dovecot auth socket: {{ 'OK' if mailsender__register_dovecot_auth_socket.stat.exists else 'MISSING' }}"
+
+- name: Send test email using local mail command (optional)
+  mail:
+    to: "root@localhost"
+    subject: "Mailsender role deployment test"
+    body: |
+      This is a test message to verify the mailsender role deployment.
+      Timestamp: {{ ansible_date_time.iso8601 }}
+      Host: {{ inventory_hostname }}
+  when: false  # Set to true if you want to test local mail delivery

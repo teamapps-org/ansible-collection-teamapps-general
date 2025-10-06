@@ -1,0 +1,33 @@
+---
+# mailsender Ansible Role - Handlers
+
+- name: restart postfix
+  systemd:
+    name: postfix
+    state: restarted
+    daemon_reload: true
+
+- name: reload postfix
+  systemd:
+    name: postfix
+    state: reloaded
+
+- name: restart dovecot
+  systemd:
+    name: dovecot
+    state: restarted
+    daemon_reload: true
+
+- name: reload dovecot
+  systemd:
+    name: dovecot
+    state: reloaded
+
+- name: postmap sender login
+  command: postmap /etc/postfix/sender_login
+  changed_when: true
+
+- name: reload ufw
+  ufw:
+    state: reloaded
+  when: mailsender_use_ufw | bool

@@ -1,0 +1,60 @@
+---
+# mailsender Ansible Role - Main Tasks
+# Secure SMTP submission service using Postfix + Dovecot + Let's Encrypt
+
+- name: Install required packages
+  apt:
+    name:
+      - postfix
+      - mailutils
+      - ca-certificates
+      - certbot
+      - dovecot-core
+      - dovecot-sieve
+      - libsasl2-modules
+      - "{{ 'swaks' if mailsender_install_testing_tools else [] }}"
+    state: present
+    update_cache: true
+  tags:
+    - mailsender
+    - packages
+
+- name: Configure firewall rules
+  include_tasks: firewall.yml
+  when: mailsender_use_ufw | bool
+  tags:
+    - mailsender
+    - firewall
+
+- name: Setup Let's Encrypt certificates
+  include_tasks: certbot.yml
+  tags:
+    - mailsender
+    - tls
+    - certbot
+
+- name: Configure Dovecot for SMTP AUTH
+  include_tasks: dovecot.yml
+  tags:
+    - mailsender
+    - dovecot
+    - auth
+
+- name: Configure user accounts and passwords
+  include_tasks: users.yml
+  tags:
+    - mailsender
+    - users
+    - auth
+
+- name: Configure Postfix for SMTP submission
+  include_tasks: postfix.yml
+  tags:
+    - mailsender
+    - postfix
+
+- name: Verify configuration
+  include_tasks: verify.yml
+  tags:
+    - mailsender
+    - verify
