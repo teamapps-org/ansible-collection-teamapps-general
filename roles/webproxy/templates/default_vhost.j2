@@ -1,4 +1,4 @@
-{% if webproxy_security_txt %}
+{% if webproxy_security_txt | length > 0 %}
 location ^~ /.well-known/security.txt {
     auth_basic off;
     auth_request off;
@@ -8,6 +8,6 @@ location ^~ /.well-known/security.txt {
     break;
 }
 {% endif %}
-{% if webproxy_default_vhost_custom %}
+{% if webproxy_default_vhost_custom | length > 0 %}
 {{ webproxy_default_vhost_custom }}
 {% endif %}

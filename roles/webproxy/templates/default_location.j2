@@ -2,6 +2,6 @@
 # disable access_log
 access_log off;
 {% endif %}
-{% if webproxy_default_location_custom %}
+{% if webproxy_default_location_custom | length > 0 %}
 {{ webproxy_default_location_custom }}
 {% endif %}

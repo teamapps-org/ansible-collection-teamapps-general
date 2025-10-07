@@ -16,7 +16,7 @@ backuppcclient_backup_admins: []
 backuppcclient_ssh_host: '{{ backuppcclient_ansible_ssh_host_orig }}'
 backuppcclient_ssh_port: '{{ backuppcclient_ansible_ssh_port_orig }}'
 # ssh options, default "" if ssh_port is 22, else "-p <ssh_port>"
-backuppcclient_ssh_args: '{{ "" if backuppcclient_ssh_port == "22" else "-p " + backuppcclient_ssh_port | string }}'
+backuppcclient_ssh_args: '{{ "" if (backuppcclient_ssh_port | string) == "22" else "-p " + backuppcclient_ssh_port | string }}'
 
 # Information about BackupPC Server
 # backuppcclient_server: <required>

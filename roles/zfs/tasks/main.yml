@@ -29,6 +29,7 @@
 - name: list of zpools on system
   set_fact:
     zfs_fact_zfs_pools: "{{ ansible_zfs_pools | json_query('[*].name') }}"
+  when: "ansible_zfs_pools is defined"
 
 # - name: debug2
 #   changed_when: true
@@ -65,7 +66,7 @@
     - zfs
 
 # manage zfs admin delegation
-- name: set admin delegation for {{ item.key }}
+- name: set admin delegation
   community.general.zfs_delegate_admin:
     name: "{{ item.key }}"
     users: "{{ item.value['users'] }}"
