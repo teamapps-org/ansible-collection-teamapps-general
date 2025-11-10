@@ -16,6 +16,12 @@ prometheus_blackbox_modules:
       method: POST
       preferred_ip_protocol: "ip4"
 
+  http_head_2xx:
+    prober: http
+    http:
+      method: HEAD
+      preferred_ip_protocol: "ip4"
+
   http_2xx_redirect:
     prober: http
     timeout: 10s

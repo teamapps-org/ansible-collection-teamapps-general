@@ -129,10 +129,7 @@ services:
         limits:
           cpus: '{{ grafana_image_renderer_cpu_limit }}'
           memory: '{{ grafana_image_renderer_mem_limit }}'
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q -O - 127.0.0.1:8081/metrics | grep -q 'up 1'"]
-      timeout: 10s
-      retries: 10
+    # v5 does have a predefined healthcheck in the image.
 
 
 networks:
