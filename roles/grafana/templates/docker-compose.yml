@@ -114,7 +114,7 @@ services:
       HTTP_PORT: 8081
       ENABLE_METRICS: 'true'
       RENDERING_VERBOSE_LOGGING: 'false'
-      LOG_LEVEL: 'warning'
+      LOG_LEVEL: 'info'
       RENDERING_MODE: 'clustered'
       RENDERING_CLUSTERING_MODE: '{{ grafana_image_renderer_clustering_mode }}'
       RENDERING_CLUSTERING_MAX_CONCURRENCY: '{{ grafana_image_renderer_max_concurrency }}'
