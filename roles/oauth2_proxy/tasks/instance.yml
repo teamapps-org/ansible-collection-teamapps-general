@@ -67,9 +67,10 @@
     services:
       - 'oauth2-proxy'
     state: restarted
-  when:
-    - oauth2_proxy_instance_reg_config.changed
-    - oauth2_proxy_instance_authenticated_emails_file.changed
+  when: >
+    (oauth2_proxy_instance_reg_config.changed)
+    or
+    (oauth2_proxy_instance_authenticated_emails_file.changed)
   register: oauth2_proxy__register_compose
   tags: compose_up
 
