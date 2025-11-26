@@ -30,10 +30,11 @@ dependabot_secret_key_base: key
 # you can set this to '@dependabot' if you created a dependabot user in gitlab as recommended in README.
 dependabot_commands_prefix: '$dependabot'
 
-dependabot_version: 3.10.0-alpha.1
-dependabot_mongodb_image: bitnami/mongodb:7.0-debian-11
-dependabot_redis_image: bitnami/redis:7.2-debian-11
-dependabot_docker_image: docker:24.0-dind
+# dependabot versions https://gitlab.com/dependabot-gitlab/dependabot/-/blob/main/docker-compose.yml
+dependabot_version: 3.71.0-alpha.1
+dependabot_mongodb_image: mongo:8.0.16 # https://hub.docker.com/_/mongo/
+dependabot_redis_image: redis:8.2.3 # https://hub.docker.com/_/redis
+dependabot_docker_image: docker:28.5.1-dind # https://hub.docker.com/_/docker/
 
 # pull docker images (docker compose pull)
 dependabot_docker_pull: '{{ global_docker_pull | default(False) }}'

@@ -4,7 +4,7 @@
 #   with path exposed via 'SETTINGS__UPDATER_TEMPLATE_PATH' environment variables
 
 # Dependabot-gitlab base image
-x-base-image: &base_image "${BASE_IMAGE:-andrcuns/dependabot-gitlab:latest}"
+x-base-image: &base_image "${BASE_IMAGE:-andrcuns/dependabot-gitlab:3.71.0-alpha.1}"
 
 # Option documentation
 # https://gitlab.com/dependabot-gitlab/dependabot/-/blob/master/doc/environment.md
@@ -19,15 +19,17 @@ x-environment: &environment_variables
   #  composer
   #  pub
   #  cargo
-  #  nuget
   #  maven
   #  gradle
   #  mix
   #  terraform
   #  elm
   #  gitsubmodule
+  #  bun
+  #  docker-compose
+  #  dotnet-sdk
   #
-  SETTINGS__UPDATER_IMAGE_PATTERN: "${UPDATER_IMAGE_PATTERN:-andrcuns/dependabot-gitlab-%<package_ecosystem>s:latest}"
+  SETTINGS__UPDATER_IMAGE_PATTERN: "${UPDATER_IMAGE_PATTERN:-andrcuns/dependabot-gitlab-%<package_ecosystem>s:3.71.0-alpha.1}"
   # Persistance
   REDIS_URL: redis://redis:6379
   MONGODB_URL: mongodb:27017
@@ -40,9 +42,10 @@ x-environment: &environment_variables
   SECRET_KEY_BASE: ${SECRET_KEY_BASE:-key}
   SETTINGS__LOG_COLOR: ${SETTINGS__LOG_COLOR:-false}
   SETTINGS__LOG_LEVEL: ${SETTINGS__LOG_LEVEL:-info}
-  SETTINGS__DRY_RUN: ${SETTINGS__DRY_RUN:-false}
   SETTINGS__COMMANDS_PREFIX: ${SETTINGS__COMMANDS_PREFIX:-$$dependabot}
   SETTINGS__ANONYMOUS_ACCESS: ${SETTINGS__ANONYMOUS_ACCESS:-true}
+  SETTINGS__FORCE_SSL: ${SETTINGS__FORCE_SSL:-true}
+  SETTINGS__UI_LOGIN_RATE_LIMIT: ${SETTINGS__UI_LOGIN_RATE_LIMIT:-true}
   # https://dependabot-gitlab.gitlab.io/dependabot/config/environment.html#access
   SETTINGS__GITLAB_ACCESS_TOKEN: ${SETTINGS__GITLAB_ACCESS_TOKEN:-}
   SETTINGS__GITHUB_ACCESS_TOKEN: ${SETTINGS__GITHUB_ACCESS_TOKEN:-}
@@ -77,6 +80,15 @@ x-environment: &environment_variables
   SETTINGS__SENTRY_TRACES_SAMPLE_RATE: #  ${SETTINGS__SENTRY_TRACES_SAMPLE_RATE:-0.0}
   SETTINGS__SENTRY_PROFILES_SAMPLE_RATE:
   SETTINGS__SENTRY_IGNORED_ERRORS: #  ${SETTINGS__SENTRY_IGNORED_ERRORS:-}
+  # Custom ssl certificate file for GitLab instance
+  SSL_CERT_FILE: /etc/ssl/custom/tls-ca-bundle.pem
+  # Proxy related variables -- variables should be set in pairs as some tools can use capitalized names
+  http_proxy:
+  https_proxy:
+  no_proxy:
+  HTTP_PROXY:
+  HTTPS_PROXY:
+  NO_PROXY:
 
 # Updater container definition, app dynamically loads this definition when scheduling dependency updater containers
 # If custom volumes or variables are required for dependency update process, it should be placed here.
@@ -86,6 +98,7 @@ x-environment: &environment_variables
 x-updater:
   network_mode: "host"
   environment:
+    SETTINGS__APP_COMPONENT: updater
     <<: *environment_variables
 {% for var,value in dependabot_custom_env_vars | dictsort  %}
     {{ var }}: {{ '${'+var+'}' }}
@@ -93,35 +106,28 @@ x-updater:
 
 services:
   redis:
-    image: ${REDIS_IMAGE:-bitnami/redis:7.2.4-debian-11-r19}
-    restart: always
+    image: ${REDIS_IMAGE:-redis:8.2.1}
     volumes:
-      - ./redis-data:/bitnami/redis/data
-    environment:
-      ALLOW_EMPTY_PASSWORD: ${REDIS_ALLOW_EMPTY_PASSWORD:-yes}
-      REDIS_EXTRA_FLAGS: ${REDIS_EXTRA_FLAGS:-}
+      - ./redis-data:${REDIS_DATA_DIR:-/data}
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      interval: 2s
+      timeout: 2s
+      retries: 20
 
   mongodb:
-    image: ${MONGODB_IMAGE:-bitnami/mongodb:7.0.5-debian-11-r4}
+    image: ${MONGODB_IMAGE:-mongo:8.0.15}
     restart: always
     volumes:
-      - ./mongodb-data:/bitnami/mongodb
-    environment:
-      ALLOW_EMPTY_PASSWORD: ${MONGODB_ALLOW_EMPTY_PASSWORD:-yes}
-      MONGODB_EXTRA_FLAGS: ${MONGODB_EXTRA_FLAGS:-}
+      - ./mongodb-data:${MONGODB_DATA_DIR:-/data/db}
     healthcheck:
       test: ["CMD-SHELL", "echo 'db.runCommand(\"ping\").ok' | mongosh 127.0.0.1:27017 --quiet"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      interval: 2s
+      timeout: 2s
+      retries: 20
 
   docker:
-    image: ${DOCKER_DIND_IMAGE:-docker:26.0-dind}
+    image: ${DOCKER_DIND_IMAGE:-docker:28.5.1-dind}
     restart: always
     privileged: true
     environment:
@@ -130,21 +136,22 @@ services:
       - docker-images:/var/lib/docker
       - docker-certs-ca:/certs/ca
       - docker-certs-client:/certs/client
+      - ${GITLAB_SSL_CERT_FILE:-custom-certs}:/etc/ssl/custom/tls-ca-bundle.pem:ro
     healthcheck:
       test: ["CMD-SHELL", "docker info || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 2s
+      timeout: 2s
+      retries: 20
 
   migration:
     image: *base_image
-    restart: on-failure
     depends_on:
       - mongodb
     volumes:
       - cache:/home/dependabot/app/tmp/cache
     environment:
       <<: *environment_variables
+    entrypoint: kube/compose-entrypoint.sh
     command: rails db:migrate
 
   web:
@@ -155,22 +162,23 @@ services:
       - migration
     volumes:
       - cache:/home/dependabot/app/tmp/cache
+      - ${GITLAB_SSL_CERT_FILE:-custom-certs}:/etc/ssl/custom/tls-ca-bundle.pem:ro
     environment:
       <<: *environment_variables
       RAILS_SERVE_STATIC_FILES: "true"
+      SETTINGS__APP_COMPONENT: web
       LETSENCRYPT_HOST: '{{ dependabot_domain }}'
       VIRTUAL_HOST: '{{ dependabot_domain }}'
       VIRTUAL_PORT: '3000'
     ports:
       - 127.0.0.1:3000:3000
-    expose:
-      - 3000
+    entrypoint: kube/compose-entrypoint.sh
     command: rails server
     healthcheck:
       test: ["CMD", "curl", "-f", "localhost:3000/healthcheck"]
-      interval: 10s
+      interval: 5s
       timeout: 2s
-      retries: 18
+      retries: 25
       start_period: 5s
     networks:
       - default
@@ -178,31 +186,31 @@ services:
 
   worker:
     image: *base_image
-    restart: always
     depends_on:
       - redis
       - migration
     volumes:
       - cache:/home/dependabot/app/tmp/cache
       - docker-certs-client:/certs/client:ro
-      - ./.env:/home/dependabot/app/.env:ro
-      - ./docker-compose.yml:/home/dependabot/app/docker-compose.yml:ro
+      - ${GITLAB_SSL_CERT_FILE:-custom-certs}:/etc/ssl/custom/tls-ca-bundle.pem:ro
     environment:
       <<: *environment_variables
-      SETTINGS__UPDATER_TEMPLATE_PATH: /home/dependabot/app/docker-compose.yml
       DOCKER_HOST: tcp://docker:2376
       DOCKER_CERT_PATH: "/certs/client"
       DOCKER_TLS_VERIFY: 1
+      SETTINGS__APP_COMPONENT: worker
+      SETTINGS__UPDATER_TEMPLATE_PATH: ${UPDATER_TEMPLATE_PATH:-docker-compose.yml}
       SETTINGS__SIDEKIQ_ALIVE_KEY_TTL: ${SETTINGS__SIDEKIQ_ALIVE_KEY_TTL:-60}
 {% for var,value in dependabot_custom_env_vars | dictsort  %}
       {{ var }}: {{ '${'+var+'}' }}
 {% endfor %}
+    entrypoint: kube/compose-entrypoint.sh
     command: sidekiq
     healthcheck:
       test: ["CMD", "curl", "-f", "localhost:7433/healthcheck"]
-      interval: 10s
+      interval: 5s
       timeout: 2s
-      retries: 18
+      retries: 25
       start_period: 5s
 
   background-tasks:
@@ -213,8 +221,10 @@ services:
       - worker
     volumes:
       - cache:/home/dependabot/app/tmp/cache
+      - ${GITLAB_SSL_CERT_FILE:-custom-certs}:/etc/ssl/custom/tls-ca-bundle.pem:ro
     environment:
       <<: *environment_variables
+    entrypoint: kube/compose-entrypoint.sh
     command: rails background_tasks:run_post_deploy_tasks
 
 volumes:
@@ -224,6 +234,7 @@ volumes:
   docker-images:
   docker-certs-ca:
   docker-certs-client:
+  custom-certs:
 
 networks:
   default:
