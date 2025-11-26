@@ -76,14 +76,6 @@
     group: root
     mode: '0640'
 
-- name: deploy zammad backup script
-  template:
-    src: scripts/backup.sh
-    dest: '{{ zammad_path }}/scripts/backup.sh'
-    owner: root
-    group: root
-    mode: '0750'
-
 - name: include elasticsearch expose tasks
   import_tasks: elasticsearch.yml
   when: zammad_elasticsearch_expose
