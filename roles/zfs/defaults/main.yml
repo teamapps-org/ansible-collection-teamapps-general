@@ -49,3 +49,5 @@ zfs_dataset_property_metrics_exclude_datasets: []
 #   - zfsdata/sync/backup4
 # zfs_dataset_property_metrics_exclude_datasets: # []
 #   - .*/archive
+
+zfs_snap_metrics_cron_interval: '*/5'
