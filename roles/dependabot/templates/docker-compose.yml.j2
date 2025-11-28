@@ -193,13 +193,15 @@ services:
       - cache:/home/dependabot/app/tmp/cache
       - docker-certs-client:/certs/client:ro
       - ${GITLAB_SSL_CERT_FILE:-custom-certs}:/etc/ssl/custom/tls-ca-bundle.pem:ro
+      - ./.env:/home/dependabot/app/.env:ro
+      - ./docker-compose.yml:/home/dependabot/app/docker-compose.yml:ro
     environment:
       <<: *environment_variables
       DOCKER_HOST: tcp://docker:2376
       DOCKER_CERT_PATH: "/certs/client"
       DOCKER_TLS_VERIFY: 1
       SETTINGS__APP_COMPONENT: worker
-      SETTINGS__UPDATER_TEMPLATE_PATH: ${UPDATER_TEMPLATE_PATH:-docker-compose.yml}
+      SETTINGS__UPDATER_TEMPLATE_PATH: /home/dependabot/app/docker-compose.yml
       SETTINGS__SIDEKIQ_ALIVE_KEY_TTL: ${SETTINGS__SIDEKIQ_ALIVE_KEY_TTL:-60}
 {% for var,value in dependabot_custom_env_vars | dictsort  %}
       {{ var }}: {{ '${'+var+'}' }}
