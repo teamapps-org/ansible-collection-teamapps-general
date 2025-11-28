@@ -96,7 +96,7 @@
 - name: Cronjob for zfs snap metrics
   cron:
     name: zfs_snap_metrics
-    minute: "*/5"
+    minute: "{{ zfs_snap_metrics_cron_interval }}"
     hour: "*"
     user: root
     job: '/usr/local/bin/zfs_snap_metrics.sh > {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom.new && mv {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom.new {{ zfs_metrics_textfile_dir }}/zfs_snap_metrics.prom'
