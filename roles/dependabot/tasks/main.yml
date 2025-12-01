@@ -12,20 +12,12 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: '1001'
+    owner: '999'
     group: root
     mode: '0770'
   with_items:
     - "{{ dependabot_path }}/mongodb-data"
     - "{{ dependabot_path }}/redis-data"
-
-- name: create tmp directory
-  file:
-    path: "{{ dependabot_path }}/tmp"
-    state: directory
-    owner: '1000'
-    group: '1000'
-    mode: '0770'
 
 - name: create htpasswd file
   copy:
