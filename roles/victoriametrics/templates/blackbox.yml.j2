@@ -133,5 +133,5 @@ modules:
         Accept: "*/*"
 
 {% if victoriametrics_blackbox_modules != {} %}
-  {{ victoriametrics_blackbox_modules | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ victoriametrics_blackbox_modules | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
 {% endif %}

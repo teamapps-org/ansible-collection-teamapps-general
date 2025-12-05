@@ -47,7 +47,7 @@
       #
       # Managed by ansible
       #
-      {{ item.config | to_nice_yaml(indent=2) }}
+      {{ item.config | teamapps.general.to_nice_yaml(indent=2) }}
     dest: "{{ vmagent_sd_config_dir }}/{{ item.name | default('custom') }}.{{ item.job }}.yml"
     owner: "{{ vmagent_system_user }}"
     group: "{{ vmagent_system_group }}"

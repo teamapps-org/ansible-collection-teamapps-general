@@ -12,11 +12,11 @@
 
 - name: save original ssh_host as backuppcclient_ansible_ssh_host_orig
   set_fact:
-    backuppcclient_ansible_ssh_host_orig: '{{ ansible_ssh_host }}'
+    backuppcclient_ansible_ssh_host_orig: '{{ ansible_ssh_host | default(ansible_host)}}'
 
 - name: save original ssh_port as backuppcclient_ansible_ssh_port_orig
   set_fact:
-    backuppcclient_ansible_ssh_port_orig: '{{ ansible_ssh_port | default(22) }}'
+    backuppcclient_ansible_ssh_port_orig: '{{ ansible_ssh_port | default(ansible_port) | default(22) }}'
 
 - name: Create hosts file entry on backuppc server # noqa no-tabs
   delegate_to: '{{ backuppcclient_server }}'
@@ -44,12 +44,12 @@
   lineinfile:
     dest: '{{ backuppcclient_server_known_hosts }}'
     regexp: '^{{ backuppcclient_clientname }},.*'
-    line: "{{ backuppcclient_clientname }},{{ backuppcclient_ssh_host }},{{ ansible_default_ipv4.address }} ecdsa-sha2-nistp256 {{ ansible_ssh_host_key_ecdsa_public }}"
+    line: "{{ backuppcclient_clientname }},{{ backuppcclient_ssh_host }},{{ ansible_facts['default_ipv4'].address }} ecdsa-sha2-nistp256 {{ ansible_facts['ssh_host_key_ecdsa_public'] }}"
     create: true
     owner: '1000'
     group: '1000'
     mode: '0600'
-  when: backuppcclient_ssh_port == '22'
+  when: backuppcclient_ssh_port | int == 22
 
 - name: known_hosts entry for backuppc with nonstandard port
   delegate_to: '{{ backuppcclient_server }}'
@@ -57,9 +57,9 @@
   lineinfile:
     dest: '{{ backuppcclient_server_known_hosts }}'
     regexp: '^\[{{ backuppcclient_clientname }}\]:{{ backuppcclient_ssh_port }},.*'
-    line: "[{{ backuppcclient_clientname }}]:{{ backuppcclient_ssh_port }},[{{ backuppcclient_ssh_host }}]:{{ backuppcclient_ssh_port }},[{{ ansible_default_ipv4.address }}]:{{ backuppcclient_ssh_port }} ecdsa-sha2-nistp256 {{ ansible_ssh_host_key_ecdsa_public }}"
+    line: "[{{ backuppcclient_clientname }}]:{{ backuppcclient_ssh_port }},[{{ backuppcclient_ssh_host }}]:{{ backuppcclient_ssh_port }},[{{ ansible_facts['default_ipv4'].address }}]:{{ backuppcclient_ssh_port }} ecdsa-sha2-nistp256 {{ ansible_facts['ssh_host_key_ecdsa_public'] }}"
     create: true
     owner: '1000'
     group: '1000'
     mode: '0600'
-  when: backuppcclient_ssh_port != '22'
+  when: backuppcclient_ssh_port | int != 22

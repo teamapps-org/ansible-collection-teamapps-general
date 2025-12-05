@@ -1,6 +1,6 @@
 {% if victorialogs_vmalert_rule_groups != [] %}
 groups:
-{{ victorialogs_vmalert_rule_groups | to_nice_yaml(indent=2, width=10000) }}
+{{ victorialogs_vmalert_rule_groups | teamapps.general.to_nice_yaml(indent=2, width=10000) }}
 {% else %}
 groups: []
 {% endif %}

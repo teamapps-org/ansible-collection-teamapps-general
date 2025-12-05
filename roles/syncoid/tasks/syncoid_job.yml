@@ -55,9 +55,9 @@
         {% if syncoid_dumpsnaps %}--dumpsnaps{% endif %} \
         {% if not syncoid_sync_snapshot %}--no-sync-snap{% endif %} \
         {% if not syncoid_source_privilege_elevation %}--no-privilege-elevation{% endif %} \
-        {{ syncoid_job__exclude_datasets | indent(2) }} \
-        {{ syncoid_job__exclude_snaps | indent(2) }} \
-        {{ syncoid_job__include_snaps | indent(2) }} \
+        {{ syncoid_job__exclude_datasets | default('', true) | indent(2) }} \
+        {{ syncoid_job__exclude_snaps | default('', true) | indent(2) }} \
+        {{ syncoid_job__include_snaps | default('', true) | indent(2) }} \
         {% if syncoid_use_hold %}--use-hold{% endif %} \
         --sendoptions="{{ syncoid_sendoptions }}" \
         {% if syncoid_recvoptions != '' %}--recvoptions="{{ syncoid_recvoptions }}"{% endif %} \
@@ -83,7 +83,7 @@
       /usr/local/sbin/syncoid-{{ syncoid_job_id }}
       >> /var/log/syncoid/cron-{{ syncoid_job_id }}.log 2>&1
 
-- name: "remove cronjob for syncoid-{{ syncoid_job_id }}"
+- name: remove cronjob for syncoid-job
   cron:
     cron_file: syncoid_{{ syncoid_source_host }}
     name: syncoid pull {{ syncoid_source_dataset }} from {{ syncoid_source_host }}

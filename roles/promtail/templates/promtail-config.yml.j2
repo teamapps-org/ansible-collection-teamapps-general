@@ -61,11 +61,11 @@ clients:
       forwarder: promtail
 
 scrape_configs:
-  {{ promtail_scrape_configs_default | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ promtail_scrape_configs_default | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
 
 {% if promtail_scrape_configs != [{}] %}
-  {{ promtail_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ promtail_scrape_configs | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
 {% endif %}
 {% if promtail_scrape_docker_enabled %}
-  {{ promtail_scrape_config_docker | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ promtail_scrape_config_docker | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
 {% endif %}

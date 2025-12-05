@@ -1,16 +1,16 @@
 {{ ansible_managed | comment }}
 
 global:
-  {{ alertmanager_global | to_nice_yaml(indent=2) | indent(2, False) }}
+  {{ alertmanager_global | teamapps.general.to_nice_yaml(indent=2) | indent(2, False) }}
 
 receivers:
-  {{ alertmanager_receivers | to_nice_yaml(indent=2) | indent(2, False)  }}
+  {{ alertmanager_receivers | teamapps.general.to_nice_yaml(indent=2) | indent(2, False)  }}
 
 route:
-  {{ alertmanager_route | to_nice_yaml(indent=2) | indent(2, False) }}
+  {{ alertmanager_route | teamapps.general.to_nice_yaml(indent=2) | indent(2, False) }}
 
 inhibit_rules:
-  {{ alertmanager_inhibit_rules | to_nice_yaml(indent=2) | indent(2, False) }}
+  {{ alertmanager_inhibit_rules | teamapps.general.to_nice_yaml(indent=2) | indent(2, False) }}
 
 templates:
 {% for template in  alertmanager_templates %}

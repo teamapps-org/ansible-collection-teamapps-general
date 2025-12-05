@@ -3,23 +3,23 @@
 # http://prometheus.io/docs/operating/configuration/
 
 global:
-  {{ prometheus_global | to_nice_yaml(indent=2) | indent(2, False) }}
+  {{ prometheus_global | teamapps.general.to_nice_yaml(indent=2) | indent(2, False) }}
   external_labels:
-    {{ prometheus_external_labels | to_nice_yaml(indent=2) | indent(4, False) }}
+    {{ prometheus_external_labels | teamapps.general.to_nice_yaml(indent=2) | indent(4, False) }}
 
 rule_files:
   - rules/*.rules.yml
   - rules/*.rules
 
 scrape_configs:
-  {{ prometheus_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ prometheus_scrape_configs | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
 
 {% if prometheus_alertmanager_config | length > 0 %}
 alerting:
   alertmanagers:
-  {{ prometheus_alertmanager_config | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ prometheus_alertmanager_config | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
   {% if prometheus_alert_relabel_configs | length > 0 %}
   alert_relabel_configs:
-  {{ prometheus_alert_relabel_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ prometheus_alert_relabel_configs | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
   {% endif %}
 {% endif %}

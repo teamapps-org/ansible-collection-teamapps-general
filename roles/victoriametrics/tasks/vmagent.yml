@@ -21,7 +21,7 @@
       #
       # Managed by ansible
       #
-      {{ item.config | to_nice_yaml(indent=2) }}
+      {{ item.config | teamapps.general.to_nice_yaml(indent=2) }}
     dest: "{{ victoriametrics_path }}/file_sd/{{ item.name | default('custom') }}.{{ item.job }}.yml"
     owner: root
     group: root

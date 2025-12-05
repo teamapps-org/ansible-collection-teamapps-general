@@ -50,6 +50,11 @@ Check the `defaults.yml` of the roles for information on how to configure them.
 
 ~~~
 
+## Compatibility notes
+
+- The collection now ships the `teamapps.general.to_nice_yaml` filter, which transparently calls `community.general.to_nice_yaml` on newer Ansible releases and falls back to the legacy core implementation on older ones. Add the `community.general` collection to your requirements when targeting ansible-core 2.12 or newer so the upstream filter is available.
+- ansible-core newer than 2.19 removed the safe YAML dumper from core. When the `community.general` implementation is missing the collection still falls back to the legacy dumper but now emits a warning because sensitive vault strings could be dumped in clear text (see [ansible/ansible#85722](https://github.com/ansible/ansible/issues/85722)). Install `community.general` to avoid the warning and regain the safe serializer.
+
 ## Development setup
 
 We use [pipenv](https://pipenv.readthedocs.io) to install ansible and dependency package.

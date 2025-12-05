@@ -18,4 +18,4 @@ network:
     version: 2
     ethernets:
         {{ netplan_interface }}:
-            {{ netplan_interface_config | to_nice_yaml(indent=4) | indent(12, False) }}
+            {{ netplan_interface_config | teamapps.general.to_nice_yaml(indent=4) | indent(12, False) }}

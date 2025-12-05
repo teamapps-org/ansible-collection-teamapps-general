@@ -12,4 +12,4 @@ deleteDatasources:
 prune: {{ grafana_datasources_prune | bool | ternary('true', 'false') }}
 
 datasources:
-  {{ grafana_datasources | to_nice_yaml(indent=2, width=10000) | indent(2, False) }}
+  {{ grafana_datasources | teamapps.general.to_nice_yaml(indent=2, width=10000) | indent(2, False) }}

@@ -3,7 +3,7 @@
 
 {% if loki_rules != [] %}
 groups:
-{{ loki_rules | to_nice_yaml(indent=2, width=10000) }}
+{{ loki_rules | teamapps.general.to_nice_yaml(indent=2, width=10000) }}
 {% else %}
 groups: []
 {% endif %}

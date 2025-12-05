@@ -32,5 +32,5 @@ scrape_configs:
           host: '{{ ansible_hostname }}'
 
 {% if victorialogs_scrape_configs != [] %}
-  {{ victorialogs_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ victorialogs_scrape_configs | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
 {% endif %}

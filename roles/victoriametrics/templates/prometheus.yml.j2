@@ -122,5 +122,5 @@ scrape_configs:
           - "/etc/prometheus/file_sd/*.prometheus.yml"
 
 {% if victoriametrics_scrape_configs != [] %}
-  {{ victoriametrics_scrape_configs | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ victoriametrics_scrape_configs | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
 {% endif %}

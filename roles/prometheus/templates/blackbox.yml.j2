@@ -1,4 +1,4 @@
 {{ ansible_managed | comment }}
 
 modules:
-  {{ prometheus_blackbox_modules | to_nice_yaml(indent=2) | indent(2,False) }}
+  {{ prometheus_blackbox_modules | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
