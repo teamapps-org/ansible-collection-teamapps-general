@@ -6,8 +6,8 @@
     - targets:
         - {{ loki_canary_port_bind_to }}
       labels:
-        instance: '{{ ansible_fqdn }}'
-        host: '{{ ansible_hostname }}'
+        instance: '{{ ansible_facts.fqdn }}'
+        host: '{{ ansible_facts.hostname }}'
         cluster: '{{ loki_canary_loki_domain }}'
         namespace: '{{ loki_canary_loki_domain }}'
         container_name: '{{ loki_canary_container_name }}'

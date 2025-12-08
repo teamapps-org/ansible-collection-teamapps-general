@@ -19,23 +19,23 @@
 # - name: debug0
 #   changed_when: true
 #   debug:
-#     var: ansible_zfs_pools
+#     var: ansible_facts.zfs_pools
 
 # - name: debug1
 #   changed_when: true
 #   debug:
-#     var: ansible_zfs_pools | json_query('[*].name')
+#     var: ansible_facts.zfs_pools | json_query('[*].name')
 
 - name: list of zpools on system
   set_fact:
-    zfs_fact_zfs_pools: "{{ ansible_zfs_pools | json_query('[*].name') }}"
-  when: "ansible_zfs_pools is defined"
+    zfs_fact_zfs_pools: "{{ ansible_facts.zfs_pools | json_query('[*].name') }}"
+  when: "ansible_facts.zfs_pools is defined"
 
 # - name: debug2
 #   changed_when: true
 #   debug:
 #     msg: "manage: {{ item }}"
-#   when: "item in ansible_zfs_pools | json_query('[*].name')"
+#   when: "item in ansible_facts.zfs_pools | json_query('[*].name')"
 #   loop: "{{ zfs_managed_pools }}"
 
 - name: manage zpools
@@ -43,11 +43,11 @@
   loop_control:
     loop_var: zpool
   when:
-    - "ansible_zfs_pools is defined"
+    - "ansible_facts.zfs_pools is defined"
     - "zpool in zfs_fact_zfs_pools"
   tags: zfs
   vars:
-    zfs_zpool__zpool_facts: "{{ ansible_zfs_pools | selectattr('name', 'equalto', zpool) | list | first }}"
+    zfs_zpool__zpool_facts: "{{ ansible_facts.zfs_pools | selectattr('name', 'equalto', zpool) | list | first }}"
   include_tasks:
     file: zpool.yml
     apply:

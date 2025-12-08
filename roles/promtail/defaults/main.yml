@@ -4,7 +4,7 @@ promtail_local_cache_dir: '{{ local_cache_dir | default("/tmp") }}'
 promtail_path: '/container/promtail'
 
 promtail_docker_pull: '{{ global_docker_pull | default(False) }}'
-promtail_loki_server: 'loki.{{ ansible_domain }}'
+promtail_loki_server: 'loki.{{ ansible_facts.domain }}'
 promtail_loki_url: https://{{ promtail_loki_server }}/loki/api/v1/push
 promtail_loki_username: testuser
 promtail_loki_password: password

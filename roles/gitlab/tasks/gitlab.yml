@@ -31,19 +31,19 @@
 
 - name: gitlab repository
   apt_repository:
-    repo: deb [arch=amd64 signed-by=/usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg] https://packages.gitlab.com/gitlab/gitlab-ce/ubuntu/ {{ ansible_lsb.codename }} main
+    repo: deb [arch=amd64 signed-by=/usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg] https://packages.gitlab.com/gitlab/gitlab-ce/ubuntu/ {{ ansible_facts.lsb.codename }} main
     state: present
     filename: 'gitlab_gitlab-ce'
 
 - name: gitlab runner repository deb-src
   apt_repository:
-    repo: deb-src [signed-by=/usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg] https://packages.gitlab.com/gitlab/gitlab-ce/ubuntu/ {{ ansible_lsb.codename }} main
+    repo: deb-src [signed-by=/usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg] https://packages.gitlab.com/gitlab/gitlab-ce/ubuntu/ {{ ansible_facts.lsb.codename }} main
     state: present
     filename: 'gitlab_gitlab-ce'
 
 - name: Add sources list
   apt_repository:
-    repo: deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_lsb.id | lower }}/ {{ ansible_lsb.codename }} main
+    repo: deb https://packages.gitlab.com/gitlab/gitlab-ce/{{ ansible_facts.lsb.id | lower }}/ {{ ansible_facts.lsb.codename }} main
     state: absent
     filename: 'gitlab_gitlab-ce'
 

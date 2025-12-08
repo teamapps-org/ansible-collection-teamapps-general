@@ -10,7 +10,7 @@ nextcloud_notify_push_image: icewind1991/notify_push:latest
 nextcloud_mariadb_version: 11.4
 
 nextcloud_path: '/container/nextcloud'
-nextcloud_domain: 'nextcloud.{{ ansible_fqdn }}'
+nextcloud_domain: 'nextcloud.{{ ansible_facts.fqdn }}'
 
 nextcloud_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 

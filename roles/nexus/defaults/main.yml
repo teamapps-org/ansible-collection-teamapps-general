@@ -1,7 +1,7 @@
 ---
 # defaults file for nexus
 nexus_path: '/container/nexus'
-nexus_domain: 'nexus.{{ ansible_fqdn }}'
+nexus_domain: 'nexus.{{ ansible_facts.fqdn }}'
 
 # docker image tag https://hub.docker.com/r/sonatype/nexus3/tags
 nexus_version: latest

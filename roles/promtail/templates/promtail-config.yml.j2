@@ -56,8 +56,8 @@ clients:
     # Use map like {"foo": "bar"} to add a label foo with
     # value bar.
     external_labels:
-      instance: {{ ansible_fqdn }}
-      host: {{ ansible_hostname }}
+      instance: {{ ansible_facts.fqdn }}
+      host: {{ ansible_facts.hostname }}
       forwarder: promtail
 
 scrape_configs:

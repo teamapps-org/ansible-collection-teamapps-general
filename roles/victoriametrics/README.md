@@ -25,7 +25,7 @@ Example `host_vars/vic1.example.com.yml`
 
 ~~~yaml
 victoriametrics_version: latest
-victoriametrics_domain: 'metrics.{{ ansible_fqdn }}'
+victoriametrics_domain: 'metrics.{{ ansible_facts.fqdn }}'
 
 victoriametrics_htpasswd_read: |
   grafana-read-vic:$2y$...

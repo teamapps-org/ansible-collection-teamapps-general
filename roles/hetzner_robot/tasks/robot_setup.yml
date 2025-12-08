@@ -90,7 +90,7 @@
 
 - name: check that fqdn is correct
   assert:
-    that: ansible_fqdn == inventory_hostname
+    that: ansible_facts.fqdn == inventory_hostname
 
 - name: ensure apt list dir exists
   file:

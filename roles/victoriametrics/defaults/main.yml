@@ -4,7 +4,7 @@ victoriametrics_version: latest
 victoriametrics_vmagent_version: '{{ victoriametrics_version }}'
 victoriametrics_vmalert_version: '{{ victoriametrics_version }}'
 
-victoriametrics_domain: 'metrics.{{ ansible_fqdn }}'
+victoriametrics_domain: 'metrics.{{ ansible_facts.fqdn }}'
 
 victoriametrics_nginx_image: nginx:alpine
 

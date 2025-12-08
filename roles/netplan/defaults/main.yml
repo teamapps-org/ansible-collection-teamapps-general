@@ -1,5 +1,5 @@
 ---
-netplan_interface: '{{ ansible_default_ipv4.interface }}'
+netplan_interface: '{{ ansible_facts.default_ipv4.interface }}'
 netplan_manage_adresses: true
 netplan_addresses: []
 netplan_config_file: /etc/netplan/90-ansible.yaml

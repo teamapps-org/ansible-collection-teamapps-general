@@ -6,7 +6,7 @@
     - targets:
         - {{ loki_host_port_bind_to }}
       labels:
-        instance: '{{ ansible_fqdn }}'
-        host: '{{ ansible_hostname }}'
+        instance: '{{ ansible_facts.fqdn }}'
+        host: '{{ ansible_facts.hostname }}'
         cluster: '{{ loki_domain }}'
         namespace: '{{ loki_domain }}'

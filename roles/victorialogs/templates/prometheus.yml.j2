@@ -14,14 +14,14 @@ scrape_configs:
       - targets: ['vmagent:8429']
         labels:
           instance: {{ victorialogs_metrics_instance_label }}
-          host: '{{ ansible_hostname }}'
+          host: '{{ ansible_facts.hostname }}'
 
   - job_name: 'victorialogs'
     static_configs:
       - targets: ['victorialogs:9428']
         labels:
           instance: {{ victorialogs_metrics_instance_label }}
-          host: '{{ ansible_hostname }}'
+          host: '{{ ansible_facts.hostname }}'
 
   - job_name: 'vmalert'
     metrics_path: /vmalert/metrics
@@ -29,7 +29,7 @@ scrape_configs:
       - targets: ['vmalert:8880']
         labels:
           instance: {{ victorialogs_metrics_instance_label }}
-          host: '{{ ansible_hostname }}'
+          host: '{{ ansible_facts.hostname }}'
 
 {% if victorialogs_scrape_configs != [] %}
   {{ victorialogs_scrape_configs | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}

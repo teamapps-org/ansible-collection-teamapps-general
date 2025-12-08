@@ -2,7 +2,7 @@
 
 tileserver_version: latest
 tileserver_image: 'maptiler/tileserver-gl:{{ tileserver_version }}'
-tileserver_domain: maps.{{ ansible_fqdn }}
+tileserver_domain: maps.{{ ansible_facts.fqdn }}
 
 tileserver_nginx_image: nginx:alpine
 

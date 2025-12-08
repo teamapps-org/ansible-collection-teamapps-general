@@ -2,7 +2,7 @@
   scrape_interval: 1m
   static_configs:
       - labels:
-          instance: '{{ ansible_fqdn }}'
-          host: '{{ ansible_hostname }}'
+          instance: '{{ ansible_facts.fqdn }}'
+          host: '{{ ansible_facts.hostname }}'
         targets:
           - 127.0.0.9:9100

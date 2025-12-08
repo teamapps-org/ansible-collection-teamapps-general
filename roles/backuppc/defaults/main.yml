@@ -2,7 +2,7 @@
 # defaults file for backuppc
 backuppc_path: '/container/backuppc'
 backuppc_datapath: '/container/backuppc/data'
-backuppc_domain: 'backup.{{ ansible_fqdn }}'
+backuppc_domain: 'backup.{{ ansible_facts.fqdn }}'
 backuppc_version: 4 # https://hub.docker.com/r/adferrand/backuppc/tags?page=1&ordering=last_updated
 backuppc_htpasswd:
 # generate lines with htpasswd -B -n username
@@ -67,7 +67,7 @@ backuppc_rsync_args_extra:
 backuppc_mail_enable: true
 backuppc_mail_host: '{{ base_mail_host }}'
 backuppc_mail_port: '{{ base_mail_port }}'
-backuppc_mail_from: backuppc+{{ inventory_hostname_short }}@{{ ansible_domain }}
+backuppc_mail_from: backuppc+{{ inventory_hostname_short }}@{{ ansible_facts.domain }}
 backuppc_mail_user: '{{ base_mail_user }}'
 backuppc_mail_password: '{{ base_mail_password }}'
 backuppc_mail_default_recipient: '{{ monitoring_email }}'

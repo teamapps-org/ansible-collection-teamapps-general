@@ -35,7 +35,7 @@
 
 - name: configure netdata apt repo
   apt_repository:
-    repo: 'deb [arch=amd64 signed-by=/usr/share/keyrings/netdata.gpg]  https://packagecloud.io/netdata/netdata/ubuntu/ {{ ansible_distribution_release }} main'
+    repo: 'deb [arch=amd64 signed-by=/usr/share/keyrings/netdata.gpg]  https://packagecloud.io/netdata/netdata/ubuntu/ {{ ansible_facts.distribution_release }} main'
     update_cache: false
     filename: 'netdata'
 

@@ -1,6 +1,6 @@
 ---
 kimai_path: '/container/kimai'
-kimai_domain: '{{ ansible_fqdn }}'
+kimai_domain: '{{ ansible_facts.fqdn }}'
 
 kimai_version: '2.5.0' # https://www.kimai.org/documentation/installation.html
 kimai_php_version: '8.2'

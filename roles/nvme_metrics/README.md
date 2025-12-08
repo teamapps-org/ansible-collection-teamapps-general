@@ -10,7 +10,7 @@ Installs cronjob that writes to a prom file for node_exporter textfile collector
 - name: nvme metrics play
   vars:
     # install only on physical servers
-    manage_node_exporter: '{{ ansible_virtualization_role in [ "host", "NA" ] }}'
+    manage_node_exporter: '{{ ansible_facts.virtualization_role in [ "host", "NA" ] }}'
   hosts: all:!nodefault
   roles:
     - role: teamapps.general.nvme_metrics

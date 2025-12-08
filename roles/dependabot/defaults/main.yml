@@ -1,6 +1,6 @@
 # dependabot configuration
 
-dependabot_domain: 'dependabot.{{ ansible_fqdn }}'
+dependabot_domain: 'dependabot.{{ ansible_facts.fqdn }}'
 
 dependabot_path: /container/dependabot
 # needed for auth config and whitelists

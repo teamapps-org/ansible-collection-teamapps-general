@@ -1,7 +1,7 @@
 ---
 # defaults file for zammad
 zammad_path: '/container/zammad'
-zammad_domain: 'zammad.{{ ansible_fqdn }}'
+zammad_domain: 'zammad.{{ ansible_facts.fqdn }}'
 zammad_letsencrypt_host: '{{ zammad_domain }}'
 
 # Version as on docker hub: https://hub.docker.com/r/zammad/zammad-docker-compose/tags
@@ -40,7 +40,7 @@ zammad_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
 # Elasticsearch RAM allocation (Java Xms, Xmx). valid format: 512m, 2g
 # default: 40% of total memory
-zammad_elasticsearch_memory: '{{ (ansible_memtotal_mb * 0.4) | round | int }}m'
+zammad_elasticsearch_memory: '{{ (ansible_facts.memtotal_mb * 0.4) | round | int }}m'
 
 # customize knowledge base html template.
 zammad_kb_html_custom: false

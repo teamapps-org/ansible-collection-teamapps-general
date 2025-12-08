@@ -75,7 +75,7 @@
 
   # Labels
 
-  labels.instance = '{{ ansible_fqdn }}'
+  labels.instance = '{{ ansible_facts.fqdn }}'
 {% raw %}
   labels.forwarder = 'vector'
   labels.category = 'dockerlogs'

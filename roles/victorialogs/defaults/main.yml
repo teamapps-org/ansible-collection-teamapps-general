@@ -1,7 +1,7 @@
 ---
 # https://hub.docker.com/r/victoriametrics/victoria-logs/tags?page=1&ordering=last_updated
 victorialogs_version: latest
-victorialogs_domain: 'victorialogs.{{ ansible_fqdn }}'
+victorialogs_domain: 'victorialogs.{{ ansible_facts.fqdn }}'
 
 victorialogs_nginx_image: nginx:alpine
 

@@ -3,7 +3,7 @@
 grafana_path: '/container/grafana'
 grafana_docker_pull: '{{ global_docker_pull | default(False) }}'
 
-grafana_domain: 'grafana.{{ ansible_fqdn }}'
+grafana_domain: 'grafana.{{ ansible_facts.fqdn }}'
 
 grafana_version: latest
 grafana_mariadb_version: latest

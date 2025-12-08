@@ -12,7 +12,7 @@
 
 - name: save original ssh_host as backuppcclient_ansible_ssh_host_orig
   set_fact:
-    backuppcclient_ansible_ssh_host_orig: '{{ ansible_ssh_host | default(ansible_host)}}'
+    backuppcclient_ansible_ssh_host_orig: '{{ ansible_ssh_host | default(ansible_host) }}'
 
 - name: save original ssh_port as backuppcclient_ansible_ssh_port_orig
   set_fact:

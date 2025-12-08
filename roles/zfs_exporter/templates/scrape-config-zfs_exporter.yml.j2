@@ -5,5 +5,5 @@
   static_configs:
     - targets: ['127.0.0.1:9134']
       labels:
-        instance: '{{ ansible_fqdn }}'
-        host: '{{ ansible_hostname }}'
+        instance: '{{ ansible_facts.fqdn }}'
+        host: '{{ ansible_facts.hostname }}'

@@ -76,30 +76,30 @@ hetzner_robot_clear_mdraid_partitions:
 
 hetzner_robot_zfsbulk_pool_type: mirror
 hetzner_robot_zfsbulk_partitions_by_id:
-  - "{{ ansible_device_links.ids['sda'][0] }}"
-  - "{{ ansible_device_links.ids['sdb'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sda'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdb'][0] }}"
 
 hetzner_robot_zfsbulk_extend_groups:
-  - - "{{ ansible_device_links.ids['sdc'][0] }}"
-    - "{{ ansible_device_links.ids['sdd'][0] }}"
-  - - "{{ ansible_device_links.ids['sde'][0] }}"
-    - "{{ ansible_device_links.ids['sdf'][0] }}"
-  - - "{{ ansible_device_links.ids['sdg'][0] }}"
-    - "{{ ansible_device_links.ids['sdh'][0] }}"
-  - - "{{ ansible_device_links.ids['sdi'][0] }}"
-    - "{{ ansible_device_links.ids['sdj'][0] }}"
+  - - "{{ ansible_facts.device_links.ids['sdc'][0] }}"
+    - "{{ ansible_facts.device_links.ids['sdd'][0] }}"
+  - - "{{ ansible_facts.device_links.ids['sde'][0] }}"
+    - "{{ ansible_facts.device_links.ids['sdf'][0] }}"
+  - - "{{ ansible_facts.device_links.ids['sdg'][0] }}"
+    - "{{ ansible_facts.device_links.ids['sdh'][0] }}"
+  - - "{{ ansible_facts.device_links.ids['sdi'][0] }}"
+    - "{{ ansible_facts.device_links.ids['sdj'][0] }}"
 
 hetzner_robot_zfsbulk_log_file: false
 hetzner_robot_zfsbulk_log_partitions_by_id:
-  - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part3"
-  - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part3"
+  - "{{ ansible_facts.device_links.ids['nvme0n1'][0] }}-part3"
+  - "{{ ansible_facts.device_links.ids['nvme1n1'][0] }}-part3"
 
 hetzner_robot_zfsbulk_log_device: "mirror {{ hetzner_robot_zfsbulk_log_partitions_by_id | join(' ') }}"
 
 hetzner_robot_zfsbulk_cache: true
 hetzner_robot_zfsbulk_cache_partitions_by_id:
-  - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part4"
-  - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part4"
+  - "{{ ansible_facts.device_links.ids['nvme0n1'][0] }}-part4"
+  - "{{ ansible_facts.device_links.ids['nvme1n1'][0] }}-part4"
 
 ~~~
 
@@ -109,16 +109,16 @@ hetzner_robot_zfsbulk_cache_partitions_by_id:
 hetzner_robot_zfsbulk: true
 hetzner_robot_zfsbulk_pool_type: raidz3
 hetzner_robot_zfsbulk_partitions_by_id:
-  - "{{ ansible_device_links.ids['sda'][0] }}"
-  - "{{ ansible_device_links.ids['sdb'][0] }}"
-  - "{{ ansible_device_links.ids['sdc'][0] }}"
-  - "{{ ansible_device_links.ids['sdd'][0] }}"
-  - "{{ ansible_device_links.ids['sde'][0] }}"
-  - "{{ ansible_device_links.ids['sdf'][0] }}"
-  - "{{ ansible_device_links.ids['sdg'][0] }}"
-  - "{{ ansible_device_links.ids['sdh'][0] }}"
-  - "{{ ansible_device_links.ids['sdi'][0] }}"
-  - "{{ ansible_device_links.ids['sdj'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sda'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdb'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdc'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdd'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sde'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdf'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdg'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdh'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdi'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdj'][0] }}"
 ~~~
 
 ### Mirror Setup with 4 HDD (no nvme) (SX64)
@@ -131,15 +131,15 @@ hetzner_robot_raid_disks:
 
 # part4 on big disks with gpt partition table
 hetzner_robot_zfsdata_partitions_by_id:
-  - "{{ ansible_device_links.ids['sda'][0] }}-part4"
-  - "{{ ansible_device_links.ids['sdb'][0] }}-part4"
+  - "{{ ansible_facts.device_links.ids['sda'][0] }}-part4"
+  - "{{ ansible_facts.device_links.ids['sdb'][0] }}-part4"
 
 # groups of devices, extending the pool with additional vdevs
 # for pool type mirror
 # list of lists with 2 devices.
 hetzner_robot_zfsdata_extend_groups:
-  - - "{{ ansible_device_links.ids['sdc'][0] }}"
-    - "{{ ansible_device_links.ids['sdd'][0] }}"
+  - - "{{ ansible_facts.device_links.ids['sdc'][0] }}"
+    - "{{ ansible_facts.device_links.ids['sdd'][0] }}"
 ~~~
 
 ## clean partitions from old zfspool (for reinstall)

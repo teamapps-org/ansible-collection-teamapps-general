@@ -1,11 +1,11 @@
 ---
 webserver_redirect_path: '/container/webserver_redirect'
 
-webserver_redirect_domain: 'redirect.{{ ansible_fqdn }}'
+webserver_redirect_domain: 'redirect.{{ ansible_facts.fqdn }}'
 webserver_redirect_addon_domains: []
 webserver_redirect_domains: '{{ [webserver_redirect_domain] + webserver_redirect_addon_domains }}'
 
-webserver_redirect_destination: 'https://{{ ansible_domain }}'
+webserver_redirect_destination: 'https://{{ ansible_facts.domain }}'
 webserver_redirect_code: '301' # 301: permanent, 302: temporary
 
 webserver_redirect_nginx_image: nginxinc/nginx-unprivileged:stable-alpine

@@ -26,8 +26,8 @@ vmagent_scrape_configs_default:
     static_configs:
       - targets: [127.0.0.9:8429]
         labels:
-          instance: '{{ ansible_fqdn }}'
-          host: '{{ ansible_hostname }}'
+          instance: '{{ ansible_facts.fqdn }}'
+          host: '{{ ansible_facts.hostname }}'
 
 # can be used to override/extend on host/group
 vmagent_scrape_configs_custom: []
@@ -45,7 +45,7 @@ vmagent_promscrape_config:
     scrape_interval: "{{ vmagent_scrape_interval }}"
     scrape_timeout: "{{ vmagent_scrape_timeout }}"
     external_labels:
-      scraper_instance: "{{ ansible_fqdn | default(ansible_host) | default(inventory_hostname) }}"
+      scraper_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
   scrape_configs: '{{ vmagent_scrape_configs }}'
   scrape_config_files:
     - '{{ vmagent_scrape_config_dir }}/*.yml'
@@ -67,7 +67,7 @@ vmagent_file_sd_config: []
   #   name: local
   #   config:
   #     - labels:
-  #         instance: '{{ ansible_fqdn }}'
-  #         host: '{{ ansible_hostname }}'
+  #         instance: '{{ ansible_facts.fqdn }}'
+  #         host: '{{ ansible_facts.hostname }}'
   #       targets:
   #         - 127.0.0.1:9100

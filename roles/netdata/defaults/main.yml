@@ -1,7 +1,7 @@
 ---
 # defaults file for netdata
 netdata_path: '/container/netdata'
-netdata_domain: 'netdata.{{ ansible_fqdn }}'
+netdata_domain: "netdata.{{ ansible_facts['fqdn'] }}"
 netdata_htpasswd: ''
 
 netdata_streaming_enabled: false
@@ -26,7 +26,7 @@ netdata_alarm_send_slack: false
 netdata_alarm_send_custom: false
 
 netdata_alarm_email_default_recipient: root@localhost
-netdata_alarm_email_sender: "'Netdata on host {{ ansible_fqdn }}' <netdata@localhost>"
+netdata_alarm_email_sender: "'Netdata on host {{ ansible_facts.fqdn }}' <netdata@localhost>"
 
 # Slack (Legacy) Webhooks: https://api.slack.com/legacy/custom-integrations/messaging/webhooks
 netdata_alarm_slack_webhook_url: # https://hooks.slack.com/services/...
@@ -42,7 +42,7 @@ netdata_cloud_base_url: https://app.netdata.cloud
 # Disable all telemetry, including posthog in the frontend.
 netdata_disable_telemetry: false
 
-netdata_smartd_enabled: '{{ ansible_virtualization_role in ["host", "NA"] }}'
+netdata_smartd_enabled: '{{ ansible_facts.virtualization_role in ["host", "NA"] }}'
 
 netdata_postgres_enabled: false
 netdata_postgres_update_every: 1

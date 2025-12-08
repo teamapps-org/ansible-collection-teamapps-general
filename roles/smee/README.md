@@ -26,7 +26,7 @@ Available variables are listed below, along with default values (see `defaults/m
 ```yaml
 # Basic Configuration
 smee_path: '/container/smee'
-smee_domain: 'smee.{{ ansible_fqdn }}'
+smee_domain: 'smee.{{ ansible_facts.fqdn }}'
 
 # Security Features
 smee_webhook_signatures: []  # List of secrets for webhook signature validation

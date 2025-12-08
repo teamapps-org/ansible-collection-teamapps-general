@@ -115,5 +115,5 @@ vmagent_scrape_configs_custom:
       - targets: ['127.0.0.8:18081']
         labels:
           instance: '{{ grafana_domain }}'
-          host: '{{ ansible_hostname }}'
+          host: '{{ ansible_facts.hostname }}'
 ~~~

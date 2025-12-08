@@ -10,7 +10,7 @@ See [defaults.yml](defaults/main.yml)
 
 Required configuration:
 
-* `matomo_domain:` (default: `'{{ ansible_fqdn }}'` )
+* `matomo_domain:` (default: `'{{ ansible_facts.fqdn }}'` )
 * `matomo_mysql_root_password:`
 * `matomo_mysql_password:`
 

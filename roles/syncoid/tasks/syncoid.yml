@@ -39,7 +39,7 @@
     type: ed25519
     state: present
     force: false
-    comment: syncoid@{{ ansible_fqdn }}
+    comment: syncoid@{{ ansible_facts.fqdn }}
   register: syncoid_reg__id_ed25519
   tags:
     - ssh_authorized_keys

@@ -35,15 +35,15 @@ hetzner_robot_clear_mdraid_partitions:
   - /dev/nvme1n1p3
 
 hetzner_robot_zfsdata_partitions_by_id:
-  - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part3"
-  - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part3"
+  - "{{ ansible_facts.device_links.ids['nvme0n1'][0] }}-part3"
+  - "{{ ansible_facts.device_links.ids['nvme1n1'][0] }}-part3"
 
 # groups of devices, extending the pool,
 # for pool type mirror
 # list of lists with 2 devices.
 hetzner_robot_zfsdata_extend_groups: []
-  # - - "{{ ansible_device_links.ids['sdc'][0] }}"
-  #   - "{{ ansible_device_links.ids['sdd'][0] }}"
+  # - - "{{ ansible_facts.device_links.ids['sdc'][0] }}"
+  #   - "{{ ansible_facts.device_links.ids['sdd'][0] }}"
 
 
 ## zfsbulk configuration
@@ -56,19 +56,19 @@ hetzner_robot_zfsbulk_log_device: /zfs_log_file
 # for type mirror, only define 2 and add more disks to the variable hetzner_robot_zfsbulk_extend_groups
 # mirror with more devices means more mirrors, but not more space!
 hetzner_robot_zfsbulk_partitions_by_id:
-  - "{{ ansible_device_links.ids['sda'][0] }}"
-  - "{{ ansible_device_links.ids['sdb'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sda'][0] }}"
+  - "{{ ansible_facts.device_links.ids['sdb'][0] }}"
 
 # groups of devices, extending the pool,
 # for pool type mirror
 # list of lists with 2 devices.
 hetzner_robot_zfsbulk_extend_groups: []
-  # - - "{{ ansible_device_links.ids['sdc'][0] }}"
-  #   - "{{ ansible_device_links.ids['sdd'][0] }}"
+  # - - "{{ ansible_facts.device_links.ids['sdc'][0] }}"
+  #   - "{{ ansible_facts.device_links.ids['sdd'][0] }}"
 
 # create partitions on the nvme disks and configure those as l2arc cache for zfsbulk
 hetzner_robot_zfsbulk_cache: false
 # to create partitions, add them to hetzner_robot_installimage_partitions
 hetzner_robot_zfsbulk_cache_partitions_by_id:
-  - "{{ ansible_device_links.ids['nvme0n1'][0] }}-part4"
-  - "{{ ansible_device_links.ids['nvme1n1'][0] }}-part4"
+  - "{{ ansible_facts.device_links.ids['nvme0n1'][0] }}-part4"
+  - "{{ ansible_facts.device_links.ids['nvme1n1'][0] }}-part4"

@@ -3,7 +3,7 @@
 smee_path: '/container/smee'
 
 # Domain configuration
-smee_domain: 'smee.{{ ansible_fqdn }}'
+smee_domain: 'smee.{{ ansible_facts.fqdn }}'
 smee_addon_domains: []
 smee_domains: '{{ [smee_domain] + smee_addon_domains }}'
 

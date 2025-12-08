@@ -64,6 +64,6 @@
     subject: "Mailsender role deployment test"
     body: |
       This is a test message to verify the mailsender role deployment.
-      Timestamp: {{ ansible_date_time.iso8601 }}
+      Timestamp: {{ ansible_facts.date_time.iso8601 }}
       Host: {{ inventory_hostname }}
   when: false  # Set to true if you want to test local mail delivery

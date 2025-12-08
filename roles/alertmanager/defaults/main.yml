@@ -10,7 +10,7 @@ alertmanager_htpasswd:
 
 # white list hosts that do not require basic auth
 alertmanager_allowed_hosts: []
-alertmanager_domain: "alertmanager.{{ ansible_fqdn }}"
+alertmanager_domain: "alertmanager.{{ ansible_facts.fqdn }}"
 
 ## Alertmanager Config
 # https://www.prometheus.io/docs/alerting/latest/configuration/

@@ -1,4 +1,4 @@
-loki_canary_container_name: loki-canary.{{ ansible_fqdn }} # needs to be unique!
+loki_canary_container_name: loki-canary.{{ ansible_facts.fqdn }} # needs to be unique!
 loki_canary_loki_domain: loki.example.com # websocket connection with tls on 443.
 loki_canary_version: latest
 loki_canary_user:

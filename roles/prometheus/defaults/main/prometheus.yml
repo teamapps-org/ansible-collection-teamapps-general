@@ -1,7 +1,7 @@
 ---
 # default vars for prometheus role (over docker)
 
-prometheus_domain: 'prometheus.{{ ansible_fqdn }}'
+prometheus_domain: 'prometheus.{{ ansible_facts.fqdn }}'
 prometheus_image: prom/prometheus # public image to be used
 prometheus_version: 2.37.0 # prometheus --version
 prometheus_port: 9090
@@ -20,7 +20,7 @@ prometheus_db_dir: /container/prometheus/data
 prometheus_storage_retention: "30d"
 
 prometheus_external_labels:
-  scraper_instance: "{{ ansible_fqdn | default(ansible_host) | default(inventory_hostname) }}"
+  scraper_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
 
 prometheus_http_scrape_interval: 1m
 
@@ -112,7 +112,7 @@ prometheus_scrape_configs:
     relabel_configs:
       - source_labels: [__address__]
         regex: ^(localhost.*)$ # replace localhost with hostname
-        replacement: '{{ ansible_hostname }}'
+        replacement: '{{ ansible_facts.hostname }}'
         target_label: host
       - source_labels: [__address__]
         regex: ^https?:\/\/([^?/:]+).*$ # extract domain, input: https://prometheus.prod1.example.com:443/?foo=asdf; output: prometheus.prod1.example.com

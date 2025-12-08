@@ -1,7 +1,7 @@
 ---
 # defaults file for youtrack
 youtrack_path: '/container/youtrack'
-youtrack_domain: 'youtrack.{{ ansible_fqdn }}'
+youtrack_domain: 'youtrack.{{ ansible_facts.fqdn }}'
 
 youtrack_version: '2023.2.21228'
 youtrack_jvm_max_memory: 1024m

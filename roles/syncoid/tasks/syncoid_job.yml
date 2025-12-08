@@ -11,7 +11,7 @@
   authorized_key:
     user: '{{ syncoid_source_host_ssh_user }}'
     key: '{{ syncoid_reg__id_ed25519.public_key }}'
-    comment: 'syncoid@{{ ansible_fqdn }} {{ base_authorized_keys_marker }}'
+    comment: 'syncoid@{{ ansible_facts.fqdn }} {{ base_authorized_keys_marker }}'
   delegate_to: '{{ syncoid_source_host_ssh }}'
   when:
     - not ansible_check_mode or not syncoid_reg__id_ed25519.changed # on
