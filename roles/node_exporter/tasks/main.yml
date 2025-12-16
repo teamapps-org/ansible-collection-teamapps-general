@@ -1,9 +1,9 @@
 # use include_role to workaround issue with run_once.
 # a task with run_once is run on the first host in a play,
 # if the run_once task is skipped because the role has a condition, then, the task will never run.
-- name: import cloudalchemy.node_exporter
+- name: import prometheus.prometheus.node_exporter
   include_role:
-    name: cloudalchemy.node_exporter
+    name: prometheus.prometheus.node_exporter
     apply:
       tags:
         - node_exporter

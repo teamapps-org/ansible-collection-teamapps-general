@@ -4,8 +4,17 @@ Node Exporter and Victoriametrics vmagent integration
 
 ## Dependencies
 
-- role [`cloudalchemy.node_exporter`](https://github.com/cloudalchemy/ansible-node-exporter) from ansible galaxy
+- role [`prometheus.prometheus.node_exporter`](https://github.com/prometheus-community/ansible) from Ansible Galaxy collection `prometheus.prometheus`
 - role `teamapps.general.vmagent` (optional)
+
+`requirements.yml`
+
+~~~yaml
+collections:
+  - name: prometheus.prometheus
+    version: 0.27.5
+    type: galaxy
+~~~
 
 ## Usage Example
 
@@ -14,7 +23,7 @@ Node Exporter and Victoriametrics vmagent integration
 ~~~yaml
 ## node_exporter vars
 manage_node_exporter: '{{ ansible_facts.virtualization_role in [ "host", "NA" ] }}' # only on physical servers
-node_exporter_version: 1.7.0 # or latest
+node_exporter_version: 1.9.1 # or latest
 node_exporter_web_listen_address: "127.0.0.9:9100"
 node_exporter_web_telemetry_path: "/metrics"
 
@@ -34,7 +43,7 @@ node_exporter_enabled_collectors:
   - netclass:
       ignored-devices: "^(docker[0-9]|br-.{12}|veth.{7})$"
 
-node_exporter_download_dir: '{{ local_cache_dir }}'
+node_exporter_local_cache_path: "{{ local_cache_dir }}/node_exporter-{{ ansible_facts['system'] | lower }}-{{ _node_exporter_go_ansible_arch }}/{{ node_exporter_version }}"
 ~~~
 
 playbook:
