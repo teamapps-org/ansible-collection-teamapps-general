@@ -162,7 +162,8 @@
   when:
     - hetzner_robot_zfsbulk
     - hetzner_robot_reg__create_zfsbulk.changed
-    - hetzner_robot_zfsbulk_log_device
+    - hetzner_robot_zfsbulk_log_device is defined
+    - hetzner_robot_zfsbulk_log_device != ''
 
 - name: collect zpool facts
   zpool_facts: {}
