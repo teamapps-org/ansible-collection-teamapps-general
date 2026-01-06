@@ -38,9 +38,18 @@ hetzner_robot_zfsdata_partitions_by_id:
   - "{{ ansible_facts.device_links.ids['nvme0n1'][0] }}-part3"
   - "{{ ansible_facts.device_links.ids['nvme1n1'][0] }}-part3"
 
-# groups of devices, extending the pool,
-# for pool type mirror
-# list of lists with 2 devices.
+# Pool type for extending zfsdata pool (mirror, raidz, raidz1, raidz2, raidz3)
+hetzner_robot_zfsdata_pool_type: mirror
+
+# the zpool can be extended by adding additional vdevs.
+# e.g. add another mirror of two devices.
+hetzner_robot_zfsdata_extend_vdev_type: "{{ hetzner_robot_zfsdata_pool_type }}"
+
+# groups of devices for vdevs to add to the zpool.
+# for extend vdev type mirror: list of lists with 2 devices each
+# for extend vdev type raidz/raidz1: list of lists with 3+ devices each
+# for extend vdev type raidz2: list of lists with 4+ devices each
+# for extend vdev type raidz3: list of lists with 5+ devices each
 hetzner_robot_zfsdata_extend_groups: []
   # - - "{{ ansible_facts.device_links.ids['sdc'][0] }}"
   #   - "{{ ansible_facts.device_links.ids['sdd'][0] }}"
@@ -50,8 +59,9 @@ hetzner_robot_zfsdata_extend_groups: []
 
 hetzner_robot_zfsbulk: false
 hetzner_robot_zfsbulk_pool_type: mirror
+hetzner_robot_zfsbulk_extend_vdev_type: "{{ hetzner_robot_zfsbulk_pool_type }}"
 hetzner_robot_zfsbulk_log_file: true
-hetzner_robot_zfsbulk_log_device: /zfs_log_file
+hetzner_robot_zfsbulk_log_partitions_by_id: []
 
 # for type mirror, only define 2 and add more disks to the variable hetzner_robot_zfsbulk_extend_groups
 # mirror with more devices means more mirrors, but not more space!
