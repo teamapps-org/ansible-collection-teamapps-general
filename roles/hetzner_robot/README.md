@@ -94,8 +94,6 @@ hetzner_robot_zfsbulk_log_partitions_by_id:
   - "{{ ansible_facts.device_links.ids['nvme0n1'][0] }}-part3"
   - "{{ ansible_facts.device_links.ids['nvme1n1'][0] }}-part3"
 
-hetzner_robot_zfsbulk_log_device: "mirror {{ hetzner_robot_zfsbulk_log_partitions_by_id | join(' ') }}"
-
 hetzner_robot_zfsbulk_cache: true
 hetzner_robot_zfsbulk_cache_partitions_by_id:
   - "{{ ansible_facts.device_links.ids['nvme0n1'][0] }}-part4"
