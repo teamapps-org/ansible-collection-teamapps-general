@@ -28,6 +28,12 @@ location /oauth2/ {
     proxy_pass       https://$oauth2proxy:443;
     proxy_set_header Host             {{ victoriametrics_oauth2_proxy_instance_host }};
 {% endif %}
+
+    proxy_buffering on;
+    proxy_buffers 8 16k;
+    proxy_buffer_size 16k;
+    proxy_busy_buffers_size 16k;
+
     # proxy_set_header X-Auth-Request-Redirect $request_uri;
     # or, if you are handling multiple domains:
     proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
