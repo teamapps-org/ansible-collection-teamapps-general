@@ -13,8 +13,26 @@ auth_request /oauth2/auth;
 error_page 401 = /oauth2/sign_in;
 ## to login directly, without showing the login button:
 # error_page 401 = /oauth2/start?rd=$proxy_x_forwarded_proto://$http_host$request_uri ;
+ 
+location = /oauth2/sign_out {
+    auth_request off;
+    auth_basic off;
+
+{% if victoriametrics_oauth2_proxy_instance_internal_host %}
+    proxy_pass       http://$oauth2proxy:4180;
+    proxy_set_header Host             $host;
+    proxy_set_header X-Real-IP        $remote_addr;
+    proxy_set_header X-Scheme         $http_x_forwarded_proto;
+{% else %}
+    proxy_pass       https://$oauth2proxy:443;
+    proxy_set_header Host             {{ victoriametrics_oauth2_proxy_instance_host }};
+{% endif %}
+
+    proxy_set_header X-Auth-Request-Redirect /;
+}
 
 location /oauth2/ {
+
     # disable auth for the oauth2 location
     auth_request off;
     auth_basic off;
@@ -36,7 +54,7 @@ location /oauth2/ {
 
     # proxy_set_header X-Auth-Request-Redirect $request_uri;
     # or, if you are handling multiple domains:
-    proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
+    proxy_set_header X-Auth-Request-Redirect $request_uri;
 }
 location = /oauth2/auth {
     # disable auth for the oauth2 location
