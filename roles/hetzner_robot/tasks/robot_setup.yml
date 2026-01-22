@@ -113,21 +113,42 @@
     name: zfsutils-linux
     state: present
 
+- name: define device path prefix
+  set_fact:
+    hetzner_robot__device_prefix: '/dev/disk/by-id/'
+
+- name: compute full device paths for zfsdata partitions
+  set_fact:
+    hetzner_robot__zfsdata_devices: "{{ hetzner_robot_zfsdata_partitions_by_id | map('regex_replace', '^', hetzner_robot__device_prefix) | list }}"
+    hetzner_robot__zfsdata_extend_groups_devices: "{{ hetzner_robot_zfsdata_extend_groups | map('map', 'regex_replace', '^', hetzner_robot__device_prefix) | map('list') | list }}"
+
+- name: compute full device paths for zfsbulk partitions
+  set_fact:
+    hetzner_robot__zfsbulk_devices: "{{ hetzner_robot_zfsbulk_partitions_by_id | map('regex_replace', '^', hetzner_robot__device_prefix) | list }}"
+    hetzner_robot__zfsbulk_cache_devices: "{{ hetzner_robot_zfsbulk_cache_partitions_by_id | map('regex_replace', '^', hetzner_robot__device_prefix) | list }}"
+    hetzner_robot__zfsbulk_extend_groups_devices: "{{ hetzner_robot_zfsbulk_extend_groups | map('map', 'regex_replace', '^', hetzner_robot__device_prefix) | map('list') | list }}"
+    hetzner_robot__zfsbulk_log_devices: "{{ hetzner_robot_zfsbulk_log_partitions_by_id | map('regex_replace', '^', hetzner_robot__device_prefix) | list }}"
+  when: hetzner_robot_zfsbulk
+
 - name: create zpool zfsdata
-  command: "zpool create zfsdata mirror {{ hetzner_robot_zfsdata_partitions_by_id | join(' ') }} -o ashift=12 -O compression=lz4"
+  command: "zpool create zfsdata {{ hetzner_robot_zfsdata_pool_type }} {{ hetzner_robot__zfsdata_devices | join(' ') }} -o ashift=12 -O compression=lz4"
   register: hetzner_robot_reg__create_zfsdata
   args:
     creates: /zfsdata
 
-# extend pool with more vdevs (for mirror: extend by pairs of 2 devices)
+# extend pool with more vdevs
+# for mirror: extend by pairs of 2 devices
+# for raidz/raidz1: extend by groups of 3+ devices
+# for raidz2: extend by groups of 4+ devices
+# for raidz3: extend by groups of 5+ devices
 - name: extend zpool zfsdata # noqa no-handler no-changed-when
-  command: "zpool add zfsdata mirror {{ item | join(' ') }} -o ashift=12"
-  loop: '{{ hetzner_robot_zfsdata_extend_groups }}'
+  command: "zpool add zfsdata {{ hetzner_robot_zfsdata_extend_vdev_type }} {{ item | join(' ') }} -o ashift=12"
+  loop: '{{ hetzner_robot__zfsdata_extend_groups_devices }}'
   when:
     - hetzner_robot_reg__create_zfsdata.changed
 
 - name: create zpool zfsbulk # noqa no-changed-when
-  command: "zpool create zfsbulk {{ hetzner_robot_zfsbulk_pool_type }} {{ hetzner_robot_zfsbulk_partitions_by_id | join(' ') }} -o ashift=12 -O compression=lz4"
+  command: "zpool create zfsbulk {{ hetzner_robot_zfsbulk_pool_type }} {{ hetzner_robot__zfsbulk_devices | join(' ') }} -o ashift=12 -O compression=lz4"
   args:
     creates: /zfsbulk
   register: hetzner_robot_reg__create_zfsbulk
@@ -135,14 +156,14 @@
 
 # extend pool with more vdevs (for mirror: extend by pairs of 2 devices)
 - name: extend zpool zfsbulk # noqa no-changed-when no-handler
-  command: "zpool add zfsbulk {{ hetzner_robot_zfsbulk_pool_type }} {{ item | join(' ') }} -o ashift=12"
-  loop: '{{ hetzner_robot_zfsbulk_extend_groups }}'
+  command: "zpool add zfsbulk {{ hetzner_robot_zfsbulk_extend_vdev_type }} {{ item | join(' ') }} -o ashift=12"
+  loop: '{{ hetzner_robot__zfsbulk_extend_groups_devices }}'
   when:
     - hetzner_robot_zfsbulk
     - hetzner_robot_reg__create_zfsbulk.changed
 
 - name: zfsbulk add cache devices # noqa no-changed-when no-handler
-  command: "zpool add zfsbulk cache {{ hetzner_robot_zfsbulk_cache_partitions_by_id | join(' ') }} -o ashift=12"
+  command: "zpool add zfsbulk cache {{ hetzner_robot__zfsbulk_cache_devices | join(' ') }} -o ashift=12"
   when:
     - hetzner_robot_zfsbulk
     - hetzner_robot_zfsbulk_cache
@@ -158,12 +179,11 @@
     - hetzner_robot_zfsbulk_log_file
 
 - name: add zfs write intent log # noqa no-changed-when no-handler
-  command: zpool add zfsbulk log {{ hetzner_robot_zfsbulk_log_device }}
+  command: zpool add zfsbulk log mirror {{ hetzner_robot__zfsbulk_log_devices | join(' ') }}
   when:
     - hetzner_robot_zfsbulk
     - hetzner_robot_reg__create_zfsbulk.changed
-    - hetzner_robot_zfsbulk_log_device is defined
-    - hetzner_robot_zfsbulk_log_device != ''
+    - hetzner_robot__zfsbulk_log_devices | length > 0
 
 - name: collect zpool facts
   zpool_facts: {}
