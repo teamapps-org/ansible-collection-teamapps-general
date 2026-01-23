@@ -1,0 +1,18 @@
+otel_exporter {
+    endpoint otel-collector:4317;
+}
+
+otel_service_name {{ webproxy_otel_service_name }};
+otel_resource_attr "service.instance.id" $hostname;
+otel_resource_attr "service.version" ${{ webproxy_webserver }}_version;
+otel_span_attr "service.instance.id" $hostname;
+otel_span_attr "service.version" ${{ webproxy_webserver }}_version;
+otel_span_attr "deployment.environment" "{{ webproxy_environment_name | upper }}";
+otel_span_attr "deployment.stack" "{{ webproxy_otel_stack_name }}";
+otel_span_attr "deployment.project" "{{ webproxy_otel_stack_name }}";
+otel_span_attr "deployment.service" "nginx";
+otel_span_attr "host" "{{ ansible_facts.hostname }}";
+
+otel_trace {{ "on" if webproxy_otel_trace else "off" }};
+otel_span_name "{{ webproxy_otel_span_name }}";
+otel_trace_context "{{ webproxy_otel_trace_context }}";

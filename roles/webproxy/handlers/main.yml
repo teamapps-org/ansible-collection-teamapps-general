@@ -2,7 +2,7 @@
 # handlers file for webproxy
 
 - name: webproxy_nginx_reload # noqa no-changed-when
-  command: 'docker compose exec -T nginx nginx -s reload'
+  command: 'docker compose kill -s HUP nginx'
   args:
     chdir: '{{ webproxy_path }}'
   tags: compose_up
@@ -12,6 +12,14 @@
     project_src: '{{ webproxy_path }}'
     services:
       - docker-gen
+    state: restarted
+  tags: compose_up
+
+- name: webproxy_otel_collector_restart
+  community.docker.docker_compose_v2:
+    project_src: '{{ webproxy_path }}'
+    services:
+      - otel-collector
     state: restarted
   tags: compose_up
 

@@ -49,6 +49,9 @@
     loop_var: additional_network
   ignore_errors: '{{ webproxy_ignore_missing_network }}'
 
+- name: include opentelemetry configuration tasks
+  import_tasks: otel.yml
+
 - name: 'Webproxy docker-compose.yml'
   template:
     src: docker-compose.yml.j2

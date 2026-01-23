@@ -1,0 +1,60 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+
+processors:
+  resource:
+    attributes:
+      - action: upsert
+        key: host
+        value: {{ ansible_facts.hostname }}
+      - action: upsert
+        key: environment
+        value: {{ webproxy_environment_name }}
+  attributes/application_label:
+    actions:
+      - action: upsert
+        key: application
+        from_attribute: service.name
+  batch:
+
+exporters:
+  prometheusremotewrite:
+    endpoint: {{ webproxy_victoriametrics_remotewrite_url }}
+    target_info:
+      enabled: true
+{% if webproxy_otel_tracing_enabled %}
+  otlphttp:
+    traces_endpoint: {{ webproxy_otel_tracing_http_endpoint }}/v1/traces
+    headers:
+      Authorization: "Basic {{ (webproxy_otel_tracing_http_user ~ ':' ~ webproxy_otel_tracing_http_password) | b64encode }}"
+{% for k, v in webproxy_otel_tracing_http_headers.items() %}
+      {{ k }}: "{{ v }}"
+{% endfor %}
+{% endif %}
+
+connectors:
+  spanmetrics:
+    namespace: {{ webproxy_otel_spanmetrics_namespace | default('otel') }}
+    dimensions:
+      - name: application
+        default: unknown
+      - name: deployment.environment
+      - name: deployment.project
+      - name: deployment.stack
+      - name: environment
+      - name: host
+        default: {{ ansible_facts.hostname }}
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resource, attributes/application_label, batch]
+      exporters: [spanmetrics{% if webproxy_otel_tracing_enabled %}, otlphttp{% endif %}]
+    metrics:
+      receivers: [spanmetrics]
+      processors: [resource, batch]
+      exporters: [prometheusremotewrite]
