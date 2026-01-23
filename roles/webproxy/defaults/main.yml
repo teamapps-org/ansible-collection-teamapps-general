@@ -33,13 +33,14 @@ webproxy_proxy_connect_timeout: 60s
 webproxy_proxy_send_timeout: 60s
 
 
+webproxy_webserver: nginx # supports angie or nginx. See README.md
 webproxy_nginx_image: nginx:alpine
 webproxy_dockergen_image: nginxproxy/docker-gen:latest
 webproxy_letsencrypt_image: nginxproxy/acme-companion:latest
 
 webproxy_letsencrypt_default_email: '{{ letsencrypt_email }}'
 
-webproxy_nginx_tmpl_file: nginx.tmpl
+webproxy_nginx_tmpl_file: "{{ webproxy_webserver }}.tmpl"
 
 # list of additional external networks
 webproxy_additional_networks: []
@@ -51,3 +52,22 @@ webproxy_security_txt: ''
 # webproxy_security_txt: |
 #   # Our security address
 #   Contact: mailto:security@example.com
+
+# otel tracing support for nginx/angie. Check README.md for requirements
+webproxy_otel_tracing_enabled: false
+webproxy_nginx_otel_module_path: modules/ngx_otel_module.so
+webproxy_otel_service_name: nginx
+webproxy_otel_stack_name: "webproxy-{{ ansible_facts.hostname }}"
+webproxy_environment_name: default
+webproxy_otel_trace: true
+webproxy_otel_span_name: "webproxy:default"
+webproxy_otel_trace_context: propagate
+webproxy_otel_collector_version: latest
+webproxy_otel_tracing_http_endpoint: "https://traces.example.com/insert/opentelemetry"
+webproxy_otel_tracing_http_headers: {}
+webproxy_otel_tracing_http_user:
+webproxy_otel_tracing_http_password:
+webproxy_otel_spanmetrics_namespace: otel
+webproxy_victoriametrics_remotewrite_url:
+webproxy_victoriametrics_remotewrite_username:
+webproxy_victoriametrics_remotewrite_password:

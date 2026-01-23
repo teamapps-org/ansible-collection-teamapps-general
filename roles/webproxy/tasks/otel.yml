@@ -1,0 +1,33 @@
+---
+- name: Deploy OpenTelemetry Collector Configuration
+  template:
+    src: otel-collector-config.yml.j2
+    dest: '{{ webproxy_path }}/otel-collector-config.yml'
+    owner: root
+    group: 10001
+    mode: '0640'
+  when: webproxy_otel_tracing_enabled | bool
+  notify: webproxy_otel_collector_restart
+
+- name: Remove OpenTelemetry Collector Configuration when disabled
+  file:
+    path: '{{ webproxy_path }}/otel-collector-config.yml'
+    state: absent
+  when: not (webproxy_otel_tracing_enabled | bool)
+
+- name: Deploy nginx/angie otel config
+  template:
+    src: webproxy-otel.conf.j2
+    dest: '{{ webproxy_path }}/data/conf.d/otel.conf'
+    owner: root
+    group: root
+    mode: '0640'
+  when: webproxy_otel_tracing_enabled | bool
+  notify: webproxy_nginx_reload
+
+- name: Remove nginx/angie otel config when disabled
+  file:
+    path: '{{ webproxy_path }}/data/conf.d/otel.conf'
+    state: absent
+  when: not (webproxy_otel_tracing_enabled | bool)
+  notify: webproxy_nginx_reload
