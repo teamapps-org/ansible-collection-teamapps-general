@@ -13,7 +13,7 @@ auth_request /oauth2/auth;
 error_page 401 = /oauth2/sign_in;
 ## to login directly, without showing the login button:
 # error_page 401 = /oauth2/start?rd=$proxy_x_forwarded_proto://$http_host$request_uri ;
- 
+
 location = /oauth2/sign_out {
     auth_request off;
     auth_basic off;

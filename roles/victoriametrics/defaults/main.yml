@@ -16,6 +16,7 @@ victoriametrics_max_unique_timeseries: 0 # 0 = auto (max 300000?)
 
 victoriametrics_path: '/container/victoriametrics'
 victoriametrics_docker_pull: '{{ global_docker_pull | default(False) }}'
+victoriametrics_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
 # storage path for metrics data
 victoriametrics_storage_path: '{{ victoriametrics_path }}/vmdata'

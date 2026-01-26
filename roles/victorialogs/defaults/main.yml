@@ -10,6 +10,7 @@ victorialogs_retention_period: 1y
 
 victorialogs_path: '/container/victorialogs'
 victorialogs_docker_pull: '{{ global_docker_pull | default(False) }}'
+victorialogs_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 
 # storage path for metrics data
 victorialogs_storage_path: '{{ victorialogs_path }}/vlogs-storage'

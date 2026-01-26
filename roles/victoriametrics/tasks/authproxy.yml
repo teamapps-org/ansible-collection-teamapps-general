@@ -90,3 +90,15 @@
     mode: '0644'
   notify: victoriametrics-restart-gateway
   when: victoriametrics_oauth2_proxy_integration
+
+- name: increase proxy buffer in webproxy_nginx
+  copy:
+    content: |
+      proxy_buffers 8 16k;
+      proxy_buffer_size 16k;
+    dest: '{{ victoriametrics_webproxy_path }}/data/vhost.d/{{ victoriametrics_domain }}_location'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: victoriametrics-restart-gateway
+  when: victoriametrics_oauth2_proxy_integration

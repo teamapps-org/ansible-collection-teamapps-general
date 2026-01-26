@@ -81,10 +81,22 @@
   notify: victorialogs-restart-gateway
   when: victorialogs_oauth2_proxy_integration
 
-- name: configure webproxy vhost.d location config
+- name: configure authproxy vhost.d location config
   template:
     src: 'oauth2_vhost_location.conf.j2'
     dest: '{{ victorialogs_path }}/authproxy_vhost.d/oauth2_vhost_location.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: victorialogs-restart-gateway
+  when: victorialogs_oauth2_proxy_integration
+
+- name: increase proxy buffer in webproxy_nginx
+  copy:
+    content: |
+      proxy_buffers 8 16k;
+      proxy_buffer_size 16k;
+    dest: '{{ victorialogs_webproxy_path }}/data/vhost.d/{{ victorialogs_domain }}_location'
     owner: root
     group: root
     mode: '0644'
