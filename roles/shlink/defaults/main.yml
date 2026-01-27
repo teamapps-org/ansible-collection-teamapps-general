@@ -1,0 +1,20 @@
+---
+# defaults file for shlink
+shlink_path: '{{ container_path }}/shlink'
+shlink_domain: 'link.{{ ansible_facts.fqdn }}'
+
+shlink_deploy_web_client: false
+shlink_manage_domain: 'manage.{{ shlink_domain }}'
+
+shlink_version: stable # https://hub.docker.com/r/shlinkio/shlink/tags
+shlink_timezone: Europe/Berlin
+
+# pull docker images (docker compose pull)
+shlink_docker_pull: '{{ global_docker_pull | default(false) }}'
+shlink_mariadb_version: 11
+shlink_db_name: shlink
+
+# required secrets
+shlink_mariadb_root_password: ''
+shlink_mariadb_password: ''
+shlink_geolite_license_key: '' # https://www.maxmind.com/en/geolite2/signup

@@ -1,0 +1,112 @@
+- name: shlink directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - '{{ shlink_path }}'
+    - '{{ shlink_path }}/dbdumps'
+
+- name: shlink db directory
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: 999
+    group: 999
+    mode: '0755'
+  loop:
+    - '{{ shlink_path }}/db'
+
+- name: verify shlink credentials
+  ansible.builtin.assert:
+    that:
+      - shlink_mariadb_root_password | length > 0
+      - shlink_mariadb_password | length > 0
+      - shlink_geolite_license_key | length > 0
+    fail_msg: >-
+      shlink_mariadb_root_password, shlink_mariadb_password, and
+      shlink_geolite_license_key must be set and non-empty.
+
+- name: deploy compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: '{{ shlink_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0640'
+
+- name: create shlink command wrapper
+  copy:
+    dest: '{{ shlink_path }}/shlink'
+    content: |
+      #!/bin/bash
+      # usage: ./shlink
+      set -euo pipefail
+      dir="$(dirname "$(readlink -f "$0")")"
+      cd "$dir"
+      if [ -t 0 ] ; then
+        tty=""
+      else
+        tty="-T"
+      fi
+      docker compose exec ${tty} shlink shlink "$@"
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: dbdump wrapper ({{ shlink_domain }})
+  copy:
+    content: |
+      #!/bin/bash
+      # usage: ./dbdump.sh [dbdumps/customdump.sql.gz]
+      set -euo pipefail
+      dir="$(dirname "$(readlink -f "$0")")"
+      cd "$dir"
+      dump_file=${1:-dbdumps/{{ shlink_db_name }}.sql.gz}
+      docker compose exec -T database sh -c "exec mariadb-dump -u root -p\"\$MARIADB_ROOT_PASSWORD\" {{ shlink_db_name }} --default-character-set=utf8mb4 --skip-dump-date | \
+        sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g'" | \
+        gzip --rsyncable > \"${dump_file}\""
+    dest: '{{ shlink_path }}/dbdump.sh'
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: database backup prebackup ({{ shlink_domain }})
+  lineinfile:
+    path: /usr/local/bin/prebackup.sh
+    line: '{{ shlink_path }}/dbdump.sh'
+    regex: '^{{ shlink_path }}'
+
+- name: dbrestore wrapper ({{ shlink_domain }})
+  copy:
+    content: |
+      #!/bin/bash
+      # usage: ./dbrestore.sh [dbdumps/customdump.sql.gz]
+      set -euo pipefail
+      dir="$(dirname "$(readlink -f "$0")")"
+      cd "$dir"
+      dump_file=${1:-dbdumps/{{ shlink_db_name }}.sql.gz}
+      zcat "${dump_file}" | \
+      docker compose exec -T database sh -c 'exec mariadb -p"$MARIADB_ROOT_PASSWORD" {{ shlink_db_name }}'
+    dest: '{{ shlink_path }}/dbrestore.sh'
+    owner: root
+    group: root
+    mode: '0750'
+
+- name: shlink_docker-compose-up
+  community.docker.docker_compose_v2:
+    project_src: '{{ shlink_path }}'
+    state: present
+    pull: "{{ shlink_docker_pull | ternary('always', 'policy') }}"
+  register: shlink__register_compose
+  tags: compose_up
+
+- name: print actions by compose # noqa no-handler
+  vars:
+    actions: "{{ shlink__register_compose.actions }}"
+  debug:
+    var: actions
+  when: shlink__register_compose is defined and shlink__register_compose.changed
+  changed_when: shlink__register_compose is defined and shlink__register_compose.changed

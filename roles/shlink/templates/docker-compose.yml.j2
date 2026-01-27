@@ -1,0 +1,63 @@
+---
+# Shlink URL Shortener
+
+services:
+  shlink:
+    image: shlinkio/shlink:{{ shlink_version }}
+    restart: always
+    environment:
+      VIRTUAL_HOST: "{{ shlink_domain }}"
+      LETSENCRYPT_HOST: "{{ shlink_domain }}"
+      LETSENCRYPT_PORT: 8080
+      DEFAULT_DOMAIN: "{{ shlink_domain }}"
+      TZ: "{{ shlink_timezone }}"
+      IS_HTTPS_ENABLED: true
+      GEOLITE_LICENSE_KEY: "{{ shlink_geolite_license_key }}"
+      DB_DRIVER: maria
+      DB_USER: shlink
+      DB_NAME: "{{ shlink_db_name }}"
+      DB_PASSWORD: "{{ shlink_mariadb_password }}"
+      DB_HOST: database
+    depends_on:
+      - database
+    networks:
+      - default
+      - webproxy
+
+{% if shlink_deploy_web_client %}
+  shlink-web-client:
+    image: shlinkio/shlink-web-client
+    restart: always
+    # DANGEROUS! Would expose api key, if not additionally authenticated
+    # volumes:
+    #   - type: bind
+    #     source: './servers.json'
+    #     target: '/usr/share/nginx/html/servers.json'
+    #     read_only: true
+    environment:
+      VIRTUAL_HOST: "{{ shlink_manage_domain }}"
+      LETSENCRYPT_HOST: "{{ shlink_manage_domain }}"
+      VIRTUAL_PORT: 8080
+    networks:
+      - webproxy
+{% endif %}
+
+  database:
+    image: mariadb:{{ shlink_mariadb_version }}
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: "{{ shlink_mariadb_root_password }}"
+      MARIADB_DATABASE: "{{ shlink_db_name }}"
+      MARIADB_USER: shlink
+      MARIADB_PASSWORD: "{{ shlink_mariadb_password }}"
+      MARIADB_AUTO_UPGRADE: '1'
+    volumes:
+      - type: bind
+        source: './db'
+        target: '/var/lib/mysql'
+        read_only: false
+
+networks:
+  webproxy:
+    external: true
+    name: webproxy
