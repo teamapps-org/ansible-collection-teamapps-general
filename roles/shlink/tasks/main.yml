@@ -61,13 +61,14 @@
     content: |
       #!/bin/bash
       # usage: ./dbdump.sh [dbdumps/customdump.sql.gz]
+      set -x
       set -euo pipefail
       dir="$(dirname "$(readlink -f "$0")")"
       cd "$dir"
       dump_file=${1:-dbdumps/{{ shlink_db_name }}.sql.gz}
       docker compose exec -T database sh -c "exec mariadb-dump -u root -p\"\$MARIADB_ROOT_PASSWORD\" {{ shlink_db_name }} --default-character-set=utf8mb4 --skip-dump-date | \
         sed 's\$VALUES (\$VALUES\n(\$g' | sed 's\$),(\$),\n(\$g'" | \
-        gzip --rsyncable > \"${dump_file}\""
+        gzip --rsyncable > ${dump_file}
     dest: '{{ shlink_path }}/dbdump.sh'
     owner: root
     group: root
