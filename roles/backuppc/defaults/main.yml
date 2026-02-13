@@ -46,6 +46,7 @@ backuppc_files_exclude_default:
   - '/tmp'
   - '/var/cache'
   - '/var/lib/docker'
+  - '/var/lib/containerd'
   - '/var/lib/lxcfs'
   - '/var/lib/lxd'
   - '/var/lock'

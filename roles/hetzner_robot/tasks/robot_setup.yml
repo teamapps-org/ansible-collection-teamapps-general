@@ -224,6 +224,13 @@
     extra_zfs_properties:
       mountpoint: /var/lib/docker
 
+- name: create zfs volume for containerd
+  zfs:
+    name: zfsdata/containerd
+    state: present
+    extra_zfs_properties:
+      mountpoint: /var/lib/containerd
+
 - name: create zfs volume
   zfs:
     name: zfsdata/container
