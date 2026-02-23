@@ -44,10 +44,7 @@
       delegate_to: localhost
       become: false
       run_once: true
-      when:
-        - not ansible_check_mode
-        - not vmagent_reg__vmagent_is_installed.stat.exists or
-          vmagent_version not in vmagent_reg__vmagent_current_version.stdout
+      when: not ansible_check_mode
 
     - name: Copy vmagent binary to target host
       notify: vmagent-restart
