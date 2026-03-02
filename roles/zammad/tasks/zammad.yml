@@ -23,11 +23,20 @@
   file:
     path: '{{ item }}'
     state: directory
-    owner: '1001'
-    group: root
+    owner: '1000'
+    group: '0'
     mode: '0750'
   with_items:
     - '{{ zammad_path }}/data/elasticsearch-data/'
+
+# - name: zammad elasticsearch data directory ownership migration
+#   command:
+#     argv:
+#       - chown
+#       - -R
+#       - '1000:0'
+#       - '{{ zammad_path }}/data/elasticsearch-data/'
+#   changed_when: true
 
 - name: zammad-storage directory
   file:
