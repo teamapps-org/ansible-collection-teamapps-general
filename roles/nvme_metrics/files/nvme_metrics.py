@@ -180,6 +180,10 @@ def print_prometheus_metrics(nvme_data):
         labels = [
             'device="%s"'%nvme_device['info']['DevicePath'],
         ]
+        if 'SerialNumber' in nvme_device['info']:
+            labels += [
+                'device_serial=%s'%json.dumps(nvme_device['info']['SerialNumber'])
+            ]
 
         info_labels = labels.copy()
         for info_key in ['ProductName', 'ModelNumber', 'SerialNumber', 'Firmware']:

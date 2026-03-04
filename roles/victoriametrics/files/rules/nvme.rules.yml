@@ -44,14 +44,18 @@ groups:
           description: "warning for '{{ $labels.device }}' host: '{{ $labels.host }}'"
 
       - alert: NvmeErrLogEntriesIncrease
-        expr: 'increase(nvme_smart_num_err_log_entries [1d]) > 2'
+        expr: |
+          # Stable per-serial increase, enriched with current device path.
+          (increase((sum by (host, device_serial) (nvme_smart_num_err_log_entries))[1d:5m]) > 2)
+          * on (host, device_serial) group_left(device)
+            max by (host, device_serial, device) (nvme_info)
         for: 10m
         labels:
           team: ops
           severity: warning
         annotations:
           summary: "nvme device new error log entries"
-          description: "nvme logged {{ $value }} errors for '{{ $labels.device }}' host: '{{ $labels.host }}' [1d]"
+          description: "nvme logged {{ $value }} errors for serial '{{ $labels.device_serial }}' host: '{{ $labels.host }}' [1d]"
 
       - alert: NvmeLifetimeReached
         expr: 'nvme_smart_percent_used > 100'
@@ -64,7 +68,11 @@ groups:
           description: "reached {{ $value }}% of estimated endurance of the device '{{ $labels.device }}' on host '{{ $labels.host }}'"
 
       - alert: NvmeMediaErrors
-        expr: 'increase(nvme_smart_media_errors [1d]) > 0'
+        expr: |
+          # Stable per-serial increase, enriched with current device path.
+          (increase((sum by (host, device_serial) (nvme_smart_media_errors))[1d:5m]) > 0)
+          * on (host, device_serial) group_left(device)
+            max by (host, device_serial, device) (nvme_info)
         for: 10m
         labels:
           team: ops
@@ -74,7 +82,11 @@ groups:
           description: "nvme logged {{ $value }} media errors for '{{ $labels.device }}' host: '{{ $labels.host }}' [1d]"
 
       - alert: NvmeUnsafeShutdowns
-        expr: 'increase(nvme_unsafe_shutdowns [1d]) > 0'
+        expr: |
+          # Stable per-serial increase, enriched with current device path.
+          (increase((sum by (host, device_serial) (nvme_smart_unsafe_shutdowns))[1d:5m]) > 0)
+          * on (host, device_serial) group_left(device)
+            max by (host, device_serial, device) (nvme_info)
         for: 10m
         labels:
           team: ops
