@@ -21,6 +21,7 @@ x-shared:
       BACKUP_DIR: "${BACKUP_DIR:-/var/tmp/zammad}"
       BACKUP_TIME: "${BACKUP_TIME:-03:00}"
       HOLD_DAYS: "${HOLD_DAYS:-10}"
+      NO_FILE_BACKUP: "${NO_FILE_BACKUP:-no}"
       TZ: "${TZ:-Europe/Berlin}"
       # Allow passing in these variables via .env:
       AUTOWIZARD_JSON:
