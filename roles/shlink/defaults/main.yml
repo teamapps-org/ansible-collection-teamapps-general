@@ -2,6 +2,8 @@
 # defaults file for shlink
 shlink_path: '{{ container_path }}/shlink'
 shlink_domain: 'link.{{ ansible_facts.fqdn }}'
+shlink_addon_domains: []
+shlink_domains: '{{ [shlink_domain] + shlink_addon_domains }}'
 
 shlink_deploy_web_client: false
 shlink_manage_domain: 'manage.{{ shlink_domain }}'

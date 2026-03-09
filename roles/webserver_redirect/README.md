@@ -19,6 +19,18 @@ If you configure the main domain as the webproxy_default_host, then all requests
       - example.net
       - foo.example.com
     webserver_redirect_destination: https://example.com
+    webserver_redirect_locations:
+      - location: ~ ^/(.+)$
+        target: https://example.com/$1$is_args$args
+
+    webserver_redirect_custom_domains:
+      - domains:
+          - example.net
+          - www.example.net
+        destination: https://special.example.com
+        locations:
+          - location: = /shop
+            target: https://shop.example.com/
 
     # configure teamapps.general.webproxy to forward requests for unknown domains to this container.
     webproxy_default_host: www.example.com
@@ -29,3 +41,10 @@ If you configure the main domain as the webproxy_default_host, then all requests
     - role: teamapps.general.webserver_redirect
       tags: webserver_redirect
 ~~~
+
+## Custom domain redirects
+
+- `webserver_redirect_domain` and `webserver_redirect_addon_domains` keep the existing default redirect behavior.
+- `webserver_redirect_custom_domains` adds host-specific redirect rules with one nginx `server` block per entry.
+- Each entry may define multiple host names with `domains`.
+- Custom domains must be unique and must not overlap with `webserver_redirect_domain` or `webserver_redirect_addon_domains`.

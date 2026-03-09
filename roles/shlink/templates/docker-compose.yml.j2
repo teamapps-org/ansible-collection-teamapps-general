@@ -6,8 +6,8 @@ services:
     image: shlinkio/shlink:{{ shlink_version }}
     restart: always
     environment:
-      VIRTUAL_HOST: "{{ shlink_domain }}"
-      LETSENCRYPT_HOST: "{{ shlink_domain }}"
+      VIRTUAL_HOST: {{ shlink_domains | join(',') }}
+      LETSENCRYPT_HOST: {{ shlink_domains | join(',') }}
       LETSENCRYPT_PORT: 8080
       DEFAULT_DOMAIN: "{{ shlink_domain }}"
       TZ: "{{ shlink_timezone }}"

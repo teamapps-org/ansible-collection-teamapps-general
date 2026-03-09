@@ -1,6 +1,39 @@
 # nginx webserver
 
 # config based on https://github.com/mikechernev/dockerised-php/tree/feature/log-to-stdout
+- name: validate custom redirect domain blocks are not empty
+  assert:
+    that:
+      - (redirect_domain_block.domains | default([]) | length) > 0
+    fail_msg: 'Each webserver_redirect_custom_domains entry must define at least one domain'
+  loop: '{{ webserver_redirect_custom_domains }}'
+  loop_control:
+    loop_var: redirect_domain_block
+
+- name: validate custom redirect domains are unique and do not overlap with legacy domains
+  vars:
+    custom_redirect_domains: >-
+      {{
+        webserver_redirect_custom_domains
+        | map(attribute='domains')
+        | flatten
+        | map('lower')
+        | list
+      }}
+    legacy_redirect_domains: >-
+      {{
+        ([webserver_redirect_domain] + webserver_redirect_addon_domains)
+        | map('lower')
+        | list
+      }}
+  assert:
+    that:
+      - (custom_redirect_domains | unique | length) == (custom_redirect_domains | length)
+      - (custom_redirect_domains | intersect(legacy_redirect_domains) | length) == 0
+    fail_msg: >-
+      Custom redirect domains must be unique and must not overlap with
+      webserver_redirect_domain or webserver_redirect_addon_domains.
+
 - name: webserver_redirect_directories
   file:
     path: '{{ item }}'
