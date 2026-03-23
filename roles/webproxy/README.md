@@ -25,7 +25,8 @@ See `defaults/main.yml`.
 
 - Set `webproxy_otel_tracing_enabled: true` to render OTEL configs and start the collector sidecar.
 - Defaults mirror the Hetzner LB implementation (`webproxy_otel_service_name`, `webproxy_otel_stack_name`, `webproxy_environment_name`, OTLP HTTP endpoint/auth headers, spanmetrics namespace, VictoriaMetrics remote write credentials).
-- Use an image that contains the OTEL module (e.g. `webproxy_nginx_image: docker.angie.software/angie:{{ angie_version }}`) and set `webproxy_webserver` (`nginx` default, `angie` supported).
+- Use an nginx image that contains the OTEL module, for example `webproxy_nginx_image: nginx:alpine-otel`.
+- For per-vhost nginx overrides, place a file in `data/vhost.d/<hostname>`. The generated config includes it inside the matching `server` block, so you can add OTEL directives there when needed.
 
 **Defaults (Ansible variables in `defaults/main.yml` and `webproxy-otel.conf.j2`):**
 
@@ -33,19 +34,10 @@ See `defaults/main.yml`.
 - `webproxy_otel_span_name: "webproxy:default"` → global span name fallback.
 - `webproxy_otel_trace_context: propagate` → global trace context mode.
 
-**Per-service (container) overrides via env vars:**
-
-- `WEBPROXY_OTEL_TRACE` → `true` / `false` / unset (inherits global). Use boolean-friendly values (`true|false|1|0|yes|no`); `on/off` are not valid for `parseBool`.
-- `WEBPROXY_OTEL_SPAN_NAME` → overrides span name for that vhost (falls back to upstream name if unset).
-- `WEBPROXY_OTEL_TRACE_CONTEXT` → overrides trace context for that vhost.
-
-These env vars are read from the upstream service containers (not docker-gen) and applied at server level when `/etc/angie/http.d/conf.d/otel.conf` is present. Compose uses YAML 1.2, so unquoted `off` is treated as a string—keep to `true`/`false` to avoid template errors. If none are set, the global defaults above apply.
-
-### Example (Angie with OTEL enabled)
+### Example (nginx with OTEL enabled)
 
 ```yaml
-webproxy_webserver: angie
-webproxy_nginx_image: "docker.angie.software/angie:{{ angie_version }}"
+webproxy_nginx_image: "nginx:alpine-otel"
 webproxy_nginx_otel_module_path: modules/ngx_otel_module.so
 
 webproxy_otel_tracing_enabled: true
@@ -67,6 +59,16 @@ webproxy_victoriametrics_remotewrite_password: "vm-pass"
 
 # Optional: custom namespace for spanmetrics
 webproxy_otel_spanmetrics_namespace: "otel"
+```
+
+### Optional per-vhost override
+
+Create `data/vhost.d/example.org` with directives that should apply only to that vhost. If a container sets multiple domains in `VIRTUAL_HOST`, add the same override file for each domain.
+
+```nginx
+otel_trace on;
+otel_span_name "webproxy:example";
+otel_trace_context propagate;
 ```
 
 ## Example Playbook
