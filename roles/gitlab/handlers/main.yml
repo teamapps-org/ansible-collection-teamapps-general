@@ -3,3 +3,8 @@
   command: gitlab-ctl reconfigure
   register: gitlab_restart
   failed_when: 'gitlab_restart.rc != 0'
+
+- name: restart gitlab-pages # noqa no-changed-when
+  command: gitlab-ctl restart gitlab-pages
+  register: gitlab_pages_restart
+  failed_when: 'gitlab_pages_restart.rc != 0'

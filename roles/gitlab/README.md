@@ -19,6 +19,44 @@ This role installs gitlab from the apt repository and does not use docker.
         - gitlab
 ~~~
 
+## GitLab Pages
+
+This role can configure GitLab Pages for the Omnibus package.
+
+Use a separate wildcard certificate automation role and point GitLab Pages at the resulting certificate and key paths.
+
+Typical setup:
+
+- GitLab UI on the primary public IP
+- GitLab Pages on a secondary public IP
+- wildcard DNS for the Pages domain
+- a wildcard certificate present at `gitlab_pages_cert_path` and `gitlab_pages_key_path`
+
+The role verifies the configured certificate files exist before enabling Pages.
+
+### Access control
+
+This role can enable Pages access control through Omnibus configuration. After deployment, verify the Pages OAuth application in GitLab Admin if the callback protocol or host changed.
+
+### GitLab Let's Encrypt integration
+
+GitLab's Pages Let's Encrypt integration only covers project custom domains. It does not issue the wildcard certificate required for the main Pages domain.
+
+After deploying the Pages daemon and wildcard certificate:
+
+1. Go to GitLab Admin.
+2. Open `Settings` -> `Preferences` -> `Pages`.
+3. Enable Let's Encrypt integration.
+4. Set the contact email.
+5. Keep custom domain verification enabled.
+
+### Security notes
+
+- Do not use a Pages domain that is a subdomain of the GitLab instance parent domain if that widens cookie scope unexpectedly.
+- If untrusted users can create Pages sites, consider adding the Pages domain to the Public Suffix List.
+- Keep custom domain verification enabled.
+- HTTPS termination on an external load balancer is not the preferred topology if you also want GitLab Pages to serve custom-domain certificates directly.
+
 ## Backup
 
 Backups are created by backuppc prebackup.sh script. it creates a tar file `/srv/backup/auto_gitlab_backup.tar` that is then backed up.
@@ -68,3 +106,7 @@ gitlab_custom_config: |
     },
   ]
 ~~~
+
+## Upstream
+
+This role is part of the `teamapps.general` collection. If you change the collection role here, also create a corresponding MR in the upstream `teamapps.general` repository.

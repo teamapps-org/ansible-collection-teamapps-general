@@ -38,3 +38,20 @@ gitlab_custom_config: ''
 
 # If true: deploy robots.txt with Disallow: /
 gitlab_custom_robots_txt: false
+
+# GitLab Pages settings
+gitlab_pages_enable: false
+gitlab_pages_domain: ''
+gitlab_pages_primary_ip: ''
+gitlab_pages_primary_ipv6: ''
+gitlab_pages_secondary_ip: ''
+gitlab_pages_secondary_ipv6: ''
+gitlab_pages_access_control: true
+gitlab_pages_auth_scope: read_api
+gitlab_pages_custom_domain_mode: https
+gitlab_pages_redirect_http: true
+gitlab_pages_cert_path: /etc/gitlab/ssl/gitlab-pages.crt
+gitlab_pages_key_path: /etc/gitlab/ssl/gitlab-pages.key
+gitlab_pages_tls_min_version: tls1.2
+gitlab_pages_headers: []
+gitlab_pages_extra_config: ''

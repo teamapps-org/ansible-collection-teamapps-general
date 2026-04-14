@@ -57,6 +57,10 @@
     name: gitlab-ce={{ gitlab_version }}
   when: gitlab_version != "latest"
 
+- name: setup gitlab pages
+  import_tasks: pages.yml
+  when: gitlab_pages_enable | bool
+
 - name: install gitlab.rb config file
   template:
     src: gitlab.rb.j2

@@ -4,6 +4,10 @@ This role is currently only designed to configure additional IP addresses (Float
 
 It does so by creating an additional file that is merged with the existing netplan files by netplan generate/apply.
 
+`netplan_addresses` accepts both plain CIDR strings and netplan address mappings. The mapped form can be used to set address properties such as `lifetime: 0` for additional service IPs that should remain configured on the host while the server's primary address stays preferred as the source address for new outbound connections.
+
+Netplan documents the address mapping format and `lifetime` semantics in its YAML reference: https://netplan.readthedocs.io/en/stable/netplan-yaml/
+
 ## Example Usage
 
 ~~~yaml
@@ -15,6 +19,18 @@ It does so by creating an additional file that is merged with the existing netpl
     netplan_addresses:
       - 172.16.16.16/32
       - 2001:cafe:face:beef::dead:dead/64
+  roles:
+    - role: teamapps.general.netplan
+
+- name: Add additional service IPs
+  hosts:
+    - server1.example.com
+  vars:
+    netplan_addresses:
+      - 172.16.16.16/32:
+          lifetime: 0
+      - 2001:cafe:face:beef::dead:dead/64:
+          lifetime: 0
   roles:
     - role: teamapps.general.netplan
 

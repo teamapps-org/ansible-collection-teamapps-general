@@ -89,7 +89,7 @@ oauth2_proxy_instances:
   - domain: netdata-sso.example.com
     standalone: true
     htpasswd: '{{ admin_htpasswd | default("") }}'
-    cookie_secret: 9R4DqdKnGjoi_u29EC8sEDA_uP-Luux7KdxVOxFPF14=
+    cookie_secret: ranDOm_cooKie_Secret # generate random string, see above
     cookie_name: _oauth2_netdata_sso # fixed cookie_name
     cookie_domain: .example.com # cookie_domain is on parent domain
     gitlab_url: https://git.example.com

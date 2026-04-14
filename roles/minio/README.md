@@ -22,7 +22,7 @@ Including an example of how to use your role (for instance, with variables passe
   vars:
     minio_domain: minio.example.com
     minio_root_user: please_override
-    minio_root_password: FovMoghpokDiUnecshydhoolRipht6daiwofryt
+    minio_root_password: GenerateYourSecretPassword!!
   hosts:
     - minio1.example.com
   roles:

@@ -1,0 +1,35 @@
+# gitlab pages tasks
+
+- name: assert gitlab pages settings are complete
+  assert:
+    that:
+      - gitlab_pages_domain | length > 0
+      - gitlab_pages_primary_ip | length > 0
+      - gitlab_pages_secondary_ip | length > 0
+    fail_msg: gitlab_pages_domain, gitlab_pages_primary_ip and gitlab_pages_secondary_ip are required when gitlab_pages_enable is true
+  when: gitlab_pages_enable | bool
+
+- name: gitlab ssl directory
+  file:
+    path: /etc/gitlab/ssl
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: check gitlab pages certificate
+  stat:
+    path: '{{ gitlab_pages_cert_path }}'
+  register: gitlab_pages_cert_stat
+
+- name: check gitlab pages private key
+  stat:
+    path: '{{ gitlab_pages_key_path }}'
+  register: gitlab_pages_key_stat
+
+- name: assert gitlab pages certificate files exist
+  assert:
+    that:
+      - gitlab_pages_cert_stat.stat.exists
+      - gitlab_pages_key_stat.stat.exists
+    fail_msg: gitlab_pages_cert_path and gitlab_pages_key_path must exist before configuring GitLab Pages
