@@ -79,6 +79,7 @@ grafana_image_renderer_max_concurrency: 3
 grafana_image_renderer_cpu_limit: 1.5
 grafana_image_renderer_mem_limit: 500M
 grafana_image_renderer_port: 127.0.0.8:18081 # port for metric scraping
+grafana_renderer_token:
 
 # configure grafana with ini file
 # allows to source another template file

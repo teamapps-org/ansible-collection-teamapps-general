@@ -104,6 +104,10 @@ roles/grafana_custom/
 This role installs grafana-image-renderer as docker container. The container exposes metrics on the configured port. (default `127.0.0.8:18081`)
 There's [dashboard](https://grafana.com/grafana/dashboards/12203) published that explains the details of how to configure and monitor the rendering service using Prometheus as a data source.
 
+Sensitive container environment values are rendered into `{{ grafana_path }}/.env` and referenced from `docker-compose.yml` via Compose variable substitution.
+
+For Grafana 13 and newer, set `grafana_renderer_token` to a non-default secret so Grafana can authenticate to `grafana-image-renderer`.
+
 You can monitor the metrics exposed by the service on that port. Example using vmagent role in this collection:
 
 Add to host_vars:
