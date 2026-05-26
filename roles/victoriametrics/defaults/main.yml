@@ -41,7 +41,8 @@ victoriametrics_log_new_series: false # -logNewSeries,  Whether to log new serie
 victoriametrics_grafana_datasource_name: VictoriaMetrics
 victoriametrics_vmalert_evaluation_interval: 1m
 victoriametrics_vmalert_external_url: 'https://grafana.yourdomain.com'
-victoriametrics_vmalert_external_source: explore?orgId=1&left={"datasource":"{{ victoriametrics_grafana_datasource_name }}","queries":[{"expr":{% raw %}{{.Expr|jsonEscape|queryEscape}}{% endraw %},"refId":"A"}],"range":{"from":"now-24h","to":"now"}}
+victoriametrics_vmalert_external_source: >-
+  explore?orgId=1&left=%7B%22datasource%22:%22{{ victoriametrics_grafana_datasource_name | urlencode }}%22,%22queries%22:%5B%7B%22expr%22:{% raw %}{{.Expr|jsonEscape|queryEscape}}{% endraw %},%22refId%22:%22A%22%7D%5D,%22range%22:%7B%22from%22:%22now-24h%22,%22to%22:%22now%22%7D%7D
 
 # external labels added to all alerts. To see and filter in alertmanager where the alert is coming from
 victoriametrics_vmalert_external_labels:
