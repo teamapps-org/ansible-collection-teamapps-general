@@ -21,6 +21,8 @@ Role for Webproxy based on https://github.com/nginx-proxy with three separate co
 
 See `defaults/main.yml`.
 
+- `webproxy_ssl_policy` controls the `SSL_POLICY` passed to `docker-gen`. The default is `Mozilla-Intermediate-PQ`, which keeps upstream `Mozilla-Intermediate` unchanged and uses the local hardened TLS policy explicitly.
+
 ## OpenTelemetry tracing
 
 - Set `webproxy_otel_tracing_enabled: true` to render OTEL configs and start the collector sidecar.

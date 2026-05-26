@@ -20,6 +20,7 @@ webproxy_docker_pull: '{{ global_docker_pull | default(False) }}'
 webproxy_cookies_secure_only: false
 
 webproxy_nginx_worker_connections: 8096
+webproxy_ssl_policy: Mozilla-Intermediate-PQ
 
 ## Default server configuration
 # Domain of server to receive requests for unconfigured domains
