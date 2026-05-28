@@ -15,6 +15,12 @@
     - zfs
     - zpool
 
+- name: manage zfs arc size
+  import_tasks: arc.yml
+  when: zfs_reg__zpool_stat.stat.exists | bool
+  tags:
+    - zfs
+
 
 # - name: debug0
 #   changed_when: true

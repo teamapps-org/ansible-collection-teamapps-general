@@ -39,4 +39,10 @@ zfs_datasets:
     extra_zfs_properties:
       relatime: off
 
+# Persist and apply zfs_arc_max in bytes.
+zfs_arc_max: '42949672960' # 40 GiB
+
+# Remove the managed limit and use the OpenZFS default.
+zfs_arc_max: null
+
 ~~~

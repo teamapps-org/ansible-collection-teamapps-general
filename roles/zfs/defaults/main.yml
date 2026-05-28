@@ -18,6 +18,9 @@ zfs_datasets: []
 zfs_extra_zfs_properties_default:
   relatime: 'on'
 
+# Maximum ZFS ARC size in bytes. Set to null to remove the managed limit and use the OpenZFS default.
+zfs_arc_max: null
+
 # ZFS Permission delegation
 # zfs_delegate:
 #   'zfsdata/container/backuppc/data':
