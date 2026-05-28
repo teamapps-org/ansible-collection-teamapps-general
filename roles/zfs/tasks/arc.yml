@@ -1,0 +1,48 @@
+- name: check zfs arc max module option
+  stat:
+    path: /etc/modprobe.d/zfs-arc-max.conf
+  register: zfs_reg__arc_max_config_stat
+  changed_when: false
+
+- name: manage zfs arc max module option
+  copy:
+    dest: /etc/modprobe.d/zfs-arc-max.conf
+    content: |
+      # Ansible managed
+      options zfs zfs_arc_max={{ zfs_arc_max }}
+    owner: root
+    group: root
+    mode: '0644'
+  when: zfs_arc_max is not none
+
+- name: remove zfs arc max module option
+  file:
+    path: /etc/modprobe.d/zfs-arc-max.conf
+    state: absent
+  when: zfs_arc_max is none
+
+- name: check live zfs arc max parameter
+  stat:
+    path: /sys/module/zfs/parameters/zfs_arc_max
+  register: zfs_reg__arc_max_parameter_stat
+  changed_when: false
+  check_mode: false
+
+- name: read live zfs arc max parameter
+  slurp:
+    src: /sys/module/zfs/parameters/zfs_arc_max
+  register: zfs_reg__arc_max_parameter
+  check_mode: false
+  when: zfs_reg__arc_max_parameter_stat.stat.exists | bool
+
+- name: set live zfs arc max parameter
+  command:
+    argv:
+      - tee
+      - /sys/module/zfs/parameters/zfs_arc_max
+    stdin: "{{ zfs_arc_max | default(0, true) | string }}"
+  changed_when: true
+  when:
+    - zfs_reg__arc_max_parameter_stat.stat.exists | bool
+    - zfs_arc_max is not none or zfs_reg__arc_max_config_stat.stat.exists | bool
+    - (zfs_reg__arc_max_parameter.content | b64decode | trim) != (zfs_arc_max | default(0, true) | string)
