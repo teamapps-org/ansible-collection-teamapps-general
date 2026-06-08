@@ -75,6 +75,18 @@ victoriametrics_grafana_datasource_name: VictoriaMetrics
 victoriametrics_vmalert_external_url: 'https://grafana.yourdomain.com'
 ~~~
 
+## Search Cache Timestamp Offset
+
+`victoriametrics_search_cache_timestamp_offset` configures VictoriaMetrics'
+`-search.cacheTimestampOffset` setting. It defines how far behind the current
+time samples may be while still being considered safe for rollup result cache
+reuse.
+
+Increase this value when queried metrics are produced less frequently than the
+default `5m`, for example by `vmalert` rule groups with `interval: 10m`. Without
+enough offset, VictoriaMetrics can log `resetting rollup result cache` warnings
+for valid but infrequently updated series such as `ALERTS`.
+
 ## Useful Prometheus Resources
 
 PromQL for Beginners and Humans:  https://valyala.medium.com/promql-tutorial-for-beginners-9ab455142085
