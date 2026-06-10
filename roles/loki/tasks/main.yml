@@ -15,9 +15,7 @@
   when: loki_auth == 'request'
   assert:
     that:
-      - vars[assert_var] is defined
-      - vars[assert_var] | length > 0
-      - vars[assert_var] != None
+      - lookup('ansible.builtin.vars', assert_var, default='') | default('', true) | length > 0
     fail_msg: "{{ assert_var }} needs to be set!"
   loop_control:
     loop_var: assert_var
