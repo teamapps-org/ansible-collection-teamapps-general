@@ -119,7 +119,7 @@ services:
     command: ["--config=/etc/otel-collector-config.yml"]
     restart: always
     healthcheck:
-      test: ["CMD", "/otelcol-contrib", "--config=/etc/otel-collector-config.yml", "--feature-gates", "otelcol.printInitialConfig", "print-initial-config"]
+      test: ["CMD", "/otelcol-contrib", "validate", "--config=/etc/otel-collector-config.yml"]
       interval: 30s
       timeout: 3s
       retries: 3
