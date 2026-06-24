@@ -1,3 +1,24 @@
+- name: validate oauth2-proxy provider config - {{ oauth2_proxy_instance_domain }}
+  assert:
+    that:
+      - oauth2_proxy_instance_provider in ['gitlab', 'entra-id']
+      - oauth2_proxy_instance_client_id | length > 0
+      - oauth2_proxy_instance_provider != 'gitlab' or oauth2_proxy_instance_gitlab_url | length > 0
+      - oauth2_proxy_instance_provider != 'entra-id' or oauth2_proxy_instance_oidc_issuer_url | length > 0
+      - oauth2_proxy_instance_provider != 'gitlab' or oauth2_proxy_instance_client_secret | length > 0
+      - oauth2_proxy_instance_provider != 'entra-id' or oauth2_proxy_instance_client_secret | length > 0 or oauth2_proxy_instance_entra_id_federated_token_auth | bool
+    fail_msg: >-
+      oauth2_proxy instance {{ oauth2_proxy_instance_domain }} must define a valid provider config.
+      Use provider=gitlab with gitlab_url, or provider=entra-id with entra_id_tenant_id or oidc_issuer_url.
+
+- name: validate oauth2-proxy session store config - {{ oauth2_proxy_instance_domain }}
+  assert:
+    that:
+      - oauth2_proxy_instance_session_store_type in ['cookie', 'redis']
+    fail_msg: >-
+      oauth2_proxy instance {{ oauth2_proxy_instance_domain }} must define a valid session store config.
+      Supported session_store_type values are cookie and redis.
+
 - name: create oauth2-proxy instance directory - {{ oauth2_proxy_instance_domain }}
   file:
     path: '{{ oauth2_proxy_instance_directory }}'
@@ -5,6 +26,17 @@
     owner: root
     group: root
     mode: '0750'
+
+- name: create oauth2-proxy redis data directory - {{ oauth2_proxy_instance_domain }}
+  file:
+    path: '{{ oauth2_proxy_instance_redis_data_directory }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0750'
+  when:
+    - oauth2_proxy_instance_session_store_type == 'redis'
+    - oauth2_proxy_instance_redis_persistence_enabled | bool
 
 - name: deploy docker-compose.yml - {{ oauth2_proxy_instance_domain }}
   template:

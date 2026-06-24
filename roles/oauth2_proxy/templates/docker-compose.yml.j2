@@ -16,6 +16,11 @@ services:
       VIRTUAL_PORT: 4180
 {% endif %}
     command: --config=/etc/oauth2-proxy.cfg
+{% if oauth2_proxy_instance_session_store_type == 'redis' %}
+    depends_on:
+      redis:
+        condition: service_healthy
+{% endif %}
     volumes:
       - type: bind
         source: './oauth2-proxy.cfg'
@@ -33,14 +38,45 @@ services:
       webproxy:
         aliases:
           - '{{ oauth2_proxy_instance_host }}'
+{% if oauth2_proxy_instance_session_store_type == 'redis' %}
+      session:
+{% endif %}
     healthcheck:
       test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:4180/ping"]
       interval: 30s
       timeout: 5s
       retries: 3
+{% if oauth2_proxy_instance_session_store_type == 'redis' %}
+
+  redis:
+    restart: always
+    image: {{ oauth2_proxy_redis_image }}
+{% if oauth2_proxy_instance_redis_persistence_enabled | bool %}
+    command: ["redis-server", "--appendonly", "yes", "--save", ""]
+    volumes:
+      - type: bind
+        source: '{{ oauth2_proxy_instance_redis_data_directory }}'
+        target: /data
+{% else %}
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+{% endif %}
+    expose:
+      - "6379"
+    networks:
+      session:
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+{% endif %}
 
 
 networks:
+{% if oauth2_proxy_instance_session_store_type == 'redis' %}
+  session:
+    internal: true
+{% endif %}
   webproxy:
     external: true
     name: webproxy

@@ -6,7 +6,7 @@ This setup uses nginx auth_request to authenticate visitors, no additional proxy
 
 oauth2_proxy Documentation: <https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/>
 
-Every oauth2_proxy instance should have its own Application Registration in GitLab.
+Every oauth2_proxy instance should have its own Application Registration in GitLab or Microsoft Entra ID.
 
 ## Register Application in Gitlab
 
@@ -31,6 +31,7 @@ Every oauth2_proxy instance should have its own Application Registration in GitL
       - domain: service.example.com
         htpasswd: '' # Optional, allow local login with basic auth credentials
         cookie_secret: RANDOM_STRING # generate!
+        provider: gitlab # Optional. Defaults to gitlab.
         gitlab_url: https://git.example.com
         client_id: APPLICATION_ID # from Gitlab Application Registration
         client_secret: SECRET     # from Gitlab Application Registration
@@ -61,7 +62,63 @@ Every oauth2_proxy instance should have its own Application Registration in GitL
 ~~~
 
 Be aware, that without defining `gitlab_groups` restriction, anyone who can login to your Gitlab instance can use your oauth2_proxy-protected service, independent of where the application is registered.
-Registering an appliation in a GitLab group does not restrict the users!
+Registering an application in a GitLab group does not restrict the users!
+
+## Register Application in Microsoft Entra ID
+
+[Microsoft Entra ID Provider Documentation](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/ms_entra_id/)
+
+* Create an App registration
+* Add a Web redirect URI pointing to `https://service.example.com/oauth2/callback`
+* Generate a client secret
+* Copy Application (client) ID and secret to `client_id` and `client_secret`
+* For group filtering, configure the app registration to emit `SecurityGroup` group claims in ID tokens
+* Use Entra ID group object IDs in `allowed_groups`
+
+For users with more than 200 group memberships, oauth2-proxy needs Microsoft Graph group overage support. Set `scope: openid User.Read` and ensure the app has consent for `User.Read`.
+
+~~~yaml
+oauth2_proxy_instances:
+  - domain: service.example.com
+    provider: entra-id
+    cookie_secret: RANDOM_STRING # generate!
+    session_store_type: redis # Optional. Uses the built-in Redis sidecar by default.
+    entra_id_tenant_id: TENANT_ID
+    client_id: APPLICATION_ID # from Entra ID App registration
+    client_secret: SECRET     # from Entra ID App registration
+    whitelist_domains:
+      - '.example.com'
+    email_domains:
+      - 'example.com'
+    scope: openid User.Read # Optional. Use openid if group overage support is not needed.
+    allowed_groups: # Optional. Entra ID group object IDs.
+      - '00000000-0000-0000-0000-000000000000'
+~~~
+
+For multi-tenant Entra ID apps, set `oidc_issuer_url: https://login.microsoftonline.com/common/v2.0`, `insecure_oidc_skip_issuer_verification: true`, and optionally restrict tenants with `entra_id_allowed_tenants`.
+
+## Redis session storage
+
+oauth2-proxy stores sessions in browser cookies by default. For providers with large OIDC tokens or many group claims, especially Microsoft Entra ID, use Redis session storage to keep browser cookies small and avoid split-cookie handling issues.
+
+The built-in Redis sidecar is attached only to an internal Docker network and persists sessions to a bind-mounted data directory by default. Redis stores encrypted oauth2-proxy session data, but the directory should still be treated as sensitive operational data.
+
+~~~yaml
+oauth2_proxy_instances:
+  - domain: service.example.com
+    session_store_type: redis
+    # Starts an internal Redis sidecar and configures oauth2-proxy to use redis://redis:6379.
+    # redis_data_directory defaults to <instance directory>/redis-data.
+~~~
+
+To avoid persisted sessions and require users to sign in again after Redis or the oauth2-proxy compose project restarts:
+
+~~~yaml
+oauth2_proxy_instances:
+  - domain: service.example.com
+    session_store_type: redis
+    redis_persistence_enabled: false
+~~~
 
 for cookie_secret, create random string, see https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview#generating-a-cookie-secret
 
@@ -92,6 +149,7 @@ oauth2_proxy_instances:
     cookie_secret: ranDOm_cooKie_Secret # generate random string, see above
     cookie_name: _oauth2_netdata_sso # fixed cookie_name
     cookie_domain: .example.com # cookie_domain is on parent domain
+    provider: gitlab
     gitlab_url: https://git.example.com
     client_id:
     client_secret:

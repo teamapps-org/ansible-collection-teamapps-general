@@ -97,11 +97,21 @@ cookie_refresh = "3h"
 cookie_secure = true
 cookie_httponly = true
 
-provider = "gitlab"
-redirect_url = "https://{{ oauth2_proxy_instance_domain }}/oauth2/callback" # Should be the same as the redirect url for the application in gitlab
-client_id = "{{ oauth2_proxy_instance_client_id }}"
-client_secret = "{{ oauth2_proxy_instance_client_secret }}"
+{% if oauth2_proxy_instance_session_store_type != 'cookie' %}
+session_store_type = "{{ oauth2_proxy_instance_session_store_type }}"
+{% if oauth2_proxy_instance_session_store_type == 'redis' %}
+redis_connection_url = "redis://redis:6379"
+{% endif %}
+{% endif %}
 
+provider = "{{ oauth2_proxy_instance_provider }}"
+redirect_url = "https://{{ oauth2_proxy_instance_domain }}/oauth2/callback" # Should be the same as the redirect url for the application
+client_id = "{{ oauth2_proxy_instance_client_id }}"
+{% if oauth2_proxy_instance_client_secret != '' %}
+client_secret = "{{ oauth2_proxy_instance_client_secret }}"
+{% endif %}
+
+{% if oauth2_proxy_instance_provider == 'gitlab' %}
 oidc_issuer_url = "{{ oauth2_proxy_instance_gitlab_url }}"
 code_challenge_method = "S256"
 gitlab_groups= [
@@ -109,6 +119,30 @@ gitlab_groups= [
     "{{ group }}",
 {% endfor %}
 ]
+{% elif oauth2_proxy_instance_provider == 'entra-id' %}
+oidc_issuer_url = "{{ oauth2_proxy_instance_oidc_issuer_url }}"
+scope = "{{ oauth2_proxy_instance_scope }}"
+{% if oauth2_proxy_instance_insecure_oidc_skip_issuer_verification | bool %}
+insecure_oidc_skip_issuer_verification = true
+{% endif %}
+{% if oauth2_proxy_instance_entra_id_federated_token_auth | bool %}
+entra_id_federated_token_auth = true
+{% endif %}
+{% if oauth2_proxy_instance_entra_id_allowed_tenants | length > 0 %}
+entra_id_allowed_tenants = [
+{% for tenant in oauth2_proxy_instance_entra_id_allowed_tenants %}
+    "{{ tenant }}",
+{% endfor %}
+]
+{% endif %}
+{% if oauth2_proxy_instance_allowed_groups | length > 0 %}
+allowed_groups = [
+{% for group in oauth2_proxy_instance_allowed_groups %}
+    "{{ group }}",
+{% endfor %}
+]
+{% endif %}
+{% endif %}
 
 whitelist_domains = [
 {% for domain in oauth2_proxy_instance_whitelist_domains %}
