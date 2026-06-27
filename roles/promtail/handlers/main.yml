@@ -13,11 +13,13 @@
 
 - name: restart promtail service
   service:
-    name: promtail
+    name: "{{ promtail_service_name }}"
     enabled: true
     state: restarted
   listen: restart promtail
-  when: promtail_deploy_mode == 'binary'
+  when:
+    - promtail_deploy_mode == 'binary'
+    - not ansible_check_mode
 
 - name: promtail_daemon_reload_systemd
   become: true
