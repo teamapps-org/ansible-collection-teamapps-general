@@ -7,7 +7,7 @@ oauth2_proxy_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }
 oauth2_proxy_version: latest
 
 # Redis image used when an instance enables session_store_type: redis and uses the built-in Redis sidecar.
-oauth2_proxy_redis_image_version: 7-alpine
+oauth2_proxy_redis_image_version: 8-alpine
 oauth2_proxy_redis_image: redis:{{ oauth2_proxy_redis_image_version }}
 
 # additional config added to the bottom of oauth2-proxy.cfg
