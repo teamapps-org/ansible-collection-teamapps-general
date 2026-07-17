@@ -1,0 +1,77 @@
+---
+- name: configure vmauth
+  when: victoriametrics_vmauth_users | length > 0
+  block:
+    - name: validate vmauth variable types
+      assert:
+        that:
+          - victoriametrics_vmauth_users is sequence
+          - victoriametrics_vmauth_users is not string
+          - victoriametrics_vmauth_passwords is mapping
+        fail_msg: victoriametrics_vmauth_users must be a list and victoriametrics_vmauth_passwords must be a mapping
+
+    - name: validate vmauth password entries
+      assert:
+        that:
+          - item.key is match('^[A-Za-z_][A-Za-z0-9_]*$')
+          - item.value is string
+          - item.value | length > 0
+          - "'\n' not in item.value"
+          - "'\r' not in item.value"
+        fail_msg: Each victoriametrics_vmauth_passwords entry must use a valid environment variable name and a non-empty, single-line string value
+      loop: '{{ victoriametrics_vmauth_passwords | dict2items }}'
+      no_log: true
+
+    - name: validate vmauth user password references
+      assert:
+        that:
+          - item.password is defined
+          - item.password is string
+          - item.password is match('^%\{[A-Za-z_][A-Za-z0-9_]*\}$')
+        fail_msg: Each vmauth user password must be an environment reference such as %{VMAUTH_PASSWORD}
+      loop: '{{ victoriametrics_vmauth_users }}'
+      loop_control:
+        label: '{{ item.name | default(item.username | default("unnamed")) }}'
+
+    - name: verify vmauth user password references exist
+      assert:
+        that:
+          - item.password[2:-1] in victoriametrics_vmauth_passwords
+        fail_msg: 'Password reference {{ item.password }} has no matching victoriametrics_vmauth_passwords entry'
+      loop: '{{ victoriametrics_vmauth_users }}'
+      loop_control:
+        label: '{{ item.name | default(item.username | default("unnamed")) }}'
+
+    - name: deploy vmauth auth config
+      template:
+        src: vmauth-auth.yml.j2
+        dest: '{{ victoriametrics_path }}/vmauth-auth.yml'
+        owner: root
+        group: root
+        mode: '0640'
+      notify: victoriametrics-vmauth-restart
+
+    - name: deploy vmauth environment file
+      template:
+        src: vmauth.env.j2
+        dest: '{{ victoriametrics_path }}/.vmauth.env'
+        owner: root
+        group: root
+        mode: '0600'
+      notify: victoriametrics-vmauth-restart
+      no_log: true
+
+    - name: validate vmauth auth config
+      command: docker compose run --rm -T vmauth -dryRun -auth.config=/etc/vmauth/auth.yml
+      args:
+        chdir: '{{ victoriametrics_path }}'
+      changed_when: false
+
+- name: remove disabled vmauth files
+  file:
+    path: '{{ victoriametrics_path }}/{{ item }}'
+    state: absent
+  loop:
+    - .vmauth.env
+    - vmauth-auth.yml
+  when: victoriametrics_vmauth_users | length == 0

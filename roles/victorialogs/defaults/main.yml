@@ -5,6 +5,13 @@ victorialogs_domain: 'victorialogs.{{ ansible_facts.fqdn }}'
 
 victorialogs_nginx_image: nginx:alpine
 
+victorialogs_vmauth_version: '{{ victoriametrics_version | default("latest") }}'
+victorialogs_vmauth_domain: 'vmauth.{{ victorialogs_domain }}'
+# vmauth users are rendered directly into its auth config. Passwords must use %{ENV_VAR} references.
+victorialogs_vmauth_users: []
+# Map environment variable names to values encrypted with Ansible Vault.
+victorialogs_vmauth_passwords: {}
+
 # retention period (months) https://victoriametrics.github.io/#retention
 victorialogs_retention_period: 1y
 

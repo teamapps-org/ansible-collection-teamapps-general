@@ -18,6 +18,9 @@
     group: root
     mode: '0640'
 
+- name: include vmauth config
+  import_tasks: vmauth.yml
+
 - name: include vmagent scraper config
   import_tasks: vmagent.yml
 

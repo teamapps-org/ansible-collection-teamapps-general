@@ -53,6 +53,31 @@ Deploy oauth2_proxy for the victorialogs_domain
 * Use curl for querying victorialogs. <https://docs.victoriametrics.com/victorialogs/querying/#command-line>
 * [./files/logsQL.py](./files/logsQL.py) wrapper script, [README for logsQL.py](./files/README.md)
 
+### Restricted access with vmauth
+
+Set `victorialogs_vmauth_users` to expose an additional entrypoint at `victorialogs_vmauth_domain`, which defaults to `vmauth.{{ victorialogs_domain }}`. The existing nginx auth proxy remains unchanged.
+
+`victorialogs_vmauth_users` is rendered directly into the vmauth auth config. Every user password must be a `%{ENV_VAR}` reference with one matching key in the `victorialogs_vmauth_passwords` mapping. Store password values with Ansible Vault; the role writes them to `.vmauth.env` with mode `0600` and `no_log: true`.
+
+~~~yaml
+victorialogs_vmauth_domain: vmauth.vlogs.example.com
+victorialogs_vmauth_users:
+  - name: frontend-logs-viewer
+    username: frontend-viewer
+    password: '%{VMAUTH_FRONTEND_PASSWORD}'
+    url_map:
+      - src_paths:
+          - /select/.*
+        # Percent-encoded _stream:{service=frontend-logs}
+        url_prefix: http://victorialogs:9428/?extra_stream_filters=_stream%3A%7Bservice%3Dfrontend-logs%7D
+victorialogs_vmauth_passwords:
+  VMAUTH_FRONTEND_PASSWORD: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    ...
+~~~
+
+Use `extra_stream_filters` for stream fields where possible. `extra_filters` can enforce a LogsQL filter on all subqueries in the same way. Do not add either parameter to `merge_query_args`, because the configured restriction must override client-supplied values.
+
 ### Grafana VictoriaLogs Datasource
 
 * VictoriaLogs datasource for Grafana <https://docs.victoriametrics.com/victorialogs/querying/#command-line>

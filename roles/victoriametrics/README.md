@@ -8,6 +8,28 @@ Standalone  or together with `teamapps.general.vmagent`, this is a complete repl
 
 This role uses an additional nginx proxy to manage access to different api endpoints (write/read/admin)
 
+## Restricted access with vmauth
+
+Set `victoriametrics_vmauth_users` to expose an additional entrypoint at `victoriametrics_vmauth_domain`, which defaults to `vmauth.{{ victoriametrics_domain }}`. The existing nginx auth proxy remains unchanged.
+
+`victoriametrics_vmauth_users` is rendered directly into the vmauth auth config. Every user password must be a `%{ENV_VAR}` reference with one matching key in the `victoriametrics_vmauth_passwords` mapping. Store password values with Ansible Vault; the role writes them to `.vmauth.env` with mode `0600` and `no_log: true`.
+
+~~~yaml
+victoriametrics_vmauth_domain: vmauth.metrics.example.com
+victoriametrics_vmauth_users:
+  - name: application-metrics-reader
+    username: application-metrics-reader
+    password: '%{APPLICATION_METRICS_READER_PASSWORD}'
+    url_map:
+      - src_paths:
+          - /api/v1/query.*
+        url_prefix: http://victoriametrics:8428/
+victoriametrics_vmauth_passwords:
+  APPLICATION_METRICS_READER_PASSWORD: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    ...
+~~~
+
 ## Usage Example
 
 ~~~yaml

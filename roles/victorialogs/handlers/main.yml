@@ -6,6 +6,15 @@
     state: restarted
   tags: compose_up
 
+- name: victorialogs-vmauth-restart
+  community.docker.docker_compose_v2:
+    project_src: '{{ victorialogs_path }}'
+    services:
+      - vmauth
+    state: restarted
+  when: not ansible_check_mode
+  tags: compose_up
+
 # validation in the template won't work because %s expansion won't be reachable from within the container
 - name: vmalert validate config # noqa no-changed-when
   command: docker compose run --rm -T vmalert -dryRun -rule=/etc/alerts/*.yml

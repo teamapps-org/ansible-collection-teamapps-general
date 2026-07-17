@@ -1,6 +1,39 @@
 # based on https://github.com/VictoriaMetrics/VictoriaMetrics/tree/master/deployment/docker
 
 services:
+{% if victorialogs_vmauth_users | length > 0 %}
+  vmauth:
+    image: victoriametrics/vmauth:{{ victorialogs_vmauth_version }}
+    restart: always
+    depends_on:
+      - victorialogs
+    expose:
+      - 8427
+    env_file:
+      - ./.vmauth.env
+    environment:
+      VIRTUAL_HOST: '{{ victorialogs_vmauth_domain }}'
+      VIRTUAL_PORT: 8427
+      LETSENCRYPT_HOST: '{{ victorialogs_vmauth_domain }}'
+      LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
+    volumes:
+      - type: bind
+        source: ./vmauth-auth.yml
+        target: /etc/vmauth/auth.yml
+        read_only: true
+    command:
+      - '-auth.config=/etc/vmauth/auth.yml'
+      - '-httpInternalListenAddr=127.0.0.1:8426'
+    networks:
+      - vm_net
+      - webproxy
+    healthcheck:
+      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:8426/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+{% endif %}
   authproxy:
     image: '{{ victorialogs_nginx_image }}'
     restart: always

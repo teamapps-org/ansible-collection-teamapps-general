@@ -8,6 +8,13 @@ victoriametrics_domain: 'metrics.{{ ansible_facts.fqdn }}'
 
 victoriametrics_nginx_image: nginx:alpine
 
+victoriametrics_vmauth_version: '{{ victoriametrics_version }}'
+victoriametrics_vmauth_domain: 'vmauth.{{ victoriametrics_domain }}'
+# vmauth users are rendered directly into its auth config. Passwords must use %{ENV_VAR} references.
+victoriametrics_vmauth_users: []
+# Map environment variable names to values encrypted with Ansible Vault.
+victoriametrics_vmauth_passwords: {}
+
 # retention period (months) https://victoriametrics.github.io/#retention
 victoriametrics_retention_period: 3
 victoriametrics_big_merge_concurrency: 0
