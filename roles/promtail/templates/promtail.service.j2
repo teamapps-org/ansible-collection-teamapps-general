@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 [Unit]
-Description=promtail
+Description={{ promtail_service_name }}
 After=network.target
 
 [Service]
@@ -14,7 +14,7 @@ ExecStart=/usr/local/bin/promtail \
 PrivateTmp=true
 ProtectHome=true
 NoNewPrivileges=true
-SyslogIdentifier=promtail
+SyslogIdentifier={{ promtail_service_name }}
 Restart=on-failure
 RestartSec=5
 TimeoutStopSec=30

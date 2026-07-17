@@ -146,3 +146,4 @@ promtail_additional_groups:
 
 # run promtail with user. Allows overriding to root (for debugging)
 promtail_user: promtail
+promtail_service_name: promtail
