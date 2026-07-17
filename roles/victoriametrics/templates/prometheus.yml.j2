@@ -2,7 +2,11 @@ global:
   scrape_interval: {{ victoriametrics_scrape_interval }}
   scrape_timeout: {{ victoriametrics_scrape_timeout }}
   external_labels:
-    scraper_instance: victoriametrics-{{ ansible_facts.fqdn }}
+    scraper_instance: victoriametrics-{{ ansible_facts.fqdn }} # deprecated, kept during collector_instance transition
+    collector_instance: victoriametrics-{{ ansible_facts.fqdn }}
+    # No global `host` external_label here (FND-1778): this config runs blackbox/probe jobs
+    # (http_2xx/http_401/http_zammad + user scrape_configs) that relabel `host` to the probe
+    # target. A global host would clobber those. Self-scrape jobs set `host` per-target below.
 
 scrape_config_files:
   - /etc/prometheus/scrape_configs/*.yml

@@ -20,7 +20,11 @@ prometheus_db_dir: /container/prometheus/data
 prometheus_storage_retention: "30d"
 
 prometheus_external_labels:
-  scraper_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
+  scraper_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}" # deprecated, kept during collector_instance transition
+  collector_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
+  # No global `host` external_label here (FND-1778): the netdata job derives `host` from the
+  # scraped target address and the http_2xx/http_401/http_zammad/prometheus jobs relabel `host`
+  # to the probe target. A global host would clobber those per-target values.
 
 prometheus_http_scrape_interval: 1m
 
