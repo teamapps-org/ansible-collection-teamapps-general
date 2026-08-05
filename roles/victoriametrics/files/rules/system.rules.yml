@@ -25,7 +25,15 @@ groups:
 
       # critical for job netdata if not reported up
       - alert: NetdataHostLastUpdate
-        expr: time()-tlast_over_time(up{job="netdata"}[7d]) > 60*2
+        expr: |
+          time() - max by (job, host) (
+            # freshest sample per host; max drops series orphaned by a relabel
+            # (adding a collector or replica label forks the series), so a live
+            # host with a changed label stays quiet. A real outage ages out and
+            # trips the threshold. Group on stable (job, host), not the
+            # churn-prone scrape labels. Assumes one netdata target per host.
+            tlast_over_time(up{job="netdata"}[7d])
+          ) > 60*2
         labels:
           severity: critical
         annotations:
@@ -37,7 +45,7 @@ groups:
         expr: |
           time() - tlast_over_time(
             # summarize without instance and other labels that could change by service discovery & service scaling
-            count by (job, host, scraper_instance, environment, application) (
+            count by (job, host, environment, application) (
               up{job!="netdata"}
             )[7d]
           ) > 60*5
@@ -49,8 +57,8 @@ groups:
 
       - alert: HostNotUp
         expr: |
-          count(up{host!=""} offset 60m) by (job, host, scraper_instance, environment, application)
-          unless count(up{host!=""}) by (job, host, scraper_instance, environment, application)
+          count(up{host!=""} offset 60m) by (job, host, environment, application)
+          unless count(up{host!=""}) by (job, host, environment, application)
         for: 5m
         labels:
           severity: warning
@@ -58,7 +66,6 @@ groups:
           summary: "Host Down? up metric missing"
           description: |-
             Host shut down or target removed? Missing updates for metric 'up' of host '{{ $labels.host }}', job: '{{ $labels.job }}'
-            scraper: '{{ $labels.scraper_instance }}'
             The up metric has no current value but was available an hour ago.
 
   - name: cpu
