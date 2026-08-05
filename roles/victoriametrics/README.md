@@ -81,6 +81,25 @@ victoriametrics_file_sd_config:
 
 ~~~
 
+## Testing the alerting rules
+
+`files/rules/tests/` holds `vmalert-tool` unit tests for the shipped rule files.
+Run them with the `vmalert-tool` binary from the VictoriaMetrics `vmutils`
+release archive, pinned to the vmalert version you deploy:
+
+~~~bash
+VM_VERSION=v1.147.0
+curl -sSL -o /tmp/vmutils.tgz \
+  "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/${VM_VERSION}/vmutils-linux-amd64-${VM_VERSION}.tar.gz"
+tar xzf /tmp/vmutils.tgz -C /tmp vmalert-tool-prod
+cd roles/victoriametrics/files/rules/tests
+/tmp/vmalert-tool-prod unittest --files=system.rules.test.yml
+~~~
+
+Run this in CI when changing a rule expression. A staleness or absence rule can
+keep passing a syntax check while it silently stops firing, and the unit tests
+pin the firing behaviour instead.
+
 ## Grafana Dashboards
 
 The role includes self-monitoring rules that can link to grafana.
