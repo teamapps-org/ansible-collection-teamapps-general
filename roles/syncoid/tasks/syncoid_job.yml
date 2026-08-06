@@ -48,7 +48,10 @@
     mode: '0750'
     content: |
       #!/bin/sh
-      flock -n /run/lock/syncoid-{{ syncoid_job_id }}.lock {{ syncoid_command }} \
+      exec 9>/run/lock/syncoid-{{ syncoid_job_id }}.lock
+      flock -n 9 || exit 1
+
+      {{ syncoid_command }} \
         --source-bwlimit={{ syncoid_source_bwlimit }} \
         {% if syncoid_recursive %}--recursive{% endif %} \
         {% if syncoid_skip_parent %}--skip-parent{% endif %} \
