@@ -34,10 +34,12 @@ victorialogs_oauth2_proxy_cookie_name: '_oauth2_{{ victorialogs_domain }}'
 victorialogs_vmagent_version: '{{ victoriametrics_version | default("latest") }}'
 victorialogs_vmalert_version: '{{ victoriametrics_version | default("latest") }}'
 victorialogs_metrics_instance_label: '{{ victorialogs_domain }}'
+# Full Prometheus remote-write endpoint, including /api/v1/write.
 victorialogs_victoriametrics_remotewrite_url:
 victorialogs_victoriametrics_remotewrite_username:
 victorialogs_victoriametrics_remotewrite_password:
-victorialogs_victoriametrics_remoteread_url: '{{ victorialogs_victoriametrics_remotewrite_url }}'
+# VictoriaMetrics base URL only; vmalert appends the required query path.
+victorialogs_victoriametrics_remoteread_url:
 victorialogs_victoriametrics_remoteread_username: '{{ victorialogs_victoriametrics_remotewrite_username }}'
 victorialogs_victoriametrics_remoteread_password: '{{ victorialogs_victoriametrics_remotewrite_password }}'
 
