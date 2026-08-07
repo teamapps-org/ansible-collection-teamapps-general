@@ -148,7 +148,8 @@
               "instance": true,
               "job": true,
               "nvme_info": true,
-              "scraper_instance": true
+              "scraper_instance": true,
+              "collector_instance": true
             },
             "includeByName": {},
             "indexByName": {
@@ -1256,7 +1257,8 @@
               "__name__": true,
               "instance": true,
               "job": true,
-              "scraper_instance": true
+              "scraper_instance": true,
+              "collector_instance": true
             },
             "indexByName": {
               "Value #controller_ready (last)": 13,
@@ -1531,7 +1533,8 @@
               "__name__": false,
               "instance": true,
               "job": true,
-              "scraper_instance": true
+              "scraper_instance": true,
+              "collector_instance": true
             },
             "indexByName": {
               "Time": 0,
@@ -2387,5 +2390,5 @@
   "timezone": "",
   "title": "NVMe Dashboard",
   "uid": "7ES1GVmnk",
-  "version": 25
+  "version": 26
 }

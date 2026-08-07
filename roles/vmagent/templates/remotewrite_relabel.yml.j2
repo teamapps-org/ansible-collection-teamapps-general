@@ -1,0 +1,4 @@
+{{ ansible_managed | comment }}
+# vmagent -remoteWrite.relabelConfig: applied to every series after external_labels
+# are added, just before remote write. Populated from vmagent_remotewrite_relabel_configs.
+{{ vmagent_remotewrite_relabel_configs | teamapps.general.to_nice_yaml(indent=2) }}

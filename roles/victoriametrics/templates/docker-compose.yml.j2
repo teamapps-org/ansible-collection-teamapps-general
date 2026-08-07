@@ -188,8 +188,13 @@ services:
     command:
       - '-http.pathPrefix=/vmalert'
       - '-datasource.url=http://victoriametrics:8428/'
+      # No -remoteRead.disablePathAppend here: in vmalert that flag also stops the
+      # '/api/v1/query' / '/api/v1/query_range' path selection on -datasource.url,
+      # sending every rule evaluation to the bare root (400 "unsupported path").
+      # Auto-append picks the correct read path for both URLs.
       - '-remoteRead.url=http://victoriametrics:8428/'
-      - '-remoteWrite.url=http://victoriametrics:8428/'
+      - '-remoteWrite.url=http://victoriametrics:8428/api/v1/write'
+      - '-remoteWrite.disablePathAppend'
       - '-evaluationInterval={{ victoriametrics_vmalert_evaluation_interval }}'
       - '-notifier.url={{ victoriametrics_alertmanager_url }}'
       - '-notifier.basicAuth.username={{ victoriametrics_alertmanager_user }}'
