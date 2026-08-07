@@ -1,5 +1,18 @@
 # Victoria Logs
 
+## VictoriaMetrics remote endpoints
+
+The VictoriaMetrics remote-write and remote-read variables intentionally use different URL formats:
+
+| Variable | Required format | Example |
+| --- | --- | --- |
+| `victorialogs_victoriametrics_remotewrite_url` | Full Prometheus remote-write endpoint | `https://metrics.example.com/api/v1/write` |
+| `victorialogs_victoriametrics_remoteread_url` | VictoriaMetrics base URL without an API path | `https://metrics.example.com/` |
+
+vmagent requires the full write endpoint. The role also passes that endpoint to vmalert with `-remoteWrite.disablePathAppend`, preventing vmalert from appending a second `/api/v1/write` path.
+
+The remote-read value must remain a base URL. vmalert automatically selects the required query path, such as `/api/v1/query` or `/api/v1/query_range`. Do not set `-remoteRead.disablePathAppend`: despite its name, that upstream flag also disables path selection for `-datasource.url`, including the LogsQL endpoints used to evaluate VictoriaLogs rules.
+
 ## Web User Interface
 
 VictoriaLogs also provides Web User Interfaces. The following endpoints are exposed. These endpoints are protected by htpasswd_admin
