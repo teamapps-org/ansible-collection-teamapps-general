@@ -47,6 +47,10 @@ Role to install and configure Victoriametrics vmagent. Installs by using binary 
 
 See [defaults](defaults/main.yml)
 
+`vmagent_remotewrite_relabel_configs` accepts a list of VictoriaMetrics relabel
+rules applied after external labels are added and immediately before remote
+write. An empty list disables remote-write relabeling.
+
 ## License
 
 Apache 2.0

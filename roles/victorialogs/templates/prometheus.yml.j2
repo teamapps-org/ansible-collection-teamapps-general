@@ -4,7 +4,7 @@ global:
   external_labels:
     scraper_instance: {{ victorialogs_metrics_instance_label }} # deprecated, kept during collector_instance transition
     collector_instance: {{ victorialogs_metrics_instance_label }}
-    # No global `host` external_label here (FND-1778): every self-scrape job below sets `host`
+    # No global `host` external_label here: every self-scrape job below sets `host`
     # per-target, and user scrape_configs / scrape_config_files may relabel `host` to a probe
     # target. A global host would clobber per-target values without adding anything.
 

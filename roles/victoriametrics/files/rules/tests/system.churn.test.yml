@@ -1,0 +1,286 @@
+# vmalert unit test for the absence rules in system.rules.yml.
+# Run: vmalert-tool unittest --files=system.churn.test.yml
+# (see the role README for the pinned vmalert-tool command)
+#
+# Companion to system.rules.test.yml, which covers NetdataHostLastUpdate's
+# firing thresholds with a generic `collector` label. This file covers the
+# label-churn regression class for all three absence rules in system.rules.yml,
+# using the two provenance label names a real deployment migrates between.
+#
+# The regression: a series' identity is its full label set, so changing a
+# provenance label forks the series. If a rule GROUPS on that label, the old
+# output series is orphaned, its tlast freezes, and it ages past the threshold
+# -- so a healthy host alerts for the whole lookback window. A fleet-wide
+# relabel once false-fired every netdata host this way for seven days.
+#
+# All three rules group on stable identity only, so no orphan exists.
+#
+# Four churn shapes are modelled per rule, because they are not equivalent:
+#   value change of the OLD label   (collector renamed, target moved)
+#   value change of the NEW label   (same, after the migration)
+#   NEW label APPEARS               (the additive rollout itself)
+#   OLD label DISAPPEARS            (the eventual cleanup)
+# Absent versus present is a distinct group value, so the appear/disappear
+# shapes catch regressions a value change alone would miss. Adding a label
+# alone is NOT sufficient: both forked series then carry the same provenance
+# value, so even a provenance-grouped rule collapses them and stays fresh.
+#
+# Convention: `1xN` yields N+1 samples at 0m..Nm, matching system.rules.test.yml.
+# host-01/03/04/05 churn but stay healthy -> must NOT alert.
+# host-02 stops reporting -> MUST alert. Listing only host-02 asserts both,
+# since vmalert-tool fails on an unexpected extra alert.
+---
+rule_files:
+  - ../system.rules.yml
+
+tests:
+  # NetdataHostLastUpdate: max by (job, host) over raw samples, > 2m.
+  # Covered here with the real provenance labels; the generic-label coverage
+  # in system.rules.test.yml does not detect either label being re-added to
+  # this rule's grouping.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="netdata",host="host-01",instance="host-01:19999",scraper_instance="collector-a",collector_instance="collector-a"}'
+        values: "1x5"
+      - series: 'up{job="netdata",host="host-01",instance="host-01:19999",scraper_instance="collector-a2",collector_instance="collector-a"}'
+        values: "1x40"
+      - series: 'up{job="netdata",host="host-03",instance="host-03:19999",scraper_instance="collector-c",collector_instance="collector-c"}'
+        values: "1x5"
+      - series: 'up{job="netdata",host="host-03",instance="host-03:19999",scraper_instance="collector-c",collector_instance="collector-c2"}'
+        values: "1x40"
+      - series: 'up{job="netdata",host="host-04",instance="host-04:19999",scraper_instance="collector-d"}'
+        values: "1x5"
+      - series: 'up{job="netdata",host="host-04",instance="host-04:19999",scraper_instance="collector-d",collector_instance="collector-d"}'
+        values: "1x40"
+      - series: 'up{job="netdata",host="host-05",instance="host-05:19999",scraper_instance="collector-e",collector_instance="collector-e"}'
+        values: "1x5"
+      - series: 'up{job="netdata",host="host-05",instance="host-05:19999",collector_instance="collector-e"}'
+        values: "1x40"
+      - series: 'up{job="netdata",host="host-02",instance="host-02:19999",scraper_instance="collector-b",collector_instance="collector-b"}'
+        values: "1x5"
+    alert_rule_test:
+      - eval_time: 30m
+        groupname: "system down"
+        alertname: NetdataHostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: netdata
+              host: host-02
+            exp_annotations:
+              summary: "Host not reported up"
+              description: "The host host-02 last reported 'up' 25m 0s ago"
+
+  # HostLastUpdate: up{job!="netdata"} stale for more than 5m.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="node",host="host-01",instance="host-01:9100",environment="PROD",application="node",scraper_instance="collector-a",collector_instance="collector-a"}'
+        values: "1x5"
+      - series: 'up{job="node",host="host-01",instance="host-01:9100",environment="PROD",application="node",scraper_instance="collector-a2",collector_instance="collector-a"}'
+        values: "1x40"
+      - series: 'up{job="node",host="host-03",instance="host-03:9100",environment="PROD",application="node",scraper_instance="collector-c",collector_instance="collector-c"}'
+        values: "1x5"
+      - series: 'up{job="node",host="host-03",instance="host-03:9100",environment="PROD",application="node",scraper_instance="collector-c",collector_instance="collector-c2"}'
+        values: "1x40"
+      - series: 'up{job="node",host="host-04",instance="host-04:9100",environment="PROD",application="node",scraper_instance="collector-d"}'
+        values: "1x5"
+      - series: 'up{job="node",host="host-04",instance="host-04:9100",environment="PROD",application="node",scraper_instance="collector-d",collector_instance="collector-d"}'
+        values: "1x40"
+      - series: 'up{job="node",host="host-05",instance="host-05:9100",environment="PROD",application="node",scraper_instance="collector-e",collector_instance="collector-e"}'
+        values: "1x5"
+      - series: 'up{job="node",host="host-05",instance="host-05:9100",environment="PROD",application="node",collector_instance="collector-e"}'
+        values: "1x40"
+      # host-02: genuine outage, both labels present, never returns.
+      - series: 'up{job="node",host="host-02",instance="host-02:9100",environment="PROD",application="node",scraper_instance="collector-b",collector_instance="collector-b"}'
+        values: "1x5"
+    alert_rule_test:
+      - eval_time: 30m
+        groupname: "system down"
+        alertname: HostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-02
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Target not reported up for job node"
+              description: "The job node host host-02 last reported 'up' 25m 0s ago"
+
+  # HostNotUp: present an hour ago, absent now. Same four churn shapes.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="node",host="host-01",instance="host-01:9100",environment="PROD",application="node",scraper_instance="collector-a",collector_instance="collector-a"}'
+        values: "1x65"
+      - series: 'up{job="node",host="host-01",instance="host-01:9100",environment="PROD",application="node",scraper_instance="collector-a2",collector_instance="collector-a"}'
+        values: "1x130"
+      - series: 'up{job="node",host="host-03",instance="host-03:9100",environment="PROD",application="node",scraper_instance="collector-c",collector_instance="collector-c"}'
+        values: "1x65"
+      - series: 'up{job="node",host="host-03",instance="host-03:9100",environment="PROD",application="node",scraper_instance="collector-c",collector_instance="collector-c2"}'
+        values: "1x130"
+      - series: 'up{job="node",host="host-04",instance="host-04:9100",environment="PROD",application="node",scraper_instance="collector-d"}'
+        values: "1x65"
+      - series: 'up{job="node",host="host-04",instance="host-04:9100",environment="PROD",application="node",scraper_instance="collector-d",collector_instance="collector-d"}'
+        values: "1x130"
+      - series: 'up{job="node",host="host-05",instance="host-05:9100",environment="PROD",application="node",scraper_instance="collector-e",collector_instance="collector-e"}'
+        values: "1x65"
+      - series: 'up{job="node",host="host-05",instance="host-05:9100",environment="PROD",application="node",collector_instance="collector-e"}'
+        values: "1x130"
+      - series: 'up{job="node",host="host-02",instance="host-02:9100",environment="PROD",application="node",scraper_instance="collector-b",collector_instance="collector-b"}'
+        values: "1x65"
+    alert_rule_test:
+      - eval_time: 125m
+        groupname: "system down"
+        alertname: HostNotUp
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-02
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Host Down? up metric missing"
+              description: |-
+                Host shut down or target removed? Missing updates for metric 'up' of host 'host-02', job: 'node'
+                The up metric has no current value but was available an hour ago.
+
+  # No false positives on a continuously reporting target.
+  #
+  # HostLastUpdate evaluates `tlast_over_time` over a `count(...)[7d]`
+  # SUBQUERY. That form reports the subquery step boundary rather than the
+  # sample timestamp, so the computed age sawtooths while the target reports
+  # without interruption. This rule has NO `for:` clause, so a single bad
+  # evaluation fires it -- its only protection is that its threshold sits above
+  # the sawtooth's peak.
+  #
+  # The peak was measured by bisecting the threshold on an equivalent rule with
+  # no `for:`: thresholds up to 239s fire, 240s and above stay silent, putting
+  # the peak in (180s, 240s]. This rule's 300s threshold cleared it at scrape
+  # intervals of 15s, 30s, 60s and 5m. Those are the conditions actually
+  # measured; the cases below sample the peak offsets so the margin is asserted
+  # rather than assumed. Varying the lookback window and group interval was not
+  # tested here.
+  #
+  # LOWERING THIS THRESHOLD TO 240s OR BELOW will cause continuous false
+  # alerts on healthy hosts. The raw-sample form -- max by (...)
+  # (tlast_over_time(raw[7d])), as NetdataHostLastUpdate above already uses --
+  # has no such dependency.
+  #
+  # Uses a realistic 15s scrape interval and samples both on and off the 1m
+  # grid. The sawtooth is NOT hidden by a 1m interval or by grid-aligned
+  # eval_times -- a 239s threshold false-fires at 15s, 30s and 60s intervals
+  # including on whole minutes -- so the interval choice is for realism, not
+  # to make the artifact visible.
+  #
+  # host-02 is a genuinely stopped host carried alongside the healthy one, and
+  # the first case below asserts it FIRES. Without it every assertion here is
+  # `exp_alerts: []`, which vmalert-tool also satisfies when the alertname or
+  # groupname does not resolve -- so a typo would silently turn this whole
+  # block into a no-op. The positive case fails on such a typo.
+  - interval: 15s
+    input_series:
+      - series: 'up{job="node",host="host-01",instance="host-01:9100",environment="PROD",application="node",collector_instance="collector-a"}'
+        values: "1x480"
+      - series: 'up{job="node",host="host-02",instance="host-02:9100",environment="PROD",application="node",collector_instance="collector-b"}'
+        values: "1x20"
+    alert_rule_test:
+      # Sawtooth peak offsets: m%5 in {2,3,4}, sampled off the 1m grid.
+      # host-01 (healthy) must never appear. host-02 stopped at 5m and is listed
+      # in every assertion, so the alertname and groupname must resolve for these
+      # cases to pass at all.
+      - eval_time: 62m30s
+        groupname: "system down"
+        alertname: HostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-02
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Target not reported up for job node"
+              description: "The job node host host-02 last reported 'up' 57m 0s ago"
+      - eval_time: 64m30s
+        groupname: "system down"
+        alertname: HostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-02
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Target not reported up for job node"
+              description: "The job node host host-02 last reported 'up' 59m 0s ago"
+      - eval_time: 89m59s
+        groupname: "system down"
+        alertname: HostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-02
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Target not reported up for job node"
+              description: "The job node host host-02 last reported 'up' 1h 24m 0s ago"
+      - eval_time: 119m45s
+        groupname: "system down"
+        alertname: HostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-02
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Target not reported up for job node"
+              description: "The job node host host-02 last reported 'up' 1h 54m 0s ago"
+
+  # Retention horizon. The [7d] lookback is what keeps a long outage alerting:
+  # once the last sample falls outside the range vector, tlast_over_time
+  # returns nothing, the series drops out of the result, and the alert goes
+  # SILENT even though the host is still down. A future edit shortening the
+  # window would therefore make outages disappear after that shorter period --
+  # a silent monitoring gap, not a false alarm, so nothing else here catches
+  # it. These cases pin the window: host-gone stops after 1h and must STILL be
+  # alerting a full day later. Shortening [7d] to [1h] fails this.
+  - interval: 30m
+    input_series:
+      - series: 'up{job="node",host="host-ok",instance="host-ok:9100",environment="PROD",application="node",scraper_instance="collector-a",collector_instance="collector-a"}'
+        values: "1x432"
+      - series: 'up{job="node",host="host-gone",instance="host-gone:9100",environment="PROD",application="node",scraper_instance="collector-a",collector_instance="collector-a"}'
+        values: "1x2"
+    alert_rule_test:
+      - eval_time: 24h
+        groupname: "system down"
+        alertname: HostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-gone
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Target not reported up for job node"
+              description: "The job node host host-gone last reported 'up' 22h 30m 0s ago"
+      - eval_time: 144h
+        groupname: "system down"
+        alertname: HostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-gone
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Target not reported up for job node"
+              description: "The job node host host-gone last reported 'up' 5d 22h 30m 0s ago"

@@ -620,6 +620,7 @@
               "job 6": true,
               "job 7": true,
               "job 8": true,
+              "scraper_instance": true,
               "phase": true,
               "type": true,
               "type 1": true,
@@ -647,7 +648,7 @@
               "host": 8,
               "instance": 0,
               "job": 12,
-              "scraper_instance": 11,
+              "collector_instance": 11,
               "version": 4
             },
             "renameByName": {
@@ -1240,5 +1241,5 @@
   "timezone": "",
   "title": "Blackbox Exporter (HTTP prober)",
   "uid": "NEzutrbMk",
-  "version": 17
+  "version": 18
 }

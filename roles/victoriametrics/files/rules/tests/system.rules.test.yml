@@ -1,0 +1,111 @@
+# vmalert unit test for system.rules.yml.
+# Run: vmalert-tool unittest --files=system.rules.test.yml
+#
+# Covers NetdataHostLastUpdate. A series' identity is its full label set, so
+# adding a label to a scrape target (a collector or replica identifier applied at
+# remote-write, for example) starts a NEW up series and freezes the old one. The
+# rule must ignore that frozen sibling while the host still reports, and must
+# still fire once a host stops reporting.
+#
+# Sample placement: `1xN` yields N+1 samples at 0m..Nm, so `1x5` at interval 1m
+# ends at 5m. The staleness values expected below depend on that.
+#
+# The description assertions render through humanizeDuration. Should a future
+# VictoriaMetrics release change that formatting, update the expected strings;
+# the alert itself keeps working.
+---
+rule_files:
+  - ../system.rules.yml
+
+tests:
+  # A relabelled host stays quiet while a genuinely dead host fires.
+  - interval: 1m
+    input_series:
+      # host-01: relabel case. The original series (no collector label) ends at
+      # 5m, the relabelled one keeps reporting. The host is UP.
+      - series: 'up{job="netdata",host="host-01",instance="host-01:19999"}'
+        values: "1x5"
+      - series: 'up{job="netdata",host="host-01",instance="host-01:19999",collector="collector-a"}'
+        values: "1x30"
+      # host-02: genuine outage. Stops at 5m and never returns.
+      - series: 'up{job="netdata",host="host-02",instance="host-02:19999",collector="collector-a"}'
+        values: "1x5"
+      # host-03: healthy throughout.
+      - series: 'up{job="netdata",host="host-03",instance="host-03:19999",collector="collector-a"}'
+        values: "1x30"
+
+    alert_rule_test:
+      # 8m: host-02 went stale 3m ago and clears the 2m threshold, so it fires.
+      # host-01's frozen sibling is stale by the same 3m, which makes this the
+      # tight case for the max-by grouping.
+      - eval_time: 8m
+        groupname: "system down"
+        alertname: NetdataHostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: netdata
+              host: host-02
+            exp_annotations:
+              summary: "Host not reported up"
+              description: "The host host-02 last reported 'up' 3m 0s ago"
+
+      # 20m: same split with a wider margin. Naming only host-02 also asserts
+      # the absence of the others, since an extra alert fails the test.
+      - eval_time: 20m
+        groupname: "system down"
+        alertname: NetdataHostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: netdata
+              host: host-02
+            exp_annotations:
+              summary: "Host not reported up"
+              description: "The host host-02 last reported 'up' 15m 0s ago"
+
+  # A relabelled host that later dies must still fire.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="netdata",host="host-04",instance="host-04:19999"}'
+        values: "1x5"
+      - series: 'up{job="netdata",host="host-04",instance="host-04:19999",collector="collector-a"}'
+        values: "1x10"
+
+    alert_rule_test:
+      # 12m: the relabelled series ends at 10m, so staleness is exactly 2m. The
+      # threshold is `> 60*2`, a strict comparison, so nothing fires. One minute
+      # later, at 13m, it does. This pins the boundary from below; raising the
+      # threshold or making the comparison `>=` will fail here on purpose.
+      - eval_time: 12m
+        groupname: "system down"
+        alertname: NetdataHostLastUpdate
+        exp_alerts: []
+
+      # 13m: staleness reaches 3m and the alert fires. Together with the 12m
+      # case above this pins the boundary from both sides.
+      - eval_time: 13m
+        groupname: "system down"
+        alertname: NetdataHostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: netdata
+              host: host-04
+            exp_annotations:
+              summary: "Host not reported up"
+              description: "The host host-04 last reported 'up' 3m 0s ago"
+
+      # 20m: both series are dead. max picks the later timestamp (10m), leaving
+      # 10m of staleness, so the alert fires.
+      - eval_time: 20m
+        groupname: "system down"
+        alertname: NetdataHostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: netdata
+              host: host-04
+            exp_annotations:
+              summary: "Host not reported up"
+              description: "The host host-04 last reported 'up' 10m 0s ago"
