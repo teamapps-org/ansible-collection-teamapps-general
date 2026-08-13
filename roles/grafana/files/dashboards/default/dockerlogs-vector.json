@@ -4,43 +4,22 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "datasource",
-          "uid": "grafana"
+          "type": "grafana",
+          "uid": "-- Grafana --"
         },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
-        "target": {
-          "limit": 1000,
-          "matchAny": false,
-          "tags": [],
-          "type": "dashboard"
-        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
-  "links": [
-    {
-      "asDropdown": true,
-      "icon": "external link",
-      "includeVars": true,
-      "keepTime": true,
-      "tags": [
-        "logs"
-      ],
-      "targetBlank": false,
-      "title": "Log Dashboards",
-      "tooltip": "",
-      "type": "dashboards",
-      "url": ""
-    }
-  ],
-  "liveNow": false,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
   "panels": [
     {
       "collapsed": false,
@@ -50,60 +29,626 @@
         "x": 0,
         "y": 0
       },
-      "id": 16,
+      "id": 8,
       "panels": [],
-      "title": "Usage Help",
+      "title": "Usage",
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": ""
-      },
       "description": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
-        "h": 5,
+        "h": 9,
         "w": 9,
         "x": 0,
         "y": 1
       },
-      "id": 17,
+      "id": 9,
       "options": {
         "code": {
           "language": "plaintext",
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "### Logs Dashboard for docker container logs\n\nFor best performance, narrow search using the filters above before opening the log panels.\n",
+        "content": "# VictoriaLogs Dashboard\n\n* [LogsQL](https://docs.victoriametrics.com/victorialogs/logsql/index.html)\n* [LogsQL Examples](https://docs.victoriametrics.com/victorialogs/logsql-examples/)\n* [Querying on CLI](https://docs.victoriametrics.com/victorialogs/querying/) \n* [logsQL.py CLI helper](https://github.com/teamapps-org/ansible-collection-teamapps-general/blob/main/roles/victorialogs/files/logsQL.py), [README](https://github.com/teamapps-org/ansible-collection-teamapps-general/blob/main/roles/victorialogs/files/README.md)",
         "mode": "markdown"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.1.1",
+      "title": "",
       "type": "text"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": ""
-      },
       "description": "",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
       "gridPos": {
-        "h": 5,
+        "h": 9,
         "w": 15,
         "x": 9,
         "y": 1
       },
-      "id": 18,
+      "id": 12,
       "options": {
         "code": {
           "language": "plaintext",
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "### Filtering loki logs\n\n* search: simple content string/regex filter\n* filter: [advanced log parsing and filtering](https://grafana.com/docs/loki/latest/logql/log_queries/#log-pipeline)\n\nFilter example for filtering and parsing logs:\n`| service=\"gitlab\" | json | duration_s >= 0.05 and ua !=\"\" | line_format \"{{ .ua }}: {{ __line__ }}\" !~\"Blackbox\"`",
+        "content": "## Example Queries for ad hoc log analysis\n### filter\n* `error -exception` all messages containing the [word](https://docs.victoriametrics.com/victorialogs/logsql/index.html#word-filter) \"error\", but not \"exception\"\n* `\"[123]: cannot open file\"` exact [phrase filter](https://docs.victoriametrics.com/victorialogs/logsql/index.html#phrase-filter)\n* `~\"err|warn\"` substring / [regex filter](https://docs.victoriametrics.com/victorialogs/logsql/#regexp-filter). case sensitive!\n* `err*`,`'unexpected fail'*` [prefix filter](https://docs.victoriametrics.com/victorialogs/logsql/#prefix-filter)\n* `i('err*')` [case insentive filtering](https://docs.victoriametrics.com/victorialogs/logsql/index.html#case-insensitive-filter), LogsQL supports [quoting](https://docs.victoriametrics.com/victorialogs/logsql/#string-literals) via double quotes `\"`, single quotes `'` and backticks `\n* `compose_service: gitlab` apply word filter on specific field.\n* `compose_service:~ \"git.+\"` apply regex filter on field\n*  No field specified (above) is just a shortcut for `_msg: <filter>`\n* `| stream_context before 2 after 5` show [context](https://docs.victoriametrics.com/victorialogs/logsql/#stream_context-pipe) lines before/after matching messages\n\n### extract & format\n* `| extract \"ip=<ip> \"` [extract fields](https://docs.victoriametrics.com/victorialogs/logsql/#extract-pipe) from message with pattern\n* `| unpack_json` [parse json](https://docs.victoriametrics.com/victorialogs/logsql/#unpack_json-pipe) from msg to fields\n* `| unpack_logfmt` [parse logfmt](https://docs.victoriametrics.com/victorialogs/logsql/#unpack_logfmt-pipe) from msg\n* `| format \"request from <ip>:<port>\"` change output [format](https://docs.victoriametrics.com/victorialogs/logsql/#format-pipe)\n* `| format if (ip:* and host:*) \"request from <ip>:<host>\"` only [reformat line if](https://docs.victoriametrics.com/victorialogs/logsql/#conditional-format) it contains these fields\n\n* `| unpack_logfmt | status:>300 status:<400` parse log message, then apply [range comparison filter](https://docs.victoriametrics.com/victorialogs/logsql/#range-comparison-filter) on extracted field\n\n### Ad Hoc Filtering\n\nClicking a log message shows the available fields, (+) or (-) buttons can be used to quickly add add hoc filters",
         "mode": "markdown"
       },
-      "pluginVersion": "10.0.1",
+      "pluginVersion": "12.1.1",
+      "title": "",
       "type": "text"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 10
+      },
+      "id": 6,
+      "panels": [],
+      "title": "Container Logs Statistics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "victorialogs-datasource",
+        "uid": "${DS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 6,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 14,
+        "x": 0,
+        "y": 11
+      },
+      "id": 5,
+      "maxDataPoints": 100,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Total",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "editorMode": "code",
+          "expr": "category:in(dockerlogs) AND host:in($host) AND compose_project:in($compose_project) AND compose_service:in($compose_service) $log_query\n  | stats by (host) count()",
+          "legendFormat": "{{ host }}",
+          "queryType": "statsRange",
+          "refId": "A"
+        }
+      ],
+      "title": "overview by host [$__interval]",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "victorialogs-datasource",
+        "uid": "${DS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 14,
+        "y": 11
+      },
+      "id": 2,
+      "options": {
+        "displayLabels": [
+          "percent",
+          "name"
+        ],
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": false,
+          "values": [
+            "value"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "asc"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "editorMode": "code",
+          "expr": "category:in(dockerlogs) AND host:in($host) AND compose_project:in($compose_project) AND compose_service:in($compose_service) $log_query\n  | stats by (host) count() logs",
+          "legendFormat": "{{ host }}",
+          "queryType": "stats",
+          "refId": "A"
+        }
+      ],
+      "title": "overview by host",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "victorialogs-datasource",
+        "uid": "${DS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 7,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 14,
+        "x": 0,
+        "y": 18
+      },
+      "id": 10,
+      "maxDataPoints": 100,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Total",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "editorMode": "code",
+          "expr": "category:in(dockerlogs) AND host:in($host) AND compose_project:in($compose_project) AND compose_service:in($compose_service) $log_query\n| format 'UNDEFINED' as compose_service keep_original_fields\n| stats by (compose_service) count()",
+          "legendFormat": "{{ compose_service }}",
+          "queryType": "statsRange",
+          "refId": "A"
+        }
+      ],
+      "title": "overview by compose_service [$__interval]",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "victorialogs-datasource",
+        "uid": "${DS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 14,
+        "y": 18
+      },
+      "id": 3,
+      "options": {
+        "displayLabels": [
+          "percent",
+          "name",
+          "value"
+        ],
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "editorMode": "code",
+          "expr": "category:in(dockerlogs) AND host:in($host) AND compose_project:in($compose_project) AND compose_service:in($compose_service) $log_query\n  | stats by (host,compose_project) count() logs",
+          "legendFormat": "{{ host }}:{{ compose_project }}",
+          "queryType": "stats",
+          "refId": "A"
+        }
+      ],
+      "title": "overview by host and project",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "victorialogs-datasource",
+        "uid": "${DS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "bars",
+            "fillOpacity": 100,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "stepBefore",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 14,
+        "x": 0,
+        "y": 25
+      },
+      "id": 11,
+      "maxDataPoints": 100,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Total",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "editorMode": "code",
+          "expr": "category:in(dockerlogs) AND host:in($host) and compose_project:in($compose_project) and compose_service:in($compose_service)\n  | stats by(host) count()",
+          "legendFormat": "{{ host }} {{ compose_project }}",
+          "queryType": "statsRange",
+          "refId": "A"
+        }
+      ],
+      "title": "unfiltered logs (without custom Query), stacked [$__interval]",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "victorialogs-datasource",
+        "uid": "${DS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "light-blue",
+            "mode": "shades"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "fieldMinMax": false,
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 10,
+        "x": 14,
+        "y": 25
+      },
+      "id": 4,
+      "options": {
+        "displayLabels": [
+          "percent"
+        ],
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Value",
+          "sortDesc": false,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "editorMode": "code",
+          "expr": "category:in(dockerlogs) AND host:in($host) AND compose_project:in($compose_project) AND compose_service:in($compose_service) $log_query\n  | stats by(host, compose_project, compose_service) count() logs \n  | sort by(logs) desc | limit 20",
+          "legendFormat": "{{ host }}:{{ compose_service }}",
+          "queryType": "stats",
+          "refId": "A"
+        }
+      ],
+      "title": "top 20 by host, compose_service",
+      "type": "piechart"
     },
     {
       "collapsed": true,
@@ -111,118 +656,132 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 6
+        "y": 31
       },
-      "id": 13,
+      "id": 7,
       "panels": [
         {
           "datasource": {
-            "type": "loki",
-            "uid": "${loki}"
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
           },
           "description": "",
           "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "axisSoftMin": 0,
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 70,
-                "gradientMode": "opacity",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "stepBefore",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "log": 2,
-                  "type": "log"
-                },
-                "showPoints": "never",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "short"
-            },
+            "defaults": {},
             "overrides": []
           },
           "gridPos": {
-            "h": 5,
+            "h": 22,
             "w": 24,
             "x": 0,
-            "y": 17
+            "y": 32
           },
-          "id": 11,
-          "interval": "10s",
+          "id": 1,
           "options": {
-            "graph": {},
-            "legend": {
-              "calcs": [
-                "sum"
-              ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "multi",
-              "sort": "desc"
-            }
+            "dedupStrategy": "none",
+            "enableInfiniteScrolling": true,
+            "enableLogDetails": true,
+            "prettifyLogMessage": false,
+            "showCommonLabels": false,
+            "showLabels": false,
+            "showTime": true,
+            "sortOrder": "Ascending",
+            "wrapLogMessage": true
           },
-          "pluginVersion": "7.5.5",
+          "pluginVersion": "12.1.1",
           "targets": [
             {
               "datasource": {
-                "type": "loki",
-                "uid": "000000001"
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
               },
-              "expr": "sum by (host) (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
-              "instant": false,
-              "legendFormat": "{{ host }}",
-              "range": true,
-              "refId": "A",
-              "resolution": 5
+              "editorMode": "code",
+              "expr": "category:in(dockerlogs) AND host:in($host) AND compose_project:in($compose_project) AND compose_service:in($compose_service) $log_query\n| sort\n# format outputs with color codes\n| format \"\\033[33m<host>\\033[0m:\\033[36m<compose_project>\\033[0m/\\033[96m<compose_service>\\033[0m\\t<_msg>\" as _msg",
+              "legendFormat": "{{ compose_service }}",
+              "queryType": "instant",
+              "refId": "A"
             }
           ],
-          "title": "Message counts by host [$__interval]",
-          "transformations": [],
-          "transparent": true,
-          "type": "timeseries"
-        },
+          "title": "",
+          "type": "logs"
+        }
+      ],
+      "title": "Container Logs",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "id": 14,
+      "panels": [
         {
           "datasource": {
-            "type": "loki",
-            "uid": "${loki}"
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 22,
+            "w": 24,
+            "x": 0,
+            "y": 33
+          },
+          "id": 13,
+          "options": {
+            "dedupStrategy": "none",
+            "enableInfiniteScrolling": true,
+            "enableLogDetails": true,
+            "prettifyLogMessage": false,
+            "showCommonLabels": false,
+            "showLabels": false,
+            "showTime": true,
+            "sortOrder": "Ascending",
+            "wrapLogMessage": true
+          },
+          "pluginVersion": "12.1.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
+              },
+              "editorMode": "code",
+              "expr": "category:in(dockerlogs) AND host:in($host) AND compose_project:in($compose_project) AND compose_service:in($compose_service) \n# $log_query\n| sort\n# format outputs with color codes\n| format \"\\033[33m<host>\\033[0m:\\033[36m<compose_project>\\033[0m/\\033[96m<compose_service>\\033[0m\\t<_msg>\" as _msg",
+              "legendFormat": "{{ compose_service }}",
+              "queryType": "instant",
+              "refId": "A"
+            }
+          ],
+          "title": "",
+          "type": "logs"
+        }
+      ],
+      "title": "Unfiltered Container Logs (of selected host, project, service)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 33
+      },
+      "id": 17,
+      "panels": [
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
           },
           "description": "",
           "fieldConfig": {
@@ -231,21 +790,23 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
-                "fillOpacity": 70,
-                "gradientMode": "opacity",
+                "fillOpacity": 0,
+                "gradientMode": "none",
                 "hideFrom": {
-                  "graph": false,
                   "legend": false,
                   "tooltip": false,
                   "viz": false
                 },
-                "lineInterpolation": "stepBefore",
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
                 "lineWidth": 1,
                 "pointSize": 5,
                 "scaleDistribution": {
@@ -267,7 +828,7 @@
                 "steps": [
                   {
                     "color": "green",
-                    "value": null
+                    "value": 0
                   },
                   {
                     "color": "red",
@@ -277,99 +838,494 @@
               },
               "unit": "short"
             },
-            "overrides": [
-              {
-                "matcher": {
-                  "id": "byName",
-                  "options": "unfiltered"
-                },
-                "properties": [
-                  {
-                    "id": "custom.axisPlacement",
-                    "value": "right"
-                  },
-                  {
-                    "id": "unit",
-                    "value": "string"
-                  },
-                  {
-                    "id": "color",
-                    "value": {
-                      "fixedColor": "dark-blue",
-                      "mode": "fixed"
-                    }
-                  },
-                  {
-                    "id": "custom.gradientMode",
-                    "value": "opacity"
-                  },
-                  {
-                    "id": "custom.lineStyle",
-                    "value": {
-                      "fill": "solid"
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
-            "h": 8,
-            "w": 24,
+            "h": 7,
+            "w": 14,
             "x": 0,
-            "y": 22
+            "y": 34
           },
-          "id": 9,
-          "interval": "10s",
+          "id": 18,
+          "maxDataPoints": 100,
           "options": {
-            "graph": {},
             "legend": {
               "calcs": [
+                "max",
                 "sum"
               ],
-              "displayMode": "list",
-              "placement": "bottom",
-              "showLegend": true
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Total",
+              "sortDesc": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "multi",
               "sort": "desc"
             }
           },
-          "pluginVersion": "7.5.5",
+          "pluginVersion": "12.1.1",
           "targets": [
             {
               "datasource": {
-                "type": "loki",
-                "uid": "000000001"
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
               },
-              "expr": "sum by (compose_service)(count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} $filter |~ \"$search\" [$__interval]))",
-              "instant": false,
-              "legendFormat": "{{ compose_service }}",
-              "range": true,
+              "editorMode": "code",
+              "expr": "host:in($host) AND category:in(serverlogs) $serverlogs_query\n  | stats by (host) count()",
+              "legendFormat": "{{ host }}",
+              "queryType": "statsRange",
               "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "loki",
-                "uid": "000000001"
-              },
-              "expr": "sum (count_over_time({host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\", compose_service=~\"$service\"} [$__interval]))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "unfiltered",
-              "range": true,
-              "refId": "unfiltered",
-              "resolution": 1
             }
           ],
-          "title": "Message counts by service [$__interval]",
-          "transformations": [],
-          "transparent": true,
+          "title": "overview by host [$__interval]",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 10,
+            "x": 14,
+            "y": 34
+          },
+          "id": 19,
+          "options": {
+            "displayLabels": [
+              "percent",
+              "name"
+            ],
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Value",
+              "sortDesc": false,
+              "values": [
+                "value"
+              ]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "12.1.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
+              },
+              "editorMode": "code",
+              "expr": "host:in($host) AND category:in(serverlogs) $serverlogs_query\n  | stats by (host) count() logs",
+              "legendFormat": "{{ host }}",
+              "queryType": "stats",
+              "refId": "A"
+            }
+          ],
+          "title": "overview by host",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 14,
+            "x": 0,
+            "y": 63
+          },
+          "id": 20,
+          "maxDataPoints": 100,
+          "options": {
+            "legend": {
+              "calcs": [
+                "max",
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.0.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
+              },
+              "editorMode": "code",
+              "expr": "host:in($host) AND category:in(serverlogs) $serverlogs_query\n| format 'UNDEFINED' as systemd_unit keep_original_fields\n| stats by (systemd_unit) count()",
+              "legendFormat": "{{ systemd_unit }}",
+              "queryType": "statsRange",
+              "refId": "A"
+            }
+          ],
+          "title": "overview by systemd_unit [$__interval]",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 10,
+            "x": 14,
+            "y": 63
+          },
+          "id": 21,
+          "options": {
+            "displayLabels": [
+              "percent",
+              "name",
+              "value"
+            ],
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
+              },
+              "editorMode": "code",
+              "expr": "host:in($host) AND category:in(serverlogs) $serverlogs_query\n| format 'UNDEFINED' as systemd_unit keep_original_fields\n| stats by (host,systemd_unit) count()",
+              "legendFormat": "{{ host }}:{{ systemd_unit }}",
+              "queryType": "stats",
+              "refId": "A"
+            }
+          ],
+          "title": "overview by host and systemd_unit",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "bars",
+                "fillOpacity": 100,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "stepBefore",
+                "lineWidth": 0,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 14,
+            "x": 0,
+            "y": 69
+          },
+          "id": 22,
+          "maxDataPoints": 100,
+          "options": {
+            "legend": {
+              "calcs": [
+                "max",
+                "sum"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Total",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.0.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
+              },
+              "editorMode": "code",
+              "expr": "host:in($host) AND category:in(serverlogs)\n| stats by (host,systemd_unit,filename) count()",
+              "legendFormat": "{{ host }} {{ systemd_unit }} {{ filename }}",
+              "queryType": "statsRange",
+              "refId": "A"
+            }
+          ],
+          "title": "unfiltered logs (without custom Server Query), stacked [$__interval]",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "light-blue",
+                "mode": "shades"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "fieldMinMax": false,
+              "mappings": [],
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 10,
+            "x": 14,
+            "y": 69
+          },
+          "id": 23,
+          "options": {
+            "displayLabels": [
+              "percent"
+            ],
+            "legend": {
+              "calcs": [],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Value",
+              "sortDesc": false,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.0.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
+              },
+              "editorMode": "code",
+              "expr": "host:in($host) AND category:in(serverlogs) $serverlogs_query\n  | stats by(host, systemd_unit, filename) count() logs \n  | sort by(logs) desc | limit 20",
+              "legendFormat": "{{ host }}:{{ systemd_unit }}{{ filename }}",
+              "queryType": "stats",
+              "refId": "A"
+            }
+          ],
+          "title": "top 20 by host, service",
+          "type": "piechart"
         }
       ],
-      "title": "Log Volume Statistics",
+      "title": "Serverlogs Statistics",
       "type": "row"
     },
     {
@@ -378,128 +1334,119 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 7
+        "y": 34
       },
-      "id": 15,
+      "id": 16,
       "panels": [
         {
           "datasource": {
-            "type": "loki",
-            "uid": "$loki"
+            "type": "victorialogs-datasource",
+            "uid": "${DS}"
           },
           "description": "",
+          "fieldConfig": {
+            "defaults": {},
+            "overrides": []
+          },
           "gridPos": {
-            "h": 17,
+            "h": 22,
             "w": 24,
             "x": 0,
-            "y": 18
+            "y": 35
           },
-          "id": 3,
-          "maxDataPoints": 5000,
+          "id": 15,
           "options": {
             "dedupStrategy": "none",
+            "enableInfiniteScrolling": true,
             "enableLogDetails": true,
             "prettifyLogMessage": false,
             "showCommonLabels": false,
             "showLabels": false,
             "showTime": true,
             "sortOrder": "Ascending",
-            "wrapLogMessage": false
+            "wrapLogMessage": true
           },
-          "pluginVersion": "7.1.5",
+          "pluginVersion": "12.1.1",
           "targets": [
             {
               "datasource": {
-                "type": "loki",
-                "uid": "$loki"
+                "type": "victorialogs-datasource",
+                "uid": "${DS}"
               },
               "editorMode": "code",
-              "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n| line_format \"{{.compose_project }}/{{.compose_service }}\\t| {{ __line__ }}\"",
-              "hide": false,
-              "legendFormat": "dockerlogs",
-              "maxLines": 5000,
-              "queryType": "range",
+              "expr": "host:in($host) AND category:in(serverlogs) $serverlogs_query\n| sort\n# format outputs with color codes\n| format \"\\033[33m<host>\\033[0m:\\033[36m<job>\\033[0m:\\033[96m<systemd_unit><filename>\\033[0m\\t<_msg>\" as _msg",
+              "legendFormat": "{{ compose_service }}",
+              "queryType": "instant",
               "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "loki",
-                "uid": "$loki"
-              },
-              "editorMode": "code",
-              "expr": "{host=~\"$host\",category=\"dockerlogs\",compose_project=~\"$project\",compose_service=~\"$service\"} $filter |~ \"$search\" \n# parse container_labels json\n| line_format \"{{ .container_labels }}\" | json\n# format printed line\n| line_format \"{{ .com_docker_compose_project | trunc 6 }}/{{.compose_service | trunc 6 }}\\t| {{ __line__ }}\"",
-              "hide": true,
-              "legendFormat": "",
-              "maxLines": 5000,
-              "queryType": "range",
-              "refId": "B"
             }
           ],
-          "title": "log messages",
+          "title": "",
           "type": "logs"
         }
       ],
-      "title": "Logs",
+      "title": "Server Logs (journald, /var/logs)",
       "type": "row"
     }
   ],
+  "preload": false,
   "refresh": "",
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 41,
   "tags": [
-    "loki",
+    "docker",
     "logs",
-    "docker"
+    "validation",
+    "victorialogs"
   ],
   "templating": {
     "list": [
       {
         "current": {
-          "selected": true
+          "text": "VictoriaLogs",
+          "value": "PD775F2863313E6C7"
         },
-        "description": "Loki Datasource",
-        "hide": 0,
         "includeAll": false,
-        "multi": false,
-        "name": "loki",
+        "name": "DS",
         "options": [],
-        "query": "loki",
-        "queryValue": "",
+        "query": "victoriametrics-logs-datasource",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
-        "allValue": ".+",
+        "allValue": "*",
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
-          "uid": "$loki"
+          "type": "victorialogs-datasource",
+          "uid": "${DS}"
         },
-        "definition": "label_values(host)",
-        "hide": 0,
+        "definition": "",
         "includeAll": true,
+        "label": "host",
         "multi": true,
         "name": "host",
         "options": [],
-        "query": "label_values(host)",
-        "refresh": 2,
+        "query": {
+          "field": "host",
+          "limit": 0,
+          "query": "",
+          "refId": "VictoriaLogsVariableQueryEditor-VariableQuery",
+          "type": "fieldValue"
+        },
+        "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
-        "allValue": ".+",
+        "allValue": "*",
         "current": {
-          "selected": true,
           "text": [
             "All"
           ],
@@ -508,28 +1455,30 @@
           ]
         },
         "datasource": {
-          "uid": "${loki}"
+          "type": "victorialogs-datasource",
+          "uid": "${DS}"
         },
-        "definition": "label_values({host=~\"$host\"}, compose_project)",
-        "hide": 0,
+        "definition": "host:in($host)",
         "includeAll": true,
+        "label": "project",
         "multi": true,
-        "name": "project",
+        "name": "compose_project",
         "options": [],
-        "query": "label_values({host=~\"$host\"}, compose_project)",
+        "query": {
+          "field": "compose_project",
+          "limit": 0,
+          "query": "host:in($host)",
+          "refId": "VictoriaLogsVariableQueryEditor-VariableQuery",
+          "type": "fieldValue"
+        },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
-        "allValue": ".*",
+        "allValue": "*",
         "current": {
-          "selected": true,
           "text": [
             "All"
           ],
@@ -538,34 +1487,53 @@
           ]
         },
         "datasource": {
-          "uid": "${loki}"
+          "type": "victorialogs-datasource",
+          "uid": "${DS}"
         },
-        "definition": "label_values({host=~\"$host\",compose_project=~\"$project\"}, compose_service)",
-        "hide": 0,
+        "definition": "host:in($host) and compose_project:in($compose_project)",
         "includeAll": true,
-        "label": "",
+        "label": "service",
         "multi": true,
-        "name": "service",
+        "name": "compose_service",
         "options": [],
-        "query": "label_values({host=~\"$host\",compose_project=~\"$project\"}, compose_service)",
+        "query": {
+          "field": "compose_service",
+          "limit": 0,
+          "query": "host:in($host) and compose_project:in($compose_project)",
+          "refId": "VictoriaLogsVariableQueryEditor-VariableQuery",
+          "type": "fieldValue"
+        },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "current": {
-          "selected": true,
+          "text": "*",
+          "value": "*"
+        },
+        "description": "LogsQL Query String\nwords or LogsQL statements",
+        "label": "Query",
+        "name": "log_query",
+        "options": [
+          {
+            "selected": true,
+            "text": "*",
+            "value": "*"
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      },
+      {
+        "current": {
           "text": "",
           "value": ""
         },
-        "description": "Custom LogQL line filter expressions, added to the query, before formatting",
-        "hide": 0,
-        "name": "filter",
+        "description": "LogsQL Query String for filtering Serverlogs\nwords or LogsQL statements",
+        "label": "Server Query",
+        "name": "serverlogs_query",
         "options": [
           {
             "selected": true,
@@ -574,40 +1542,19 @@
           }
         ],
         "query": "",
-        "skipUrlSync": false,
         "type": "textbox"
       },
       {
-        "current": {
-          "selected": true,
-          "text": "",
-          "value": ""
-        },
-        "description": "only lines with that string (regex)",
-        "hide": 0,
-        "name": "search",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "skipUrlSync": false,
-        "type": "textbox"
-      },
-      {
+        "baseFilters": [],
         "datasource": {
-          "type": "loki",
-          "uid": "${loki}"
+          "type": "victoriametrics-logs-datasource",
+          "uid": "${DS}"
         },
-        "description": "additional filtering by log stream labels",
+        "description": "adhoc filter",
         "filters": [],
         "hide": 1,
-        "label": "label filter",
-        "name": "loki_filter",
-        "skipUrlSync": false,
+        "label": "filter",
+        "name": "adhoc",
         "type": "adhoc"
       }
     ]
@@ -616,23 +1563,9 @@
     "from": "now-15m",
     "to": "now"
   },
-  "timepicker": {
-    "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
-    ]
-  },
-  "timezone": "",
+  "timepicker": {},
+  "timezone": "browser",
   "title": "Docker Logs Dashboard",
   "uid": "_PfW8xQGz",
-  "version": 15,
-  "weekStart": ""
+  "version": 16
 }
