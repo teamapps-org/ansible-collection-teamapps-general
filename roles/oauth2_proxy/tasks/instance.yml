@@ -31,7 +31,7 @@
   file:
     path: '{{ oauth2_proxy_instance_redis_data_directory }}'
     state: directory
-    owner: root
+    owner: '999'
     group: root
     mode: '0750'
   when:
