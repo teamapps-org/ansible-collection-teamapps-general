@@ -54,7 +54,6 @@ vmagent_promscrape_config:
     scrape_interval: "{{ vmagent_scrape_interval }}"
     scrape_timeout: "{{ vmagent_scrape_timeout }}"
     external_labels:
-      scraper_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}" # deprecated, kept during collector_instance transition
       collector_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
       # No global `host` external_label here: vmagent scrape configs set `host`
       # per-target (netdata/self-scrape default to the local hostname, and custom jobs such as

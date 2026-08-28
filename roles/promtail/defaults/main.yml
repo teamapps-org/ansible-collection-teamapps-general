@@ -59,6 +59,20 @@ promtail_scrape_configs: [{}]
 
 # scrape logs from docker containers
 promtail_scrape_docker_enabled: false
+
+# Default pipeline stages for the docker scrape config.
+promtail_scrape_config_docker_pipeline_stages_base:
+  - multiline:
+      firstline: '^\x{200B}'
+      max_wait_time: 1s
+  - drop:
+      older_than: 48h
+      drop_counter_reason: "line_too_old"
+
+# Extra stages appended after the base ones, e.g. host-scoped body rewrites
+# for containers whose JSON log keys collide with stream labels.
+promtail_scrape_config_docker_pipeline_stages_extra: []
+
 promtail_scrape_config_docker:
   - job_name: docker
     docker_sd_configs:
@@ -114,13 +128,7 @@ promtail_scrape_config_docker:
       # - action: labelmap
       #   regex: '__meta_docker_container_label_(.+)'
       #   replacement: 'container_labels_${1}'
-    pipeline_stages:
-      - multiline:
-          firstline: '^\x{200B}'
-          max_wait_time: 1s
-      - drop:
-          older_than: 48h
-          drop_counter_reason: "line_too_old"
+    pipeline_stages: '{{ promtail_scrape_config_docker_pipeline_stages_base + promtail_scrape_config_docker_pipeline_stages_extra }}'
 
 
 # deploy mode (binary/docker)

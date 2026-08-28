@@ -18,7 +18,7 @@ Role to install and configure Victoriametrics vmagent. Installs by using binary 
       global:
         scrape_interval: 10s
         external_labels:
-          scraper_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
+          collector_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
       scrape_configs:
         - job_name: "netdata"
           metrics_path: /api/v1/allmetrics
