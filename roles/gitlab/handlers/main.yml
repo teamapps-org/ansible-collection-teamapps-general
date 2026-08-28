@@ -8,3 +8,7 @@
   command: gitlab-ctl restart gitlab-pages
   register: gitlab_pages_restart
   failed_when: 'gitlab_pages_restart.rc != 0'
+
+- name: gitlab reload systemd
+  systemd:
+    daemon_reload: true
