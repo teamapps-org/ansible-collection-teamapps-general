@@ -13,6 +13,7 @@
   loop: '{{ oauth2_proxy_instances | default([]) }}'
   loop_control:
     loop_var: instance
+    label: '{{ instance.domain }}'
   vars:
     oauth2_proxy_instance_domain: "{{ instance.domain }}"
     oauth2_proxy_instance_standalone: "{{ instance.standalone | default(False) }}"

@@ -54,6 +54,7 @@
     group: root
     mode: '0640'
   register: oauth2_proxy_instance_reg_config
+  no_log: true
 
 - name: deploy htpasswd file - {{ oauth2_proxy_instance_domain }}
   template:
