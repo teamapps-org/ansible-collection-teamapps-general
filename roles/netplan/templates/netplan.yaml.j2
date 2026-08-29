@@ -17,5 +17,10 @@
 network:
     version: 2
     ethernets:
+{% if netplan_ethernets %}
+        {{ netplan_ethernets | teamapps.general.to_nice_yaml(indent=4) | indent(8, False) }}
+{% endif %}
+{% if netplan_manage_addresses | bool %}
         {{ netplan_interface }}:
             {{ netplan_interface_config | teamapps.general.to_nice_yaml(indent=4) | indent(12, False) }}
+{% endif %}

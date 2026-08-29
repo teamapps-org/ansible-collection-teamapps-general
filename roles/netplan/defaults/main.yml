@@ -1,8 +1,10 @@
 ---
 netplan_interface: '{{ ansible_facts.default_ipv4.interface }}'
-netplan_manage_adresses: true
+netplan_manage_addresses: true
 netplan_addresses: []
 netplan_config_file: /etc/netplan/90-ansible.yaml
+# Rendered independently from the default-interface address configuration.
+netplan_ethernets: {}
 
 netplan_interface_config:
   addresses: '{{ netplan_addresses }}'

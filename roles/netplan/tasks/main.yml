@@ -1,20 +1,30 @@
 ---
-- name: Configuring Netplan additional addresses
+- name: Warn about misspelled netplan_manage_adresses variable
+  changed_when: true
+  debug:
+    msg: >-
+      WARNING: Misspelled netplan_manage_adresses is no longer supported.
+      Rename it to netplan_manage_addresses.
+  when: netplan_manage_adresses is defined
+  tags:
+    - netplan
+
+- name: Configure Netplan
   template:
     src: netplan.yaml.j2
     dest: "{{ netplan_config_file }}"
     owner: root
     group: root
     mode: '0600'
-  when: netplan_manage_adresses
+  when: netplan_manage_addresses | bool or (netplan_ethernets | length) > 0
   notify: netplan apply
   tags:
     - netplan
 
 # Always run validate to keep warning when invalid config is written but not applied
 - name: Netplan validate config
-  command: netplan generate --mapping '{{ netplan_interface }}'
-  when: netplan_manage_adresses
+  command: netplan generate
+  when: netplan_manage_addresses | bool or (netplan_ethernets | length) > 0
   changed_when: false
   tags:
     - netplan
