@@ -53,6 +53,10 @@ victorialogs_vmalert_external_labels:
   - 'alertsource={{ victorialogs_domain }}'
   - 'alerttype=vlogs'
 
+# Record canary lag and missing minute buckets for VictoriaMetrics alerting.
+victorialogs_canary_recording_rules_enabled: false
+victorialogs_canary_stream_selector: '(job:"journallogs" or job:"docker")'
+
 # vlogs alert rule groups https://docs.victoriametrics.com/victorialogs/vmalert/#groups
 # ensure to escape strings with {{ and }} using {% raw %}{% endraw %}
 victorialogs_vmalert_rule_groups:
