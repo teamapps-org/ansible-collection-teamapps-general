@@ -26,10 +26,48 @@
     - vmalert reload
     - vmalert validate config
 
+- name: validate VictoriaLogs canary alert configuration
+  assert:
+    that:
+      - victoriametrics_victorialogs_canary_domains is sequence
+      - victoriametrics_victorialogs_canary_domains is not string
+      - victoriametrics_victorialogs_canary_domains | length > 0
+      - victoriametrics_victorialogs_canary_alert_labels is mapping
+    fail_msg: >-
+      victoriametrics_victorialogs_canary_domains must contain at least one
+      domain and victoriametrics_victorialogs_canary_alert_labels must be a mapping.
+  when: victoriametrics_victorialogs_canary_alerts_enabled | bool
+  tags:
+    - victorialogs_canary
+
+- name: manage VictoriaLogs canary alert rules file
+  template:
+    src: rules/victorialogs-canary.rules.yml.j2
+    dest: '{{ victoriametrics_path }}/rules/victorialogs-canary.rules.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  when: victoriametrics_victorialogs_canary_alerts_enabled | bool
+  notify:
+    - vmalert reload
+    - vmalert validate config
+  tags:
+    - victorialogs_canary
+
+- name: remove disabled VictoriaLogs canary alert rules file
+  file:
+    path: '{{ victoriametrics_path }}/rules/victorialogs-canary.rules.yml'
+    state: absent
+  when: not (victoriametrics_victorialogs_canary_alerts_enabled | bool)
+  notify:
+    - vmalert reload
+    - vmalert validate config
+  tags:
+    - victorialogs_canary
+
 - name: delete old rules
   file:
-    path:
-    dest: "{{ victoriametrics_path }}/rules/vmalert.rules.yml"
+    path: '{{ victoriametrics_path }}/rules/vmalert.rules.yml'
     state: absent
 
 - name: copy alerting rule files

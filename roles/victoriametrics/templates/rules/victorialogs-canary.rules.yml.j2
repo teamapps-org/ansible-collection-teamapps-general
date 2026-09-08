@@ -1,0 +1,107 @@
+# {{ ansible_managed }}
+groups:
+  - name: victorialogs_canary_expected
+    rules:
+      # Keep seven days of source identity so that a disappeared recording
+      # series remains alertable without a static expected-host list.
+      - record: log_canary_expected
+        expr: |
+{% for domain in victoriametrics_victorialogs_canary_domains %}
+          max by (domain, host, src) (
+            count_over_time(log_canary_lag_seconds{domain="{{ domain }}"}[7d])
+          ) > 0{{ ' or' if not loop.last else '' }}
+{% endfor %}
+
+      - record: log_canary_readpath_expected
+        expr: |
+{% for domain in victoriametrics_victorialogs_canary_domains %}
+          label_set(vector(1), "domain", "{{ domain }}"){{ ' or' if not loop.last else '' }}
+{% endfor %}
+
+  - name: victorialogs_canary
+    rules:
+      - alert: LogCanaryMissing
+        expr: >-
+          log_canary_expected
+          unless on (domain, host, src)
+          max_over_time(log_canary_lag_seconds[3m])
+        for: 2m
+        labels:
+{{ victoriametrics_victorialogs_canary_alert_labels | to_nice_yaml(indent=2, sort_keys=false) | indent(10, true) }}
+        annotations:
+          summary: '{% raw %}No {{ $labels.src }} logs from {{ $labels.host }} via {{ $labels.domain }}{% endraw %}'
+          description: >-
+            No current canary exists for this source path. Check the emitter and
+            log shipper. If many sources fail together, check VictoriaLogs
+            recording rules and their remote write to VictoriaMetrics.
+{% if victoriametrics_victorialogs_canary_dashboard_url | length > 0 %}
+          dashboard: '{{ victoriametrics_victorialogs_canary_dashboard_url }}'
+{% endif %}
+
+      - alert: LogCanaryDeliveryLag
+        expr: >-
+          (last_over_time(log_canary_lag_seconds[3m]) > 300)
+          and on (domain, host, src) log_canary_expected
+        for: 2m
+        labels:
+{{ victoriametrics_victorialogs_canary_alert_labels | to_nice_yaml(indent=2, sort_keys=false) | indent(10, true) }}
+        annotations:
+          summary: '{% raw %}Log delivery from {{ $labels.host }} via {{ $labels.domain }} is lagging{% endraw %}'
+          description: >-
+            The newest delivered canary is more than five minutes old. A wrong
+            source clock has the same symptom, so check time synchronization as
+            well as the emitter and log shipper.
+{% if victoriametrics_victorialogs_canary_dashboard_url | length > 0 %}
+          dashboard: '{{ victoriametrics_victorialogs_canary_dashboard_url }}'
+{% endif %}
+
+      - alert: LogCanaryPartialLoss
+        expr: >-
+          (log_canary_missing_minutes > 0)
+          and on (domain, host, src) log_canary_expected
+        for: 15m
+        labels:
+{{ victoriametrics_victorialogs_canary_alert_labels | to_nice_yaml(indent=2, sort_keys=false) | indent(10, true) }}
+        annotations:
+          summary: '{% raw %}Intermittent {{ $labels.src }} log loss from {{ $labels.host }}{% endraw %}'
+          description: >-
+            Minute sequence buckets are missing while newer canaries still
+            arrive. Check source restarts, clock changes, and the log shipper.
+{% if victoriametrics_victorialogs_canary_dashboard_url | length > 0 %}
+          dashboard: '{{ victoriametrics_victorialogs_canary_dashboard_url }}'
+{% endif %}
+
+  - name: victorialogs_canary_readpath
+    rules:
+      - alert: LogCanaryReadPathFailing
+        expr: >-
+          (victorialogs_canary_readpath_exit_code != 0)
+          and on (domain) log_canary_readpath_expected
+        for: 10m
+        labels:
+{{ victoriametrics_victorialogs_canary_alert_labels | to_nice_yaml(indent=2, sort_keys=false) | indent(10, true) }}
+        annotations:
+          summary: '{% raw %}VictoriaLogs {{ $labels.domain }} read path is failing{% endraw %}'
+          description: >-
+            The restricted public query fails through DNS, TLS, authentication,
+            or LogsQL. Writes can still succeed while this read path is unavailable.
+{% if victoriametrics_victorialogs_canary_dashboard_url | length > 0 %}
+          dashboard: '{{ victoriametrics_victorialogs_canary_dashboard_url }}'
+{% endif %}
+
+      - alert: LogCanaryReadPathNotReporting
+        expr: >-
+          log_canary_readpath_expected
+          unless on (domain)
+          (time() - victorialogs_canary_readpath_last_run_seconds <= 1800)
+        for: 10m
+        labels:
+{{ victoriametrics_victorialogs_canary_alert_labels | to_nice_yaml(indent=2, sort_keys=false) | indent(10, true) }}
+        annotations:
+          summary: '{% raw %}No VictoriaLogs {{ $labels.domain }} read probe is reporting{% endraw %}'
+          description: >-
+            No recent probe result exists for this service domain, so its public
+            read path is unmonitored. Check the probe schedule and metrics scrape.
+{% if victoriametrics_victorialogs_canary_dashboard_url | length > 0 %}
+          dashboard: '{{ victoriametrics_victorialogs_canary_dashboard_url }}'
+{% endif %}

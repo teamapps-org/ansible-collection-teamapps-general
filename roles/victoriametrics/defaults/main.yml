@@ -56,6 +56,15 @@ victoriametrics_vmalert_external_source: >-
 victoriametrics_vmalert_external_labels:
   - 'alertsource={{ victoriametrics_domain }}'
 
+# Alert on missing, delayed, or incomplete VictoriaLogs canary signals. The
+# domain list scopes both current and seven-day source-discovery queries.
+victoriametrics_victorialogs_canary_alerts_enabled: false
+victoriametrics_victorialogs_canary_domains: []
+victoriametrics_victorialogs_canary_alert_labels:
+  severity: warning
+# Optional runbook or dashboard URL added to canary alerts.
+victoriametrics_victorialogs_canary_dashboard_url: ''
+
 victoriametrics_blackbox_image: prom/blackbox-exporter
 victoriametrics_blackbox_version: master # if unstable v0.18.0 can be used
 
