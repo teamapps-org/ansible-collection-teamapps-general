@@ -1,0 +1,14 @@
+[Unit]
+# {{ ansible_managed }}
+Description=VictoriaLogs canary emitter timer
+
+[Timer]
+OnCalendar=*-*-* *:*:00
+AccuracySec=1s
+# The emitter proves the pipeline is alive right now. A missed run must not be
+# replayed later, because a late line would look like a late delivery.
+Persistent=false
+Unit=vlcanary.service
+
+[Install]
+WantedBy=timers.target

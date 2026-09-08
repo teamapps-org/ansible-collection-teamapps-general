@@ -1,0 +1,26 @@
+---
+# Full teardown, so turning the probe off removes the credential too rather than
+# leaving a secret behind on a host that no longer probes.
+- name: remove the read path probe schedule
+  ansible.builtin.cron:
+    name: victorialogs canary read path probe
+    cron_file: vlcanary_readpath
+    user: root
+    state: absent
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_readpath
+
+# Remove the textfile metric with the probe. Otherwise node_exporter keeps the
+# stale result and hides absence while firing a permanent staleness alert.
+- name: remove the read path probe files
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: absent
+  loop:
+    - /usr/local/bin/vlcanary-readpath
+    - /etc/vlcanary-readpath.netrc
+    - '{{ victorialogs_canary_textfile_dir }}/vlcanary_readpath.prom'
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_readpath

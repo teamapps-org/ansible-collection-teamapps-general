@@ -1,0 +1,70 @@
+---
+- name: check for an existing container canary
+  ansible.builtin.stat:
+    path: '{{ victorialogs_canary_docker_path }}/docker-compose.yml'
+  register: victorialogs_canary_compose_present
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_docker
+
+- name: create the container canary directory
+  ansible.builtin.file:
+    path: '{{ victorialogs_canary_docker_path }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: victorialogs_canary_enabled and victorialogs_canary_docker_enabled
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_docker
+
+- name: deploy the container canary compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: '{{ victorialogs_canary_docker_path }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0644'
+  register: victorialogs_canary_compose
+  when: victorialogs_canary_enabled and victorialogs_canary_docker_enabled
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_docker
+
+- name: start the container canary
+  community.docker.docker_compose_v2:
+    project_src: '{{ victorialogs_canary_docker_path }}'
+    project_name: vlcanary
+    state: present
+    recreate: "{{ victorialogs_canary_compose.changed | default(false) | ternary('always', 'auto') }}"
+  when:
+    - victorialogs_canary_enabled and victorialogs_canary_docker_enabled
+    - not ansible_check_mode or victorialogs_canary_compose_present.stat.exists
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_docker
+
+- name: tear down the container canary
+  community.docker.docker_compose_v2:
+    project_src: '{{ victorialogs_canary_docker_path }}'
+    project_name: vlcanary
+    state: absent
+    remove_orphans: true
+  when:
+    - not (victorialogs_canary_enabled and victorialogs_canary_docker_enabled)
+    - victorialogs_canary_compose_present.stat.exists | default(false)
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_docker
+
+- name: remove the container canary directory
+  ansible.builtin.file:
+    path: '{{ victorialogs_canary_docker_path }}'
+    state: absent
+  when:
+    - not (victorialogs_canary_enabled and victorialogs_canary_docker_enabled)
+    - victorialogs_canary_compose_present.stat.exists | default(false)
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_docker

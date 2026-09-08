@@ -1,0 +1,34 @@
+---
+# {{ ansible_managed }}
+# Container-path canary. A separate collector reads these logs, so the journal
+# canary cannot verify this path.
+services:
+  canary:
+    image: busybox:{{ victorialogs_canary_busybox_version }}
+    restart: always
+    # Prefix with zero-width space so multiline parsing keeps lines separate.
+    command:
+      - sh
+      - -c
+      - >-
+        while true; do
+        printf '\342\200\213VLCANARY src=docker seq=%s\n' "$$(date +%s)";
+        touch /tmp/last_emit;
+        sleep 60;
+        done
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          test -f /tmp/last_emit &&
+          age=$$(( $$(date +%s) - $$(stat -c %Y /tmp/last_emit) )) &&
+          test "$$age" -lt 120
+      interval: 60s
+      timeout: 5s
+      retries: 2
+      start_period: 120s
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '2'
