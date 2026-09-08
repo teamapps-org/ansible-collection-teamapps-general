@@ -57,7 +57,7 @@ groups:
 
       - alert: LogCanaryPartialLoss
         expr: >-
-          (log_canary_missing_minutes > 0)
+          (last_over_time(log_canary_missing_minutes[15m]) > 0)
           and on (domain, host, src) log_canary_expected
         for: 15m
         labels:
