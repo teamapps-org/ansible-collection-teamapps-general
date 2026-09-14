@@ -97,6 +97,98 @@ oauth2_proxy_instances:
 
 For multi-tenant Entra ID apps, set `oidc_issuer_url: https://login.microsoftonline.com/common/v2.0`, `insecure_oidc_skip_issuer_verification: true`, and optionally restrict tenants with `entra_id_allowed_tenants`.
 
+## Choose the Entra claim mode
+
+Each oauth2-proxy instance uses one of two modes. The selected claim supplies both the `allowed_groups` check and the backend groups headers.
+
+| Mode | `oidc_groups_claim` | `allowed_groups` entries | `X-Groups` and `X-Forwarded-Groups` values |
+| --- | --- | --- | --- |
+| Group object IDs, the original mode | `groups`, also the default when omitted | Entra security group object IDs | Original group object IDs, without translation to names |
+| App-role names | `roles` | App role values such as `role.internal` and `role.external` | App role values by name, not group object IDs or role display names |
+
+The groups headers carry the complete session group list, not just entries matching `allowed_groups`. An instance cannot filter by group IDs while forwarding app roles through the same claim setting. Changing modes requires matching Entra configuration and `allowed_groups` values.
+
+Both modes forward the full list as comma-separated values in `X-Forwarded-Groups` and `X-Groups`. The shared role does not select one role or generate an `X-Role` header. The backend parses the list and decides which permissions it grants.
+
+### Group object ID mode
+
+Configure `SecurityGroup` claims in the App registration and restrict Enterprise Application assignment to the intended users or groups. Add these settings to the instance:
+
+~~~yaml
+oidc_groups_claim: groups
+scope: openid User.Read
+allowed_groups:
+  - '00000000-0000-0000-0000-000000000000' # Security group object ID
+~~~
+
+`User.Read` supports Microsoft Graph lookup when the token has too many group memberships. Group display names are not forwarded.
+
+## Configure Entra app roles
+
+1. Define app roles in the App registration, with **Users/Groups** as the allowed member type. Use role values such as `role.internal` and `role.external`.
+2. Set **Assignment required?** to **Yes** in the Enterprise Application.
+3. Assign the intended security groups or users to those roles in the Enterprise Application.
+4. Set `oidc_groups_claim: roles` and put the allowed role **values**, not display names or group object IDs, in `allowed_groups`.
+5. Configure the backend to read `X-Forwarded-Groups` as a comma-separated list of role values.
+
+For new applications, use the `role.` prefix with lowercase names, for example `role.internal`, `role.external`, `role.admin`, and `role.read_only`. This is a naming convention, not an oauth2-proxy requirement. The prefix identifies values as application roles when reading logs or configuration. It does not change how authorization works. Existing role values remain valid; renaming them requires coordinated changes to Entra, `allowed_groups`, and backend permission checks.
+
+Keep the exact same role values in the Entra App registration, the proxy's `allowed_groups`, and application permission checks. The proxy forwards these values unchanged; it does not add or remove the `role.` prefix.
+
+`allowed_groups` is the proxy's admission check: the user needs at least one listed role to reach the service. For example, `allowed_groups: [role.internal, role.external]` admits a user with either role. It does not choose a primary role or remove other roles from the forwarded list. The backend checks that list to decide which operations the admitted user can perform.
+
+~~~yaml
+oauth2_proxy_instances:
+  - domain: service.example.com
+    provider: entra-id
+    entra_id_tenant_id: TENANT_ID
+    client_id: APPLICATION_ID
+    client_secret: '{{ service_oauth_client_secret }}' # Supply through Ansible Vault.
+    cookie_secret: '{{ service_oauth_cookie_secret }}' # Supply through Ansible Vault.
+    session_store_type: redis
+    email_domains:
+      - '*'
+    scope: openid profile email
+    oidc_groups_claim: roles
+    allowed_groups:
+      - role.internal
+      - role.external
+~~~
+
+The `roles` claim replaces oauth2-proxy's session group list. `allowed_groups` therefore checks app roles, and `X-Auth-Request-Groups` carries role values. oauth2-proxy does not emit an `X-Auth-Request-Role` header for this configuration. Group-ID filtering and app-role filtering are not separate checks here.
+
+`openid profile email` requests identity claims for the backend. Microsoft Graph `User.Read` is needed for directory group overage lookup, not to request app roles. Keep it if your provider configuration still requires that lookup. A user without an allowed role must be denied by oauth2-proxy.
+
+After changing the claim or assignments, sign out and sign in again to test with a new session. Existing Redis sessions and the nginx auth cache can retain earlier authorization data.
+
+## Identity and role header reference
+
+The webproxy integration overwrites these backend request headers with values from the oauth2-proxy auth response. Missing values remove the corresponding header.
+
+| Backend headers | Auth response header |
+| --- | --- |
+| `X-User`, `X-Forwarded-User` | `X-Auth-Request-User` |
+| `X-Email`, `X-Forwarded-Email` | `X-Auth-Request-Email` |
+| `X-Groups`, `X-Forwarded-Groups` | `X-Auth-Request-Groups` |
+| `X-Forwarded-Preferred-Username` | `X-Auth-Request-Preferred-Username` |
+
+Email and preferred username depend on the provider's session claims. They are not stable authorization identifiers. The groups headers preserve the complete list, including multiple app roles.
+
+These instance settings control role forwarding:
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `oidc_groups_claim` | Omitted, oauth2-proxy uses `groups` | Token claim used for session groups. `roles` selects Entra app roles. |
+| `allowed_groups` | `[]` | For `entra-id`, requires at least one listed session group. An empty list adds no group restriction. |
+
+This forwarding also applies to `oauth2_proxy_webproxy_sso_configs`. The shared oauth2-proxy instance must supply `X-Auth-Request-Groups`, usually through `set_xauthrequest = true`.
+
+For a header such as `X-Forwarded-Groups: role.internal, role.read_only`, split on commas, trim whitespace, and compare complete values with the expected case. Do not use substring matches or depend on list order. The application defines how multiple roles combine. Missing or unknown values must not grant permissions.
+
+Only backends reachable through the trusted proxy can rely on these headers. The role overwrites the documented identity and groups headers with authenticated values. It does not strip arbitrary custom headers such as `X-Role` or `X-Name`; applications must not trust those without explicit proxy configuration.
+
+To adopt the claim setting, move `oidc_groups_claim = "roles"` from `additional_config` to `oidc_groups_claim: roles`. Do not define the TOML key twice. Keep existing application-specific header adapters until the backend can consume the list.
+
 ## Redis session storage
 
 oauth2-proxy stores sessions in browser cookies by default. For providers with large OIDC tokens or many group claims, especially Microsoft Entra ID, use Redis session storage to keep browser cookies small and avoid split-cookie handling issues.

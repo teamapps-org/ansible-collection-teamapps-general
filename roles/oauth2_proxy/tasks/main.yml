@@ -36,6 +36,7 @@
     oauth2_proxy_instance_authenticated_emails: "{{ instance.authenticated_emails | default([]) }}"
     oauth2_proxy_instance_gitlab_groups: "{{ instance.gitlab_groups | default([]) }}"
     oauth2_proxy_instance_allowed_groups: "{{ instance.allowed_groups | default([]) }}"
+    oauth2_proxy_instance_oidc_groups_claim: "{{ instance.oidc_groups_claim | default('') }}"
     oauth2_proxy_instance_scope: "{{ instance.scope | default('openid') }}"
     oauth2_proxy_instance_entra_id_allowed_tenants: "{{ instance.entra_id_allowed_tenants | default([]) }}"
     oauth2_proxy_instance_insecure_oidc_skip_issuer_verification: "{{ instance.insecure_oidc_skip_issuer_verification | default(false) }}"

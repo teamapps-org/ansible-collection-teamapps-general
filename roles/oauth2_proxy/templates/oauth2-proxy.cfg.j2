@@ -110,6 +110,9 @@ client_id = "{{ oauth2_proxy_instance_client_id }}"
 {% if oauth2_proxy_instance_client_secret != '' %}
 client_secret = "{{ oauth2_proxy_instance_client_secret }}"
 {% endif %}
+{% if oauth2_proxy_instance_oidc_groups_claim != '' %}
+oidc_groups_claim = "{{ oauth2_proxy_instance_oidc_groups_claim }}"
+{% endif %}
 
 {% if oauth2_proxy_instance_provider == 'gitlab' %}
 oidc_issuer_url = "{{ oauth2_proxy_instance_gitlab_url }}"

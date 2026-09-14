@@ -39,8 +39,9 @@ oauth2_proxy_instances: []
   #   entra_id_tenant_id: TENANT_ID # Required for provider: entra-id unless oidc_issuer_url is set.
   #   oidc_issuer_url: https://login.microsoftonline.com/TENANT_ID/v2.0 # Optional for provider: entra-id.
   #   scope: openid # Optional for provider: entra-id. Use "openid User.Read" for group overage support.
-  #   allowed_groups: # Optional for provider: entra-id. Entra ID group object IDs.
+  #   allowed_groups: # Optional for provider: entra-id. Group object IDs, or app role values with oidc_groups_claim: roles.
   #     - '00000000-0000-0000-0000-000000000000'
+  #   oidc_groups_claim: groups # Optional OIDC claim used for oauth2-proxy groups. Use roles for Entra app roles.
   #   entra_id_allowed_tenants: # Optional for multi-tenant Entra ID apps.
   #     - '00000000-0000-0000-0000-000000000000'
   #   insecure_oidc_skip_issuer_verification: false # Required for Entra ID multi-tenant common issuer.
