@@ -1,0 +1,4 @@
+---
+- name: reload systemd for vlcanary
+  ansible.builtin.systemd:
+    daemon_reload: true

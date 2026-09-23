@@ -6,6 +6,14 @@ Recommendation: mount an external volume to /srv before installing gitlab.
 
 This role installs gitlab from the apt repository and does not use docker.
 
+## Container registry storage
+
+When `gitlab_registry_path` is a dedicated filesystem, set
+`gitlab_registry_require_mount: true`. The role then refuses to configure or
+upgrade GitLab unless that path is mounted and adds a systemd dependency so
+GitLab stops if the mount is stopped. This prevents the registry from silently
+writing into the underlying root filesystem after a volume is unmounted.
+
 ## Usage Example
 
 ~~~yaml

@@ -96,8 +96,10 @@ services:
       - '-retention.maxDiskSpaceUsageBytes=10TiB'
       # - '-logNewStreams'
       # - '-loggerLevel INFO' # Minimum level of errors to log. Possible values: INFO, WARN, ERROR, FATAL, PANIC (default "INFO")
+    # Temporary executable check until a native HTTP healthcheck is available:
+    # https://github.com/VictoriaMetrics/VictoriaLogs/issues/1565
     healthcheck:
-      test: ["CMD", "wget", "-qO/dev/null", "http://127.0.0.1:9428/health"]
+      test: ["CMD", "/victoria-logs-prod", "-version"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -162,9 +164,16 @@ services:
       - '-http.pathPrefix=/vmalert'
       - '-datasource.url=http://victorialogs:9428/'
 
+      # The URL includes the full path required by vmagent above. Disable vmalert's
+      # automatic path append to avoid posting to '/api/v1/write/api/v1/write'.
       - '-remoteWrite.url={{ victorialogs_victoriametrics_remotewrite_url }}'
+      - '-remoteWrite.disablePathAppend'
       - '-remoteWrite.basicAuth.username={{ victorialogs_victoriametrics_remotewrite_username }}'
       - '-remoteWrite.basicAuth.password={{ victorialogs_victoriametrics_remotewrite_password }}'
+      # Base URL, no -remoteRead.disablePathAppend: that flag also disables path
+      # selection on -datasource.url, sending every LogsQL rule evaluation to the
+      # bare root of victorialogs:9428 (400 "unsupported path"). Auto-append picks
+      # the correct read path for both URLs.
       - '-remoteRead.url={{ victorialogs_victoriametrics_remoteread_url }}'
       - '-remoteRead.basicAuth.username={{ victorialogs_victoriametrics_remoteread_username }}'
       - '-remoteRead.basicAuth.password={{ victorialogs_victoriametrics_remoteread_password }}'

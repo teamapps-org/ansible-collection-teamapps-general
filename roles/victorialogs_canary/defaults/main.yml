@@ -1,0 +1,27 @@
+---
+# Emit synthetic canary log lines so per-host alert rules can detect a broken
+# log delivery chain: source -> shipper -> VictoriaLogs -> vmalert -> Alertmanager.
+# Deploy on every host that ships logs to a VictoriaLogs instance.
+victorialogs_canary_enabled: true
+# LogsQL stream selector shared by the read probe and recording rules.
+victorialogs_canary_stream_selector: '(job:"journallogs" or job:"docker")'
+
+# VictoriaLogs service domain written to read-path metrics. The playbook that
+# integrates this role with a shipper must set it when the probe is enabled.
+victorialogs_canary_domain: ''
+
+# Emit a second canary line through the container log path. The shipper reads
+# journald and container logs with separate collectors, so a single journald
+# canary cannot detect a broken container path.
+victorialogs_canary_docker_enabled: false
+victorialogs_canary_busybox_version: ''
+victorialogs_canary_docker_path: /container/vlcanary
+
+# Query the restricted public endpoint to cover DNS, TLS, auth, and LogsQL.
+# Enable the probe on one external host per VictoriaLogs service domain.
+victorialogs_canary_readpath_enabled: false
+victorialogs_canary_readpath_url: ''
+victorialogs_canary_readpath_username: ''
+victorialogs_canary_readpath_password: ''
+# Node exporter textfile directory for probe metrics.
+victorialogs_canary_textfile_dir: '{{ node_exporter_textfile_dir | default("/var/lib/node_exporter") }}'

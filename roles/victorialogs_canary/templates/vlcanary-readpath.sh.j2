@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# {{ ansible_managed }}
+# Public read-path probe. Credentials stay in a 0600 netrc file, outside process
+# arguments and Ansible diffs.
+set -u
+set -o pipefail
+
+URL='{{ victorialogs_canary_readpath_url }}'
+NETRC='/etc/vlcanary-readpath.netrc'
+MAX_LAG=300
+METRICS_FILE='{{ victorialogs_canary_textfile_dir }}/vlcanary_readpath.prom'
+
+write_metrics() {
+  exit_code=$?
+  trap - EXIT
+  end=$(date +%s)
+  temporary_file="${METRICS_FILE}.$$"
+  cat > "${temporary_file}" <<EOF
+# HELP victorialogs_canary_readpath_last_run_seconds Unix timestamp of the last read-path probe.
+# TYPE victorialogs_canary_readpath_last_run_seconds gauge
+victorialogs_canary_readpath_last_run_seconds{domain="{{ victorialogs_canary_domain }}"} ${end}
+# HELP victorialogs_canary_readpath_exit_code Exit code of the last read-path probe.
+# TYPE victorialogs_canary_readpath_exit_code gauge
+victorialogs_canary_readpath_exit_code{domain="{{ victorialogs_canary_domain }}"} ${exit_code}
+EOF
+  metrics_status=$?
+  if [ "${metrics_status}" -eq 0 ] && ! mv "${temporary_file}" "${METRICS_FILE}"; then
+    metrics_status=1
+  fi
+  if [ "${metrics_status}" -ne 0 ]; then
+    rm -f "${temporary_file}"
+    echo "ERROR: could not publish read-path metrics to ${METRICS_FILE}" >&2
+  fi
+  if [ "${exit_code}" -eq 0 ] && [ "${metrics_status}" -ne 0 ]; then
+    exit_code=8
+  fi
+  exit "${exit_code}"
+}
+
+trap write_metrics EXIT
+
+# Match job and full canary shape. A bare token also matches VictoriaLogs
+# request logs and could let the probe pass on its own query.
+QUERY='_time:1h {{ victorialogs_canary_stream_selector }} _msg:~"^(\\x{200B})?VLCANARY src=(journal|docker) seq=[0-9]+$" | math (now() - _time) as lag | stats min(lag) as lag_ns, count() as hits'
+
+if [ ! -r "${NETRC}" ]; then
+  echo "ERROR: credential file ${NETRC} is missing or unreadable" >&2
+  exit 5
+fi
+
+response="$(curl --silent --show-error --fail --max-time 30 \
+  --netrc-file "${NETRC}" \
+  --get "${URL}/select/logsql/query" \
+  --data-urlencode "query=${QUERY}" 2>&1)"
+status=$?
+
+if [ "${status}" -ne 0 ]; then
+  echo "ERROR: query to ${URL} failed: ${response}" >&2
+  exit 2
+fi
+
+hits="$(printf '%s' "${response}" | head -n1 | sed -n 's/.*"hits":"\([0-9]*\)".*/\1/p')"
+lag_ns="$(printf '%s' "${response}" | head -n1 | sed -n 's/.*"lag_ns":"\(-\{0,1\}[0-9][0-9]*\)".*/\1/p')"
+
+if [ -z "${hits}" ]; then
+  echo "ERROR: could not parse a hit count from the response: ${response}" >&2
+  exit 6
+fi
+
+if [ "${hits}" -eq 0 ]; then
+  echo "ERROR: no canary lines readable over the public endpoint" >&2
+  exit 3
+fi
+
+# An unparseable or negative lag means a clock problem or an unexpected response
+# shape. Do not treat either as healthy.
+if [ -z "${lag_ns}" ]; then
+  echo "ERROR: could not parse a lag from the response: ${response}" >&2
+  exit 6
+fi
+
+if [ "${lag_ns}" -lt 0 ]; then
+  echo "ERROR: newest canary line is stamped in the future, lag ${lag_ns}ns. Check the clock on the emitting host." >&2
+  exit 7
+fi
+
+lag_seconds=$(( lag_ns / 1000000000 ))
+if [ "${lag_seconds}" -gt "${MAX_LAG}" ]; then
+  echo "ERROR: newest readable canary line is ${lag_seconds}s old, limit is ${MAX_LAG}s" >&2
+  exit 4
+fi
+
+echo "OK: ${hits} canary lines readable, newest is ${lag_seconds}s old"
+exit 0

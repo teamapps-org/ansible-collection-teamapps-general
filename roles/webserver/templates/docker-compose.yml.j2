@@ -29,6 +29,7 @@ services:
         read_only: true
 {% endif %}
     networks:
+      - webproxy
       - code-network
     logging:
       driver: 'json-file'
@@ -67,7 +68,6 @@ services:
         read_only: true
     working_dir: /code
     networks:
-      - webproxy
       - code-network
     logging:
       driver: 'json-file'

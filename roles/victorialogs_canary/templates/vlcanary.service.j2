@@ -1,0 +1,7 @@
+[Unit]
+# {{ ansible_managed }}
+Description=VictoriaLogs canary emitter
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/vlcanary

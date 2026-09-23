@@ -18,7 +18,7 @@ Role to install and configure Victoriametrics vmagent. Installs by using binary 
       global:
         scrape_interval: 10s
         external_labels:
-          scraper_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
+          collector_instance: "{{ ansible_facts.fqdn | default(ansible_host) | default(inventory_hostname) }}"
       scrape_configs:
         - job_name: "netdata"
           metrics_path: /api/v1/allmetrics
@@ -46,6 +46,10 @@ Role to install and configure Victoriametrics vmagent. Installs by using binary 
 ## Parameters
 
 See [defaults](defaults/main.yml)
+
+`vmagent_remotewrite_relabel_configs` accepts a list of VictoriaMetrics relabel
+rules applied after external labels are added and immediately before remote
+write. An empty list disables remote-write relabeling.
 
 ## License
 

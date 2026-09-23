@@ -1,0 +1,152 @@
+---
+- name: validate canary configuration
+  ansible.builtin.assert:
+    that:
+      - not (victorialogs_canary_enabled and victorialogs_canary_docker_enabled) or victorialogs_canary_busybox_version | length > 0
+    fail_msg: >-
+      victorialogs_canary_busybox_version must be set when the Docker canary is enabled.
+  when: victorialogs_canary_enabled
+  tags:
+    - victorialogs_canary
+
+- name: deploy the canary emitter script
+  ansible.builtin.template:
+    src: vlcanary.sh.j2
+    dest: /usr/local/bin/vlcanary
+    owner: root
+    group: root
+    mode: '0755'
+  when: victorialogs_canary_enabled
+  tags:
+    - victorialogs_canary
+
+- name: check whether the canary emitter timer unit exists
+  ansible.builtin.stat:
+    path: /etc/systemd/system/vlcanary.timer
+  register: victorialogs_canary_timer_unit
+  tags:
+    - victorialogs_canary
+
+- name: deploy the canary emitter systemd units
+  ansible.builtin.template:
+    src: '{{ item }}.j2'
+    dest: /etc/systemd/system/{{ item }}
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - vlcanary.service
+    - vlcanary.timer
+  register: victorialogs_canary_units
+  notify: reload systemd for vlcanary
+  when: victorialogs_canary_enabled
+  tags:
+    - victorialogs_canary
+
+- name: flush handlers so the timer starts from the current unit files
+  ansible.builtin.meta: flush_handlers
+
+- name: enable and start the canary emitter timer
+  ansible.builtin.systemd:
+    name: vlcanary.timer
+    enabled: true
+    state: started
+  when:
+    - victorialogs_canary_enabled
+    - not ansible_check_mode or victorialogs_canary_timer_unit.stat.exists
+  tags:
+    - victorialogs_canary
+
+# state: started leaves an already running timer untouched, so a changed
+# schedule needs an explicit restart.
+- name: restart the canary emitter timer after a unit change # noqa: no-handler
+  ansible.builtin.systemd:
+    name: vlcanary.timer
+    state: restarted
+  when:
+    - victorialogs_canary_enabled
+    - not ansible_check_mode or victorialogs_canary_timer_unit.stat.exists
+    - victorialogs_canary_units.changed
+  tags:
+    - victorialogs_canary
+
+# No failed_when: false here. A timer that cannot be stopped must fail the run,
+# because the next task removes its unit file and would otherwise leave a loaded
+# timer still emitting with no unit on disk.
+- name: stop and disable the canary emitter timer
+  ansible.builtin.systemd:
+    name: vlcanary.timer
+    enabled: false
+    state: stopped
+  when:
+    - not victorialogs_canary_enabled
+    - victorialogs_canary_timer_unit.stat.exists | default(false)
+  tags:
+    - victorialogs_canary
+
+- name: remove the canary emitter units and script
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: absent
+  loop:
+    - /etc/systemd/system/vlcanary.timer
+    - /etc/systemd/system/vlcanary.service
+    - /usr/local/bin/vlcanary
+  notify: reload systemd for vlcanary
+  when: not victorialogs_canary_enabled
+  tags:
+    - victorialogs_canary
+
+- name: manage the container log path canary
+  ansible.builtin.include_tasks: docker.yml
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_docker
+
+- name: manage the read path probe
+  ansible.builtin.include_tasks: readpath.yml
+  when:
+    - victorialogs_canary_enabled
+    - victorialogs_canary_readpath_enabled
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_readpath
+
+- name: remove the read path probe
+  ansible.builtin.include_tasks: readpath_absent.yml
+  when: not (victorialogs_canary_enabled and victorialogs_canary_readpath_enabled)
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_readpath
+
+- name: find obsolete canary textfile metrics
+  ansible.builtin.find:
+    paths: '{{ victorialogs_canary_textfile_dir }}'
+    patterns:
+      - monitor_job_vlcanary-readpath*.prom
+      - vlcanary_expected.prom
+    file_type: file
+    recurse: false
+  register: victorialogs_canary_obsolete_metrics
+  tags:
+    - victorialogs_canary
+
+- name: remove obsolete canary textfile metrics
+  ansible.builtin.file:
+    path: '{{ item.path }}'
+    state: absent
+  loop: '{{ victorialogs_canary_obsolete_metrics.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+  tags:
+    - victorialogs_canary
+
+# Remove the obsolete emitter in both enabled and disabled states.
+- name: remove the legacy cron canary emitter
+  ansible.builtin.cron:
+    name: victorialogs canary
+    cron_file: victorialogs_canary
+    user: root
+    state: absent
+  tags:
+    - victorialogs_canary

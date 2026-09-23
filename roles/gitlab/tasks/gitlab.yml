@@ -1,5 +1,35 @@
 # gitlab tasks
 
+- name: Verify dedicated registry storage is mounted
+  assert:
+    that:
+      - gitlab_registry_path in (ansible_facts.mounts | map(attribute='mount'))
+    fail_msg: >-
+      Refusing to configure GitLab because {{ gitlab_registry_path }} is not a
+      mounted filesystem. Restore the registry mount before continuing.
+  when: gitlab_registry_require_mount | bool
+
+- name: Create GitLab systemd override directory
+  file:
+    path: /etc/systemd/system/gitlab-runsvdir.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  when: gitlab_registry_require_mount | bool
+
+- name: Bind GitLab service lifecycle to registry mount
+  copy:
+    content: |
+      [Unit]
+      RequiresMountsFor={{ gitlab_registry_path }}
+    dest: /etc/systemd/system/gitlab-runsvdir.service.d/registry-mount.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: gitlab reload systemd
+  when: gitlab_registry_require_mount | bool
+
 - name: Install prereqs
   apt:
     pkg:

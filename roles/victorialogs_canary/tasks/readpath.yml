@@ -1,0 +1,51 @@
+---
+- name: assert that the read path probe is configured
+  ansible.builtin.assert:
+    that:
+      - victorialogs_canary_domain | length > 0
+      - victorialogs_canary_readpath_url | length > 0
+      - victorialogs_canary_readpath_username | length > 0
+      - victorialogs_canary_readpath_password | length > 0
+    fail_msg: >-
+      victorialogs_canary_readpath_enabled is true but the service domain, url,
+      username or password is empty.
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_readpath
+
+# no_log: the rendered file holds the credential, and the deploy jobs run with
+# --diff, which would otherwise print it into the pipeline log.
+- name: deploy the read path probe credential
+  ansible.builtin.template:
+    src: vlcanary-readpath.netrc.j2
+    dest: /etc/vlcanary-readpath.netrc
+    owner: root
+    group: root
+    mode: '0600'
+  no_log: true
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_readpath
+
+- name: deploy the read path probe script
+  ansible.builtin.template:
+    src: vlcanary-readpath.sh.j2
+    dest: /usr/local/bin/vlcanary-readpath
+    owner: root
+    group: root
+    mode: '0755'
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_readpath
+
+- name: schedule the read path probe
+  ansible.builtin.cron:
+    name: victorialogs canary read path probe
+    minute: '*/5'
+    user: root
+    job: /usr/local/bin/vlcanary-readpath >/dev/null
+    cron_file: vlcanary_readpath
+    state: present
+  tags:
+    - victorialogs_canary
+    - victorialogs_canary_readpath

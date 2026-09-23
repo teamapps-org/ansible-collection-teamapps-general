@@ -23,6 +23,31 @@
     - vmalert reload
     - vmalert validate config
 
+- name: manage canary recording rules file
+  template:
+    src: rules/vlcanary.rules.yml.j2
+    dest: '{{ victorialogs_path }}/rules/vlcanary.rules.yml'
+    owner: root
+    group: root
+    mode: '0640'
+  when: victorialogs_canary_recording_rules_enabled | bool
+  notify:
+    - vmalert reload
+    - vmalert validate config
+  tags:
+    - victorialogs_canary
+
+- name: remove disabled canary recording rules file
+  file:
+    path: '{{ victorialogs_path }}/rules/vlcanary.rules.yml'
+    state: absent
+  when: not (victorialogs_canary_recording_rules_enabled | bool)
+  notify:
+    - vmalert reload
+    - vmalert validate config
+  tags:
+    - victorialogs_canary
+
 - name: copy alerting rule files
   copy:
     src: "{{ item }}"

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# {{ ansible_managed }}
+set -eu
+
+exec logger -t vlcanary "VLCANARY src=journal seq=$(date +%s)"

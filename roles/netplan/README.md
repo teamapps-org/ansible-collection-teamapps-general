@@ -1,12 +1,17 @@
 # Netplan Role
 
-This role is currently only designed to configure additional IP addresses (Floating IP or Failover IPs) to the default interface on a Ubuntu system.
+This role configures Netplan ethernet interfaces on an Ubuntu system. It can
+add addresses to the default interface, render an explicit `ethernets` mapping,
+or do both.
 
-It does so by creating an additional file that is merged with the existing netplan files by netplan generate/apply.
+When enabled, the role writes an additional file. Netplan merges that file with
+the other configuration files during `netplan generate` and `netplan apply`.
 
-`netplan_addresses` accepts both plain CIDR strings and netplan address mappings. The mapped form can be used to set address properties such as `lifetime: 0` for additional service IPs that should remain configured on the host while the server's primary address stays preferred as the source address for new outbound connections.
-
-Netplan documents the address mapping format and `lifetime` semantics in its YAML reference: https://netplan.readthedocs.io/en/stable/netplan-yaml/
+Set `netplan_manage_addresses: true` to manage the default-interface
+configuration; it defaults to `true`. Set `netplan_ethernets` to render an
+explicit mapping. Set
+`netplan_manage_addresses: false` to render only `netplan_ethernets`.
+When both options render, they must configure different interfaces.
 
 ## Example Usage
 
@@ -16,21 +21,10 @@ Netplan documents the address mapping format and `lifetime` semantics in its YAM
   hosts:
     - server1.example.com
   vars:
+    netplan_manage_addresses: true
     netplan_addresses:
       - 172.16.16.16/32
       - 2001:cafe:face:beef::dead:dead/64
-  roles:
-    - role: teamapps.general.netplan
-
-- name: Add additional service IPs
-  hosts:
-    - server1.example.com
-  vars:
-    netplan_addresses:
-      - 172.16.16.16/32:
-          lifetime: 0
-      - 2001:cafe:face:beef::dead:dead/64:
-          lifetime: 0
   roles:
     - role: teamapps.general.netplan
 
@@ -38,9 +32,23 @@ Netplan documents the address mapping format and `lifetime` semantics in its YAM
   hosts:
     - server1.example.com
   vars:
+    netplan_manage_addresses: true
     netplan_addresses: []
   roles:
     - role: teamapps.general.netplan
+~~~
+
+For configurations that must survive PCI bus renumbering, match interfaces by
+MAC address:
+
+~~~yaml
+netplan_manage_addresses: false
+netplan_ethernets:
+  lan:
+    match:
+      macaddress: 00:11:22:33:44:55
+    addresses:
+      - 192.0.2.10/24
 ~~~
 
 ## Config Validation
@@ -53,8 +61,6 @@ fatal: [server1.example.com]: FAILED! => changed=false
   cmd:
   - netplan
   - generate
-  - --mapping
-  - eth0
   delta: '0:00:00.127330'
   end: '2021-06-07 15:02:36.722722'
   msg: non-zero return code

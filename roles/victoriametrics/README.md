@@ -30,6 +30,26 @@ victoriametrics_vmauth_passwords:
     ...
 ~~~
 
+## VictoriaLogs canary alerts
+
+Enable the canary alert rules on the VictoriaMetrics instance that stores the
+recording series produced by `teamapps.general.victorialogs`:
+
+~~~yaml
+victoriametrics_victorialogs_canary_alerts_enabled: true
+victoriametrics_victorialogs_canary_domains:
+  - logs.example.com
+victoriametrics_victorialogs_canary_alert_labels:
+  team: operations
+  severity: warning
+victoriametrics_victorialogs_canary_dashboard_url: https://grafana.example.com/d/logs
+~~~
+
+The role discovers expected `(domain, host, src)` series from the last seven
+days. It does not require a static host list. The rules alert on a disappeared
+source, delivery lag, persistent missing sequence minutes, a failed read-path
+query, or a stopped read probe. The dashboard URL is optional.
+
 ## Usage Example
 
 ~~~yaml
@@ -93,7 +113,7 @@ curl -sSL -o /tmp/vmutils.tgz \
   "https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/${VM_VERSION}/vmutils-linux-amd64-${VM_VERSION}.tar.gz"
 tar xzf /tmp/vmutils.tgz -C /tmp vmalert-tool-prod
 cd roles/victoriametrics/files/rules/tests
-/tmp/vmalert-tool-prod unittest --files=system.rules.test.yml
+/tmp/vmalert-tool-prod unittest --files='*.test.yml'
 ~~~
 
 Run this in CI when changing a rule expression. A staleness or absence rule can

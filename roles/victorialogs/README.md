@@ -1,5 +1,38 @@
 # Victoria Logs
 
+## VictoriaMetrics remote endpoints
+
+The VictoriaMetrics remote-write and remote-read variables intentionally use different URL formats:
+
+| Variable | Required format | Example |
+| --- | --- | --- |
+| `victorialogs_victoriametrics_remotewrite_url` | Full Prometheus remote-write endpoint | `https://metrics.example.com/api/v1/write` |
+| `victorialogs_victoriametrics_remoteread_url` | VictoriaMetrics base URL without an API path | `https://metrics.example.com/` |
+
+vmagent requires the full write endpoint. The role also passes that endpoint to vmalert with `-remoteWrite.disablePathAppend`, preventing vmalert from appending a second `/api/v1/write` path.
+
+The remote-read value must remain a base URL. vmalert automatically selects the required query path, such as `/api/v1/query` or `/api/v1/query_range`. Do not set `-remoteRead.disablePathAppend`: despite its name, that upstream flag also disables path selection for `-datasource.url`, including the LogsQL endpoints used to evaluate VictoriaLogs rules.
+
+## Canary recording rules
+
+Set `victorialogs_canary_recording_rules_enabled: true` to record delivery lag
+and missing sequence-minute buckets from log lines emitted by
+`teamapps.general.victorialogs_canary`. The role writes
+`log_canary_lag_seconds{domain,host,src}` and
+`log_canary_missing_minutes{domain,host,src}` through vmalert remote write.
+
+The default stream selector expects Promtail jobs named `journallogs` and
+`docker`:
+
+~~~yaml
+victorialogs_canary_recording_rules_enabled: true
+victorialogs_canary_stream_selector: '(job:"journallogs" or job:"docker")'
+~~~
+
+Override `victorialogs_canary_stream_selector` when the relevant stream labels
+use different names. The matching VictoriaMetrics alerts are configured by the
+`teamapps.general.victoriametrics` role.
+
 ## Web User Interface
 
 VictoriaLogs also provides Web User Interfaces. The following endpoints are exposed. These endpoints are protected by htpasswd_admin
