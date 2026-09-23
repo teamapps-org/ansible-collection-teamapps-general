@@ -1,0 +1,107 @@
+# Render templates/rules/victorialogs-canary.rules.yml.j2 beside a copy of this
+# file as victorialogs-canary.rules.yml, with domain logs.example.com,
+# alert labels {severity: warning}, and an empty dashboard URL.
+# Run: vmalert-tool unittest --files=victorialogs-canary.test.yml
+rule_files:
+  - victorialogs-canary.rules.yml
+evaluation_interval: 1m
+tests:
+  - name: isolated loss and duplicates fire and clear on the next zero
+    interval: 5m
+    input_series:
+      - series: 'log_canary_lag_seconds{domain="logs.example.com",host="affected",src="docker"}'
+        values: '0x6'
+      - series: 'log_canary_lag_seconds{domain="logs.example.com",host="healthy",src="journal"}'
+        values: '0x6'
+      - series: 'log_canary_missing_minutes{domain="logs.example.com",host="affected",src="docker"}'
+        values: '0 1 1 0 0 0 0'
+      - series: 'log_canary_duplicate_lines{domain="logs.example.com",host="affected",src="docker"}'
+        values: '0 1 1 0 0 0 0'
+      - series: 'log_canary_missing_minutes{domain="logs.example.com",host="healthy",src="journal"}'
+        values: '0x6'
+      - series: 'log_canary_duplicate_lines{domain="logs.example.com",host="healthy",src="journal"}'
+        values: '0x6'
+    alert_rule_test:
+      - eval_time: 0m
+        groupname: victorialogs_canary
+        alertname: LogCanaryPartialLoss
+        exp_alerts: []
+      - eval_time: 0m
+        groupname: victorialogs_canary
+        alertname: LogCanaryDuplicates
+        exp_alerts: []
+      - eval_time: 5m
+        groupname: victorialogs_canary
+        alertname: LogCanaryPartialLoss
+        exp_alerts: &loss
+          - exp_labels:
+              alertgroup: victorialogs_canary
+              domain: logs.example.com
+              host: affected
+              src: docker
+              severity: warning
+            exp_annotations:
+              summary: Intermittent docker log loss from affected
+              description: >-
+                Minute sequence buckets are missing while newer canaries still
+                arrive. Check source restarts, clock changes, and the log shipper.
+      - eval_time: 5m
+        groupname: victorialogs_canary
+        alertname: LogCanaryDuplicates
+        exp_alerts: &duplicates
+          - exp_labels:
+              alertgroup: victorialogs_canary
+              domain: logs.example.com
+              host: affected
+              src: docker
+              severity: info
+            exp_annotations:
+              summary: Duplicate docker logs from affected via logs.example.com
+              description: >-
+                The settled ten-minute window contains repeated canary sequences.
+                Check collector retries, replayed positions, and overlapping scrape
+                configurations. Container shutdown can also replay the final line.
+      - eval_time: 14m
+        groupname: victorialogs_canary
+        alertname: LogCanaryPartialLoss
+        exp_alerts: *loss
+      - eval_time: 14m
+        groupname: victorialogs_canary
+        alertname: LogCanaryDuplicates
+        exp_alerts: *duplicates
+      - eval_time: 15m
+        groupname: victorialogs_canary
+        alertname: LogCanaryPartialLoss
+        exp_alerts: []
+      - eval_time: 15m
+        groupname: victorialogs_canary
+        alertname: LogCanaryDuplicates
+        exp_alerts: []
+
+  - name: delayed samples remain readable and a newer zero clears them
+    interval: 5m
+    input_series:
+      - series: 'log_canary_lag_seconds{domain="logs.example.com",host="affected",src="docker"}'
+        values: '0x5'
+      - series: 'log_canary_missing_minutes{domain="logs.example.com",host="affected",src="docker"}'
+        values: '0 1 _ _ 0 0'
+      - series: 'log_canary_duplicate_lines{domain="logs.example.com",host="affected",src="docker"}'
+        values: '0 1 _ _ 0 0'
+    alert_rule_test:
+      # The latest sample is nine minutes old, beyond the default lookbehind.
+      - eval_time: 14m
+        groupname: victorialogs_canary
+        alertname: LogCanaryPartialLoss
+        exp_alerts: *loss
+      - eval_time: 14m
+        groupname: victorialogs_canary
+        alertname: LogCanaryDuplicates
+        exp_alerts: *duplicates
+      - eval_time: 20m
+        groupname: victorialogs_canary
+        alertname: LogCanaryPartialLoss
+        exp_alerts: []
+      - eval_time: 20m
+        groupname: victorialogs_canary
+        alertname: LogCanaryDuplicates
+        exp_alerts: []

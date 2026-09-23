@@ -50,7 +50,7 @@ victorialogs_canary_readpath_password: !vault |
   ...
 ```
 
-The read credential should only permit `POST /select/logsql/query` and should
+The read credential should only permit the `/select/logsql/query` path used by the probe's GET request and should
 enforce filters that restrict queries to exact canary messages. The
 `teamapps.general.victorialogs` role can create this endpoint through its
 `victorialogs_vmauth_users` and `victorialogs_vmauth_passwords` variables.
@@ -72,6 +72,8 @@ The `teamapps.general.victorialogs` role records:
 - `log_canary_lag_seconds{domain,host,src}` every minute.
 - `log_canary_missing_minutes{domain,host,src}` from settled, overlapping
   sequence windows every five minutes.
+- `log_canary_duplicate_lines{domain,host,src}` from the same windows, counting
+  total entries minus unique exact `seq` values per source.
 
 The default stream selector is suitable for Promtail jobs named `journallogs`
 and `docker`. Override `victorialogs_canary_stream_selector` when collectors use
@@ -94,13 +96,32 @@ victoriametrics_victorialogs_canary_dashboard_url: https://grafana.example.com/d
 
 `teamapps.general.victoriametrics` discovers expected `(domain, host, src)`
 series over seven days. It alerts on complete source disappearance, delivery
-lag, persistent missing sequence minutes, failed read queries, and stopped read
-probes. There is no static expected-host list.
+lag, missing sequence minutes, duplicate lines, failed read queries, and stopped
+read probes. There is no static expected-host list.
 
-Duplicate lines collapse into one sequence-minute bucket. A short restart can
-create an isolated gap, but `LogCanaryPartialLoss` requires missing buckets to
-remain visible for 15 minutes. Complete outages are covered by
-`LogCanaryDeliveryLag` and `LogCanaryMissing`.
+`LogCanaryPartialLoss` and `LogCanaryDuplicates` fire on the first positive
+settled sample. Short restart gaps and shutdown replays can therefore alert.
+Duplicate alerts have severity `info` and should use non-paging notification
+routing. Partial-loss alerts retain the configured severity, normally `warning`.
+Duplicate lines collapse into one sequence-minute bucket for loss detection,
+but the separate duplicate rule counts repeated exact sequences. Different
+sequences emitted within the same minute do not count as duplicates.
+
+Both rules inspect ten-minute windows every five minutes, delayed by five
+minutes to allow delivery to settle. The alerts clear when a newer sample is
+zero. The fifteen-minute `last_over_time` lookbehind keeps delayed recording
+samples readable; it does not hold an alert after a newer zero arrives.
+With healthy recording and delivery, allow up to about twenty minutes after
+the final affected log timestamp for the window and evaluation schedule to
+clear, plus alert evaluation and notification time. Silence the affected
+`domain` and `host` during maintenance and include this recovery time.
+
+Loss detection counts gaps between the first and last received sequence-minute
+buckets in each window. Missing buckets at the window edges and outages with
+no received lines are not counted by this rule. Complete outages are covered
+by `LogCanaryDeliveryLag` and `LogCanaryMissing`. Duplicate detection requires
+the repeated sequences to appear in the same window. A clock step backwards
+or two emitters using the same source identity can also repeat a sequence.
 
 ## Variables
 
