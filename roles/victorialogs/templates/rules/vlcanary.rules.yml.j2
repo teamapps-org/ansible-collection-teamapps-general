@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 groups:
   # Count missing minute buckets only in settled, overlapping sequence windows.
-  # This collapses duplicate lines and tolerates isolated restart gaps.
+  # Duplicate lines cannot compensate for missing minutes.
   - name: victorialogs_canary_loss
     type: vlogs
     interval: 5m
@@ -21,6 +21,20 @@ groups:
           | math (last_minute - first_minute + 1 - received_minutes)
           as log_canary_missing_minutes
           | fields host, src, log_canary_missing_minutes
+
+      # Compare exact sequences, not minute buckets: a restarted emitter can
+      # legitimately emit a different sequence in the same minute.
+      - record: log_canary_duplicate_lines
+        labels:
+          domain: '{{ victorialogs_domain }}'
+        expr: >-
+          _time:10m {{ victorialogs_canary_stream_selector }}
+          _msg:~"^(\\x{200B})?VLCANARY src=(journal|docker) seq=[0-9]+$"
+          | extract "src=<src> seq=<seq>"
+          | stats by (host, src) count() as received_lines,
+          count_uniq(seq) as received_sequences
+          | math (received_lines - received_sequences) as log_canary_duplicate_lines
+          | fields host, src, log_canary_duplicate_lines
 
   # Disable alignment because aligned requests skew LogsQL now(). The delay
   # avoids the open interval edge; source clock skew still appears as lag.

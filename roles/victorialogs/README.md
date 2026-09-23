@@ -15,11 +15,17 @@ The remote-read value must remain a base URL. vmalert automatically selects the 
 
 ## Canary recording rules
 
-Set `victorialogs_canary_recording_rules_enabled: true` to record delivery lag
-and missing sequence-minute buckets from log lines emitted by
+Set `victorialogs_canary_recording_rules_enabled: true` to record delivery lag,
+missing sequence-minute buckets, and duplicate lines emitted by
 `teamapps.general.victorialogs_canary`. The role writes
-`log_canary_lag_seconds{domain,host,src}` and
-`log_canary_missing_minutes{domain,host,src}` through vmalert remote write.
+`log_canary_lag_seconds{domain,host,src}`,
+`log_canary_missing_minutes{domain,host,src}`, and
+`log_canary_duplicate_lines{domain,host,src}` through vmalert remote write.
+
+Missing minutes use unique minute buckets so that duplicates cannot mask loss.
+Duplicate lines use total entries minus unique exact `seq` values per source.
+Both counts use overlapping ten-minute windows evaluated every five minutes
+with a five-minute settling delay. They are window counts, not counters.
 
 The default stream selector expects Promtail jobs named `journallogs` and
 `docker`:

@@ -47,8 +47,17 @@ victoriametrics_victorialogs_canary_dashboard_url: https://grafana.example.com/d
 
 The role discovers expected `(domain, host, src)` series from the last seven
 days. It does not require a static host list. The rules alert on a disappeared
-source, delivery lag, persistent missing sequence minutes, a failed read-path
-query, or a stopped read probe. The dashboard URL is optional.
+source, delivery lag, missing sequence minutes, duplicate lines, a failed
+read-path query, or a stopped read probe. The dashboard URL is optional.
+
+`LogCanaryPartialLoss` and `LogCanaryDuplicates` fire on the first positive
+settled sample, without an additional pending period. Duplicate alerts preserve
+the configured routing labels but override severity to `info`, since retries
+can legitimately repeat a line. Route informational alerts to a non-paging
+receiver in Alertmanager. Silence the affected
+sources during planned maintenance and allow the settled windows to clear
+before the silence expires. See the [canary role](../victorialogs_canary/README.md#alerts)
+for timing and detection limits.
 
 ## Usage Example
 
