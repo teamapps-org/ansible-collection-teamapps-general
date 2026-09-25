@@ -42,6 +42,18 @@ zammad_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }}'
 # default: 40% of total memory
 zammad_elasticsearch_memory: '{{ (ansible_facts.memtotal_mb * 0.4) | round | int }}m'
 
+# Optional Docker memory limits. Leave empty to let Docker use the host limit.
+zammad_backup_memory_limit: ''
+zammad_elasticsearch_memory_limit: ''
+zammad_init_memory_limit: ''
+zammad_memcached_memory_limit: 256M
+zammad_nginx_memory_limit: ''
+zammad_postgresql_memory_limit: ''
+zammad_railsserver_memory_limit: ''
+zammad_redis_memory_limit: 128M
+zammad_scheduler_memory_limit: ''
+zammad_websocket_memory_limit: ''
+
 # customize knowledge base html template.
 zammad_kb_html_custom: false
 # zammad_kb_html:
