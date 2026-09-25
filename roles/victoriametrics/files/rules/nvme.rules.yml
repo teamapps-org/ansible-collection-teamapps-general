@@ -45,8 +45,8 @@ groups:
 
       - alert: NvmeErrLogEntriesIncrease
         expr: |
-          # Stable per-serial increase, enriched with current device path.
-          (increase((sum by (host, device_serial) (nvme_smart_num_err_log_entries))[1d:5m]) > 2)
+          # Deduplicate collector series by physical device before calculating the increase.
+          (increase((max by (host, device_serial) (nvme_smart_num_err_log_entries))[1d:5m]) > 2)
           * on (host, device_serial) group_left(device)
             max by (host, device_serial, device) (nvme_info)
         for: 10m
@@ -69,8 +69,8 @@ groups:
 
       - alert: NvmeMediaErrors
         expr: |
-          # Stable per-serial increase, enriched with current device path.
-          (increase((sum by (host, device_serial) (nvme_smart_media_errors))[1d:5m]) > 0)
+          # Deduplicate collector series by physical device before calculating the increase.
+          (increase((max by (host, device_serial) (nvme_smart_media_errors))[1d:5m]) > 0)
           * on (host, device_serial) group_left(device)
             max by (host, device_serial, device) (nvme_info)
         for: 10m
@@ -83,8 +83,8 @@ groups:
 
       - alert: NvmeUnsafeShutdowns
         expr: |
-          # Stable per-serial increase, enriched with current device path.
-          (increase((sum by (host, device_serial) (nvme_smart_unsafe_shutdowns))[1d:5m]) > 0)
+          # Deduplicate collector series by physical device before calculating the increase.
+          (increase((max by (host, device_serial) (nvme_smart_unsafe_shutdowns))[1d:5m]) > 0)
           * on (host, device_serial) group_left(device)
             max by (host, device_serial, device) (nvme_info)
         for: 10m
