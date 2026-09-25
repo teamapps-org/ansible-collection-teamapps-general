@@ -74,6 +74,12 @@ services:
       - ./data/zammad-backup:/var/tmp/zammad
       - ./data/zammad-storage:/opt/zammad/storage:ro
     user: 0:0
+{% if zammad_backup_memory_limit | string | length > 0 %}
+    deploy:
+      resources:
+        limits:
+          memory: {{ zammad_backup_memory_limit }}
+{% endif %}
 
   zammad-elasticsearch:
     image: elasticsearch:${ELASTICSEARCH_VERSION:-8.19.11}
@@ -84,6 +90,12 @@ services:
       discovery.type: single-node
       xpack.security.enabled: 'false'
       ES_JAVA_OPTS: "-Xms{{ zammad_elasticsearch_memory }} -Xmx{{ zammad_elasticsearch_memory }}"
+{% if zammad_elasticsearch_memory_limit | string | length > 0 %}
+    deploy:
+      resources:
+        limits:
+          memory: {{ zammad_elasticsearch_memory_limit }}
+{% endif %}
 
   zammad-init:
     <<: *zammad-service
@@ -92,15 +104,23 @@ services:
       - zammad-postgresql
     restart: on-failure
     user: 0:0
+{% if zammad_init_memory_limit | string | length > 0 %}
+    deploy:
+      resources:
+        limits:
+          memory: {{ zammad_init_memory_limit }}
+{% endif %}
 
   zammad-memcached:
     command: memcached -m 250M
     image: memcached:${MEMCACHE_VERSION:-1.6.40-alpine}
     restart: ${RESTART:-always}
+{% if zammad_memcached_memory_limit | string | length > 0 %}
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: {{ zammad_memcached_memory_limit }}
+{% endif %}
 
   zammad-nginx:
     <<: *zammad-service
@@ -117,6 +137,12 @@ services:
       VIRTUAL_PORT: "${NGINX_PORT:-8080}"
       LETSENCRYPT_HOST: "{{ zammad_domain }}"
       LETSENCRYPT_EMAIL: "{{ letsencrypt_email }}"
+{% if zammad_nginx_memory_limit | string | length > 0 %}
+    deploy:
+      resources:
+        limits:
+          memory: {{ zammad_nginx_memory_limit }}
+{% endif %}
     networks:
       - default
       - webproxy
@@ -130,28 +156,54 @@ services:
     restart: ${RESTART:-always}
     volumes:
       - ./data/postgresql-data:/var/lib/postgresql/data
+{% if zammad_postgresql_memory_limit | string | length > 0 %}
+    deploy:
+      resources:
+        limits:
+          memory: {{ zammad_postgresql_memory_limit }}
+{% endif %}
 
   zammad-railsserver:
     <<: *zammad-service
     command: ["zammad-railsserver"]
+{% if zammad_railsserver_memory_limit | string | length > 0 %}
+    deploy:
+      resources:
+        limits:
+          memory: {{ zammad_railsserver_memory_limit }}
+{% endif %}
 
   zammad-redis:
     image: redis:${REDIS_VERSION:-7.4.7-alpine}
     restart: ${RESTART:-always}
     volumes:
       - ./data/redis-data:/data
+{% if zammad_redis_memory_limit | string | length > 0 %}
     deploy:
       resources:
         limits:
-          memory: 128M
+          memory: {{ zammad_redis_memory_limit }}
+{% endif %}
 
   zammad-scheduler:
     <<: *zammad-service
     command: ["zammad-scheduler"]
+{% if zammad_scheduler_memory_limit | string | length > 0 %}
+    deploy:
+      resources:
+        limits:
+          memory: {{ zammad_scheduler_memory_limit }}
+{% endif %}
 
   zammad-websocket:
     <<: *zammad-service
     command: ["zammad-websocket"]
+{% if zammad_websocket_memory_limit | string | length > 0 %}
+    deploy:
+      resources:
+        limits:
+          memory: {{ zammad_websocket_memory_limit }}
+{% endif %}
 
 networks:
   default:

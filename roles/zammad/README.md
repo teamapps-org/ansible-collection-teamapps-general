@@ -17,6 +17,27 @@ Database and file backups are created by the `zammad-backup` service and written
 
 See `defaults/main.yml`.
 
+### Container memory limits
+
+Set these variables to Docker memory values such as `512M` or `1G`.
+An empty value omits the service memory limit.
+
+| Variable | Default |
+| --- | --- |
+| `zammad_backup_memory_limit` | `''` |
+| `zammad_elasticsearch_memory_limit` | `''` |
+| `zammad_init_memory_limit` | `''` |
+| `zammad_memcached_memory_limit` | `256M` |
+| `zammad_nginx_memory_limit` | `''` |
+| `zammad_postgresql_memory_limit` | `''` |
+| `zammad_railsserver_memory_limit` | `''` |
+| `zammad_redis_memory_limit` | `128M` |
+| `zammad_scheduler_memory_limit` | `''` |
+| `zammad_websocket_memory_limit` | `''` |
+
+Keep the Elasticsearch container limit above `zammad_elasticsearch_memory`
+to allow memory outside the Java heap.
+
 ## Dependencies
 
 - Docker Engine
