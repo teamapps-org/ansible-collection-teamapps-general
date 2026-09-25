@@ -2,6 +2,12 @@
 
 Install Grafana using Docker compose
 
+## Container image
+
+`grafana_image` selects the image repository and defaults to `grafana/grafana`.
+`grafana_version` selects its tag. Set `grafana_image: grafana/grafana-oss` to
+retain the previous image repository.
+
 ## Provisioning
 
 This role allows automatic provisioning of datasources, plugins and dashboards
