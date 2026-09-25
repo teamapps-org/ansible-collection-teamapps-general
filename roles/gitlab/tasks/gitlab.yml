@@ -57,7 +57,7 @@
     owner: root
     group: root
     mode: '0644'
-    force: false
+    force: true
 
 - name: gitlab repository
   apt_repository:
