@@ -26,7 +26,7 @@ services:
 
   grafana:
     user: "472"
-    image: grafana/grafana-oss:{{ grafana_version }}
+    image: '{{ grafana_image }}:{{ grafana_version }}'
     restart: always
     environment:
       VIRTUAL_HOST: '{{ grafana_domain }}'
