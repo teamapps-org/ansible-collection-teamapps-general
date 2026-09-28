@@ -57,6 +57,8 @@ that runs its read probe. Use the same value as the `host` label on the probe
 metrics. The expected read-path series and `LogCanaryReadPathNotReporting` then
 carry that `host` label, so the alert names the probe host and host-level
 inhibit rules can match it. A domain without an entry gets no `host` label.
+Every key must also appear in `victoriametrics_victorialogs_canary_domains`,
+otherwise the role fails before it writes the rules.
 
 `LogCanaryPartialLoss` and `LogCanaryDuplicates` fire on the first positive
 settled sample, without an additional pending period. Duplicate alerts preserve
