@@ -9,6 +9,14 @@ grafana_image: grafana/grafana
 grafana_version: latest
 grafana_mariadb_version: latest
 
+# Resource limits for Grafana and its backend plugins; 0 means unlimited.
+grafana_cpu_limit: 0
+grafana_mem_limit: 0
+
+# Resource limits for the MariaDB container; 0 means unlimited.
+grafana_mariadb_cpu_limit: 0
+grafana_mariadb_mem_limit: 0
+
 grafana_mysql_rootpass:
 grafana_mysql_password:
 grafana_admin_password:
