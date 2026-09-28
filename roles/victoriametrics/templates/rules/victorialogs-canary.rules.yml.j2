@@ -15,7 +15,7 @@ groups:
       - record: log_canary_readpath_expected
         expr: |
 {% for domain in victoriametrics_victorialogs_canary_domains %}
-          label_set(vector(1), "domain", "{{ domain }}"){{ ' or' if not loop.last else '' }}
+          label_set(vector(1), "domain", "{{ domain }}"{% if domain in victoriametrics_victorialogs_canary_readpath_hosts %}, "host", "{{ victoriametrics_victorialogs_canary_readpath_hosts[domain] }}"{% endif %}){{ ' or' if not loop.last else '' }}
 {% endfor %}
 
   - name: victorialogs_canary

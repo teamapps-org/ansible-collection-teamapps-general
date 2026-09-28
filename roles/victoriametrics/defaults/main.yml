@@ -60,6 +60,9 @@ victoriametrics_vmalert_external_labels:
 # domain list scopes both current and seven-day source-discovery queries.
 victoriametrics_victorialogs_canary_alerts_enabled: false
 victoriametrics_victorialogs_canary_domains: []
+# Optional read-probe host per domain, for example `logs.example.com: probe1`.
+# Adds the host label to the read-path expected series and its alerts.
+victoriametrics_victorialogs_canary_readpath_hosts: {}
 victoriametrics_victorialogs_canary_alert_labels:
   severity: warning
 # Optional runbook or dashboard URL added to canary alerts.

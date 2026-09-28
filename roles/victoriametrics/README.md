@@ -39,6 +39,8 @@ recording series produced by `teamapps.general.victorialogs`:
 victoriametrics_victorialogs_canary_alerts_enabled: true
 victoriametrics_victorialogs_canary_domains:
   - logs.example.com
+victoriametrics_victorialogs_canary_readpath_hosts:
+  logs.example.com: probe1
 victoriametrics_victorialogs_canary_alert_labels:
   team: operations
   severity: warning
@@ -49,6 +51,12 @@ The role discovers expected `(domain, host, src)` series from the last seven
 days. It does not require a static host list. The rules alert on a disappeared
 source, delivery lag, missing sequence minutes, duplicate lines, a failed
 read-path query, or a stopped read probe. The dashboard URL is optional.
+
+`victoriametrics_victorialogs_canary_readpath_hosts` maps a domain to the host
+that runs its read probe. Use the same value as the `host` label on the probe
+metrics. The expected read-path series and `LogCanaryReadPathNotReporting` then
+carry that `host` label, so the alert names the probe host and host-level
+inhibit rules can match it. A domain without an entry gets no `host` label.
 
 `LogCanaryPartialLoss` and `LogCanaryDuplicates` fire on the first positive
 settled sample, without an additional pending period. Duplicate alerts preserve
