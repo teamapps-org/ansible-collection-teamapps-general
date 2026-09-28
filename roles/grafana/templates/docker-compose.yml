@@ -4,6 +4,11 @@ services:
   grafanadb:
     image: mariadb:{{ grafana_mariadb_version }}
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '{{ grafana_mariadb_cpu_limit }}'
+          memory: '{{ grafana_mariadb_mem_limit }}'
     environment:
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
       MYSQL_DATABASE: grafana
@@ -28,6 +33,11 @@ services:
     user: "472"
     image: '{{ grafana_image }}:{{ grafana_version }}'
     restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '{{ grafana_cpu_limit }}'
+          memory: '{{ grafana_mem_limit }}'
     environment:
       VIRTUAL_HOST: '{{ grafana_domain }}'
       LETSENCRYPT_HOST: '{{ grafana_domain }}'

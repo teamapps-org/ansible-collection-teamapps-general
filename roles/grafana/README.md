@@ -8,6 +8,26 @@ Install Grafana using Docker compose
 `grafana_version` selects its tag. Set `grafana_image: grafana/grafana-oss` to
 retain the previous image repository.
 
+## Resource limits
+
+Each service has configurable CPU and memory limits:
+
+| Service | CPU variable | Memory variable | Defaults |
+| --- | --- | --- | --- |
+| Grafana | `grafana_cpu_limit` | `grafana_mem_limit` | `0`, `0` |
+| MariaDB | `grafana_mariadb_cpu_limit` | `grafana_mariadb_mem_limit` | `0`, `0` |
+| Image renderer | `grafana_image_renderer_cpu_limit` | `grafana_image_renderer_mem_limit` | `1.5`, `500M` |
+
+CPU limits accept core counts such as `1.5`. Memory limits accept Compose byte
+values such as `4G`. A value of `0` means unlimited. Set limits in inventory to
+leave resources for the host and other services. Grafana's limits cover its
+backend plugin processes too. MariaDB and the image renderer have separate limits.
+
+At the limit, the kernel can kill a process inside the Grafana container.
+The `restart: always` policy restarts the container if its main process exits;
+it does not guarantee a container restart when only a plugin process is killed.
+This limit contains memory exhaustion but does not fix excessive plugin allocations.
+
 ## Provisioning
 
 This role allows automatic provisioning of datasources, plugins and dashboards
