@@ -52,13 +52,13 @@ days. It does not require a static host list. The rules alert on a disappeared
 source, delivery lag, missing sequence minutes, duplicate lines, a failed
 read-path query, or a stopped read probe. The dashboard URL is optional.
 
-`victoriametrics_victorialogs_canary_readpath_hosts` maps a domain to the host
-that runs its read probe. Use the same value as the `host` label on the probe
-metrics. The expected read-path series and `LogCanaryReadPathNotReporting` then
+`victoriametrics_victorialogs_canary_readpath_hosts` maps every domain to the
+host that runs its read probe. Use the same value as the `host` label on the
+probe metrics. The expected read-path series and `LogCanaryReadPathNotReporting`
 carry that `host` label, so the alert names the probe host and host-level
-inhibit rules can match it. A domain without an entry gets no `host` label.
-Every key must also appear in `victoriametrics_victorialogs_canary_domains`,
-otherwise the role fails before it writes the rules.
+inhibit rules can match it. The rules expect one read probe per domain, so the
+map is required. The role fails before it writes the rules if a domain has no
+entry, a key is not a listed domain, or a value is not a host name.
 
 `LogCanaryPartialLoss` and `LogCanaryDuplicates` fire on the first positive
 settled sample, without an additional pending period. Duplicate alerts preserve

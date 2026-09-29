@@ -34,12 +34,14 @@
       - victoriametrics_victorialogs_canary_domains | length > 0
       - victoriametrics_victorialogs_canary_alert_labels is mapping
       - victoriametrics_victorialogs_canary_readpath_hosts is mapping
-      - victoriametrics_victorialogs_canary_readpath_hosts.keys() | difference(victoriametrics_victorialogs_canary_domains) | length == 0
+      - victoriametrics_victorialogs_canary_readpath_hosts.keys() | list | sort == victoriametrics_victorialogs_canary_domains | unique | sort
+      - victoriametrics_victorialogs_canary_readpath_hosts.values() | select('string') | select('match', '^\S+$') | list | length == victoriametrics_victorialogs_canary_readpath_hosts | length
     fail_msg: >-
       victoriametrics_victorialogs_canary_domains must contain at least one
       domain and victoriametrics_victorialogs_canary_alert_labels must be a mapping.
-      victoriametrics_victorialogs_canary_readpath_hosts must be a mapping whose
-      keys are all listed in victoriametrics_victorialogs_canary_domains.
+      victoriametrics_victorialogs_canary_readpath_hosts must map every domain in
+      victoriametrics_victorialogs_canary_domains, and no other key, to a
+      non-empty probe host name.
   when: victoriametrics_victorialogs_canary_alerts_enabled | bool
   tags:
     - victorialogs_canary
