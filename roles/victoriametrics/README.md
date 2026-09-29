@@ -57,8 +57,10 @@ host that runs its read probe. Use the same value as the `host` label on the
 probe metrics. The expected read-path series and `LogCanaryReadPathNotReporting`
 carry that `host` label, so the alert names the probe host and host-level
 inhibit rules can match it. The rules expect one read probe per domain, so the
-map is required. The role fails before it writes the rules if a domain has no
-entry, a key is not a listed domain, or a value is not a host name.
+map is required. The role fails before it writes the rules if a domain is not a
+plain domain name, a domain has no entry, a key is not a listed domain, or a
+value is not a host name made of letters, digits, dots, hyphens, and
+underscores.
 
 `LogCanaryPartialLoss` and `LogCanaryDuplicates` fire on the first positive
 settled sample, without an additional pending period. Duplicate alerts preserve
