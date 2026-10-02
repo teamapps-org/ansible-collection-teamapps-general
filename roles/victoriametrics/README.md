@@ -39,8 +39,6 @@ recording series produced by `teamapps.general.victorialogs`:
 victoriametrics_victorialogs_canary_alerts_enabled: true
 victoriametrics_victorialogs_canary_domains:
   - logs.example.com
-victoriametrics_victorialogs_canary_readpath_hosts:
-  logs.example.com: probe1
 victoriametrics_victorialogs_canary_alert_labels:
   team: operations
   severity: warning
@@ -52,16 +50,13 @@ days. It does not require a static host list. The rules alert on a disappeared
 source, delivery lag, missing sequence minutes, duplicate lines, a failed
 read-path query, or a stopped read probe. The dashboard URL is optional.
 
-`victoriametrics_victorialogs_canary_readpath_hosts` maps every domain to the
-host that runs its read probe. Use the same value as the `host` label on the
-probe metrics. The expected read-path series and `LogCanaryReadPathNotReporting`
-carry that `host` label, so the alert names the probe host and host-level
-inhibit rules can match it. The rules expect one read probe per domain, so the
-map is required. The role fails before it writes the rules if a domain has a
-character other than ASCII letters, digits, dots, and hyphens, a domain has no
-entry, a key is not a listed domain, or a value has a character other than ASCII
-letters, digits, dots, hyphens, and underscores. The check keeps the values
-safe inside MetricsQL strings. It does not validate DNS names.
+`log_canary_readpath_expected` takes its `host` label from the newest read-probe
+result of the last seven days, so `LogCanaryReadPathNotReporting` names the
+probe host and host-level inhibit rules can match it. Until a probe has
+reported, the label is the host of this VictoriaMetrics server. Domains are
+rendered inside double-quoted MetricsQL strings, so the role fails before it
+writes the rules if a domain has a character other than ASCII letters, digits,
+dots, and hyphens. The check does not validate DNS names.
 
 `LogCanaryPartialLoss` and `LogCanaryDuplicates` fire on the first positive
 settled sample, without an additional pending period. Duplicate alerts preserve

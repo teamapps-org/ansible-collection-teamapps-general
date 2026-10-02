@@ -34,29 +34,15 @@
       - victoriametrics_victorialogs_canary_domains is not mapping
       - victoriametrics_victorialogs_canary_domains | length > 0
       - victoriametrics_victorialogs_canary_alert_labels is mapping
-      # Domains and hosts are rendered inside double-quoted MetricsQL strings.
+      # Domains are rendered inside double-quoted MetricsQL strings.
       - >-
         victoriametrics_victorialogs_canary_domains | select('string')
         | select('match', '^[A-Za-z0-9][A-Za-z0-9.-]*\Z') | list | length
         == victoriametrics_victorialogs_canary_domains | length
-      - victoriametrics_victorialogs_canary_readpath_hosts is mapping
-      - >-
-        victoriametrics_victorialogs_canary_readpath_hosts.keys() | select('string') | list | length
-        == victoriametrics_victorialogs_canary_readpath_hosts | length
-      - >-
-        victoriametrics_victorialogs_canary_readpath_hosts.keys() | list | sort
-        == victoriametrics_victorialogs_canary_domains | unique | sort
-      - >-
-        victoriametrics_victorialogs_canary_readpath_hosts.values() | select('string')
-        | select('match', '^[A-Za-z0-9][A-Za-z0-9._-]*\Z') | list | length
-        == victoriametrics_victorialogs_canary_readpath_hosts | length
     fail_msg: >-
       victoriametrics_victorialogs_canary_domains must be a non-empty list of
       names made of ASCII letters, digits, dots, and hyphens, and
       victoriametrics_victorialogs_canary_alert_labels must be a mapping.
-      victoriametrics_victorialogs_canary_readpath_hosts must map every domain in
-      that list, and no other key, to a probe host made of ASCII letters, digits,
-      dots, hyphens, and underscores.
   when: victoriametrics_victorialogs_canary_alerts_enabled | bool
   tags:
     - victorialogs_canary
