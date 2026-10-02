@@ -15,7 +15,16 @@ groups:
       - record: log_canary_readpath_expected
         expr: |
 {% for domain in victoriametrics_victorialogs_canary_domains %}
-          label_set(vector(1), "domain", "{{ domain }}"){{ ' or' if not loop.last else '' }}
+          # Host of the newest probe run in seven days, else this VictoriaMetrics host.
+          (
+            max by (domain, host) (
+              topk by (domain) (1,
+                last_over_time(victorialogs_canary_readpath_last_run_seconds{domain="{{ domain }}"}[7d])
+              )
+            ) * 0 + 1
+            or on (domain)
+            label_set(vector(1), "domain", "{{ domain }}", "host", "{{ ansible_facts.hostname }}")
+          ){{ ' or' if not loop.last else '' }}
 {% endfor %}
 
   - name: victorialogs_canary

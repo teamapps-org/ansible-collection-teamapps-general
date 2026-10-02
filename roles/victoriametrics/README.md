@@ -50,6 +50,14 @@ days. It does not require a static host list. The rules alert on a disappeared
 source, delivery lag, missing sequence minutes, duplicate lines, a failed
 read-path query, or a stopped read probe. The dashboard URL is optional.
 
+`log_canary_readpath_expected` takes its `host` label from the newest read-probe
+result of the last seven days, so `LogCanaryReadPathNotReporting` names the
+probe host and host-level inhibit rules can match it. Until a probe has
+reported, the label is the host of this VictoriaMetrics server. Domains are
+rendered inside double-quoted MetricsQL strings, so the role fails before it
+writes the rules if a domain has a character other than ASCII letters, digits,
+dots, and hyphens. The check does not validate DNS names.
+
 `LogCanaryPartialLoss` and `LogCanaryDuplicates` fire on the first positive
 settled sample, without an additional pending period. Duplicate alerts preserve
 the configured routing labels but override severity to `info`, since retries
