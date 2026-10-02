@@ -7,6 +7,7 @@ services:
     image: busybox:{{ victorialogs_canary_busybox_version }}
     restart: always
     # Prefix with zero-width space so multiline parsing keeps lines separate.
+    # Sleep to the next minute: a plain sleep 60 drifts and skips a minute bucket.
     command:
       - sh
       - -c
@@ -14,7 +15,7 @@ services:
         while true; do
         printf '\342\200\213VLCANARY src=docker seq=%s\n' "$$(date +%s)";
         touch /tmp/last_emit;
-        sleep 60;
+        sleep $$((60 - $$(date +%s) % 60));
         done
     healthcheck:
       test:
