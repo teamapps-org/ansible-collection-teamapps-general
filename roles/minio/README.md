@@ -4,6 +4,12 @@ S3 compatible service. Simple setup, standalone using docker-compose.yml
 
 MinIO website: <https://min.io>
 
+## Container image
+
+`minio_image` selects the image repository and defaults to `minio/minio`.
+`minio_version` selects its tag. Point `minio_image` at a private registry
+mirror to keep using a release that is no longer available upstream.
+
 ## Role Variables
 
 See `default/main.yml`
