@@ -2,7 +2,7 @@
 
 services:
   minio:
-    image: minio/minio:{{ minio_version }}
+    image: '{{ minio_image }}:{{ minio_version }}'
     volumes:
       - type: bind
         source: '{{ minio_data_path }}'
