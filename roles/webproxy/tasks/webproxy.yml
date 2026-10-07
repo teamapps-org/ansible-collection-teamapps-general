@@ -105,6 +105,7 @@
     owner: root
     group: root
     mode: '0640'
+  notify: webproxy_nginx_reload
 
 - name: 'Copy security.txt if defined'
   copy:
