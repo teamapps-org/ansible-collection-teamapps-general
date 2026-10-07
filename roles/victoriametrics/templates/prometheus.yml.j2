@@ -66,6 +66,7 @@ scrape_configs:
       - files:
           - "/etc/prometheus/file_sd/*.http_2xx.yml"
 
+{% if victoriametrics_file_sd_config | selectattr('job', 'equalto', 'http_401') | list %}
   - job_name: 'http_401'
     metrics_path: /probe
     scrape_interval: {{ victoriametrics_http_scrape_interval }}
@@ -85,7 +86,9 @@ scrape_configs:
     file_sd_configs:
       - files:
           - "/etc/prometheus/file_sd/*.http_401.yml"
+{% endif %}
 
+{% if victoriametrics_file_sd_config | selectattr('job', 'equalto', 'http_zammad') | list %}
   - job_name: "http_zammad"
     metrics_path: /probe
     scrape_interval: {{ victoriametrics_http_scrape_interval }}
@@ -109,7 +112,9 @@ scrape_configs:
     file_sd_configs:
       - files:
           - "/etc/prometheus/file_sd/*.http_zammad.yml"
+{% endif %}
 
+{% if victoriametrics_file_sd_config | selectattr('job', 'equalto', 'prometheus') | list %}
   - job_name: "prometheus"
     metrics_path: /metrics
     relabel_configs:
@@ -123,6 +128,7 @@ scrape_configs:
     file_sd_configs:
       - files:
           - "/etc/prometheus/file_sd/*.prometheus.yml"
+{% endif %}
 
 {% if victoriametrics_scrape_configs != [] %}
   {{ victoriametrics_scrape_configs | teamapps.general.to_nice_yaml(indent=2) | indent(2,False) }}
