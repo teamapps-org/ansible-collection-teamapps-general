@@ -28,6 +28,27 @@
     mode: '0640'
   loop: '{{ victoriametrics_file_sd_config }}'
 
+- name: find file discovery configurations
+  find:
+    paths: "{{ victoriametrics_path }}/file_sd"
+    patterns: '*.yml'
+  register: victoriametrics_file_sd_existing
+
+# prometheus.yml.j2 renders optional jobs from victoriametrics_file_sd_config, so a file it does not list must not exist
+- name: remove file discovery configurations not in victoriametrics_file_sd_config
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ victoriametrics_file_sd_existing.files }}"
+  loop_control:
+    label: "{{ item.path | basename }}"
+  when: item.path | basename not in victoriametrics_file_sd_managed
+  vars:
+    victoriametrics_file_sd_managed: >-
+      {{ victoriametrics_file_sd_config | map(attribute='name', default='custom')
+         | zip(victoriametrics_file_sd_config | map(attribute='job'))
+         | map('join', '.') | map('regex_replace', '$', '.yml') | list }}
+
 - name: deploy vmagent config file prometheus.yml
   template:
     src: 'prometheus.yml.j2'

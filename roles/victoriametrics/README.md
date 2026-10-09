@@ -118,6 +118,11 @@ victoriametrics_file_sd_config:
 
 ~~~
 
+The role owns `{{ victoriametrics_path }}/file_sd/`. It writes one `<name>.<job>.yml` file per
+`victoriametrics_file_sd_config` entry and deletes every other `*.yml` file in that directory.
+The `http_401`, `http_zammad` and `prometheus` scrape jobs are rendered only when
+`victoriametrics_file_sd_config` has an entry for that job.
+
 ## Testing the alerting rules
 
 `files/rules/tests/` holds `vmalert-tool` unit tests for the shipped rule files.
