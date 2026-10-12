@@ -50,18 +50,18 @@ The [public repository boundary in AGENTS.md](../AGENTS.md#public-repository-bou
 - Use `no_log: true` on tasks that render, read, or report secret values. Protect debug output, assertion failures, and application validation output too.
 - Keep secrets out of endpoint URLs and ordinary configuration diffs. Separate secret-bearing files from non-secret configuration when the application supports it.
 - Set secret-file ownership and permissions explicitly. Prefer root-owned mode `'0600'`; use a restricted group and mode `'0640'` only when a non-root service must read the file. Mount container secret files read-only.
-- For Compose interpolation, write a project `.env` file with mode `'0600'` and `no_log: true`, then reference `${VARIABLE}` in `docker-compose.yml`. Pass required container environment values explicitly through `environment:` rather than loading the whole file with `env_file:`. The vmauth services in `victoriametrics` and `victorialogs` still use `env_file:`; keep that unless the change is about their secret handling.
+- For Compose interpolation, write a project `.env` file with mode `'0600'` and `no_log: true`, then reference `${VARIABLE}` in `docker-compose.yml`. Pass required container environment values explicitly through `environment:` rather than loading the whole file with `env_file:`.
 - If an application supports file-based credentials or a secrets/config overlay, prefer that over injecting credentials into the container environment. The webproxy collector's separate secrets overlay is one example.
 - Keep ordinary config tasks and diffs visible when they contain no secrets. Document diff exposure when changing secret-bearing file layouts: old inline values can appear in removal diffs.
 - Read secret input privately or through Vault. Avoid literal secrets in shell arguments and command history.
 
 ## Docker Compose services
 
-- Use `restart: always` for new long-running services and `restart: "no"` for one-shot jobs. Some existing services use `unless-stopped` or `on-failure`; leave them unless the change is about restart behavior.
+- Use `restart: always` for long-running services and `restart: "no"` for one-shot jobs.
 - Add a meaningful healthcheck to each new long-running service. Use a documented endpoint or command; ask the maintainers if the correct probe is unknown.
 - Leave architecture selection to the image unless the role requires a specific `platform:`.
 - Expose host-side bind addresses and ports through role defaults when they are part of the service interface.
-- Expose image versions as role defaults, such as `<role>_version`. Pin new defaults to a specific release tag rather than `latest`. Many existing roles default to `latest`; change that only as part of a deliberate version update for that role.
+- Expose image versions as role defaults, such as `<role>_version`. Pin defaults to a specific release tag rather than `latest`.
 - Let `community.docker.docker_compose_v2` with `state: present` apply Compose changes. It recreates services whose configuration changed; the Compose template task does not need a restart notification.
 - Bind-mounted configuration and secret files are not part of Compose's configuration hash. Notify a handler when the application must reload or restart after those files change.
 - Scope reload/restart handlers to affected services with `services:`. A single-service change must not restart an entire project, especially its databases or migration jobs.
