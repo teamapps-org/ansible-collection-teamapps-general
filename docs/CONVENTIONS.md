@@ -13,7 +13,8 @@ The [public repository boundary in AGENTS.md](../AGENTS.md#public-repository-bou
 - Keep interfaces small. Add a toggle, alternate backend, or compatibility path only for a current use case.
 - Keep reusable behavior in roles. Consuming projects supply site-specific hosts, domains, credentials, and overrides.
 - Use the standard role layout: `tasks/`, `defaults/`, `handlers/`, `templates/`, and `files/` as needed. Add only used files and directories.
-- Prefer `import_tasks` for static composition and `include_tasks` for dynamic composition. Split task files at clear functional boundaries, not to create one-task wrappers.
+- Prefer `import_tasks` for static composition and `include_tasks` for dynamic composition. Split task files at clear functional boundaries, not to create one-task wrappers. Avoid include chains deeper than one level without a clear reason.
+- Name role files in `snake_case`, such as `tasks/zpool.yml`. Files deployed to a target keep their upstream names, such as `docker-compose.yml`.
 - Order tasks as preflight validation, setup, configuration, then service management.
 - Use fully qualified collection role names in consumer examples, such as `teamapps.general.webproxy`.
 
@@ -36,10 +37,11 @@ The [public repository boundary in AGENTS.md](../AGENTS.md#public-repository-bou
 - Preserve existing document-start markers; new files do not require `---`.
 - Use one space after `#` in comments and keep long lines readable even though line length is not enforced.
 - Quote YAML strings containing Jinja expressions. Use explicit `default(...)` arguments.
+- Merge and transform dictionaries with `combine`, `dict2items`, and `items2dict` as existing roles do, rather than with custom loops or `set_fact` chains.
 - Keep templates readable. Put configurable policy in defaults and keep heavy data preparation out of templates.
 - Put templates in `templates/` with a `.j2` suffix and static files in `files/`.
 - Serialize values for the target format instead of hand-quoting credentials or arbitrary strings. Account for both Compose and application interpolation when dollar signs are literal data.
-- Builtin modules may retain short names, such as `copy` and `cron`. `.ansible-lint` intentionally skips builtin FQCN enforcement; external collection modules use fully qualified names, such as `community.docker.docker_compose_v2`.
+- Builtin modules may keep short names, such as `copy` and `cron`. External collection modules use fully qualified names, such as `community.docker.docker_compose_v2`. `.ansible-lint` skips both `fqcn-builtins` and `fqcn[action]`, so lint does not catch a missing collection prefix; check it in review.
 - Sort unordered long lists where useful for review. Preserve execution order and precedence-sensitive lists.
 
 ## Secrets
@@ -48,18 +50,18 @@ The [public repository boundary in AGENTS.md](../AGENTS.md#public-repository-bou
 - Use `no_log: true` on tasks that render, read, or report secret values. Protect debug output, assertion failures, and application validation output too.
 - Keep secrets out of endpoint URLs and ordinary configuration diffs. Separate secret-bearing files from non-secret configuration when the application supports it.
 - Set secret-file ownership and permissions explicitly. Prefer root-owned mode `'0600'`; use a restricted group and mode `'0640'` only when a non-root service must read the file. Mount container secret files read-only.
-- For Compose interpolation, write a project `.env` file with mode `'0600'` and `no_log: true`, then reference `${VARIABLE}` in `docker-compose.yml`. Pass required container environment values explicitly through `environment:` rather than loading the whole file with `env_file:`.
+- For Compose interpolation, write a project `.env` file with mode `'0600'` and `no_log: true`, then reference `${VARIABLE}` in `docker-compose.yml`. Pass required container environment values explicitly through `environment:` rather than loading the whole file with `env_file:`. The vmauth services in `victoriametrics` and `victorialogs` still use `env_file:`; keep that unless the change is about their secret handling.
 - If an application supports file-based credentials or a secrets/config overlay, prefer that over injecting credentials into the container environment. The webproxy collector's separate secrets overlay is one example.
 - Keep ordinary config tasks and diffs visible when they contain no secrets. Document diff exposure when changing secret-bearing file layouts: old inline values can appear in removal diffs.
 - Read secret input privately or through Vault. Avoid literal secrets in shell arguments and command history.
 
 ## Docker Compose services
 
-- Use `restart: always` for long-running services and `restart: "no"` for one-shot jobs.
+- Use `restart: always` for new long-running services and `restart: "no"` for one-shot jobs. Some existing services use `unless-stopped` or `on-failure`; leave them unless the change is about restart behavior.
 - Add a meaningful healthcheck to each new long-running service. Use a documented endpoint or command; ask the maintainers if the correct probe is unknown.
 - Leave architecture selection to the image unless the role requires a specific `platform:`.
 - Expose host-side bind addresses and ports through role defaults when they are part of the service interface.
-- For new version defaults, prefer a specific public image tag plus immutable digest. Keep versions overridable and preserve existing update-tool annotations when changing them. This repository does not currently configure Renovate; adding an update bot is a separate change.
+- Expose image versions as role defaults, such as `<role>_version`. Pin new defaults to a specific release tag rather than `latest`. Many existing roles default to `latest`; change that only as part of a deliberate version update for that role.
 - Let `community.docker.docker_compose_v2` with `state: present` apply Compose changes. It recreates services whose configuration changed; the Compose template task does not need a restart notification.
 - Bind-mounted configuration and secret files are not part of Compose's configuration hash. Notify a handler when the application must reload or restart after those files change.
 - Scope reload/restart handlers to affected services with `services:`. A single-service change must not restart an entire project, especially its databases or migration jobs.
@@ -71,9 +73,9 @@ The [public repository boundary in AGENTS.md](../AGENTS.md#public-repository-bou
 - For OAuth2 Proxy role behavior, group filtering, and session storage, follow [roles/oauth2_proxy/README.md](../roles/oauth2_proxy/README.md). Keep tenant IDs, registrations, and actual group assignments in consumer configuration.
 - Provider-side restrictions must be explicit. Creating an OAuth application inside a GitLab group does not by itself restrict who can log in.
 
-## Example playbooks and tags
+## Examples and tags
 
-- Keep examples minimal but runnable with their documented requirements. Target a named host/group or an explicit placeholder instead of unconstrained `hosts: all`.
+- Role READMEs hold the usage examples. Keep them minimal but runnable with their documented requirements. Target a named host/group or an explicit placeholder instead of unconstrained `hosts: all`.
 - Use tags where selective execution is useful. Prefer role-prefixed task tags; functional tags remain valid.
 - Propagate tags through dynamic includes with `apply` when included tasks must inherit them.
 
@@ -86,10 +88,11 @@ The [public repository boundary in AGENTS.md](../AGENTS.md#public-repository-bou
 
 ## Lint and validation
 
-- Run `ansible-lint` on changed roles and `yamllint` on changed YAML through pipenv. Tooling and verification commands are in [AGENTS.md](../AGENTS.md).
+- Run `ansible-lint` on changed roles and `yamllint` on changed YAML through pipenv. The commands are in the README's [Run checks](../README.md#run-checks) section.
 - Respect `.ansible-lint` and `.yamllint`. For a necessary one-off exception, use a narrow `# noqa rule-name` with a reason. Preserve existing exceptions unless the task includes removing them; use local exceptions rather than adding new `skip_ansible_lint` tags or global skips.
 - Validate rendered configuration with the application's own validator where possible. Check the enabled, disabled, and authentication variants affected by the change.
-- Report validation limits honestly. A collection build checks packaging; lint and check mode do not replace runtime verification.
+- Check repeat-run idempotence and check-mode behavior when practical.
+- State in the PR what was verified and what was not. A collection build checks packaging; lint and check mode do not replace runtime verification.
 
 ## References
 
