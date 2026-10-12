@@ -1,4 +1,22 @@
 ---
+- name: validate remote-write authentication credentials
+  assert:
+    that:
+      - (webproxy_victoriametrics_remotewrite_username | default('', true) | length > 0) == (webproxy_victoriametrics_remotewrite_password | default('', true) | length > 0)
+    fail_msg: Set both webproxy_victoriametrics_remotewrite_username and webproxy_victoriametrics_remotewrite_password, or leave both unset.
+  when: webproxy_otel_tracing_enabled | bool
+
+- name: deploy OpenTelemetry collector secrets
+  template:
+    src: otel-collector-secrets.yml.j2
+    dest: '{{ webproxy_path }}/otel-collector-secrets.yml'
+    owner: root
+    group: 10001
+    mode: '0640'
+  no_log: true
+  when: webproxy_otel_tracing_enabled | bool
+  notify: webproxy_otel_collector_restart
+
 - name: Deploy OpenTelemetry Collector Configuration
   template:
     src: otel-collector-config.yml.j2
@@ -9,10 +27,13 @@
   when: webproxy_otel_tracing_enabled | bool
   notify: webproxy_otel_collector_restart
 
-- name: Remove OpenTelemetry Collector Configuration when disabled
+- name: remove OpenTelemetry collector configuration and secrets when disabled
   file:
-    path: '{{ webproxy_path }}/otel-collector-config.yml'
+    path: '{{ webproxy_path }}/{{ item }}'
     state: absent
+  loop:
+    - otel-collector-config.yml
+    - otel-collector-secrets.yml
   when: not (webproxy_otel_tracing_enabled | bool)
 
 - name: Deploy nginx otel config

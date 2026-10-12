@@ -100,7 +100,9 @@ services:
     environment:
       NGINX_DOCKER_GEN_CONTAINER: webproxy_docker-gen
       NGINX_PROXY_CONTAINER: webproxy_nginx
-      DEFAULT_EMAIL: {{ webproxy_letsencrypt_default_email }}
+{% if webproxy_letsencrypt_default_email | default('', true) | length > 0 %}
+      DEFAULT_EMAIL: {{ webproxy_letsencrypt_default_email | to_json }}
+{% endif %}
     logging: *logging
     depends_on:
       - docker-gen
@@ -116,10 +118,11 @@ services:
     image: "otel/opentelemetry-collector-contrib:{{ webproxy_otel_collector_version }}"
     volumes:
       - ./otel-collector-config.yml:/etc/otel-collector-config.yml:ro
-    command: ["--config=/etc/otel-collector-config.yml"]
+      - ./otel-collector-secrets.yml:/etc/otel-collector-secrets.yml:ro
+    command: ["--config=/etc/otel-collector-config.yml", "--config=/etc/otel-collector-secrets.yml"]
     restart: always
     healthcheck:
-      test: ["CMD", "/otelcol-contrib", "validate", "--config=/etc/otel-collector-config.yml"]
+      test: ["CMD", "/otelcol-contrib", "validate", "--config=/etc/otel-collector-config.yml", "--config=/etc/otel-collector-secrets.yml"]
       interval: 30s
       timeout: 3s
       retries: 3

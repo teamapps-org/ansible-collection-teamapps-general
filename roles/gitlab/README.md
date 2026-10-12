@@ -6,6 +6,12 @@ Recommendation: mount an external volume to /srv before installing gitlab.
 
 This role installs gitlab from the apt repository and does not use docker.
 
+## APT repository migration
+
+Repository setup installs `python3-debian` and GnuPG, then replaces `gitlab_gitlab-ce.list` with `gitlab_gitlab-ce.sources` using `deb822_repository`.
+Binary and source repositories keep the existing URL, suite and scoped signing key. Only GitLab's legacy key is removed from `/etc/apt/trusted.gpg` when present.
+The APT cache refreshes when repository files or the signing key change. Signing-key replacement remains enabled for key rotation.
+
 ## Container registry storage
 
 When `gitlab_registry_path` is a dedicated filesystem, set

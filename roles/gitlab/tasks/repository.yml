@@ -1,0 +1,81 @@
+# Repository setup is separate so migrations can be tested without installing GitLab.
+- name: install gitlab repository dependencies
+  apt:
+    pkg:
+      - curl
+      - openssh-server
+      - ca-certificates
+      - apt-transport-https
+      - debian-archive-keyring
+      - gnupg
+      - python3-debian
+    state: present
+    install_recommends: false
+
+- name: check legacy apt keyring
+  stat:
+    path: /etc/apt/trusted.gpg
+  register: gitlab_legacy_keyring
+
+- name: inspect legacy apt signing keys
+  command:
+    argv:
+      - gpg
+      - --batch
+      - --no-default-keyring
+      - --keyring
+      - /etc/apt/trusted.gpg
+      - --with-colons
+      - --list-keys
+  register: gitlab_legacy_keys
+  changed_when: false
+  check_mode: false
+  when: gitlab_legacy_keyring.stat.exists
+
+- name: remove gitlab key from legacy apt keyring
+  command:
+    argv:
+      - gpg
+      - --batch
+      - --yes
+      - --no-default-keyring
+      - --keyring
+      - /etc/apt/trusted.gpg
+      - --delete-key
+      - F6403F6544A38863DAA0B6E03F01618A51312F3F
+  changed_when: true
+  when:
+    - gitlab_legacy_keyring.stat.exists
+    - "'fpr:::::::::F6403F6544A38863DAA0B6E03F01618A51312F3F:' in gitlab_legacy_keys.stdout"
+
+- name: deploy gitlab signing key
+  copy:
+    src: gitlab_gitlab-ce-archive-keyring.gpg
+    dest: /usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg
+    owner: root
+    group: root
+    mode: '0644'
+    force: true
+  register: gitlab_signing_key
+
+- name: remove legacy gitlab repository file
+  file:
+    path: /etc/apt/sources.list.d/gitlab_gitlab-ce.list
+    state: absent
+  register: gitlab_legacy_repository
+
+- name: configure gitlab apt repository
+  ansible.builtin.deb822_repository:
+    name: gitlab_gitlab-ce
+    types: [deb, deb-src]
+    uris: https://packages.gitlab.com/gitlab/gitlab-ce/ubuntu/
+    suites: '{{ ansible_facts.lsb.codename }}'
+    components: [main]
+    architectures: [amd64]
+    signed_by: /usr/share/keyrings/gitlab_gitlab-ce-archive-keyring.gpg
+  register: gitlab_repository
+
+- name: refresh apt cache after gitlab repository changes
+  apt:
+    update_cache: true
+  when: gitlab_repository.changed or gitlab_legacy_repository.changed or gitlab_signing_key.changed

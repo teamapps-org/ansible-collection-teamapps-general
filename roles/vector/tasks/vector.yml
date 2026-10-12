@@ -1,36 +1,8 @@
 ---
 # tasks file for vector
 
-- name: remove old repository gpgkey
-  apt_key:
-    url: https://repositories.timber.io/public/vector/gpg.3543DB2D0A2BC4B8.key
-    id: 1E46C153E9EFA24018C36F753543DB2D0A2BC4B8 # for offline checkmode # gpg --list-keys --keyid-format=long --keyring /etc/apt/trusted.gpg
-    state: absent
-
-- name: remove old nightly apt repo
-  apt_repository:
-    repo: 'deb https://repositories.timber.io/public/vector-nightly/deb/ubuntu any-version main'
-    state: absent
-
-- name: remove old apt repo
-  apt_repository:
-    repo: 'deb https://repositories.timber.io/public/vector/deb/ubuntu any-version main'
-    state: absent
-
-## Repository
-# https://vector.dev/highlights/2023-11-07-new-linux-repos/
-- name: add repository gpg keyring
-  copy:
-    src: datadog-archive-keyring.gpg
-    dest: /usr/share/keyrings/datadog-archive-keyring.gpg
-    owner: root
-    group: root
-    mode: '0644'
-
-- name: add apt repo
-  apt_repository:
-    repo: 'deb [signed-by=/usr/share/keyrings/datadog-archive-keyring.gpg] https://apt.vector.dev/ stable vector-0'
-    update_cache: true
+- name: configure vector apt repository
+  import_tasks: repository.yml
 
 - name: apt pin vector version
   copy:

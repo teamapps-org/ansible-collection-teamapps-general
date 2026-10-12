@@ -2,6 +2,12 @@
 
 Vector Log & Metric Collector Agent
 
+## APT repository migration
+
+Repository setup uses `deb822_repository` and installs `python3-debian` and GnuPG first.
+It removes the managed Timber.io and `apt_vector_dev.list` files, writes `vector.sources`, and retains `https://apt.vector.dev/`, suite `stable`, component `vector-0` and the scoped Datadog signing key.
+Only Vector's legacy key is removed from `/etc/apt/trusted.gpg` when present. The APT cache refreshes when repository files or the signing key change.
+
 ## Usage
 
 Usage Example for collecting docker logs and send them to loki.

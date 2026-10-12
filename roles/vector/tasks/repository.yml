@@ -1,0 +1,77 @@
+- name: install apt repository dependencies
+  apt:
+    name:
+      - ca-certificates
+      - gnupg
+      - python3-debian
+    state: present
+
+- name: check legacy apt keyring
+  stat:
+    path: /etc/apt/trusted.gpg
+  register: vector_legacy_keyring
+
+- name: inspect legacy apt signing keys
+  command:
+    argv:
+      - gpg
+      - --batch
+      - --no-default-keyring
+      - --keyring
+      - /etc/apt/trusted.gpg
+      - --with-colons
+      - --list-keys
+  register: vector_legacy_keys
+  changed_when: false
+  check_mode: false
+  when: vector_legacy_keyring.stat.exists
+
+- name: remove vector key from legacy apt keyring
+  command:
+    argv:
+      - gpg
+      - --batch
+      - --yes
+      - --no-default-keyring
+      - --keyring
+      - /etc/apt/trusted.gpg
+      - --delete-key
+      - 1E46C153E9EFA24018C36F753543DB2D0A2BC4B8
+  changed_when: true
+  when:
+    - vector_legacy_keyring.stat.exists
+    - "'fpr:::::::::1E46C153E9EFA24018C36F753543DB2D0A2BC4B8:' in vector_legacy_keys.stdout"
+
+- name: deploy vector signing key
+  copy:
+    src: datadog-archive-keyring.gpg
+    dest: /usr/share/keyrings/datadog-archive-keyring.gpg
+    owner: root
+    group: root
+    mode: '0644'
+  register: vector_signing_key
+
+- name: remove legacy vector repository files
+  file:
+    path: '/etc/apt/sources.list.d/{{ item }}'
+    state: absent
+  loop:
+    - repositories_timber_io_public_vector_nightly_deb_ubuntu.list
+    - repositories_timber_io_public_vector_deb_ubuntu.list
+    - apt_vector_dev.list
+  register: vector_legacy_repositories
+
+- name: configure vector apt repository
+  ansible.builtin.deb822_repository:
+    name: vector
+    types: [deb]
+    uris: https://apt.vector.dev/
+    suites: [stable]
+    components: [vector-0]
+    signed_by: /usr/share/keyrings/datadog-archive-keyring.gpg
+  register: vector_repository
+
+- name: refresh apt cache after vector repository changes
+  apt:
+    update_cache: true
+  when: vector_repository.changed or vector_legacy_repositories.changed or vector_signing_key.changed

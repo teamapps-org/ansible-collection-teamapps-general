@@ -10,7 +10,6 @@ The role creates the external Docker network `webproxy` with subnet `172.28.0.0/
 - The `community.docker` collection available to Ansible.
 - Privileges to manage Docker, create networks and write root-owned configuration files.
 - The shared variable `container_path`, used to create the parent container directory. Set it to `/container` for the default layout.
-- `letsencrypt_email`, or an explicit `webproxy_letsencrypt_default_email`.
 - Ports 80 and 443 available on the host. For public certificates, domain DNS and inbound HTTP/HTTPS access must reach the proxy.
 - The subnet `172.28.0.0/16` available for the proxy network. It is currently fixed in the role.
 
@@ -21,7 +20,6 @@ The role creates the external Docker network `webproxy` with subnet `172.28.0.0/
   become: true
   vars:
     container_path: /container
-    webproxy_letsencrypt_default_email: admin@example.com
   roles:
     - role: teamapps.general.webproxy
 ```
@@ -40,7 +38,7 @@ See [defaults/main.yml](defaults/main.yml) for all defaults.
 | `webproxy_nginx_image` | `nginx:alpine` | Frontend proxy image. |
 | `webproxy_dockergen_image` | `nginxproxy/docker-gen:latest` | Docker event watcher and nginx config generator. |
 | `webproxy_letsencrypt_image` | `nginxproxy/acme-companion:latest` | Certificate management image. |
-| `webproxy_letsencrypt_default_email` | `{{ letsencrypt_email }}` | Certificate contact when an application omits `LETSENCRYPT_EMAIL`. |
+| `webproxy_letsencrypt_default_email` | `{{ letsencrypt_email \| default('') }}` | Optional acme-companion account email. Empty values omit `DEFAULT_EMAIL`. Preserve existing values to reuse the same account directory. |
 | `webproxy_docker_pull` | `{{ global_docker_pull \| default(False) }}` | Use Compose pull policy `always` when true, otherwise `policy`. |
 | `webproxy_additional_networks` | `[]` | Extra external networks joined by nginx, docker-gen and acme-companion. |
 | `webproxy_ignore_missing_network` | `true` | Ignore the role's failed network precheck. Compose still requires the networks to exist. |
@@ -79,7 +77,6 @@ services:
       VIRTUAL_HOST: app.example.com,www.app.example.com
       VIRTUAL_PORT: "80"
       LETSENCRYPT_HOST: app.example.com,www.app.example.com
-      LETSENCRYPT_EMAIL: admin@example.com
     networks:
       - webproxy
 
@@ -92,9 +89,15 @@ networks:
 - `VIRTUAL_HOST` selects the hostnames routed to the container.
 - `VIRTUAL_PORT` selects the container port, not a published host port.
 - `LETSENCRYPT_HOST` lists the certificate names. Each domain must resolve to the proxy.
-- `LETSENCRYPT_EMAIL` overrides the proxy's default certificate contact and can be omitted when the default is configured.
+- `LETSENCRYPT_EMAIL` optionally overrides the proxy's account email. Neither email setting is required for Let's Encrypt.
 
 Applications can also join a private network for databases or other internal services. If an application uses another external network instead of `webproxy`, create that network first and add it to `webproxy_additional_networks`.
+
+### Let's Encrypt account email
+
+Let's Encrypt [ended expiration notification emails on June 4, 2025](https://letsencrypt.org/2025/01/22/ending-expiration-emails/) and [no longer stores ACME account contact information](https://community.letsencrypt.org/t/did-you-change-the-response-of-new-account/238188). New deployments can omit email configuration. Use certificate monitoring for expiry alerts.
+
+Keep existing email settings when updating an installation: acme-companion uses `/etc/acme.sh/<email>` for an email-configured account and `/etc/acme.sh/default` without one. Removing an effective email value changes the local account directory and can trigger new account registration. The role preserves the `letsencrypt_email` fallback and per-application `LETSENCRYPT_EMAIL` overrides for continuity. Other ACME providers may still require email.
 
 ## Custom nginx configuration
 
@@ -149,10 +152,14 @@ Set `webproxy_otel_tracing_enabled: true` and use an nginx image containing the 
 | `webproxy_otel_tracing_http_password` | unset | Trace exporter basic-auth password. |
 | `webproxy_otel_spanmetrics_namespace` | `otel` | Namespace for generated span metrics. |
 | `webproxy_victoriametrics_remotewrite_url` | unset | Full remote-write endpoint for span metrics. Required when enabling the collector. |
-| `webproxy_victoriametrics_remotewrite_username` | unset | Declared in defaults but currently unused by the collector template. |
-| `webproxy_victoriametrics_remotewrite_password` | unset | Declared in defaults but currently unused by the collector template. |
+| `webproxy_victoriametrics_remotewrite_username` | unset | Optional remote-write basic-auth username. Set together with the password. |
+| `webproxy_victoriametrics_remotewrite_password` | unset | Optional remote-write basic-auth password. Set together with the username. |
 
-The current template always sets a basic-auth header for trace export. It does not configure authentication for metrics remote write; setting the remote-write username and password variables has no effect.
+The trace exporter sets a basic-auth header from the trace credentials. Metrics remote write uses the collector's `basicauth/remotewrite` extension when both remote-write credentials are set. Leave both unset for an unauthenticated endpoint; supplying only one fails role validation.
+
+The collector loads `otel-collector-config.yml` and a separate `otel-collector-secrets.yml` overlay. The secrets file contains remote-write credentials and all trace exporter headers; its template task uses `no_log: true`. Both files are owned by root, readable by group `10001`, have mode `0640`, and are mounted read-only. Changes to either file restart the collector, and both files are removed when tracing is disabled.
+
+Main configuration diffs remain visible. When upgrading from inline credentials, run once without `--diff` to avoid exposing the old file's secrets. Keep credentials out of endpoint URLs and other non-secret settings, which remain visible in diffs.
 
 ```yaml
 webproxy_nginx_image: nginx:alpine-otel
@@ -161,11 +168,12 @@ webproxy_environment_name: prod
 webproxy_otel_tracing_http_endpoint: https://traces.example.com/insert/opentelemetry
 webproxy_otel_tracing_http_user: "{{ vault_traces_user }}"
 webproxy_otel_tracing_http_password: "{{ vault_traces_password }}"
-# Endpoint reachable from the collector without exporter authentication.
-webproxy_victoriametrics_remotewrite_url: http://victoriametrics:8428/api/v1/write
+webproxy_victoriametrics_remotewrite_url: https://metrics.example.com/api/v1/write
+webproxy_victoriametrics_remotewrite_username: "{{ vault_metrics_user }}"
+webproxy_victoriametrics_remotewrite_password: "{{ vault_metrics_password }}"
 ```
 
-Define the referenced Vault variables in your inventory. For this example, the `victoriametrics` service must be reachable on the `webproxy` network, which is the collector's only network.
+Define the referenced Vault variables in your inventory. Both endpoints must be reachable from the collector. For a Docker-internal metrics endpoint such as `http://victoriametrics:8428/api/v1/write`, attach the metrics service to the `webproxy` network, which is the collector's only network, and omit credentials if the endpoint does not require authentication.
 
 To override tracing for a host, put directives such as these in `data/vhost.d/example.org`, alongside any required default server configuration:
 
