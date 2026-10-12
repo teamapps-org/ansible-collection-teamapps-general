@@ -1,0 +1,80 @@
+- name: install apt repository dependencies
+  apt:
+    name:
+      - ca-certificates
+      - gnupg
+      - python3-debian
+    state: present
+
+- name: check legacy apt keyring
+  stat:
+    path: /etc/apt/trusted.gpg
+  register: netdata_legacy_keyring
+
+- name: inspect legacy apt signing keys
+  command:
+    argv:
+      - gpg
+      - --batch
+      - --no-default-keyring
+      - --keyring
+      - /etc/apt/trusted.gpg
+      - --with-colons
+      - --list-keys
+  register: netdata_legacy_keys
+  changed_when: false
+  check_mode: false
+  when: netdata_legacy_keyring.stat.exists
+
+- name: remove netdata key from legacy apt keyring
+  command:
+    argv:
+      - gpg
+      - --batch
+      - --yes
+      - --no-default-keyring
+      - --keyring
+      - /etc/apt/trusted.gpg
+      - --delete-key
+      - A799AB702EA6DEE3E21AA716B4188B90F6FB8FD3
+  changed_when: true
+  when:
+    - netdata_legacy_keyring.stat.exists
+    - "'fpr:::::::::A799AB702EA6DEE3E21AA716B4188B90F6FB8FD3:' in netdata_legacy_keys.stdout"
+
+- name: deploy netdata signing key
+  copy:
+    src: netdata.gpg
+    dest: /usr/share/keyrings/netdata.gpg
+    owner: root
+    group: root
+    mode: '0644'
+    force: false
+  register: netdata_signing_key
+
+- name: remove legacy netdata repository files
+  file:
+    path: '/etc/apt/sources.list.d/{{ item }}'
+    state: absent
+  loop:
+    - repositories_timber_io_public_vector_deb_ubuntu.list
+    - packagecloud_io_netdata_netdata_ubuntu.list
+    - packagecloud_io_netdata_netdata_ubuntu.list.distUpgrade
+    - netdata.list
+  register: netdata_legacy_repositories
+
+- name: configure netdata apt repository
+  ansible.builtin.deb822_repository:
+    name: netdata
+    types: [deb]
+    uris: https://packagecloud.io/netdata/netdata/ubuntu/
+    suites: '{{ ansible_facts.distribution_release }}'
+    components: [main]
+    architectures: [amd64]
+    signed_by: /usr/share/keyrings/netdata.gpg
+  register: netdata_repository
+
+- name: refresh apt cache after netdata repository changes
+  apt:
+    update_cache: true
+  when: netdata_repository.changed or netdata_legacy_repositories.changed or netdata_signing_key.changed

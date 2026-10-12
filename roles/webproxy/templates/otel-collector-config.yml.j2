@@ -1,3 +1,9 @@
+{% set remote_write_auth = webproxy_victoriametrics_remotewrite_username | default('', true) | length > 0 %}
+{% if remote_write_auth %}
+extensions:
+  basicauth/remotewrite: {}
+
+{% endif %}
 receivers:
   otlp:
     protocols:
@@ -23,16 +29,15 @@ processors:
 exporters:
   prometheusremotewrite:
     endpoint: {{ webproxy_victoriametrics_remotewrite_url }}
+{% if remote_write_auth %}
+    auth:
+      authenticator: basicauth/remotewrite
+{% endif %}
     target_info:
       enabled: true
 {% if webproxy_otel_tracing_enabled %}
   otlphttp:
     traces_endpoint: {{ webproxy_otel_tracing_http_endpoint }}/v1/traces
-    headers:
-      Authorization: "Basic {{ (webproxy_otel_tracing_http_user ~ ':' ~ webproxy_otel_tracing_http_password) | b64encode }}"
-{% for k, v in webproxy_otel_tracing_http_headers.items() %}
-      {{ k }}: "{{ v }}"
-{% endfor %}
 {% endif %}
 
 connectors:
@@ -49,6 +54,9 @@ connectors:
         default: {{ ansible_facts.hostname }}
 
 service:
+{% if remote_write_auth %}
+  extensions: [basicauth/remotewrite]
+{% endif %}
   pipelines:
     traces:
       receivers: [otlp]

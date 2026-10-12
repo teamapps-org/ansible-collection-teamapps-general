@@ -42,4 +42,4 @@ sanoid_conf: |
 
 sanoid_install_from_deb_source: true
 
-sanoid_deb_source: https://ftp.debian.org/debian/pool/main/s/sanoid/sanoid_2.3.0-1_all.deb
+sanoid_deb_source: https://ftp.debian.org/debian/pool/main/s/sanoid/sanoid_2.3.0-2_all.deb

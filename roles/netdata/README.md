@@ -4,6 +4,12 @@ Netdata is installed and started on host to have a complete view of the system.
 
 netdata can be used as standalone monitoring tool on a server, but also as a metrics collector. Netdata has a prometheus api, that can be scraped by prometheus or victoriametrics' vmagent. See their respective roles.
 
+## APT repository migration
+
+Repository setup uses `deb822_repository` and installs `python3-debian` and GnuPG first.
+It replaces the managed legacy `.list` files with `netdata.sources`, keeps the existing repository URL and scoped signing key, and removes only Netdata's legacy key from `/etc/apt/trusted.gpg` when present.
+The APT cache refreshes when the repository, legacy files or signing key change.
+
 ## Docker Webproxy integration
 
 The docker-compose.yml file is used to forward requests from the docker network (webproxy) to netdata listening on localhost:19999.

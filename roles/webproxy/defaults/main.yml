@@ -38,7 +38,8 @@ webproxy_nginx_image: nginx:alpine
 webproxy_dockergen_image: nginxproxy/docker-gen:latest
 webproxy_letsencrypt_image: nginxproxy/acme-companion:latest
 
-webproxy_letsencrypt_default_email: '{{ letsencrypt_email }}'
+# Optional for Let's Encrypt; keep existing values to reuse acme-companion account directories.
+webproxy_letsencrypt_default_email: "{{ letsencrypt_email | default('') }}"
 
 webproxy_nginx_tmpl_file: nginx.tmpl
 
@@ -69,5 +70,6 @@ webproxy_otel_tracing_http_user:
 webproxy_otel_tracing_http_password:
 webproxy_otel_spanmetrics_namespace: otel
 webproxy_victoriametrics_remotewrite_url:
+# Optional remote-write basic authentication. Set both credentials or leave both unset.
 webproxy_victoriametrics_remotewrite_username:
 webproxy_victoriametrics_remotewrite_password:
