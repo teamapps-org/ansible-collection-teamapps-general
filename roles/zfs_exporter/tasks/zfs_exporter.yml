@@ -4,6 +4,7 @@
   command: "{{ zfs_exporter_bin_path }} --version"
   failed_when: false
   changed_when: false
+  check_mode: false
   register: zfs_exporter_version_check
 
 - name: Download and unarchive zfs_exporter into temporary location.
@@ -12,9 +13,10 @@
     dest: /tmp
     remote_src: true
     mode: '0755'
+  # zfs_exporter prints its version to stderr
   when: >
     zfs_exporter_version_check.stdout is not defined
-    or zfs_exporter_version not in zfs_exporter_version_check.stdout
+    or zfs_exporter_version not in (zfs_exporter_version_check.stdout ~ zfs_exporter_version_check.stderr)
   register: zfs_exporter_download_check
 
 - name: Move zfs_exporter binary into place. # noqa no-handler
