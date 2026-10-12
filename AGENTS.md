@@ -1,155 +1,61 @@
 # AGENTS.md
 
-This repository is an Ansible collection (`teamapps.general`) with many roles.
-Use these notes when making changes so your edits fit existing practices.
+This repository publishes the `teamapps.general` Ansible collection. Keep roles generic and reusable. Deployments belong to the Ansible projects that consume the collection.
 
-## Environment and tooling
+## Public repository boundary
 
-- Python: 3.10 (see `Pipfile`)
-- Package manager: `pipenv`
-- Ansible config: `ansible.cfg` in repo root
+- Never include consumer organization names, internal system information, actual hostnames or IP addresses, private domains or URLs, tenant or account identifiers, ticket references, or other site-specific details.
+- Apply this rule to code, comments, examples, documentation, filenames, commit messages, and PR content.
+- Use generic placeholders such as `app.example.com` and documentation-only addresses. Keep real configuration and operational context in the consuming Ansible project.
+- Public upstream project names, package names, and official documentation links are permitted when required to identify an integration or dependency.
 
-### Bootstrap
+Before creating or changing roles, playbooks, templates, or plugins, read [docs/CONVENTIONS.md](docs/CONVENTIONS.md). It is the source of truth for coding, secrets, Compose, and documentation conventions. This file covers agent workflow and repository-specific tooling.
 
-```bash
-pipenv sync
-pipenv shell
-```
+## Environment and repository facts
 
-## Build, lint, and test
+- Run Python and Ansible tools through `pipenv run`, or inside an active pipenv shell. `Pipfile` declares the Python version and dependencies; `Pipfile.lock` records resolved versions.
+- Bootstrap with `pipenv sync`. Confirm the installed Ansible version with `pipenv run ansible --version`.
+- `roles/<role>/` contains the collection's first-party roles; `plugins/` contains collection plugins. Usage examples live in each role's README; there is no `playbooks/` or `examples/` directory.
+- `ansible.cfg`, `.ansible-lint`, and `.yamllint` define local tool settings. Check them before overriding paths or interpreting lint failures. `ansible.cfg` refers to local-only paths (`inventory/`, `roles_galaxy/`, `collections/`) that are not part of the repository; never commit them.
+- This checkout has no dedicated test runner or root `requirements.yml`. Validation focuses on role linting, rendered configuration, and collection packaging.
+- `.ansible-lint` runs offline. When lint needs a missing external collection, install it into the configured path with `pipenv run ansible-galaxy collection install <namespace.name> -p collections`.
 
-There is no dedicated test runner in this repo; linting is the primary check.
-The collection can be built with `ansible-galaxy` when needed.
+## Change and verification workflow
 
-### Lint all roles
+1. Inspect the working tree and the affected role's defaults, README, tasks, templates, and handlers. Preserve unrelated user changes.
+2. Make the smallest change that meets the current requirement. Update the role interface and documentation together.
+3. Run the relevant checks from the repository root:
 
-```bash
-ansible-lint roles/*
-```
+   ```bash
+   pipenv run ansible-lint roles/<role>
+   pipenv run yamllint roles/<role>
+   git diff --check
+   ```
 
-### Lint a single role ("single test")
+   Add any changed YAML file outside the role to the `yamllint` call. For changes across roles, use `pipenv run ansible-lint roles/*` and `pipenv run yamllint .`.
+4. When configuration behavior changes, validate it as described in [Lint and validation](docs/CONVENTIONS.md#lint-and-validation). Ask before long-running verification or building a custom proof harness.
+5. Report which checks ran, what was not verified, and any missing dependencies or pre-existing failures.
 
-```bash
-ansible-lint roles/zfs
-ansible-lint roles/hetzner_robot
-```
-
-### YAML lint (all YAML files)
-
-```bash
-yamllint .
-```
-
-### YAML lint a single file ("single test")
+For collection packaging changes, build outside the working tree:
 
 ```bash
-yamllint roles/zfs/tasks/main.yml
+pipenv run ansible-galaxy collection build --output-path <artifact-directory>
 ```
 
-### Build the collection tarball
+## Secrets
 
-```bash
-ansible-galaxy collection build
-```
+- Keep secret values out of chat, command arguments, logs, commits, and verification output. Follow the secrets conventions for sensitive tasks and rendered files.
 
-### Install collection locally (optional)
+## Dependencies and worktrees
 
-```bash
-ansible-galaxy collection install -r requirements.yml -f
-```
+- Declare Python dependencies in `Pipfile` and update `Pipfile.lock` when requirements change. `pipenv sync` installs the lockfile; it does not regenerate it.
+- Declare collection dependencies needed by consumers in `galaxy.yml`; document role-specific requirements in the role README. Do not assume dependencies are vendored here.
+- Pipenv chooses its virtualenv by the Pipfile's directory. To reuse the main checkout's environment from a worktree, set `PIPENV_PIPFILE=<main-checkout>/Pipfile` and keep the worktree as the working directory. Do not do this when the branch changes `Pipfile` or `Pipfile.lock`; run `pipenv sync` in the worktree instead so checks use the branch's dependencies.
 
-Notes:
+## Git and release workflow
 
-- `ansible-lint` config: `.ansible-lint`
-- `yamllint` config: `.yamllint`
-- Some roles add `skip_ansible_lint` tags intentionally.
-
-## Repository structure
-
-- `roles/<role>`: standard role layout (`defaults/`, `tasks/`, `handlers/`, `templates/`, `files/`)
-- `playbooks/`: example playbooks
-- `plugins/`: collection plugins (filters, modules, etc.)
-- `examples/`: user examples
-
-## Code style guidelines
-
-### YAML and formatting
-
-- Indentation: 2 spaces (see `.yamllint`)
-- No document start marker (`---`), unless a file already uses it
-- Line length is not enforced, but keep lines readable
-- Keep a single space after `#` in comments
-- Use lists with `-` and align nested maps under the key
-
-### Ansible tasks
-
-- Always include a `name` for tasks, short and lowercase (verb first)
-- Prefer idempotent modules over shell/command
-- Use `changed_when` and `check_mode` when behavior is non-standard
-- Use `tags` when tasks are logically grouped
-- Use `when` with explicit boolean checks (`| bool`) when a fact may be stringy
-- Use `loop_control.loop_var` when the item name matters
-
-### Variables and defaults
-
-- Role variables are prefixed with the role name (e.g. `zfs_`, `hetzner_robot_`)
-- Role defaults live in `defaults/main.yml`
-- All role variables MUST be documented in role defaults.
-- Keep default values explicit and documented with comments when helpful
-- Booleans are lowercase `true`/`false`
-
-### Jinja and templating
-
-- Use Jinja in YAML strings with `"{{ ... }}"` or `'{{ ... }}'`
-- Prefer `| default(...)` instead of `| default` to be explicit
-- Use `| combine` and `| dict2items` as in existing roles
-- Keep Jinja expressions on one line when possible
-
-### Module naming and FQCN
-
-- Builtin modules are typically referenced without FQCN (e.g. `copy`, `cron`)
-- Community modules use FQCN (e.g. `community.general.zfs_delegate_admin`)
-- This repo skips ansible-lint FQCN rules; follow existing style
-
-### Error handling and safety
-
-- Use `failed_when` only when needed; prefer native module checks
-- Guard tasks with `when` to avoid unexpected changes
-- Avoid unsafe defaults; set conservative permissions (e.g. `mode: '0750'`)
-- For shell scripts, keep paths explicit and quote variables in commands
-
-### Naming conventions
-
-- Task names: sentence case or lowercase, no trailing period
-- Variables: snake_case, role-prefixed
-- Files: snake_case where possible (`main.yml`, `zpool.yml`)
-- Handlers: descriptive verbs ("restart service")
-
-### Role composition
-
-- Use `import_tasks` for static includes, `include_tasks` for dynamic
-- When including tasks with tags, use `apply` to propagate tags
-- Avoid deep include chains without a clear reason
-
-### Templates and files
-
-- Templates live in `templates/` with `.j2` suffix
-- Files live in `files/` and are copied with `copy`
-- Keep templates readable; avoid heavy logic when variables can precompute values
-
-### Documentation
-
-- Each role keeps a `README.md` with usage and variables
-- Update role README when adding new defaults or behavior
-- Keep examples minimal but accurate
-
-## Existing agent rules
-
-- No Cursor or Copilot rules found in `.cursor/rules/`, `.cursorrules`, or `.github/copilot-instructions.md`.
-
-## Practical tips
-
-- Run `ansible-lint` on the specific role you touched before opening a PR.
-- If you add new role defaults, mirror them in the role README.
-- Keep tasks ordered: preflight checks → setup → configuration → services.
-- Before release (git push), update the version in `galaxy.yml`.
+- Use a feature branch and review the staged diff before committing. Stage task-related paths rather than unrelated working-tree changes.
+- Changes to roles, plugins, or collection metadata bump `version` in `galaxy.yml` in the same PR, following semantic versioning: patch for fixes, minor for new features or variables, major for breaking changes. Follow-up commits on a PR that already bumps the version keep that bump.
+- Changes limited to documentation (`AGENTS.md`, `docs/`, README files) need no version bump; they ship with the next release.
+- Rewrite published history only when requested. Use `git push --force-with-lease` for an approved force push.
+- This repository is the upstream collection. Create or update a GitHub PR here when requested.

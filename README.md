@@ -57,23 +57,25 @@ Check the `defaults.yml` of the roles for information on how to configure them.
 
 ## Development setup
 
-We use [pipenv](https://pipenv.readthedocs.io) to install ansible and dependency package.
+See [docs/CONVENTIONS.md](docs/CONVENTIONS.md) for role, secrets, Docker Compose, and documentation conventions. [AGENTS.md](AGENTS.md) covers repository tooling, verification, and agent workflow.
+
+We use [pipenv](https://pipenv.readthedocs.io) to install Ansible and its Python dependencies. `Pipfile` sets the Python version; `Pipfile.lock` pins the package versions.
 
 ### First time Setup
 
-This is my current way I do it on Ubuntu. There are other ways to install ansible and manage the python dependencies.
+One way to set it up on Ubuntu. Other ways to install pipenv and the required Python version work as well.
 
 ~~~bash
 cd ansible-collection-teamapps-general # where you cloned this repository
-sudo apt install python3-pip
-# set PATH so it includes user's ~/.local/bin
-echo $PATH | grep '\.local/bin' || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.profile && export PATH="$HOME/.local/bin:$PATH"
-pip3 install --user --upgrade pip pipenv
-pipenv shell --three
+sudo apt install pipx
+pipx ensurepath
+pipx install pipenv
 pipenv sync
 # check ansible working correctly
-ansible --version
+pipenv run ansible --version
 ~~~
+
+`pipenv sync` needs the Python version from `Pipfile`. If it is not installed, install it first, for example with [pyenv](https://github.com/pyenv/pyenv), which pipenv uses automatically.
 
 ### Loading pipenv
 
@@ -82,20 +84,25 @@ cd ansible-collection-teamapps-general # where you cloned this repository
 pipenv shell
 ~~~
 
+Alternatively, prefix single commands with `pipenv run`.
+
 ### update ansible and other python packages
 
-* Update your pip and pipenv packages: `pip3 install --user --upgrade pip pipenv`
+* Update pipenv: `pipx upgrade pipenv`
 * To update your local packages to what's defined in the Pipfile and Pipfile.lock, run `pipenv sync`
 * To update the Pipfile.lock, run `pipenv update`
 * For a major upgrade of ansible, you will get a warning. use `pipenv --rm` and then `pipenv sync`
 
 ### Run checks
 
-Check YAML and ansible syntax
+Check YAML and Ansible syntax of all roles:
 
 ~~~bash
-ansible-lint roles/*
+pipenv run ansible-lint roles/*
+pipenv run yamllint .
 ~~~
+
+For a single role, pass its directory, for example `pipenv run ansible-lint roles/zfs` and `pipenv run yamllint roles/zfs`.
 
 ## License
 
