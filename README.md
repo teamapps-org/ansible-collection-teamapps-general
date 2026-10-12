@@ -57,6 +57,8 @@ Check the `defaults.yml` of the roles for information on how to configure them.
 
 ## Development setup
 
+See [docs/CONVENTIONS.md](docs/CONVENTIONS.md) for role, secrets, Docker Compose, and documentation conventions. [AGENTS.md](AGENTS.md) covers repository tooling, verification, and agent workflow.
+
 We use [pipenv](https://pipenv.readthedocs.io) to install ansible and dependency package.
 
 ### First time Setup
