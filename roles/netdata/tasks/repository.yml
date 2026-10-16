@@ -5,6 +5,7 @@
       - gnupg
       - python3-debian
     state: present
+  register: netdata_apt_dependencies
 
 - name: check legacy apt keyring
   stat:
@@ -68,11 +69,13 @@
     name: netdata
     types: [deb]
     uris: https://packagecloud.io/netdata/netdata/ubuntu/
-    suites: '{{ ansible_facts.distribution_release }}'
+    suites: '{{ netdata_apt_suite }}'
     components: [main]
     architectures: [amd64]
     signed_by: /usr/share/keyrings/netdata.gpg
   register: netdata_repository
+  # deb822_repository fails in check mode without python3-debian, which the task above only installs for real
+  when: not ansible_check_mode or netdata_apt_dependencies is not changed
 
 - name: refresh apt cache after netdata repository changes
   apt:
