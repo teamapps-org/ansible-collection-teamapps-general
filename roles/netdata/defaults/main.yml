@@ -21,6 +21,9 @@ netdata_bind_to: '127.0.0.1:19999'
 # Set to false if you don't want to install/manage netdata on a host/group
 netdata_manage_netdata: true
 
+# APT suite of the packagecloud repository; override it when packagecloud has no suite for the host's release
+netdata_apt_suite: '{{ ansible_facts.distribution_release }}'
+
 netdata_alarm_send_email: false
 netdata_alarm_send_slack: false
 netdata_alarm_send_custom: false
