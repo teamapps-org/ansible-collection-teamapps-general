@@ -77,6 +77,20 @@ Registering an application in a GitLab group does not restrict the users!
 
 For users with more than 200 group memberships, oauth2-proxy needs Microsoft Graph group overage support. Set `scope: openid User.Read` and ensure the app has consent for `User.Read`.
 
+For refresh tokens, add `offline_access` to the instance's `scope` and set `cookie_refresh: 30m`, below the issued token lifetime. Entra must allow consent to `offline_access`; tenant policy can require administrator consent. Existing sessions need a fresh sign-in to obtain a refresh token. Conditional Access can still require reauthentication.
+
+The per-instance `cookie_refresh` setting defaults to `oauth2_proxy_cookie_refresh`, which is `3h`. Refresh runs on requests after that interval. The cookie expiry remains `168h`.
+
+Example instance settings for Entra refresh tokens:
+
+```yaml
+scope: openid User.Read offline_access
+cookie_refresh: 30m
+```
+
+See [Microsoft's offline_access scope documentation](https://learn.microsoft.com/en-us/entra/identity-platform/scopes-oidc#the-offline_access-scope)
+and [OAuth2 Proxy session storage and refresh settings](https://oauth2-proxy.github.io/oauth2-proxy/configuration/session_storage/).
+
 ~~~yaml
 oauth2_proxy_instances:
   - domain: service.example.com
