@@ -14,6 +14,14 @@ webproxy_default_location_custom: ''
 # custom config for default vhost (included in every generated server block)
 webproxy_default_vhost_custom: ''
 
+# custom config for single vhosts (server block), keyed by hostname. Written to vhost.d/<hostname>,
+# which nginx-proxy includes instead of vhost.d/default, so the file includes vhost.d/default first.
+# Do not use it for a hostname whose vhost.d/<hostname> file another role manages.
+webproxy_vhost_custom: {}
+# webproxy_vhost_custom:
+#   app.example.com: |
+#     client_max_body_size 100m;
+
 # pull docker images (docker compose pull)
 webproxy_docker_pull: '{{ global_docker_pull | default(False) }}'
 

@@ -58,6 +58,7 @@ See [defaults/main.yml](defaults/main.yml) for all defaults.
 | `webproxy_nginx_custom_options` | `""` | Extra nginx directives in the HTTP context. |
 | `webproxy_default_location_custom` | `""` | Extra directives in the default location snippet. |
 | `webproxy_default_vhost_custom` | `""` | Extra directives in the default server snippet. |
+| `webproxy_vhost_custom` | `{}` | Extra server-context directives for single hostnames, written to `data/vhost.d/<hostname>`. See [Per-host snippets](#per-host-snippets). |
 | `webproxy_cookies_secure_only` | `false` | Rewrite upstream cookie paths with `HTTPOnly; Secure` flags using `proxy_cookie_path`. |
 | `webproxy_security_txt` | `""` | Shared disclosure policy served at `/.well-known/security.txt` through the default server snippet. |
 
@@ -108,6 +109,7 @@ The role renders these files under `webproxy_path`:
 | `data/nginx.conf` | Main nginx configuration and worker settings. |
 | `data/conf.d/custom_options.conf` | HTTP-context defaults, timeouts, cookie rewrites and `webproxy_nginx_custom_options`. |
 | `data/vhost.d/default` | Default server-context snippet, including the optional security.txt location and `webproxy_default_vhost_custom`. |
+| `data/vhost.d/<hostname>` | One file per key of `webproxy_vhost_custom`: an include of `vhost.d/default`, then the configured directives. |
 | `data/vhost.d/default_location` | Default location-context snippet, written when access logging is disabled or location customizations are nonempty. |
 | `nginx.tmpl` | docker-gen template used to create nginx server configuration. |
 
@@ -116,6 +118,37 @@ Changes to the nginx configuration templates, including `data/vhost.d/default`, 
 ### Per-host snippets
 
 Manage `data/vhost.d/<hostname>` separately to configure a specific server, or `data/vhost.d/<hostname>_location` for its locations. With the bundled `nginx.tmpl`, host-specific snippets replace the corresponding default snippets. They do not automatically include the defaults. Add any shared directives or an explicit default-file include when needed.
+
+`webproxy_vhost_custom` manages server snippets from the role. Each key is a hostname, each value the nginx directives for its `server` block. The role writes `data/vhost.d/<hostname>`, starting with `include /etc/nginx/vhost.d/default;` so the default snippet still applies. A new file restarts docker-gen so the generated configuration includes it; a changed file reloads nginx. Do not set a hostname whose `vhost.d/<hostname>` another role or process manages. Removing a hostname from the variable does not delete its file.
+
+```yaml
+webproxy_vhost_custom:
+  app.example.com: |
+    client_max_body_size 100m;
+```
+
+Example: answer image requests that carry a foreign `Referer` with a placeholder instead of the real image, for example to expose sites that embed the images. Requests without a `Referer` keep the real image.
+
+```yaml
+webproxy_vhost_custom:
+  app.example.com: |
+    valid_referers none blocked server_names example.com *.example.com;
+    set $hotlink "";
+    if ($invalid_referer) {
+        set $hotlink "R";
+    }
+    if ($uri ~* "\.(?:png|jpe?g|gif|webp|avif|svg|ico)$") {
+        set $hotlink "${hotlink}I";
+    }
+    if ($hotlink = "RI") {
+        rewrite ^ /__hotlink-placeholder.svg last;
+    }
+    location = /__hotlink-placeholder.svg {
+        default_type image/svg+xml;
+        add_header Cache-Control "no-store" always;
+        return 200 '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240"><rect width="640" height="240" fill="#cc0000"/><text x="320" y="135" fill="#ffffff" font-family="Arial,sans-serif" font-size="48" text-anchor="middle">Image not available</text></svg>';
+    }
+```
 
 For containers serving multiple domains, provide a snippet for each hostname that needs the override. Changes to files managed outside this role need their own reload notification. Newly added snippets may also require docker-gen to regenerate its includes.
 
