@@ -107,6 +107,22 @@
     mode: '0640'
   notify: webproxy_nginx_reload
 
+# docker-gen only includes vhost.d/<hostname> if the file exists when it renders the config,
+# so a new file needs a generator restart. Changed content only needs an nginx reload.
+- name: Deploy vhost.d/<hostname> for webproxy_vhost_custom
+  template:
+    src: vhost_custom.j2
+    dest: '{{ webproxy_path }}/data/vhost.d/{{ item.key }}'
+    owner: root
+    group: root
+    mode: '0640'
+  loop: '{{ webproxy_vhost_custom | dict2items }}'
+  loop_control:
+    label: '{{ item.key }}'
+  notify:
+    - webproxy_nginx_reload
+    - webproxy_generator_restart
+
 - name: 'Copy security.txt if defined'
   copy:
     content: "{{ webproxy_security_txt }}\n"
