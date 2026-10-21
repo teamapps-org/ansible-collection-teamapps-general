@@ -70,6 +70,7 @@
   notify: backuppc reload config
 
 - name: Configure Mail sending through msmtp
+  no_log: true
   template:
     src: msmtprc.j2
     dest: '{{ backuppc_datapath }}/home/.msmtprc'

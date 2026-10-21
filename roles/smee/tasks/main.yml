@@ -5,6 +5,17 @@
     state: directory
     mode: '0755'
 
+- name: deploy compose secrets
+  no_log: true
+  blockinfile:
+    path: '{{ smee_path }}/.env'
+    create: true
+    owner: root
+    group: root
+    mode: '0600'
+    marker: '# {mark} ANSIBLE smee secrets'
+    block: "{{ lookup('template', 'compose.env.j2') }}"
+
 - name: Copy docker-compose.yml
   ansible.builtin.template:
     src: docker-compose.yml.j2
@@ -12,6 +23,7 @@
     mode: '0644'
 
 - name: Start Gosmee service
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: "{{ smee_path }}"
     state: present

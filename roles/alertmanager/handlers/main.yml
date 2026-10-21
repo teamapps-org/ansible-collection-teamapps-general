@@ -1,6 +1,7 @@
 ---
 
 - name: alertmanager-check-config # noqa no-changed-when
+  no_log: true
   # start new alertmanager container, entrypoint amtool
   command: 'docker compose run --rm -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
   args:

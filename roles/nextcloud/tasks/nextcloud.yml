@@ -27,6 +27,17 @@
     - '{{ nextcloud_path }}'
     - '{{ nextcloud_path }}/docker-build'
 
+- name: deploy compose secrets
+  no_log: true
+  blockinfile:
+    path: '{{ nextcloud_path }}/.env'
+    create: true
+    owner: root
+    group: root
+    mode: '0600'
+    marker: '# {mark} ANSIBLE nextcloud secrets'
+    block: "{{ lookup('template', 'compose.env.j2') }}"
+
 - name: docker-compose.yml
   template:
     src: docker-compose.yml.j2
@@ -155,6 +166,7 @@
   meta: flush_handlers
 
 - name: nextcloud docker-compose-up
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ nextcloud_path }}'
     state: present

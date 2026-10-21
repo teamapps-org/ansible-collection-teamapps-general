@@ -10,6 +10,18 @@
     - "{{ victoriametrics_path }}"
     - "{{ victoriametrics_storage_path }}"
 
+- name: deploy compose secrets
+  no_log: true
+  blockinfile:
+    path: '{{ victoriametrics_path }}/.env'
+    create: true
+    owner: root
+    group: root
+    mode: '0600'
+    marker: '# {mark} ANSIBLE victoriametrics secrets'
+    block: "{{ lookup('template', 'compose.env.j2') }}"
+  notify: victoriametrics-vmauth-restart
+
 - name: deploy docker-compose.yml
   template:
     src: 'docker-compose.yml.j2'
@@ -34,6 +46,7 @@
   import_tasks: authproxy.yml
 
 - name: victoriametrics_docker-compose-up
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ victoriametrics_path }}'
     state: present

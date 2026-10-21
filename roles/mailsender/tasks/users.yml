@@ -6,6 +6,7 @@
     mailsender_users_with_hashes: []
 
 - name: Process each user individually
+  no_log: true
   include_tasks: process_single_user.yml
   loop: "{{ mailsender_users }}"
   loop_control:

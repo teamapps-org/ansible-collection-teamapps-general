@@ -97,10 +97,10 @@ services:
         read_only: false
     environment:
       TZ: Etc/UTC
-      MYSQL_ROOT_PASSWORD: '{{ webserver_mysql_root_password }}'
+      MYSQL_ROOT_PASSWORD: '${WEBSERVER_MYSQL_ROOT_PASSWORD}'
       MYSQL_DATABASE: '{{ webserver_mysql_database }}'
       MYSQL_USER: '{{ webserver_mysql_user }}'
-      MYSQL_PASSWORD: '{{ webserver_mysql_password }}'
+      MYSQL_PASSWORD: '${WEBSERVER_MYSQL_PASSWORD}'
       MARIADB_AUTO_UPGRADE: 'True'
       MARIADB_DISABLE_UPGRADE_BACKUP: 'True'
     healthcheck:
@@ -150,7 +150,7 @@ services:
       TZ: Etc/UTC
       PMA_HOST: db
       PMA_USER: '{{ webserver_mysql_user }}'
-      PMA_PASSWORD: '{{ webserver_mysql_password }}'
+      PMA_PASSWORD: '${WEBSERVER_MYSQL_PASSWORD}'
       HIDE_PHP_VERSION: 'yes'
       UPLOAD_LIMIT:  '{{ webserver_myadmin_max_upload_size }}'
       PMA_ABSOLUTE_URI: '{{ webserver_myadmin_absolute_uri }}'

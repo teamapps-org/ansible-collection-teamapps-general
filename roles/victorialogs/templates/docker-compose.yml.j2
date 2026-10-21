@@ -9,9 +9,10 @@ services:
       - victorialogs
     expose:
       - 8427
-    env_file:
-      - ./.vmauth.env
     environment:
+{% for key in victorialogs_vmauth_passwords %}
+      {{ key }}: '{{ '${VICTORIALOGS_VMAUTH_' ~ key ~ '}' }}'
+{% endfor %}
       VIRTUAL_HOST: '{{ victorialogs_vmauth_domain }}'
       VIRTUAL_PORT: 8427
       LETSENCRYPT_HOST: '{{ victorialogs_vmauth_domain }}'
@@ -134,7 +135,7 @@ services:
       - '-promscrape.config=/etc/prometheus/prometheus.yml'
       - '-remoteWrite.url={{ victorialogs_victoriametrics_remotewrite_url }}'
       - '-remoteWrite.basicAuth.username={{ victorialogs_victoriametrics_remotewrite_username }}'
-      - '-remoteWrite.basicAuth.password={{ victorialogs_victoriametrics_remotewrite_password }}'
+      - '-remoteWrite.basicAuth.password=${VICTORIALOGS_REMOTEWRITE_PASSWORD}'
       - '-remoteWrite.tmpDataPath=/vmagentdata'
     networks:
       - vm_net
@@ -169,21 +170,21 @@ services:
       - '-remoteWrite.url={{ victorialogs_victoriametrics_remotewrite_url }}'
       - '-remoteWrite.disablePathAppend'
       - '-remoteWrite.basicAuth.username={{ victorialogs_victoriametrics_remotewrite_username }}'
-      - '-remoteWrite.basicAuth.password={{ victorialogs_victoriametrics_remotewrite_password }}'
+      - '-remoteWrite.basicAuth.password=${VICTORIALOGS_REMOTEWRITE_PASSWORD}'
       # Base URL, no -remoteRead.disablePathAppend: that flag also disables path
       # selection on -datasource.url, sending every LogsQL rule evaluation to the
       # bare root of victorialogs:9428 (400 "unsupported path"). Auto-append picks
       # the correct read path for both URLs.
       - '-remoteRead.url={{ victorialogs_victoriametrics_remoteread_url }}'
       - '-remoteRead.basicAuth.username={{ victorialogs_victoriametrics_remoteread_username }}'
-      - '-remoteRead.basicAuth.password={{ victorialogs_victoriametrics_remoteread_password }}'
+      - '-remoteRead.basicAuth.password=${VICTORIALOGS_REMOTEREAD_PASSWORD}'
 
       - '-rule.defaultRuleType=vlogs'
       - '-evaluationInterval={{ victorialogs_vmalert_evaluation_interval }}'
 
       - '-notifier.url={{ victorialogs_alertmanager_url }}'
       - '-notifier.basicAuth.username={{ victorialogs_alertmanager_user }}'
-      - '-notifier.basicAuth.password={{ victorialogs_alertmanager_password }}'
+      - '-notifier.basicAuth.password=${VICTORIALOGS_ALERTMANAGER_PASSWORD}'
 
       - '-rule=/etc/alerts/*.yml'
       # display source of alerts in grafana

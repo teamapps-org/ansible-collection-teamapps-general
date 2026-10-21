@@ -1,0 +1,50 @@
+{# Only evaluated by a no_log task. Never loop over source dictionaries in visible tasks. #}
+{% set ns = namespace(datasources=[], secrets={}, identities=[], valid=true, credentials_supported=true) %}
+{# Inspect only fields outside the extracted credential locations. Unknown public
+   plugin options and nested metadata are allowed; credential evidence is rejected. #}
+{% macro inspect(value) %}
+{% if value is mapping %}
+{% for key, child in value.items() %}
+{% if key | regex_search('(?i)(password|passwd|secret|token|api[_-]?key|private[_-]?key|credentials?|authorization|httpHeaderValue[0-9]*)$') %}
+{% set ns.credentials_supported = false %}
+{% endif %}
+{{ inspect(child) }}
+{% endfor %}
+{% elif value is string %}
+{% if value | regex_search('://[^/\\s]*@|(?i:[?&;\\s](?:password|passwd|secret|token|api[_-]?key|access_token)=)[^&\\s]+|-----BEGIN [A-Z ]*PRIVATE KEY-----') %}
+{% set ns.credentials_supported = false %}
+{% endif %}
+{% elif value is sequence %}
+{% for child in value %}
+{{ inspect(child) }}
+{% endfor %}
+{% endif %}
+{% endmacro %}
+{% for source in grafana_datasources %}
+{% set ds = namespace(value={}) %}
+{% set identity = [source.orgId | default(1), source.uid | default(source.name)] | to_json %}
+{% if identity in ns.identities %}
+{% set ns.valid = false %}
+{% endif %}
+{% set ns.identities = ns.identities + [identity] %}
+{% for key, value in source.items() %}
+{% if key == 'secureJsonData' %}
+{% set secure = namespace(value={}) %}
+{% for field, secret in value.items() %}
+{% set env = 'GRAFANA_DS_' ~ ([identity, key, field] | to_json | hash('sha256') | upper) %}
+{% set ns.secrets = ns.secrets | combine({env: secret | string}) %}
+{% set secure.value = secure.value | combine({field: '$' ~ env}) %}
+{% endfor %}
+{% set ds.value = ds.value | combine({key: secure.value}) %}
+{% elif key in ['password', 'basicAuthPassword'] %}
+{% set env = 'GRAFANA_DS_' ~ ([identity, key] | to_json | hash('sha256') | upper) %}
+{% set ns.secrets = ns.secrets | combine({env: value | string}) %}
+{% set ds.value = ds.value | combine({key: '$' ~ env}) %}
+{% else %}
+{% set ds.value = ds.value | combine({key: value}) %}
+{{ inspect({key: value}) }}
+{% endif %}
+{% endfor %}
+{% set ns.datasources = ns.datasources + [ds.value] %}
+{% endfor %}
+{{ {'datasources': ns.datasources, 'secrets': ns.secrets, 'valid': ns.valid, 'credentials_supported': ns.credentials_supported} | to_json }}

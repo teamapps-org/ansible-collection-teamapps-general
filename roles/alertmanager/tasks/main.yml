@@ -47,6 +47,7 @@
   with_items: '{{ alertmanager_templates }}'
 
 - name: deploy alertmanager config
+  no_log: true
   template:
     src: 'alertmanager.yml.j2'
     dest: '{{ alertmanager_path }}/alertmanager.yml'
@@ -74,6 +75,7 @@
   notify: alertmanager_regenerate_webproxy_config
 
 - name: alertmanager-check-config
+  no_log: true
   # start new alertmanager container, entrypoint amtool
   command: 'docker compose run --rm -T --entrypoint amtool alertmanager check-config /etc/alertmanager/alertmanager.yml'
   args:

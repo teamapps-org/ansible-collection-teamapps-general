@@ -1,4 +1,5 @@
 - name: victorialogs-restart-gateway
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ victorialogs_path }}'
     services:
@@ -7,16 +8,18 @@
   tags: compose_up
 
 - name: victorialogs-vmauth-restart
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ victorialogs_path }}'
     services:
       - vmauth
     state: restarted
-  when: not ansible_check_mode
+  when: not ansible_check_mode and victorialogs_vmauth_users | length > 0
   tags: compose_up
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
 - name: vmalert validate config # noqa no-changed-when
+  no_log: true
   command: docker compose run --rm -T vmalert -dryRun -rule=/etc/alerts/*.yml
   args:
     chdir: "{{ victorialogs_path }}" # to run docker compose in the correct directory
@@ -33,6 +36,7 @@
     chdir: '{{ victorialogs_path }}'
 
 - name: victorialogs-vmagent-restart
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ victorialogs_path }}'
     services:

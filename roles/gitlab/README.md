@@ -1,5 +1,12 @@
 # Gitlab Role
 
+The role writes SMTP credentials, `gitlab_pages_extra_config` and
+`gitlab_custom_config` to root-owned, mode-`0600` files in `/etc/gitlab/`:
+`ansible-smtp.rb`, `ansible-pages.rb` and `ansible-custom.rb`.
+`gitlab.rb` loads them with `from_file` at their original positions to preserve
+precedence. Their writes and reconfiguration output are masked; the main
+`gitlab.rb` diff remains visible.
+
 Data is stored in /srv/git
 
 Recommendation: mount an external volume to /srv before installing gitlab.
