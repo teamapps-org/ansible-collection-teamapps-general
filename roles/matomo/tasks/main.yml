@@ -8,6 +8,7 @@
     webserver_domain: '{{ matomo_domain }}'
     webserver_php_enable: true
     webserver_php_version: '{{ matomo_php_version }}'
+    webserver_php_image: '{{ matomo_php_image }}'
     webserver_php_memory_limit: '{{ matomo_php_memory_limit }}'
     webserver_php_container_mem_limit: '{{ matomo_php_container_mem_limit }}'
     webserver_php_override_custom: '{{ matomo_php_override_custom }}'
