@@ -19,6 +19,7 @@
     oauth2_proxy_instance_standalone: "{{ instance.standalone | default(False) }}"
     oauth2_proxy_instance_htpasswd: "{{ instance.htpasswd | default('') }}"
     oauth2_proxy_instance_cookie_secret: "{{ instance.cookie_secret }}"
+    oauth2_proxy_instance_cookie_refresh: "{{ instance.cookie_refresh | default(oauth2_proxy_cookie_refresh) }}"
     oauth2_proxy_instance_cookie_domain: "{{ instance.cookie_domain | default(oauth2_proxy_instance_domain) }}"
     oauth2_proxy_instance_cookie_name: "{{ instance.cookie_name | default('_oauth2_' + oauth2_proxy_instance_domain) | regex_replace('[^a-z0-9]', '_') }}"
     oauth2_proxy_instance_host: "{{ instance.host | default('oauth2-proxy.' + oauth2_proxy_instance_domain) }}"
