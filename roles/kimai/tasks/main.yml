@@ -1,4 +1,0 @@
-- name: setup kimai
-  import_tasks: kimai.yml
-  tags:
-    - kimai
