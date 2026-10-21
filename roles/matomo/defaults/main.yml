@@ -9,4 +9,9 @@ matomo_mysql_user: matomo
 matomo_max_execution_time: 30
 
 matomo_php_version: '8.2'
+matomo_php_memory_limit: 4G
+# docker memory limit (cgroup) for the php container, e.g. 3g. unlimited if empty
+matomo_php_container_mem_limit: ''
+# custom php override config (php.ini syntax)
+matomo_php_override_custom: ''
 matomo_mariadb_version: '10.11'
