@@ -53,6 +53,10 @@ services:
     build: ./php
 {% endif %}
     restart: always
+{% if webserver_php_container_mem_limit != '' %}
+    mem_limit: '{{ webserver_php_container_mem_limit }}'
+    memswap_limit: '{{ webserver_php_container_mem_limit }}'
+{% endif %}
     volumes:
       - type: bind
         source: './code'
