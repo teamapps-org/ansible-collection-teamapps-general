@@ -12,10 +12,10 @@ services:
       - 9000
     environment:
       MINIO_ROOT_USER: '{{ minio_root_user }}'
-      MINIO_ROOT_PASSWORD: '{{ minio_root_password }}'
+      MINIO_ROOT_PASSWORD: '${MINIO_ROOT_PASSWORD}'
 {% if minio_console_enable %}
-      CONSOLE_PBKDF_PASSPHRASE: '{{ minio_console_pbkdf_passphrase }}'
-      CONSOLE_PBKDF_SALT: '{{ minio_console_pbkdf_salt }}'
+      CONSOLE_PBKDF_PASSPHRASE: '${CONSOLE_PBKDF_PASSPHRASE}'
+      CONSOLE_PBKDF_SALT: '${CONSOLE_PBKDF_SALT}'
       CONSOLE_MINIO_SERVER: 'https://{{ minio_domain }}'
       MINIO_BROWSER_REDIRECT_URL: 'https://{{ minio_console_domain }}'
 {% else %}

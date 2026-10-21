@@ -34,11 +34,14 @@
   import_tasks: repository.yml
 
 - name: Install latest package version
+  # Package scripts can run reconfigure and report secret-bearing Ruby errors.
+  no_log: true
   apt:
     name: gitlab-ce
   when: gitlab_version == "latest"
 
 - name: Install specific package version
+  no_log: true
   apt:
     name: gitlab-ce={{ gitlab_version }}
   when: gitlab_version != "latest"
@@ -46,6 +49,20 @@
 - name: setup gitlab pages
   import_tasks: pages.yml
   when: gitlab_pages_enable | bool
+
+- name: install restricted gitlab configuration
+  no_log: true
+  template:
+    src: 'ansible-{{ item }}.rb.j2'
+    dest: '/etc/gitlab/ansible-{{ item }}.rb'
+    owner: root
+    group: root
+    mode: '0600'
+  loop:
+    - smtp
+    - pages
+    - custom
+  notify: gitlab-ctl reconfigure
 
 - name: install gitlab.rb config file
   template:

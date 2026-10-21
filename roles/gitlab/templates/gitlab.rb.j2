@@ -46,7 +46,7 @@ gitlab_rails['smtp_enable'] = true
 gitlab_rails['smtp_address'] = "{{ gitlab_mail_host }}"
 gitlab_rails['smtp_port'] = {{ gitlab_mail_port }}
 gitlab_rails['smtp_user_name'] = "{{ gitlab_mail_user }}"
-gitlab_rails['smtp_password'] = "{{ gitlab_mail_password }}"
+from_file '/etc/gitlab/ansible-smtp.rb'
 gitlab_rails['smtp_domain'] = "{{ gitlab_mail_host }}"
 gitlab_rails['smtp_authentication'] = "login"
 gitlab_rails['smtp_enable_starttls_auto'] = true
@@ -120,7 +120,7 @@ gitlab_pages['headers'] = [
 ]
 {% endif %}
 
-{{ gitlab_pages_extra_config }}
+from_file '/etc/gitlab/ansible-pages.rb'
 {% endif %}
 
 ############
@@ -148,4 +148,4 @@ registry_nginx['listen_addresses'] = [
 #registry_nginx['ssl_certificate'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
 #registry_nginx['ssl_certificate_key'] = "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
 
-{{ gitlab_custom_config }}
+from_file '/etc/gitlab/ansible-custom.rb'

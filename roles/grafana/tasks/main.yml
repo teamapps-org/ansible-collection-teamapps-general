@@ -1,3 +1,19 @@
+- name: isolate datasource secrets
+  set_fact:
+    grafana_datasource_facts: "{{ lookup('template', 'datasource_facts.json.j2') | from_json }}"
+  no_log: true
+
+- name: validate datasource configuration
+  assert:
+    that:
+      - grafana_datasource_facts.valid
+      - grafana_datasource_facts.credentials_supported
+    fail_msg: >-
+      Each datasource needs a unique orgId and uid (or name). Put credentials only
+      in the plugin's supported secureJsonData fields or the legacy
+      password/basicAuthPassword fields, not in URLs or other fields.
+      No configuration files have been written.
+
 - name: create directories for grafana
   file:
     path: '{{ item }}'
@@ -39,7 +55,7 @@
 
 - name: deploy docker-compose.yml
   template:
-    src: docker-compose.yml
+    src: docker-compose.yml.j2
     dest: '{{ grafana_path }}/docker-compose.yml'
     owner: root
     group: root
@@ -51,7 +67,7 @@
     dest: '{{ grafana_path }}/.env'
     owner: root
     group: root
-    mode: '0640'
+    mode: '0600'
   no_log: true
 
 - name: deploy grafana.ini

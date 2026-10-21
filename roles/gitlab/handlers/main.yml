@@ -1,5 +1,7 @@
 ---
 - name: gitlab-ctl reconfigure # noqa no-changed-when
+  # Ruby syntax errors and Chef failures can include the secret source line.
+  no_log: true
   command: gitlab-ctl reconfigure
   register: gitlab_restart
   failed_when: 'gitlab_restart.rc != 0'

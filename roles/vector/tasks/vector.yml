@@ -62,6 +62,7 @@
   notify: restart vector
 
 - name: Copy docker-to-loki config
+  no_log: true
   template:
     src: 'docker-to-loki.toml.j2'
     dest: '/etc/vector/docker-to-loki.toml'
@@ -78,6 +79,7 @@
   when: not vector_docker_to_loki | default(False)
 
 - name: Copy metrics-to-prom config
+  no_log: true
   template:
     src: 'metrics-to-prom.toml.j2'
     dest: '/etc/vector/metrics-to-prom.toml'

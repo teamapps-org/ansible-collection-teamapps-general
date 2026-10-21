@@ -10,6 +10,18 @@
     - "{{ victorialogs_path }}"
     - "{{ victorialogs_storage_path }}"
 
+- name: deploy compose secrets
+  no_log: true
+  blockinfile:
+    path: '{{ victorialogs_path }}/.env'
+    create: true
+    owner: root
+    group: root
+    mode: '0600'
+    marker: '# {mark} ANSIBLE victorialogs secrets'
+    block: "{{ lookup('template', 'compose.env.j2') }}"
+  notify: victorialogs-vmauth-restart
+
 - name: deploy docker-compose.yml
   template:
     src: 'docker-compose.yml.j2'
@@ -39,6 +51,7 @@
 
 # validation in the template won't work because %s expansion won't be reachable from within the container
 - name: vmagent validate config
+  no_log: true
   command: 'docker compose run --rm -T vmagent -dryRun -promscrape.config=/etc/prometheus/prometheus.yml -remoteWrite.url=http://INVALID:8428/api/v1/write'
   args:
     chdir: "{{ victorialogs_path }}" # to run docker compose in the correct directory
@@ -46,6 +59,7 @@
 
 
 - name: victorialogs_docker-compose-up
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ victorialogs_path }}'
     state: present

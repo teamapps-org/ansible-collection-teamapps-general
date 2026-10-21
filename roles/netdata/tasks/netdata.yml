@@ -26,16 +26,23 @@
   notify: netdata_restart
   when: netdata_docker_integration
 
-- name: deploy config
+- name: deploy netdata config
   template:
-    src: '{{ item }}'
-    dest: '/etc/netdata/{{ item }}'
+    src: netdata.conf
+    dest: /etc/netdata/netdata.conf
     owner: root
     group: 'netdata'
     mode: '0640'
-  with_items:
-    - netdata.conf
-    - stream.conf
+  notify: netdata_restart
+
+- name: deploy stream config
+  no_log: true
+  template:
+    src: stream.conf
+    dest: /etc/netdata/stream.conf
+    owner: root
+    group: 'netdata'
+    mode: '0640'
   notify: netdata_restart
 
 - name: ensure /etc/netdata/go.d exists
@@ -56,6 +63,7 @@
   notify: netdata_restart
 
 - name: deploy postgres monitoring configuration
+  no_log: true
   template:
     src: postgres.conf.j2
     dest: /etc/netdata/go.d/postgres.conf
@@ -97,6 +105,7 @@
   notify: netdata_restart
 
 - name: alarm sending configuration
+  no_log: true
   template:
     src: health_alarm_notify.conf
     dest: /etc/netdata/health_alarm_notify.conf

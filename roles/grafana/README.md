@@ -93,6 +93,28 @@ grafana_datasources:
       severity_warning: warning
 ~~~
 
+### Datasource credentials
+
+Put datasource credentials in the plugin's `secureJsonData` fields or the legacy
+top-level `password` and `basicAuthPassword` fields, as literal values. The role
+moves them into the project `.env` and provisions `$GRAFANA_DS_<hash>` references,
+so the provisioning diff stays readable. The names are stable across reordering
+and rotation; do not use the `GRAFANA_DS_` prefix for other variables.
+
+Before writing any file, the role fails on duplicate datasource identities and on
+recognizable credentials elsewhere, such as `user:password@` in URLs or keys
+ending in `password`, `token` or `secret`. It cannot detect arbitrary secret
+values under other keys.
+
+Rendering test (Ansible and Docker Compose, no containers started), run from the
+collection root:
+
+```sh
+pipenv run python roles/grafana/tests/verify_datasources.py
+```
+
+Set `COMPOSE=/path/to/docker-compose` if `docker compose` is not available.
+
 ### Custom Dashboards
 
 You can create a wrapper role where you can put your custom dashboards in `files/dashboards/somefolder/somedashboard.json` and add them to `grafana_custom_dashboards`.

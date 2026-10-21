@@ -51,27 +51,22 @@
         mode: '0640'
       notify: victoriametrics-vmauth-restart
 
-    - name: deploy vmauth environment file
-      template:
-        src: vmauth.env.j2
-        dest: '{{ victoriametrics_path }}/.vmauth.env'
-        owner: root
-        group: root
-        mode: '0600'
-      notify: victoriametrics-vmauth-restart
-      no_log: true
-
     - name: validate vmauth auth config
+      no_log: true
       command: docker compose run --rm -T vmauth -dryRun -auth.config=/etc/vmauth/auth.yml
       args:
         chdir: '{{ victoriametrics_path }}'
       changed_when: false
+
+- name: remove legacy vmauth environment file
+  file:
+    path: '{{ victoriametrics_path }}/.vmauth.env'
+    state: absent
 
 - name: remove disabled vmauth files
   file:
     path: '{{ victoriametrics_path }}/{{ item }}'
     state: absent
   loop:
-    - .vmauth.env
     - vmauth-auth.yml
   when: victoriametrics_vmauth_users | length == 0

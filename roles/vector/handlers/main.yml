@@ -6,6 +6,7 @@
     daemon_reload: true
 
 - name: validate vector config # noqa no-changed-when
+  no_log: true
   command: /usr/bin/vector validate --config-toml /etc/vector/*.toml
   listen:
     - restart vector

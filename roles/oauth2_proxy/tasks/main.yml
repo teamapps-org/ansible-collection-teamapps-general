@@ -10,6 +10,7 @@
   notify: oauth2_proxy_regenerate_webproxy_config
 
 - name: manage oauth2_proxy instances
+  no_log: true
   loop: '{{ oauth2_proxy_instances | default([]) }}'
   loop_control:
     loop_var: instance

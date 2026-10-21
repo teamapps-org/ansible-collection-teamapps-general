@@ -26,6 +26,7 @@
     - "{{ promtail_positions_path }}"
 
 - name: Promtail Configuration File
+  no_log: true
   template:
     src: promtail-config.yml.j2
     dest: '{{ promtail_config_dir }}/promtail.yml'
