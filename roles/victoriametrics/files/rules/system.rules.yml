@@ -41,12 +41,16 @@ groups:
           description: The host {{ $labels.host }} last reported 'up' {{ $value | humanizeDuration }} ago
 
       # generic, warning only if no update for 5 min
+      # Kubernetes targets (k8s="true") are excluded here and in HostNotUp: their
+      # `host` is the node a pod runs on, so a rescheduled pod or a replaced node
+      # orphans the old series and the rule fires for the whole lookback window.
+      # Cover Kubernetes with cluster-native rules (kube-state-metrics) instead.
       - alert: HostLastUpdate
         expr: |
           time() - tlast_over_time(
             # summarize without instance and other labels that could change by service discovery & service scaling
             count by (job, host, environment, application) (
-              up{job!="netdata"}
+              up{job!="netdata",k8s!="true"}
             )[7d]
           ) > 60*5
         labels:
@@ -57,8 +61,8 @@ groups:
 
       - alert: HostNotUp
         expr: |
-          count(up{host!=""} offset 60m) by (job, host, environment, application)
-          unless count(up{host!=""}) by (job, host, environment, application)
+          count(up{host!="",k8s!="true"} offset 60m) by (job, host, environment, application)
+          unless count(up{host!="",k8s!="true"}) by (job, host, environment, application)
         for: 5m
         labels:
           severity: warning

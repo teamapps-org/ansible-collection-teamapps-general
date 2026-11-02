@@ -284,3 +284,61 @@ tests:
             exp_annotations:
               summary: "Target not reported up for job node"
               description: "The job node host host-gone last reported 'up' 5d 22h 30m 0s ago"
+
+  # Kubernetes rescheduling. A pod scrape sets `host` to the node the pod runs
+  # on, so a rescheduled pod forks every host-keyed series. The host rules must
+  # ignore k8s="true" targets; Kubernetes health is covered by cluster rules.
+  # ns/moved: its only pod moves from node-a to node-b at 5m.
+  # ns/gone: its only pod stops at 5m. Also ignored: k8s targets never alert here.
+  # host-02: non-k8s outage, keeps HostLastUpdate's assertion non-empty.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="ns/moved",host="node-a",instance="10.0.0.1:8080",pod="moved-a",cluster="cluster-a",k8s="true"}'
+        values: "1x5"
+      - series: 'up{job="ns/moved",host="node-b",instance="10.0.0.2:8080",pod="moved-b",cluster="cluster-a",k8s="true"}'
+        values: "_x5 1x35"
+      - series: 'up{job="ns/gone",host="node-a",instance="10.0.0.3:8080",pod="gone-a",cluster="cluster-a",k8s="true"}'
+        values: "1x5"
+      - series: 'up{job="node",host="host-02",instance="host-02:9100",environment="PROD",application="node"}'
+        values: "1x5"
+    alert_rule_test:
+      - eval_time: 30m
+        groupname: "system down"
+        alertname: HostLastUpdate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-02
+              environment: PROD
+              application: node
+            exp_annotations:
+              summary: "Target not reported up for job node"
+              description: "The job node host host-02 last reported 'up' 25m 0s ago"
+
+  # HostNotUp ignores the same reschedule: ns/moved changes node at 65m and
+  # must stay quiet; host-02 disappears and must fire.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="ns/moved",host="node-a",instance="10.0.0.1:8080",pod="moved-a",cluster="cluster-a",k8s="true"}'
+        values: "1x65"
+      - series: 'up{job="ns/moved",host="node-b",instance="10.0.0.2:8080",pod="moved-b",cluster="cluster-a",k8s="true"}'
+        values: "_x65 1x65"
+      - series: 'up{job="node",host="host-02",instance="host-02:9100",environment="PROD",application="node"}'
+        values: "1x65"
+    alert_rule_test:
+      - eval_time: 125m
+        groupname: "system down"
+        alertname: HostNotUp
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: node
+              host: host-02
+              environment: PROD
+              application: node
+            exp_annotations:
+              description: |-
+                Host shut down or target removed? Missing updates for metric 'up' of host 'host-02', job: 'node'
+                The up metric has no current value but was available an hour ago.
+              summary: "Host Down? up metric missing"
