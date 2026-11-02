@@ -31,6 +31,20 @@ The docker-compose.yml file is used to forward requests from the docker network 
 netdata_docker_integration: true
 ~~~
 
+## PostgreSQL monitoring
+
+go.d writes the full DSN to the log when a check fails. Do not put the password into `dsn`. Set `password` instead:
+
+~~~yaml
+netdata_postgres_enabled: true
+netdata_postgres_jobs:
+  - name: postgres_local
+    dsn: 'postgres://postgres@127.0.0.1:5432/postgres'
+    password: '{{ vault_netdata_postgres_password }}'
+~~~
+
+The role writes the password to `/etc/netdata/pgpass.d/<name>` (owner root, group netdata, mode `0640`) and adds `passfile=` to the DSN. The directory `/etc/netdata/pgpass.d` belongs to the role. The role removes every file in it that is not a current job with `password`. A password inside `dsn` still works, but go.d logs it when a check fails. The role fails if a job has `password` and also a `user:password@` password inside `dsn`, because the driver then ignores the pgpass file. Passwords must not start or end with whitespace or contain newlines or carriage returns (the pgpass format cannot store them).
+
 ## Netdata Resource usage
 
 <https://learn.netdata.cloud/docs/deployment-in-production/metric-retention---database/change-how-long-netdata-stores-metrics>

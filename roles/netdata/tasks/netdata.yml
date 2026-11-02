@@ -54,6 +54,61 @@
     mode: '0644'
   notify: netdata_restart
 
+# go.d logs the full DSN when a check fails. The password goes to a pgpass
+# file so the DSN has none.
+- name: check that postgres jobs with password key have no inline password
+  assert:
+    that: netdata__postgres_inline_password_jobs | length == 0
+    fail_msg: >-
+      netdata_postgres_jobs: remove the password from dsn of
+      {{ netdata__postgres_inline_password_jobs | join(', ') }}
+    quiet: true
+  vars:
+    netdata__postgres_inline_password_jobs: >-
+      {{ netdata_postgres_jobs | selectattr('password', 'defined')
+      | selectattr('dsn', 'match', '^postgres(ql)?://[^/@]*:[^/@]*@')
+      | map(attribute='name') | list }}
+  when: netdata_postgres_enabled | bool
+
+- name: create postgres pgpass directory
+  file:
+    path: /etc/netdata/pgpass.d
+    state: directory
+    owner: root
+    group: netdata
+    mode: '0750'
+
+- name: deploy postgres pgpass files
+  no_log: true
+  template:
+    src: pgpass.j2
+    dest: '/etc/netdata/pgpass.d/{{ item.name }}'
+    owner: root
+    group: netdata
+    mode: '0640'
+  loop: '{{ netdata_postgres_jobs | selectattr("password", "defined") | list }}'
+  notify: netdata_restart
+  when: netdata_postgres_enabled | bool
+
+- name: find postgres pgpass files
+  find:
+    paths: /etc/netdata/pgpass.d
+    file_type: file
+  register: netdata__register_pgpass_files
+
+- name: remove stale postgres pgpass files
+  file:
+    path: '{{ item.path }}'
+    state: absent
+  loop: '{{ netdata__register_pgpass_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+  notify: netdata_restart
+  when: >-
+    not netdata_postgres_enabled | bool
+    or item.path | basename not in
+    netdata_postgres_jobs | selectattr('password', 'defined') | map(attribute='name') | list
+
 - name: deploy postgres monitoring configuration
   no_log: true
   template:

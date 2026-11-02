@@ -52,10 +52,11 @@ netdata_postgres_update_every: 1
 netdata_postgres_autodetection_retry: 0
 netdata_postgres_jobs: []
 
-## Example:
+## Example (password goes to /etc/netdata/pgpass.d/<name>, see README):
 # netdata_postgres_jobs:
 #  - name: postgres_local
-#    dsn: 'postgres://postgres:password@127.0.0.1:5432/postgres' # gitleaks:allow
+#    dsn: 'postgres://postgres@127.0.0.1:5432/postgres'
+#    password: '{{ vault_netdata_postgres_password }}'
 
 # ~82.4M / 1000 metrics for a full day of per second retention.
 # a server has 3000-6000 metrics.
