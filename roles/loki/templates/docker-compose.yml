@@ -13,6 +13,9 @@ services:
     volumes:
       - ./htaccess:/etc/nginx/conf.d/htaccess:ro
       - ./site.conf:/etc/nginx/conf.d/default.conf:ro
+    tmpfs:
+      # The auth_request cache stores the Authorization header; keep it in memory.
+      - /tmp/validatecache
     networks:
       loki:
       webproxy:
