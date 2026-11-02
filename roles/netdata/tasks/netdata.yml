@@ -9,25 +9,6 @@
     name: netdata
     state: present
 
-# With docker integration the access log is off and netdata logs to the journal
-# (journalctl --namespace=netdata). Files left in /var/log/netdata are old.
-- name: remove old netdata log files
-  when: netdata_docker_integration
-  block:
-    - name: find old netdata log files
-      find:
-        paths: /var/log/netdata
-        file_type: file
-      register: netdata__register_old_logs
-
-    - name: remove old netdata log files
-      file:
-        path: '{{ item.path }}'
-        state: absent
-      loop: '{{ netdata__register_old_logs.files }}'
-      loop_control:
-        label: '{{ item.path }}'
-
 - name: add user netdata to docker group
   user:
     name: netdata
@@ -133,6 +114,24 @@
 
 - name: restart netdata service now if needed
   meta: flush_handlers
+
+# netdata.conf sends every log to the journal, so files left in
+# /var/log/netdata are old. Runs after the restart, when netdata no longer writes there.
+- name: remove old netdata log files
+  block:
+    - name: find old netdata log files
+      find:
+        paths: /var/log/netdata
+        file_type: file
+      register: netdata__register_old_logs
+
+    - name: remove old netdata log files
+      file:
+        path: '{{ item.path }}'
+        state: absent
+      loop: '{{ netdata__register_old_logs.files }}'
+      loop_control:
+        label: '{{ item.path }}'
 
 - name: Import tasks for netdata-docker integration
   import_tasks: docker.yml
