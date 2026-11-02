@@ -9,14 +9,6 @@
     name: netdata
     state: present
 
-- name: create log directory
-  file:
-    path: /var/log/netdata
-    state: directory
-    owner: netdata
-    group: netdata
-    mode: '2750'
-
 - name: add user netdata to docker group
   user:
     name: netdata
@@ -122,6 +114,24 @@
 
 - name: restart netdata service now if needed
   meta: flush_handlers
+
+# netdata.conf sends every log to the journal, so files left in
+# /var/log/netdata are old. Runs after the restart, when netdata no longer writes there.
+- name: remove old netdata log files
+  block:
+    - name: find old netdata log files
+      find:
+        paths: /var/log/netdata
+        file_type: file
+      register: netdata__register_old_logs
+
+    - name: remove old netdata log files
+      file:
+        path: '{{ item.path }}'
+        state: absent
+      loop: '{{ netdata__register_old_logs.files }}'
+      loop_control:
+        label: '{{ item.path }}'
 
 - name: Import tasks for netdata-docker integration
   import_tasks: docker.yml
