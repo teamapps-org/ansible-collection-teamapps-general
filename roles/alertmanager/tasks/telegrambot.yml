@@ -15,6 +15,7 @@
     mode: '0644'
 
 - name: telegrambot config
+  no_log: true
   template:
     src: telegram-bot-config.yaml
     dest: '{{ alertmanager_path }}/telegrambot/config.yaml'

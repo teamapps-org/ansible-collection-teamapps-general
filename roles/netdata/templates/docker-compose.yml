@@ -16,10 +16,9 @@ services:
       LETSENCRYPT_EMAIL: '{{ letsencrypt_email }}'
     entrypoint: socat TCP-LISTEN:80,nodelay,fork,reuseaddr TCP:172.28.0.1:19999
     healthcheck:
-      # Send a http request to the main socat instance and check if netcat replies
-      # As without container orchestration no one will restart if unhealthy, we need to do that ourselves...
-      test: ["CMD-SHELL", "if ! [ 'HTTP' = `printf 'GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' | socat - TCP:localhost:80,readbytes=4` ]; then kill 1 ; fi"]
-      # test: ["CMD-SHELL", "[ 'HTTP' = `printf 'GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' | socat - TCP:localhost:80,readbytes=4` ]"]
+      # Read the full response: closing early makes the forked socat log "Broken pipe".
+      # Nothing restarts an unhealthy container, so kill PID 1 ourselves.
+      test: ["CMD-SHELL", "r=$$(printf 'GET /api/v1/info HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' | socat - TCP:localhost:80); case \"$$r\" in HTTP*) ;; *) kill 1 ;; esac"]
       interval: 30s
       timeout: 20s
     expose:

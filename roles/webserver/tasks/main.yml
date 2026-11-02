@@ -11,6 +11,17 @@
   with_items:
     - '{{ webserver_path }}'
 
+- name: deploy compose secrets
+  no_log: true
+  blockinfile:
+    path: '{{ webserver_path }}/.env'
+    create: true
+    owner: root
+    group: root
+    mode: '0600'
+    marker: '# {mark} ANSIBLE webserver secrets'
+    block: "{{ lookup('template', 'compose.env.j2') }}"
+
 - name: deploy docker-compose.yml ({{ webserver_domain }})
   template:
     src: docker-compose.yml.j2
@@ -123,6 +134,7 @@
 #     build: '{{ webserver_docker_pull }}'
 
 - name: docker compose up ({{ webserver_domain }} in {{ webserver_path }})
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     state: present

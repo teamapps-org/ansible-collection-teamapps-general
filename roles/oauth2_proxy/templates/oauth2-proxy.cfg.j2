@@ -93,7 +93,7 @@ cookie_name = "{{ oauth2_proxy_instance_cookie_name }}"
 cookie_secret = "{{ oauth2_proxy_instance_cookie_secret }}"
 cookie_domains = "{{ oauth2_proxy_instance_cookie_domain }}"
 cookie_expire = "168h"
-cookie_refresh = "3h"
+cookie_refresh = "{{ oauth2_proxy_instance_cookie_refresh }}"
 cookie_secure = true
 cookie_httponly = true
 

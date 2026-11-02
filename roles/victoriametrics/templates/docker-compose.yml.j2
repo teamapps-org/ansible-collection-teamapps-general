@@ -9,9 +9,10 @@ services:
       - victoriametrics
     expose:
       - 8427
-    env_file:
-      - ./.vmauth.env
     environment:
+{% for key in victoriametrics_vmauth_passwords %}
+      {{ key }}: '{{ '${VICTORIAMETRICS_VMAUTH_' ~ key ~ '}' }}'
+{% endfor %}
       VIRTUAL_HOST: '{{ victoriametrics_vmauth_domain }}'
       VIRTUAL_PORT: 8427
       LETSENCRYPT_HOST: '{{ victoriametrics_vmauth_domain }}'
@@ -198,7 +199,7 @@ services:
       - '-evaluationInterval={{ victoriametrics_vmalert_evaluation_interval }}'
       - '-notifier.url={{ victoriametrics_alertmanager_url }}'
       - '-notifier.basicAuth.username={{ victoriametrics_alertmanager_user }}'
-      - '-notifier.basicAuth.password={{ victoriametrics_alertmanager_password }}'
+      - '-notifier.basicAuth.password=${VICTORIAMETRICS_ALERTMANAGER_PASSWORD}'
       - '-rule=/etc/alerts/*.yml'
       # display source of alerts in grafana
       - '-external.url={{ victoriametrics_vmalert_external_url }}'

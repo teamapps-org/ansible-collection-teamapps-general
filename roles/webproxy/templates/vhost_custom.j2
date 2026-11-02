@@ -1,0 +1,5 @@
+{{ ansible_managed | comment }}
+# webproxy_vhost_custom for {{ item.key }}. nginx-proxy includes this file instead of vhost.d/default.
+include /etc/nginx/vhost.d/default;
+
+{{ item.value }}

@@ -8,6 +8,7 @@
     mode: '0644'
 
 - name: deploy prometheus config
+  no_log: true
   template:
     src: 'prometheus.yml.j2'
     dest: '{{ prometheus_config_dir }}/prometheus.yml'
@@ -55,6 +56,7 @@
 
 # promtool check config actually validates config AND alerting rules
 - name: always validate config
+  no_log: true
   command: docker compose exec -T prometheus promtool check config {{ prometheus_config_dir_container }}/prometheus.yml
   args:
     chdir: "{{ prometheus_config_dir }}" # to run docker compose in the correct directory

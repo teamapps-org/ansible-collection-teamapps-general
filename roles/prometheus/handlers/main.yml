@@ -4,6 +4,7 @@
 # validation in the template won't work because %s expansion won't be reachable from within the container
 # promtool check config actually validates config AND alerting rules
 - name: validate config # noqa no-changed-when
+  no_log: true
   command: docker compose exec -T prometheus promtool check config {{ prometheus_config_dir_container }}/prometheus.yml
   args:
     chdir: "{{ prometheus_config_dir }}" # to run docker compose in the correct directory

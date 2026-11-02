@@ -65,6 +65,7 @@
   notify: vmagent-reload
 
 - name: Configure promscrape config
+  no_log: true
   template:
     src: prometheus_scrape.yml.j2
     dest: "{{ vmagent_config_dir }}/config.yml"
@@ -75,5 +76,6 @@
   notify: vmagent-reload
 
 - name: always validate config
+  no_log: true
   command: /usr/local/bin/vmagent-prod -dryRun -promscrape.config "{{ vmagent_config_dir }}/config.yml"
   changed_when: false

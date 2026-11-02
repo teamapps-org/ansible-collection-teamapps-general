@@ -33,6 +33,7 @@
   notify: loki-restart-gateway
 
 - name: Loki Configuration File
+  no_log: true
   template:
     src: loki-config.yml.j2
     dest: '{{ loki_path }}/loki-config.yml'

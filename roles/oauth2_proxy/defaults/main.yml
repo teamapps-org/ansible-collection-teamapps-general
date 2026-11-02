@@ -6,6 +6,9 @@ oauth2_proxy_webproxy_path: '{{ webproxy_path | default("/container/webproxy") }
 # https://quay.io/repository/oauth2-proxy/oauth2-proxy?tab=tags&tag=latest
 oauth2_proxy_version: latest
 
+# Refresh sessions on requests after this interval. Override per instance with cookie_refresh.
+oauth2_proxy_cookie_refresh: 3h
+
 # Redis image used when an instance enables session_store_type: redis and uses the built-in Redis sidecar.
 oauth2_proxy_redis_image_version: 8-alpine
 oauth2_proxy_redis_image: redis:{{ oauth2_proxy_redis_image_version }}
@@ -21,6 +24,7 @@ oauth2_proxy_instances: []
   #   cookie_secret: RANDOM_STRING # generate!
   #   cookie_domain: # optional
   #   cookie_name: # optional
+  #   cookie_refresh: 3h # Optional. For Entra refresh tokens, use offline_access and e.g. 30m.
   #   session_store_type: cookie # Optional, cookie or redis. Use redis for large OIDC/Entra sessions.
   #   redis_persistence_enabled: true # Optional for built-in Redis. Persist sessions across restarts.
   #   redis_data_directory: /container/oauth2_service.example.com/redis-data # Optional for built-in Redis persistence.

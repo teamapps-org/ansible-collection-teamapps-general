@@ -44,7 +44,8 @@
     mailsender_users_with_hashes: >-
       {{
         mailsender_users_with_hashes + [
-          mailsender_current_user | combine({'password_hash': mailsender_user_final_hash})
+          mailsender_current_user | dict2items | rejectattr('key', 'equalto', 'password')
+          | items2dict | combine({'password_hash': mailsender_user_final_hash})
         ]
       }}
   when: mailsender_user_final_hash is defined

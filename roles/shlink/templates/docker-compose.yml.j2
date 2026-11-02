@@ -12,11 +12,11 @@ services:
       DEFAULT_DOMAIN: "{{ shlink_domain }}"
       TZ: "{{ shlink_timezone }}"
       IS_HTTPS_ENABLED: true
-      GEOLITE_LICENSE_KEY: "{{ shlink_geolite_license_key }}"
+      GEOLITE_LICENSE_KEY: '${SHLINK_GEOLITE_LICENSE_KEY}'
       DB_DRIVER: maria
       DB_USER: shlink
       DB_NAME: "{{ shlink_db_name }}"
-      DB_PASSWORD: "{{ shlink_mariadb_password }}"
+      DB_PASSWORD: '${SHLINK_MARIADB_PASSWORD}'
       DB_HOST: database
     depends_on:
       - database
@@ -46,10 +46,10 @@ services:
     image: mariadb:{{ shlink_mariadb_version }}
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: "{{ shlink_mariadb_root_password }}"
+      MARIADB_ROOT_PASSWORD: '${SHLINK_MARIADB_ROOT_PASSWORD}'
       MARIADB_DATABASE: "{{ shlink_db_name }}"
       MARIADB_USER: shlink
-      MARIADB_PASSWORD: "{{ shlink_mariadb_password }}"
+      MARIADB_PASSWORD: '${SHLINK_MARIADB_PASSWORD}'
       MARIADB_AUTO_UPGRADE: '1'
     volumes:
       - type: bind

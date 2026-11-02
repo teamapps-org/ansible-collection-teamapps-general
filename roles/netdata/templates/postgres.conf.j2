@@ -59,8 +59,9 @@
 #  - dsn
 #    Data Source Name.
 #    Format: postgres://[username[:password]]@host:port[/dbname]?sslmode=[disable|verify-ca|verify-full]
+#    Do not put the password here, go.d logs the DSN. Use the role's `password` job key.
 #    Syntax:
-#     dsn: postgres://postgres:postgres@127.0.0.1:5432/postgres # gitleaks:allow
+#     dsn: postgres://postgres@127.0.0.1:5432/postgres?passfile=/etc/netdata/pgpass.d/<name>
 #
 #
 # [ JOB defaults ]:
@@ -84,7 +85,11 @@ autodetection_retry: {{ netdata_postgres_autodetection_retry }}
 jobs:
 {% for item in netdata_postgres_jobs %}
   - name: {{ item.name }}
+{% if item.password is defined %}
+    dsn: '{{ item.dsn }}{{ '&' if '?' in item.dsn else '?' }}passfile=/etc/netdata/pgpass.d/{{ item.name }}'
+{% else %}
     dsn: '{{ item.dsn }}'
+{% endif %}
 {% endfor %}
 
 {% endif %}

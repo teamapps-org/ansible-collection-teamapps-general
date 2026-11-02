@@ -22,6 +22,8 @@ webserver_php_override_custom: ''
 webserver_php_image: '' # if set, use image from registry, else build image
 webserver_php_version: '8'
 webserver_php_memory_limit: 4G
+# docker memory limit (cgroup) for the php container, e.g. 3g. unlimited if empty
+webserver_php_container_mem_limit: ''
 webserver_php_apt_packages: []
   # - git
 webserver_php_extensions:

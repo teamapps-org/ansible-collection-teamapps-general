@@ -1,11 +1,13 @@
 ---
 - name: webserver_restart
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     state: restarted
   tags: compose_up
 
 - name: webserver_restart_nginx
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     services:
@@ -14,6 +16,7 @@
   tags: compose_up
 
 - name: webserver_restart_php
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     services:
@@ -23,6 +26,7 @@
   tags: compose_up
 
 - name: webserver_recreate_sftp
+  no_log: true
   community.docker.docker_compose_v2:
     project_src: '{{ webserver_path }}'
     services:

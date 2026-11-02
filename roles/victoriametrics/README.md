@@ -12,7 +12,7 @@ This role uses an additional nginx proxy to manage access to different api endpo
 
 Set `victoriametrics_vmauth_users` to expose an additional entrypoint at `victoriametrics_vmauth_domain`, which defaults to `vmauth.{{ victoriametrics_domain }}`. The existing nginx auth proxy remains unchanged.
 
-`victoriametrics_vmauth_users` is rendered directly into the vmauth auth config. Every user password must be a `%{ENV_VAR}` reference with one matching key in the `victoriametrics_vmauth_passwords` mapping. Store password values with Ansible Vault; the role writes them to `.vmauth.env` with mode `0600` and `no_log: true`.
+`victoriametrics_vmauth_users` is rendered directly into the vmauth auth config. Every user password must be a `%{ENV_VAR}` reference with one matching key in the `victoriametrics_vmauth_passwords` mapping. Store password values with Ansible Vault. The role writes them to the project `.env` with mode `0600` and `no_log: true`, then passes each value explicitly to vmauth through `environment:`.
 
 ~~~yaml
 victoriametrics_vmauth_domain: vmauth.metrics.example.com

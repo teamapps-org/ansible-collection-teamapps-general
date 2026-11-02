@@ -1,4 +1,5 @@
 - name: deploy blackbox config
+  no_log: true
   template:
     src: 'blackbox.yml.j2'
     dest: '{{ victoriametrics_path }}/blackbox.yml'

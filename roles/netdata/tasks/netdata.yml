@@ -9,14 +9,6 @@
     name: netdata
     state: present
 
-- name: create log directory
-  file:
-    path: /var/log/netdata
-    state: directory
-    owner: netdata
-    group: netdata
-    mode: '2750'
-
 - name: add user netdata to docker group
   user:
     name: netdata
@@ -26,16 +18,23 @@
   notify: netdata_restart
   when: netdata_docker_integration
 
-- name: deploy config
+- name: deploy netdata config
   template:
-    src: '{{ item }}'
-    dest: '/etc/netdata/{{ item }}'
+    src: netdata.conf
+    dest: /etc/netdata/netdata.conf
     owner: root
     group: 'netdata'
     mode: '0640'
-  with_items:
-    - netdata.conf
-    - stream.conf
+  notify: netdata_restart
+
+- name: deploy stream config
+  no_log: true
+  template:
+    src: stream.conf
+    dest: /etc/netdata/stream.conf
+    owner: root
+    group: 'netdata'
+    mode: '0640'
   notify: netdata_restart
 
 - name: ensure /etc/netdata/go.d exists
@@ -55,7 +54,63 @@
     mode: '0644'
   notify: netdata_restart
 
+# go.d logs the full DSN when a check fails. The password goes to a pgpass
+# file so the DSN has none.
+- name: check that postgres jobs with password key have no inline password
+  assert:
+    that: netdata__postgres_inline_password_jobs | length == 0
+    fail_msg: >-
+      netdata_postgres_jobs: remove the password from dsn of
+      {{ netdata__postgres_inline_password_jobs | join(', ') }}
+    quiet: true
+  vars:
+    netdata__postgres_inline_password_jobs: >-
+      {{ netdata_postgres_jobs | selectattr('password', 'defined')
+      | selectattr('dsn', 'match', '^postgres(ql)?://[^/@]*:[^/@]*@')
+      | map(attribute='name') | list }}
+  when: netdata_postgres_enabled | bool
+
+- name: create postgres pgpass directory
+  file:
+    path: /etc/netdata/pgpass.d
+    state: directory
+    owner: root
+    group: netdata
+    mode: '0750'
+
+- name: deploy postgres pgpass files
+  no_log: true
+  template:
+    src: pgpass.j2
+    dest: '/etc/netdata/pgpass.d/{{ item.name }}'
+    owner: root
+    group: netdata
+    mode: '0640'
+  loop: '{{ netdata_postgres_jobs | selectattr("password", "defined") | list }}'
+  notify: netdata_restart
+  when: netdata_postgres_enabled | bool
+
+- name: find postgres pgpass files
+  find:
+    paths: /etc/netdata/pgpass.d
+    file_type: file
+  register: netdata__register_pgpass_files
+
+- name: remove stale postgres pgpass files
+  file:
+    path: '{{ item.path }}'
+    state: absent
+  loop: '{{ netdata__register_pgpass_files.files }}'
+  loop_control:
+    label: '{{ item.path }}'
+  notify: netdata_restart
+  when: >-
+    not netdata_postgres_enabled | bool
+    or item.path | basename not in
+    netdata_postgres_jobs | selectattr('password', 'defined') | map(attribute='name') | list
+
 - name: deploy postgres monitoring configuration
+  no_log: true
   template:
     src: postgres.conf.j2
     dest: /etc/netdata/go.d/postgres.conf
@@ -97,6 +152,7 @@
   notify: netdata_restart
 
 - name: alarm sending configuration
+  no_log: true
   template:
     src: health_alarm_notify.conf
     dest: /etc/netdata/health_alarm_notify.conf
@@ -113,6 +169,24 @@
 
 - name: restart netdata service now if needed
   meta: flush_handlers
+
+# netdata.conf sends every log to the journal, so files left in
+# /var/log/netdata are old. Runs after the restart, when netdata no longer writes there.
+- name: remove old netdata log files
+  block:
+    - name: find old netdata log files
+      find:
+        paths: /var/log/netdata
+        file_type: file
+      register: netdata__register_old_logs
+
+    - name: remove old netdata log files
+      file:
+        path: '{{ item.path }}'
+        state: absent
+      loop: '{{ netdata__register_old_logs.files }}'
+      loop_control:
+        label: '{{ item.path }}'
 
 - name: Import tasks for netdata-docker integration
   import_tasks: docker.yml

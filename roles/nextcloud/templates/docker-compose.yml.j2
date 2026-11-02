@@ -18,10 +18,10 @@ services:
         read_only: true
     environment:
       TZ: Europe/Berlin
-      MYSQL_ROOT_PASSWORD: '{{ nextcloud_mysql_root_password }}'
+      MYSQL_ROOT_PASSWORD: '${NEXTCLOUD_MYSQL_ROOT_PASSWORD}'
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
-      MYSQL_PASSWORD: '{{ nextcloud_mysql_password }}'
+      MYSQL_PASSWORD: '${NEXTCLOUD_MYSQL_PASSWORD}'
       MARIADB_AUTO_UPGRADE: 'True'
       MARIADB_DISABLE_UPGRADE_BACKUP: 'True'
     healthcheck:
@@ -73,7 +73,7 @@ services:
       MYSQL_HOST: db
       MYSQL_DATABASE: nextcloud
       MYSQL_USER: nextcloud
-      MYSQL_PASSWORD: '{{ nextcloud_mysql_password }}'
+      MYSQL_PASSWORD: '${NEXTCLOUD_MYSQL_PASSWORD}'
       REDIS_HOST: redis
       NEXTCLOUD_TRUSTED_DOMAINS: 'localhost,{{ nextcloud_domain }}'
       # NEXTCLOUD_ADMIN_USER:  # doesn't work, configure manually with web setup

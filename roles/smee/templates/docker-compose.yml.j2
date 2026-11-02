@@ -22,7 +22,7 @@ services:
 {% if smee_webhook_signatures | length > 0 %}
 {% for signature in smee_webhook_signatures %}
       - --webhook-signature
-      - {{ signature }}
+      - '${SMEE_WEBHOOK_SIGNATURE_{{ loop.index }}}'
 {% endfor %}
 {% endif %}
     environment:

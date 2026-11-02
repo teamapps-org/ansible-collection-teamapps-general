@@ -77,17 +77,24 @@
     mode: '0644'
   notify: tileserver restart
 
-- name: Deploy nginx maps
+- name: deploy nginx hostnames map
   template:
-    src: 'nginx/maps/{{ item }}'
-    dest: '{{ tileserver_path }}/nginx/maps/{{ item }}'
+    src: nginx/maps/hostnames_no_rate_limit.conf
+    dest: '{{ tileserver_path }}/nginx/maps/hostnames_no_rate_limit.conf'
     owner: root
     group: root
     mode: '0644'
   notify: tileserver restart
-  with_items:
-    - hostnames_no_rate_limit.conf
-    - key_no_rate_limit.conf
+
+- name: deploy nginx key map
+  no_log: true
+  template:
+    src: nginx/maps/key_no_rate_limit.conf
+    dest: '{{ tileserver_path }}/nginx/maps/key_no_rate_limit.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: tileserver restart
 
 - name: tileserver_docker-compose-up
   community.docker.docker_compose_v2:
