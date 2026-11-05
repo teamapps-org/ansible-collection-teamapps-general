@@ -1,5 +1,13 @@
 # Victoria Logs
 
+## Container health checks
+
+vmagent, vmalert and vmauth require v1.155.0 or newer for their native
+`-healthcheck` commands. These check whether the HTTP listener accepts
+connections, not HTTP responses. VictoriaLogs v1.53.0 does not support that
+flag, so its container still uses the executable-only `-version` fallback.
+Keep the self-scrape and canary monitoring enabled to check application health.
+
 ## VictoriaMetrics remote endpoints
 
 The VictoriaMetrics remote-write and remote-read variables intentionally use different URL formats:

@@ -8,6 +8,13 @@ Standalone  or together with `teamapps.general.vmagent`, this is a complete repl
 
 This role uses an additional nginx proxy to manage access to different api endpoints (write/read/admin)
 
+## Container health checks
+
+VictoriaMetrics, vmagent, vmalert and vmauth require v1.155.0 or newer for their
+native `-healthcheck` commands. These check whether the HTTP listener accepts
+connections without requiring curl or wget. They do not check HTTP responses
+or ingestion; keep application monitoring enabled.
+
 ## Restricted access with vmauth
 
 Set `victoriametrics_vmauth_users` to expose an additional entrypoint at `victoriametrics_vmauth_domain`, which defaults to `vmauth.{{ victoriametrics_domain }}`. The existing nginx auth proxy remains unchanged.
