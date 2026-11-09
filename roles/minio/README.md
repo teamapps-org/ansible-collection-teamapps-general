@@ -10,6 +10,20 @@ MinIO website: <https://min.io>
 `minio_version` selects its tag. Point `minio_image` at a private registry
 mirror to keep using a release that is no longer available upstream.
 
+Upstream `minio/minio` is archived and gets no security fixes. The
+`cgr.dev/chainguard/minio` image builds the maintained
+[chainguard-forks/minio](https://github.com/chainguard-forks/minio). Its free
+tier publishes only `latest`, so pin it by digest:
+`minio_image: cgr.dev/chainguard/minio` and
+`minio_version: latest@sha256:<digest>`.
+
+That image runs as uid `65532`. MinIO fails with "Unable to write to the
+backend" on data created by the root-running upstream image. Either set
+`minio_container_user: '0:0'` or change the owner of `minio_data_path` to
+`65532`.
+
+The healthcheck runs `mc ready local`, which both images include.
+
 ## Role Variables
 
 See `default/main.yml`

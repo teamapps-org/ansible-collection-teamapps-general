@@ -3,6 +3,9 @@
 services:
   minio:
     image: '{{ minio_image }}:{{ minio_version }}'
+{% if minio_container_user %}
+    user: '{{ minio_container_user }}'
+{% endif %}
     volumes:
       - type: bind
         source: '{{ minio_data_path }}'
@@ -30,7 +33,7 @@ services:
     networks:
       - webproxy
     healthcheck:
-      test: ["CMD-SHELL", "curl --head --fail http://127.0.0.1:9000/minio/health/live || exit 1"]
+      test: ["CMD", "mc", "ready", "local"]
       interval: 30s
       timeout: 10s
       retries: 3
