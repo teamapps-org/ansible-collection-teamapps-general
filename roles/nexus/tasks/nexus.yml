@@ -16,6 +16,34 @@
     group: '200'
     mode: '0750'
 
+- name: nexus secrets key file
+  when: nexus_secrets_keys | length > 0
+  block:
+    - name: assert nexus_secrets_active_key references a configured key
+      assert:
+        that:
+          - nexus_secrets_active_key in (nexus_secrets_keys | map(attribute='id') | list)
+        fail_msg: 'nexus_secrets_active_key must be one of the ids in nexus_secrets_keys'
+        quiet: true
+
+    - name: nexus_secrets directory
+      file:
+        path: '{{ nexus_path }}/secrets'
+        state: directory
+        owner: '200'
+        group: '200'
+        mode: '0700'
+
+    - name: deploy nexus_secrets.json
+      template:
+        src: 'nexus_secrets.json'
+        dest: '{{ nexus_path }}/secrets/nexus_secrets.json'
+        owner: '200'
+        group: '200'
+        mode: '0400'
+      no_log: true
+      notify: nexus_restart
+
 - name: deploy docker-compose.yml
   template:
     src: 'docker-compose.yml'
