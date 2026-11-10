@@ -1,10 +1,18 @@
 # based on https://github.com/VictoriaMetrics/VictoriaMetrics/tree/master/deployment/docker
 
+# Rotate container logs; -logNewSeries alone can write gigabytes a day.
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '{{ victoriametrics_log_max_size }}'
+    max-file: '{{ victoriametrics_log_max_file }}'
+
 services:
 {% if victoriametrics_vmauth_users | length > 0 %}
   vmauth:
     image: victoriametrics/vmauth:{{ victoriametrics_vmauth_version }}
     restart: always
+    logging: *default-logging
     depends_on:
       - victoriametrics
     expose:
@@ -38,6 +46,7 @@ services:
   authproxy:
     image: '{{ victoriametrics_nginx_image }}'
     restart: always
+    logging: *default-logging
     expose:
       - 80
     environment:
@@ -62,11 +71,6 @@ services:
     networks:
       vm_net:
       webproxy:
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '10m'
-        max-file: '10'
     ulimits:
       nproc: 65535
       nofile:
@@ -115,6 +119,7 @@ services:
       - vm_net
       - webproxy
     restart: always
+    logging: *default-logging
     ulimits:
       nproc: 65535
       nofile:
@@ -161,6 +166,7 @@ services:
     networks:
       - vm_net
     restart: always
+    logging: *default-logging
     ulimits:
       nproc: 65535
       nofile:
@@ -210,6 +216,7 @@ services:
     networks:
       - vm_net
     restart: always
+    logging: *default-logging
     healthcheck:
       test: ["CMD", "/vmalert-prod", "-healthcheck"]
       interval: 30s
@@ -233,6 +240,7 @@ services:
     ports:
       - 127.0.0.3:9115:9115
     restart: always
+    logging: *default-logging
     networks:
       - vm_net
     ulimits:
