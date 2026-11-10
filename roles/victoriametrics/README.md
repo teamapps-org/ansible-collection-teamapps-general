@@ -15,6 +15,13 @@ native `-healthcheck` commands. These check whether the HTTP listener accepts
 connections without requiring curl or wget. They do not check HTTP responses
 or ingestion; keep application monitoring enabled.
 
+## Container logs
+
+All containers of the stack use the `json-file` log driver with rotation. Each keeps at most
+`victoriametrics_log_max_file` files of `victoriametrics_log_max_size` (defaults: 10 files of
+10m). `victoriametrics_log_new_series` logs every new series and can write gigabytes a day
+during high churn; rotation caps its disk use.
+
 ## Restricted access with vmauth
 
 Set `victoriametrics_vmauth_users` to expose an additional entrypoint at `victoriametrics_vmauth_domain`, which defaults to `vmauth.{{ victoriametrics_domain }}`. The existing nginx auth proxy remains unchanged.
