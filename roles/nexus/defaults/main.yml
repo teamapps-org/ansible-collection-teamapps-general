@@ -11,3 +11,12 @@ nexus_docker_pull: '{{ global_docker_pull | default(False) }}'
 
 # leave blank for defaults, or override (e.g.: -Xms2703m -Xmx2703m -XX:MaxDirectMemorySize=2703m -Djava.util.prefs.userRoot=${NEXUS_DATA}/javaprefs)
 nexus_add_vm_params:
+
+# Custom secret encryption keys, replacing the built-in default key
+# (https://help.sonatype.com/en/re-encryption-in-nexus-repository.html).
+# List of {id, key}; key is a secret string, e.g. `openssl rand -base64 32`.
+# Keep retired keys listed until their secrets are re-encrypted with the active key.
+# Once secrets are re-encrypted with a custom key, Nexus needs the key on every start: never drop it.
+nexus_secrets_keys: []
+# id of the key used to encrypt new secrets, must match an id in nexus_secrets_keys
+nexus_secrets_active_key: ''

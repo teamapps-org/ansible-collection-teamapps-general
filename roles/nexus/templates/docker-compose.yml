@@ -8,12 +8,21 @@ services:
         source: './data'
         target: /nexus-data
         read_only: false
+{% if nexus_secrets_keys | length > 0 %}
+      - type: bind
+        source: './secrets'
+        target: /nexus-secrets
+        read_only: true
+{% endif %}
     environment:
       VIRTUAL_HOST: {{ nexus_domain }}
       LETSENCRYPT_HOST: {{ nexus_domain }}
       LETSENCRYPT_EMAIL: {{ letsencrypt_email }}
 {% if nexus_add_vm_params %}
       INSTALL4J_ADD_VM_PARAMS: {{ nexus_add_vm_params }}
+{% endif %}
+{% if nexus_secrets_keys | length > 0 %}
+      NEXUS_SECRETS_KEY_FILE: /nexus-secrets/nexus_secrets.json
 {% endif %}
     restart: unless-stopped
     expose:
