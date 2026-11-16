@@ -17,8 +17,10 @@ services:
     entrypoint: socat TCP-LISTEN:80,nodelay,fork,reuseaddr TCP:172.28.0.1:19999
     healthcheck:
       # Read the full response: closing early makes the forked socat log "Broken pipe".
+      # -t 15: wait up to 15 s for the reply after the request is sent. With the
+      # default 0.5 s, a slow answer from netdata under host load killed the container.
       # Nothing restarts an unhealthy container, so kill PID 1 ourselves.
-      test: ["CMD-SHELL", "r=$$(printf 'GET /api/v1/info HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' | socat - TCP:localhost:80); case \"$$r\" in HTTP*) ;; *) kill 1 ;; esac"]
+      test: ["CMD-SHELL", "r=$$(printf 'GET /api/v1/info HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' | socat -t 15 - TCP:localhost:80); case \"$$r\" in HTTP*) ;; *) kill 1 ;; esac"]
       interval: 30s
       timeout: 20s
     expose:
