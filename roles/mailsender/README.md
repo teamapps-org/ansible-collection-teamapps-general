@@ -93,7 +93,7 @@ mailsender_users:
 |----------|---------|-------------|
 | `mailsender_enable_ipv6` | `false` | Enable IPv6 support |
 | `mailsender_message_size_limit` | `26214400` | Max message size (~25MB) |
-| `mailsender_disable_inbound_smtp25` | `true` | Block inbound SMTP (port 25) |
+| `mailsender_disable_inbound_smtp25` | `true` | Port 25 listens on loopback only |
 | `mailsender_use_ufw` | `true` | Configure firewall with ufw |
 | `mailsender_install_testing_tools` | `true` | Install swaks for testing |
 
@@ -152,7 +152,7 @@ swaks --server relay.sender.domain.tld --port 587 --tls \
 ## Security Notes
 
 - All SMTP submission requires TLS encryption and authentication
-- Inbound SMTP (port 25) is blocked by default to prevent abuse
+- Inbound SMTP (port 25) listens on loopback only by default to prevent abuse
 - User passwords are hashed with SHA512-CRYPT
 - Sender address restrictions can be enforced per user
 - Let's Encrypt certificates are automatically renewed
