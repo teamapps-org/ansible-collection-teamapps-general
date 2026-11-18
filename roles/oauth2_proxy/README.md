@@ -4,6 +4,12 @@ Add single sign on protection to any service exposed using the webproxy (nginx-p
 
 This setup uses nginx auth_request to authenticate visitors, no additional proxy is added between webproxy and service.
 
+nginx sends every protected request to oauth2-proxy (`/oauth2/auth`) and does not cache the answer.
+oauth2-proxy accepts session cookies (also split as `<name>_0`, `<name>_1`) and, with `htpasswd`, `Authorization: Basic`.
+A cached answer must be keyed on all of these credentials, so a cache keyed on the client IP and one cookie
+gives one client's authorization to another client on the same IP. Do not add `proxy_cache` to `/oauth2/auth`.
+Sign-out takes effect on the next request.
+
 oauth2_proxy Documentation: <https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/overview/>
 
 Every oauth2_proxy instance should have its own Application Registration in GitLab or Microsoft Entra ID.
@@ -173,7 +179,7 @@ The `roles` claim replaces oauth2-proxy's session group list. `allowed_groups` t
 
 `openid profile email` requests identity claims for the backend. Microsoft Graph `User.Read` is needed for directory group overage lookup, not to request app roles. Keep it if your provider configuration still requires that lookup. A user without an allowed role must be denied by oauth2-proxy.
 
-After changing the claim or assignments, sign out and sign in again to test with a new session. Existing Redis sessions and the nginx auth cache can retain earlier authorization data.
+After changing the claim or assignments, sign out and sign in again to test with a new session. Existing Redis sessions can retain earlier authorization data.
 
 ## Identity and role header reference
 
@@ -284,3 +290,18 @@ To logout and test login, one can use the /oauth2/sign_in endpoint with a redire
 
 * `/oauth2/sign_out?rd=https%3A%2F%2Fservice.example.com%2F`
 * `/oauth2/sign_in?rd=https%3A%2F%2Fservice.example.com`
+
+## Verify that no auth answer is reused
+
+Run this after a change to the webproxy integration, from one machine. `USER` is an `htpasswd` entry of the instance;
+curl asks for the password. `/oauth2/auth` is the location nginx uses for `auth_request`, so it shows the answer that
+protected requests get. A protected page is not a good test: without credentials it shows the sign-in page, which can return 200.
+
+~~~bash
+url=https://service.example.com/oauth2/auth
+curl -s -o /dev/null -w '%{http_code}\n' -u USER "$url"         # expect 202
+curl -s -D - -o /dev/null "$url" | grep -iE '^HTTP|x-cache-status|x-auth-request'
+# expect HTTP 401 and no X-Cache-Status or X-Auth-Request-* header
+~~~
+
+Send the second request within 30 seconds of the first. A 202 there means nginx reused the answer for the first request.

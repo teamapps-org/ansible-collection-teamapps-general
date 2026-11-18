@@ -14,15 +14,6 @@
   tags:
     - oauth2_proxy_instance
 
-- name: deploy oauth2 proxy_cache conf to webproxy
-  template:
-    src: 'webproxy_oauth2_proxy_cache.conf.j2'
-    dest: '{{ oauth2_proxy_webproxy_path }}/data/conf.d/oauth2_proxy_cache.conf'
-    owner: root
-    group: root
-    mode: '0644'
-  notify: oauth2_proxy_regenerate_webproxy_config
-
 - name: manage oauth2_proxy instances
   no_log: true
   loop: '{{ oauth2_proxy_instances | default([]) }}'
@@ -94,3 +85,25 @@
   tags:
     - oauth2_proxy
     - oauth2_proxy_webproxy_config
+
+# The nginx auth cache was removed (see README). Older deployments still have its cache zone.
+# nginx does not start when a proxy_cache names an unknown zone, so the zone stays until no
+# vhost.d file uses it. Such files can come from another play or from outside this role.
+- name: find webproxy vhost configs that still use the oauth2 cache zone
+  command:
+    argv:
+      - grep
+      - -rlE
+      - '^\s*proxy_cache\s+oauth2_cache'
+      - '{{ oauth2_proxy_webproxy_path }}/data/vhost.d'
+  register: oauth2_proxy_cache_zone_users
+  changed_when: false
+  failed_when: oauth2_proxy_cache_zone_users.rc not in [0, 1]
+  check_mode: false
+
+- name: remove unused oauth2 proxy_cache conf from webproxy
+  file:
+    path: '{{ oauth2_proxy_webproxy_path }}/data/conf.d/oauth2_proxy_cache.conf'
+    state: absent
+  when: oauth2_proxy_cache_zone_users.stdout == ''
+  notify: oauth2_proxy_regenerate_webproxy_config
