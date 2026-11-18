@@ -60,6 +60,12 @@ oauth2_proxy_instances: []
   #   custom_vhost: '' # Optional, append to vhost include
   #   custom_vhost_location: '' # Optional, append to vhost_location include
 
+# Idle keepalive connections that each nginx worker keeps to a remote oauth2-proxy host
+# (oauth2_proxy_webproxy_sso_configs without internal_host). Without them, every auth_request
+# opens a new TLS connection to that host. Requires nginx 1.27.3 or later in the webproxy.
+# 0 disables the upstream and restores one connection per auth_request.
+oauth2_proxy_webproxy_keepalive: 4
+
 # list of webproxy configs only (See README)
 oauth2_proxy_webproxy_sso_configs: []
   # - service_domain:

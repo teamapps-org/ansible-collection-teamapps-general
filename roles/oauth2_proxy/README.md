@@ -284,6 +284,22 @@ oauth2_proxy_instances:
       - 'netdata-sso_group'
 ~~~
 
+### Connections to the shared instance
+
+nginx asks the shared instance on every protected request, over HTTPS. The role defines an nginx `upstream`
+with keepalive connections for each remote `oauth2_proxy_host`, in `conf.d/oauth2_proxy_upstream_<host>.conf`
+of the webproxy, and `/oauth2/auth` uses it. Without it, every auth request opens a new TLS connection to
+the shared instance: a dashboard that polls its API does that several times per second, and so does every
+anonymous request to a protected domain.
+
+* `oauth2_proxy_webproxy_keepalive` (default `4`) is the number of idle connections each nginx worker keeps.
+  `0` disables the upstream.
+* The upstream uses `server ... resolve`, which needs nginx 1.27.3 or later. It follows DNS changes of the
+  shared instance, and nginx starts even when the name does not resolve.
+* Entries with `internal_host: true` reach oauth2-proxy over the Docker network and do not use the upstream.
+* After setting the variable to `0`, the `conf.d/oauth2_proxy_upstream_<host>.conf` files stay in place.
+  They are unused and can be deleted.
+
 ## Sign in link
 
 To logout and test login, one can use the /oauth2/sign_in endpoint with a redirect url

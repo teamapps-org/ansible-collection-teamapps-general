@@ -72,6 +72,7 @@
     oauth2_proxy_instance_domain: "{{ instance.service_domain }}"
     oauth2_proxy_instance_host: "{{ instance.oauth2_proxy_host }}"
     oauth2_proxy_instance_internal_host: "{{ instance.internal_host | default(False) }}"
+    oauth2_proxy_instance_upstream: "oauth2_proxy_{{ instance.oauth2_proxy_host | regex_replace('[^A-Za-z0-9]', '_') }}"
     oauth2_proxy_instance_cookie_name: "{{ instance.cookie_name }}"
     # oauth2_proxy_webproxy_config_vhost_directory: "{{ instance.vhost_directory | default( oauth2_proxy_webproxy_path + '/data/vhost.d') }}"
     oauth2_proxy_webproxy_config_custom_vhost: "{{ instance.custom_vhost | default('') }}"

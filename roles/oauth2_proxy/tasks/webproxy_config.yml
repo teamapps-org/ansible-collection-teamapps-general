@@ -1,5 +1,19 @@
 ## deploy webproxy configuration for auth_request
 
+# The vhost config below names this upstream. nginx does not start when the upstream is missing,
+# so this file has to be in place first.
+- name: configure webproxy upstream with keepalive - {{ oauth2_proxy_instance_host }}
+  template:
+    src: 'webproxy_oauth2_proxy_upstream.conf.j2'
+    dest: '{{ oauth2_proxy_webproxy_path }}/data/conf.d/oauth2_proxy_upstream_{{ oauth2_proxy_instance_host }}.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  when:
+    - not oauth2_proxy_instance_internal_host
+    - oauth2_proxy_webproxy_keepalive | int > 0
+  notify: oauth2_proxy_regenerate_webproxy_config
+
 - name: configure webproxy vhost.d config - {{ oauth2_proxy_instance_domain }}
   template:
     src: 'webproxy_vhost.conf.j2'
