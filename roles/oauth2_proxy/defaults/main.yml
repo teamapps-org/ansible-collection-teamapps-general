@@ -9,6 +9,12 @@ oauth2_proxy_version: latest
 # Refresh sessions on requests after this interval. Override per instance with cookie_refresh.
 oauth2_proxy_cookie_refresh: 3h
 
+# Direct proxy IPs or CIDR ranges allowed to set X-Forwarded-* and X-Real-IP headers
+# (oauth2-proxy trusted_proxy_ips, requires oauth2-proxy v7.15.2 or later). An empty list
+# omits the setting, so oauth2-proxy trusts all callers. With teamapps.general.webproxy,
+# set it to the webproxy network subnet: ['172.28.0.0/16'].
+oauth2_proxy_trusted_proxy_ips: []
+
 # Redis image used when an instance enables session_store_type: redis and uses the built-in Redis sidecar.
 oauth2_proxy_redis_image_version: 8-alpine
 oauth2_proxy_redis_image: redis:{{ oauth2_proxy_redis_image_version }}

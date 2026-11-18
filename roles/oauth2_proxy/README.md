@@ -230,6 +230,17 @@ for cookie_secret, create random string, see https://oauth2-proxy.github.io/oaut
 
 with python3: `python3 -c 'import os,base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())'`
 
+## Trusted reverse proxy
+
+Every instance runs with `reverse_proxy = true`, so oauth2-proxy reads the client IP from `X-Real-IP` and builds redirects from `X-Forwarded-*` headers. By default it accepts these headers from every caller and logs a startup warning. `oauth2_proxy_trusted_proxy_ips` limits which direct callers may set them. Behind `teamapps.general.webproxy`, use the subnet of its `webproxy` network:
+
+```yaml
+oauth2_proxy_trusted_proxy_ips:
+  - 172.28.0.0/16
+```
+
+Requests from other addresses are still served, but oauth2-proxy ignores their forwarding headers. Include every proxy that connects to the instances directly. The setting requires oauth2-proxy v7.15.2 or later; older versions fail to load a configuration that contains it. The default empty list omits the setting.
+
 ## Shared oauth proxy example
 
 If there are multiple similar services that should be protected by a single OAuth2 Prox Instance. E.g. a service that runs on every host. The services need to share a common parent domain, configured in cookie_domain.
