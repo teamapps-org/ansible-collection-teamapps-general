@@ -78,27 +78,15 @@ location = /oauth2/auth {
     proxy_http_version          1.1;
     proxy_ssl_server_name       on;
 
-    # Cache responses from the auth proxy
-    # https://gist.github.com/JoelSpeed/9f4dbf6f79f6498d12ccd6ff0bc096e2
-    proxy_cache_valid 202 401 30s;
-    proxy_cache_valid any    1s;
+    # No auth cache: oauth2-proxy also accepts Authorization: Basic (htpasswd) and
+    # split session cookies (<name>_0, <name>_1). A cache keyed on the client IP and
+    # one cookie handed a cached 202 with the X-Auth-Request-* headers to anonymous
+    # requests from the same IP. See the oauth2_proxy role README.
 
-    proxy_cache_lock      on;
-    proxy_cache           oauth2_cache;
-    proxy_cache_methods   GET;
-    proxy_cache_key       "$host|$proxy_host|$remote_addr|$cookie_{{ oauth2_proxy_instance_cookie_name }}";
-
-    # buffering required for caching
-    proxy_buffering on;
-
-    # buffer size needs to be bigger to keep the cookie in the cache_key
+    # The auth response carries Set-Cookie (cookie_refresh) and X-Auth-Request-Groups,
+    # which exceed the default 4k/8k header buffer for large sessions and Entra groups.
     proxy_buffers 8 16k;
     proxy_buffer_size 16k;
     proxy_busy_buffers_size 16k;
-
-    # Should still cache even with Set-Cookie
-    proxy_ignore_headers          Set-Cookie;
-
-    add_header X-Cache-Status $upstream_cache_status always;
 }
 {{ oauth2_proxy_webproxy_config_custom_vhost }}
