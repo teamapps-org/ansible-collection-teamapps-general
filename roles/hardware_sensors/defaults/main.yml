@@ -1,0 +1,6 @@
+---
+# Super-I/O sensor drivers to load. A driver whose chip is not on the board fails to load (ENODEV, or EBUSY when
+# ACPI owns the chip) and is skipped. Drivers that load are persisted in /etc/modules-load.d/<driver>.conf.
+# nct6775 covers the Nuvoton NCT67xx chips used on many ASUS and ASRock boards; add it87 for ITE chips.
+hardware_sensors_candidate_modules:
+  - nct6775

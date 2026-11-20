@@ -1,0 +1,96 @@
+# vmalert unit test for hardware.rules.yml.
+# Run: vmalert-tool unittest --files=hardware.rules.test.yml
+#
+# `1xN` yields N+1 samples at 0m..Nm; `_xN` skips N samples. The group evaluates every 5m.
+---
+rule_files:
+  - ../hardware.rules.yml
+evaluation_interval: 5m
+tests:
+  # host-02 (AMD) jumps to 96 °C at 5m, host-03 (Intel) to 95 °C at 5m; both fire after `for: 15m`.
+  # host-01 stays at 70 °C, and its NVMe temp1 at 95 °C is not a CPU sensor.
+  - interval: 1m
+    input_series:
+      - series: 'node_hwmon_chip_names{job="node",instance="host-02:9100",host="host-02",chip="pci0000:00_0000:00:18_3",chip_name="k10temp"}'
+        values: "1x40"
+      - series: 'node_hwmon_temp_celsius{job="node",instance="host-02:9100",host="host-02",chip="pci0000:00_0000:00:18_3",sensor="temp1"}'
+        values: "80x4 96x36"
+      - series: 'node_hwmon_chip_names{job="node",instance="host-03:9100",host="host-03",chip="platform_coretemp_0",chip_name="coretemp"}'
+        values: "1x40"
+      - series: 'node_hwmon_temp_celsius{job="node",instance="host-03:9100",host="host-03",chip="platform_coretemp_0",sensor="temp1"}'
+        values: "60x4 95x36"
+      - series: 'node_hwmon_chip_names{job="node",instance="host-01:9100",host="host-01",chip="pci0000:00_0000:00:18_3",chip_name="k10temp"}'
+        values: "1x40"
+      - series: 'node_hwmon_temp_celsius{job="node",instance="host-01:9100",host="host-01",chip="pci0000:00_0000:00:18_3",sensor="temp1"}'
+        values: "70x40"
+      - series: 'node_hwmon_chip_names{job="node",instance="host-01:9100",host="host-01",chip="nvme_nvme0",chip_name="nvme"}'
+        values: "1x40"
+      - series: 'node_hwmon_temp_celsius{job="node",instance="host-01:9100",host="host-01",chip="nvme_nvme0",sensor="temp1"}'
+        values: "95x40"
+    alert_rule_test:
+      - eval_time: 15m
+        groupname: hardware_sensors
+        alertname: HostCpuTemperatureHigh
+        exp_alerts: []
+      - eval_time: 25m
+        groupname: hardware_sensors
+        alertname: HostCpuTemperatureHigh
+        exp_alerts:
+          - exp_labels: {severity: warning, team: ops, instance: "host-02:9100", host: host-02}
+            exp_annotations:
+              summary: "CPU of host-02 at 96 °C"
+              description: "The CPU of host-02 has been above 90 °C for 15 minutes, at or near its throttling limit. Check the CPU fan (HostFanStopped) and the cooler."
+          - exp_labels: {severity: warning, team: ops, instance: "host-03:9100", host: host-03}
+            exp_annotations:
+              summary: "CPU of host-03 at 95 °C"
+              description: "The CPU of host-03 has been above 90 °C for 15 minutes, at or near its throttling limit. Check the CPU fan (HostFanStopped) and the cooler."
+
+  # host-01's CPU fan spins until 5m, then reads 0 RPM and fires after `for: 5m`.
+  # fan1 is unconnected and never spun; the GPU fan (PCI chip) may stop at idle.
+  - interval: 1m
+    input_series:
+      - series: 'node_hwmon_fan_rpm{job="node",instance="host-01:9100",host="host-01",chip="platform_nct6775_656",sensor="fan2"}'
+        values: "2100x5 0x20"
+      - series: 'node_hwmon_fan_rpm{job="node",instance="host-01:9100",host="host-01",chip="platform_nct6775_656",sensor="fan1"}'
+        values: "0x25"
+      - series: 'node_hwmon_fan_rpm{job="node",instance="host-01:9100",host="host-01",chip="0000:00:03_1_0000:09:00_0",sensor="fan1"}'
+        values: "900x5 0x20"
+    alert_rule_test:
+      - eval_time: 10m
+        groupname: hardware_sensors
+        alertname: HostFanStopped
+        exp_alerts: []
+      - eval_time: 15m
+        groupname: hardware_sensors
+        alertname: HostFanStopped
+        exp_alerts:
+          - exp_labels: {severity: critical, team: ops, job: node, instance: "host-01:9100", host: host-01, chip: platform_nct6775_656, sensor: fan2}
+            exp_annotations:
+              summary: "Fan fan2 of host-01 stopped"
+              description: "Fan input fan2 (platform_nct6775_656) of host-01 spun within the last 30 days and has read 0 RPM for 5 minutes. A stopped CPU fan makes the CPU throttle; have the fan checked or replaced. A fan removed on purpose, or a header in 0 RPM fan-stop mode, keeps this firing until 30 days after its last reading above 0."
+
+  # host-03 reboots at 10m without the fan driver: its fan disappears while the CPU chip is still reported.
+  # host-01 goes down completely at 10m (no hwmon chip at all), which is not a sensor problem.
+  - interval: 1m
+    input_series:
+      - series: 'node_hwmon_fan_rpm{job="node",instance="host-03:9100",host="host-03",chip="platform_nct6775_656",sensor="fan2"}'
+        values: "2300x10 _x40"
+      - series: 'node_hwmon_chip_names{job="node",instance="host-03:9100",host="host-03",chip="pci0000:00_0000:00:18_3",chip_name="k10temp"}'
+        values: "1x50"
+      - series: 'node_hwmon_fan_rpm{job="node",instance="host-01:9100",host="host-01",chip="platform_nct6775_656",sensor="fan2"}'
+        values: "2100x10 _x40"
+      - series: 'node_hwmon_chip_names{job="node",instance="host-01:9100",host="host-01",chip="pci0000:00_0000:00:18_3",chip_name="k10temp"}'
+        values: "1x10 _x40"
+    alert_rule_test:
+      - eval_time: 15m
+        groupname: hardware_sensors
+        alertname: HostFanSensorMissing
+        exp_alerts: []
+      - eval_time: 45m
+        groupname: hardware_sensors
+        alertname: HostFanSensorMissing
+        exp_alerts:
+          - exp_labels: {severity: warning, team: ops, job: node, instance: "host-03:9100", host: host-03, chip: platform_nct6775_656, sensor: fan2}
+            exp_annotations:
+              summary: "Fan fan2 of host-03 not reported"
+              description: "host-03 reported fan input fan2 on chip platform_nct6775_656 within the last 7 days, but node_exporter has not reported it for 15 minutes. Check that the sensor driver is loaded (lsmod, /etc/modules-load.d/) and rerun the hardware_sensors role."

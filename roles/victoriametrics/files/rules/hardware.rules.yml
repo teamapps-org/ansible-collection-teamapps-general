@@ -1,0 +1,51 @@
+---
+# Mainboard sensors from the node_exporter hwmon collector. The hardware_sensors role loads the fan-controller driver.
+# Fan rules only look at Super-I/O chips (chip="platform_*"): GPU fans stop at idle by design.
+# Unconnected headers always read 0 RPM, so a fan input counts as connected once it reported RPM above 0 within
+# 30 days. A fan that never spun since its driver was loaded is not covered; HostCpuTemperatureHigh catches the result.
+groups:
+  - name: hardware_sensors
+    interval: 5m # max_over_time over 30 days is expensive; the for: durations are 5m and longer
+    rules:
+
+      # temp1 is Tctl on AMD (k10temp) and the package temperature on Intel (coretemp).
+      - alert: HostCpuTemperatureHigh
+        expr: |
+          max by (instance, host) (
+            node_hwmon_temp_celsius{sensor="temp1"}
+            * on (instance, chip) group_left () node_hwmon_chip_names{chip_name=~"k10temp|coretemp"}
+          ) > 90
+        for: 15m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "CPU of {{ $labels.host }} at {{ $value | humanize }} °C"
+          description: "The CPU of {{ $labels.host }} has been above 90 °C for 15 minutes, at or near its throttling limit. Check the CPU fan (HostFanStopped) and the cooler."
+
+      - alert: HostFanStopped
+        expr: |
+          node_hwmon_fan_rpm{chip=~"platform_.*"} == 0
+          and on (instance, chip, sensor) max_over_time(node_hwmon_fan_rpm{chip=~"platform_.*"}[30d]) > 0
+        for: 5m
+        labels:
+          team: ops
+          severity: critical
+        annotations:
+          summary: "Fan {{ $labels.sensor }} of {{ $labels.host }} stopped"
+          description: "Fan input {{ $labels.sensor }} ({{ $labels.chip }}) of {{ $labels.host }} spun within the last 30 days and has read 0 RPM for 5 minutes. A stopped CPU fan makes the CPU throttle; have the fan checked or replaced. A fan removed on purpose, or a header in 0 RPM fan-stop mode, keeps this firing until 30 days after its last reading above 0."
+
+      # A fan reported within 7 days is gone while node_exporter still reports other hwmon chips:
+      # the driver did not load after a reboot. After a board swap this fires until the 7 days pass.
+      - alert: HostFanSensorMissing
+        expr: |
+          max_over_time(node_hwmon_fan_rpm{chip=~"platform_.*"}[7d]) > 0
+          unless on (instance, chip, sensor) node_hwmon_fan_rpm
+          and on (instance) node_hwmon_chip_names
+        for: 15m
+        labels:
+          team: ops
+          severity: warning
+        annotations:
+          summary: "Fan {{ $labels.sensor }} of {{ $labels.host }} not reported"
+          description: "{{ $labels.host }} reported fan input {{ $labels.sensor }} on chip {{ $labels.chip }} within the last 7 days, but node_exporter has not reported it for 15 minutes. Check that the sensor driver is loaded (lsmod, /etc/modules-load.d/) and rerun the hardware_sensors role."

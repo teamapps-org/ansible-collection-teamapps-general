@@ -1,0 +1,17 @@
+---
+# modprobe fails with "No such device" when the board has no matching chip, and with "Device or resource busy"
+# when ACPI claims the chip. Both mean the driver is not usable on this host; any other error fails the task.
+# The module writes /etc/modules-load.d/<driver>.conf only after the driver loaded.
+- name: load and persist sensor drivers
+  community.general.modprobe:
+    name: '{{ item }}'
+    state: present
+    persistent: present
+  loop: '{{ hardware_sensors_candidate_modules }}'
+  register: __hardware_sensors_modprobe
+  failed_when:
+    - __hardware_sensors_modprobe.rc | default(0) != 0
+    - '"No such device" not in __hardware_sensors_modprobe.msg | default("")'
+    - '"Device or resource busy" not in __hardware_sensors_modprobe.msg | default("")'
+  tags:
+    - hardware_sensors
