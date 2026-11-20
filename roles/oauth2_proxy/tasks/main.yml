@@ -1,5 +1,19 @@
 # tasks for oauth2 proxy
 
+- name: validate oauth2_proxy_trusted_proxy_ips
+  assert:
+    that:
+      - oauth2_proxy_trusted_proxy_ips is sequence
+      - oauth2_proxy_trusted_proxy_ips is not string
+      - oauth2_proxy_trusted_proxy_ips is not mapping
+      - oauth2_proxy_trusted_proxy_ips | reject('string') | list | length == 0
+    fail_msg: >-
+      oauth2_proxy_trusted_proxy_ips must be a list of IP addresses or CIDR ranges,
+      for example ['172.28.0.0/16'], not {{ oauth2_proxy_trusted_proxy_ips | to_json }}.
+    quiet: true
+  tags:
+    - oauth2_proxy_instance
+
 - name: deploy oauth2 proxy_cache conf to webproxy
   template:
     src: 'webproxy_oauth2_proxy_cache.conf.j2'
