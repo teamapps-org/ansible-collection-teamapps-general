@@ -65,6 +65,13 @@ location = /oauth2/auth {
     proxy_set_header Host             $host;
     proxy_set_header X-Real-IP        $remote_addr;
     proxy_set_header X-Scheme         $http_x_forwarded_proto;
+{% elif oauth2_proxy_webproxy_keepalive | int > 0 %}
+    # Upstream with keepalive connections, from conf.d/oauth2_proxy_upstream_{{ oauth2_proxy_instance_host }}.conf.
+    # With a variable in proxy_pass, every auth_request opens a new TLS connection.
+    proxy_pass       https://{{ oauth2_proxy_instance_upstream }};
+    proxy_ssl_name   {{ oauth2_proxy_instance_host }};
+    proxy_set_header Host             {{ oauth2_proxy_instance_host }};
+    proxy_set_header Connection       "";
 {% else %}
     proxy_pass       https://$oauth2proxy:443;
     proxy_set_header Host             {{ oauth2_proxy_instance_host }};

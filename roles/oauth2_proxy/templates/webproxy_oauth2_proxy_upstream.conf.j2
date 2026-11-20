@@ -1,0 +1,11 @@
+## deployed by ansible role oauth2_proxy
+# Keepalive connections to the remote oauth2-proxy host {{ oauth2_proxy_instance_host }}.
+# nginx auth_request asks this host on every protected request. Without this upstream,
+# each of these requests opens a new TLS connection.
+# "resolve" follows DNS changes, and nginx starts even when the name does not resolve.
+upstream {{ oauth2_proxy_instance_upstream }} {
+    zone {{ oauth2_proxy_instance_upstream }} 256k;
+    resolver 127.0.0.11 valid=10s; # 127.0.0.11 comes from /etc/resolv.conf on the nginx container
+    server {{ oauth2_proxy_instance_host }}:443 resolve;
+    keepalive {{ oauth2_proxy_webproxy_keepalive | int }};
+}
