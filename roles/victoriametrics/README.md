@@ -44,6 +44,15 @@ victoriametrics_vmauth_passwords:
     ...
 ~~~
 
+## Loki canary alerts
+
+The role deploys `files/rules/loki_canary.rules.yml` by default. Hosts without
+`loki-canary` can turn it off. The role then removes the file:
+
+~~~yaml
+victoriametrics_loki_canary_alerts_enabled: false
+~~~
+
 ## VictoriaLogs canary alerts
 
 Enable the canary alert rules on the VictoriaMetrics instance that stores the
