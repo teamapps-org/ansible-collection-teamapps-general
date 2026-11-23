@@ -59,6 +59,9 @@ victoriametrics_vmalert_external_source: >-
 victoriametrics_vmalert_external_labels:
   - 'alertsource={{ victoriametrics_domain }}'
 
+# Deploy files/rules/loki_canary.rules.yml. Set to false where no loki-canary runs.
+victoriametrics_loki_canary_alerts_enabled: true
+
 # Alert on missing, delayed, or incomplete VictoriaLogs canary signals. The
 # domain list scopes both current and seven-day source-discovery queries.
 victoriametrics_victorialogs_canary_alerts_enabled: false
